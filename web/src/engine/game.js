@@ -24,7 +24,7 @@ import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
 import { NetClient } from './net.js';
 
-export const DEMO_FACTIONS = ['karens', 'hoaDads', 'vcBros', 'wokeLibs', 'rednecks', 'fratHouse'];
+export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
 const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
 
