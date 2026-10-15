@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#111d35">
 <title>Call of Karen: HOA Warfare (web slice)</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -67,12 +70,28 @@
       <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
     </div>
     <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
-    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores<br>O/0 Cycle Visual Styles · 1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
+    <p class="keys"><b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
+    <b>Controller:</b> L stick move (click = sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · D-pad up/down weapon · VIEW scores · START pause · menu: LB/RB faction, A deploy<br>
+    <b>Phone / tablet:</b> left thumb = move (push to the edge to sprint) · drag right side to aim · hold FIRE (drag it to aim while shooting) · auto-fire when your crosshair is on an enemy · turn sideways<br>
+    O/0 visual style · [ Clean/Steam · ] legal-safe · P 16-bit filter · M mute</p>
   </div>
 </div>
 
-<div id="pause" class="overlay hidden"><div class="panel small"><h2>Paused</h2><p>Click to keep fighting for the block.</p><button id="toMenu">Quit to menu</button></div></div>
+<div id="pause" class="overlay hidden"><div class="panel small"><h2>Paused</h2><p id="pauseHint">Click to keep fighting for the block.</p><button id="toMenu">Quit to menu</button></div></div>
 <div id="end" class="overlay hidden"><div class="panel" id="endPanel"></div></div>
+
+<div id="touch" class="hidden-unless-touch">
+  <div class="t-stick"><div class="t-knob"></div></div>
+  <button data-t="pause" class="t-btn t-pause" aria-label="Pause">II</button>
+  <button data-t="board" class="t-btn t-board" aria-label="Scores">☰</button>
+  <button data-t="fire" class="t-btn t-fire" aria-label="Fire">FIRE</button>
+  <button data-t="jump" class="t-btn t-jump" aria-label="Jump">⤒</button>
+  <button data-t="reload" class="t-btn t-reload" aria-label="Reload">R</button>
+  <button data-t="melee" class="t-btn t-melee" aria-label="Trophy melee">🏆</button>
+  <button data-t="grenade" class="t-btn t-grenade" aria-label="Throw Lawsuit">💼</button>
+  <button data-t="swap" class="t-btn t-swap" aria-label="Swap weapon">⇄</button>
+</div>
+<div id="rotate">Turn your phone sideways to defend the block.</div>
 
 <script type="module" src="src/engine/game.js"></script>
 </body>

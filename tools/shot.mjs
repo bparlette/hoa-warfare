@@ -39,8 +39,20 @@ const send = (method, params = {}) => new Promise(r => { const i = ++id; pending
 await send('Runtime.enable');
 await send('Log.enable');
 await send('Page.enable');
+// MOBILE=1 emulates a landscape phone with touch; TOUCH='[{"type":"touchStart","points":[[x,y]...],"wait":ms},...]'
+// replays real touch events (ids = point index) after the page loads.
+if (process.env.MOBILE) {
+  await send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true, screenOrientation: { type: 'landscapePrimary', angle: 90 } });
+  await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+}
 await send('Page.navigate', { url: `http://127.0.0.1:8642/web/?${query}` });
 await sleep(Number(secs) * 1000);
+if (process.env.TOUCH) {
+  for (const step of JSON.parse(process.env.TOUCH)) {
+    await send('Input.dispatchTouchEvent', { type: step.type, touchPoints: (step.points || []).map(([x, y], id) => ({ x, y, id })) });
+    if (step.wait) await sleep(step.wait);
+  }
+}
 if (evalJs) {
   const r = await send('Runtime.evaluate', { expression: evalJs, awaitPromise: true, returnByValue: true });
   console.log('eval:', JSON.stringify(r.result?.result?.value ?? r.result));

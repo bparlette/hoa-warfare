@@ -12,6 +12,9 @@ import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
+import { Controls, aimAssist } from './controls.js';
+
+const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -214,10 +217,18 @@ class Game {
   update(dt) {
     this.realTime += dt;
     const sim = this.sim;
-    const paused = !state.spectate && !input.locked && !sim.over;
-    $('pause').classList.toggle('hidden', !paused || !!this.killcam || !$('menu').classList.contains('hidden'));
+    const paused = !state.spectate && !input.engaged && !sim.over;
+    const showPause = paused && !this.killcam && $('menu').classList.contains('hidden');
+    $('pause').classList.toggle('hidden', !showPause);
+    if (showPause) $('pauseHint').textContent = PAUSE_HINT[input.device];
+    document.body.classList.toggle('touch-mode', input.device === 'touch');
     if (!paused) {
-      if (!this.me.isBot) input.apply(this.me);
+      if (!this.me.isBot) {
+        const assist = input.device === 'mouse' ? { slow: 1, onTarget: false } : aimAssist(sim, this.me);
+        input.assist = assist.slow;
+        input.onTarget = assist.onTarget;
+        input.apply(this.me, dt);
+      }
       this.acc = Math.min((this.acc || 0) + dt, FIXED * 5);
       while (this.acc >= FIXED) {
         this.acc -= FIXED;
@@ -530,8 +541,8 @@ class Game {
       placed.push({ x, y, w, h });
       bb.el.style.left = `${x}px`; bb.el.style.top = `${y}px`;
     }
-    $('board').classList.toggle('hidden', !input.keys.has('Tab'));
-    if (input.keys.has('Tab')) this.renderBoard($('board'));
+    $('board').classList.toggle('hidden', !input.scoreboard);
+    if (input.scoreboard) this.renderBoard($('board'));
   }
 
   update007Meters(hp, maxHp = 100, armor = 100, maxArmor = 100) {
@@ -582,106 +593,39 @@ class Game {
 
 // ------------------------------------------------------------------ input
 
-const input = {
-  keys: new Set(), locked: false, fire: false, sens: 0.0022, yaw: 0, pitch: 0,
-  gpPrev: new Map(),
-  apply(a) {
-    const k = this.keys;
-    let fwd = (k.has('KeyW') ? 1 : 0) - (k.has('KeyS') ? 1 : 0);
-    let right = (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0);
-    let jump = k.has('Space');
-    let sprint = k.has('ShiftLeft') || k.has('ShiftRight');
-    let fire = this.fire;
-
-    // Gamepad (Xbox / standard controller) support
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gp = pads.find(p => p && p.connected);
-    if (gp) {
-      const dead = 0.15;
-      const lx = Math.abs(gp.axes[0] || 0) > dead ? gp.axes[0] : 0;
-      const ly = Math.abs(gp.axes[1] || 0) > dead ? gp.axes[1] : 0;
-      const rx = Math.abs(gp.axes[2] || 0) > dead ? gp.axes[2] : 0;
-      const ry = Math.abs(gp.axes[3] || 0) > dead ? gp.axes[3] : 0;
-
-      // D-pad support (buttons 12-15)
-      const dUp = gp.buttons[12]?.pressed ? 1 : 0;
-      const dDown = gp.buttons[13]?.pressed ? 1 : 0;
-      const dLeft = gp.buttons[14]?.pressed ? 1 : 0;
-      const dRight = gp.buttons[15]?.pressed ? 1 : 0;
-
-      fwd += -ly + (dUp - dDown);
-      right += lx + (dRight - dLeft);
-
-      // Aiming look sticks
-      if (rx || ry) {
-        this.yaw -= rx * 0.05;
-        this.pitch = Math.max(-1.45, Math.min(1.45, this.pitch - ry * 0.038));
-      }
-
-      // Face & shoulder buttons
-      const btn = (i) => !!gp.buttons[i]?.pressed;
-      const edge = (i) => {
-        const was = !!this.gpPrev.get(i);
-        const now = btn(i);
-        this.gpPrev.set(i, now);
-        return now && !was;
-      };
-
-      if (btn(0)) jump = true; // A = Jump
-      if (btn(6) || btn(10)) sprint = true; // LT or L3 = Sprint
-      if (btn(7)) fire = true; // RT = Fire
-
-      if (edge(2)) a.input.reload = true; // X = Reload
-      if (edge(1) || edge(5)) a.input.melee = true; // B or RB = Melee Trophy
-      if (edge(4)) a.input.grenade = true; // LB = Throw Lawsuit
-      if (edge(3)) a.input.switchSlot = a.activeSlot === 'primary' ? 'secondary' : 'primary'; // Y = Swap Weapon
-      if (edge(12)) a.input.switchSlot = 'primary'; // D-pad Up = Primary
-      if (edge(13)) a.input.switchSlot = 'secondary'; // D-pad Down = Secondary
-      if (btn(9)) this.keys.add('Tab'); else if (!k.has('TabKey')) this.keys.delete('Tab'); // Start/View = Scoreboard
-    }
-
-    a.input.forward = Math.max(-1, Math.min(1, fwd));
-    a.input.right = Math.max(-1, Math.min(1, right));
-    a.input.jump = jump;
-    a.input.sprint = sprint;
-    a.input.fire = fire && a.alive;
-    if (!a.alive) { this.yaw = a.team === 0 ? 0 : Math.PI; this.pitch = 0; }
-    a.input.yaw = this.yaw;
-    a.input.pitch = this.pitch;
-  },
-};
 const canvas = $('view');
-function lock() { try { canvas.requestPointerLock()?.catch?.(() => {}); } catch {} }
+const input = new Controls({ canvas, touchRoot: $('touch') });
+const lock = () => input.lock();
 canvas.addEventListener('click', () => { if (game && !game.sim.over && !state.spectate) lock(); sfx.unlock(); });
 $('pause').addEventListener('click', e => { if (e.target.id !== 'toMenu') lock(); });
-document.addEventListener('pointerlockchange', () => { input.locked = document.pointerLockElement === canvas; if (!input.locked) input.fire = false; });
-document.addEventListener('mousemove', e => {
-  if (!input.locked) return;
-  input.yaw -= e.movementX * input.sens;
-  input.pitch = Math.max(-1.45, Math.min(1.45, input.pitch - e.movementY * input.sens));
-});
-document.addEventListener('mousedown', e => { if (input.locked && e.button === 0) input.fire = true; });
-document.addEventListener('mouseup', e => { if (e.button === 0) input.fire = false; });
 document.addEventListener('keydown', e => {
-  if (e.code === 'Tab') e.preventDefault();
-  input.keys.add(e.code);
-  if (e.code === 'KeyO' || e.code === 'Digit0') {
-    cycleStyle();
-  }
+  if (e.code === 'KeyO' || e.code === 'Digit0') cycleStyle();
   if (!game) return;
-  const me = game.me;
-  if (e.code === 'KeyR') me.input.reload = true;
-  if (e.code === 'KeyF' || e.code === 'KeyV') me.input.melee = true;
-  if (e.code === 'KeyG') me.input.grenade = true;
-  if (e.code === 'KeyQ') me.input.switchSlot = me.activeSlot === 'primary' ? 'secondary' : 'primary';
-  if (e.code === 'Digit1') me.input.switchSlot = 'primary';
-  if (e.code === 'Digit2') me.input.switchSlot = 'secondary';
   if (e.code === 'KeyP') { state.retro = !state.retro; renderer.setRetro(state.retro); }
   if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
   if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
   if (e.code === 'BracketRight') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
 });
-document.addEventListener('keyup', e => input.keys.delete(e.code));
+
+// Controller navigation outside gameplay: menu (A deploy, LB/RB or D-pad faction), pause (START resume,
+// VIEW quit), end screen (A run it back, B menu). In-game START pauses.
+input.onPadPress = pr => {
+  sfx.unlock();
+  const menuOpen = !$('menu').classList.contains('hidden');
+  const endOpen = !$('end').classList.contains('hidden');
+  if (menuOpen) {
+    const step = (pr.RB || pr.RIGHT ? 1 : 0) - (pr.LB || pr.LEFT ? 1 : 0);
+    if (step) { const i = phase0.indexOf(state.faction); state.faction = phase0[(i + step + phase0.length) % phase0.length]; buildMenu(); }
+    if (pr.A || pr.START) startGame();
+  } else if (endOpen) {
+    if (pr.A) startGame();
+    if (pr.B) toMenu();
+  } else if (game) {
+    if (pr.START) input.userPaused = !input.userPaused;
+    else if (input.userPaused && pr.VIEW) toMenu();
+    else if (input.userPaused && pr.A) input.userPaused = false;
+  }
+};
 window.addEventListener('resize', () => renderer.resize());
 
 function setupShortRecorder() {
@@ -726,7 +670,9 @@ function startGame() {
   $('menu').classList.add('hidden');
   $('end').classList.add('hidden');
   sfx.unlock();
-  input.yaw = 0; input.pitch = 0;
+  input.resetLook(0);
+  input.userPaused = false;
+  if (input.device === 'touch') { document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape')).catch(() => {}); }
   game = new Game();
   if (params.get('short') === '1' && !window.__shortStarted) {
     window.__shortStarted = true;
@@ -748,6 +694,7 @@ let last = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - last) / 1000);
   last = t;
+  input.pollPad();
   if (gunbarrel && gunbarrel.active) gunbarrel.update(dt);
   if (game) game.update(dt);
   else if (params.get('lineup') === '1') return;

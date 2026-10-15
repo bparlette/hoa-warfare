@@ -4,6 +4,65 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 ---
 
+## 🧭 Engineering review + next work (Claude, 2026-10-15)
+
+**Priority is the non-Roblox (Steam / web) build.** Roblox work is paused. Every task below targets the web slice first; Unity tasks wait until the owner says go.
+
+### ⛔ Blocked on the owner (do not extend until decided)
+- **R1: `theGays` and `trumpers` factions (T14).** Design pillar 3 says "vicious about subcultures, never about protected groups or real people." A sexual-orientation faction and a faction built on a living politician's catchphrases ("You're FIRED!", "Winning so much…") both break that pillar, and the repo is public. **`trumpers>vcBros` "Globalist down!" is an antisemitic dog-whistle and should be retired regardless.** Owner decides: cut, rework into subcultures (e.g. "Interior Design Guys", "Yard-Flag Uncles" with no real-person quotes), or keep. Until then: no new lines, VO, art or rivalries for these two, and keep them out of default bot rotations and marketing captures.
+
+### What I changed in this pass
+- **T18 Controller + phone/tablet touch (`web/src/engine/controls.js`) — done.** Keyboard/mouse, gamepad and touch now share one module. Fixed in T02:
+  - controller-only (and touch) players were stuck on the pause screen forever, because play required mouse pointer lock;
+  - stick look speed was per frame, so aim changed with FPS (now rad/s × dt, with a response curve);
+  - the D-pad both moved you and switched weapons; now D-pad up/down = weapons only;
+  - START/VIEW handling and the bogus `TabKey` check.
+  - Added controller menu navigation (LB/RB faction, A deploy, START pause, A/B on the end screen), aim slowdown for pad and touch, and touch auto-fire while the crosshair is on an enemy.
+  - Touch layout: floating left stick (edge = sprint), drag-to-look, FIRE with drag-aim, plus jump, reload, trophy, Lawsuit, swap, scores and pause buttons, a "turn sideways" screen, and safe-area insets.
+  - `web/tests/controls.test.mjs` (5 tests); `MOBILE=1 TOUCH='[...]' node tools/shot.mjs` emulates a phone with real touch events.
+- Menu key hints corrected: `[` / `]` toggle script and legal-safe (1/2 are weapon slots now).
+
+### Review notes on recent work (fix these as part of your next task in that area)
+1. **`game.js` is 800+ lines** mixing HUD, styles, gunbarrel, short recorder, killcam and menu. Split HUD into `hud.js` and the style system into `styles.js` before adding more UI. *(Antigravity)*
+2. **King of the Lawn bots all rush the zone** (botGoal always returns it), so fights are one blob. Split roles: about 60% take or hold the zone, 40% flank or hunt. *(Opus)*
+3. **No CI.** Agents push straight to `main` and only "run tests locally." Add a GitHub Action running `npm test` and `npm run lint`. *(Claude)*
+4. **VO is TTS placeholder audio in git** (9 MB, 690 files). Fine for the prototype, but don't regenerate and re-commit full batches for small text changes (history bloat). Regenerate only changed IDs. Before Steam, confirm the TTS voices' licence allows commercial use, or replace with the human VO the GDD calls for. *(Muse)*
+5. **Docs drift:** AGENTS.md says "28+ tests"; there are 53. Say "all tests" instead of a number. Commit messages are public: no real names or personal details.
+6. **`audit` warnings: 28** (thin pools of 1 line for headshot/double kills in most factions). *(Muse)*
+
+### Next work, by agent
+
+**Claude (engineering lead)**
+- C1: CI workflow (`.github/workflows/test.yml`): `npm test` + lint on every push.
+- C2: **Online multiplayer prototype.** `sim.js` is deterministic and headless, so run it authoritatively in a Node WebSocket server. Clients send inputs and receive snapshots, with client-side prediction for your own movement and interpolation for others; bots fill empty slots. This is the biggest gap between the slice and a real game.
+- C3: Performance budget for phones: shadow-map size by device, a frame-time HUD (`?perf=1`), and a 60 fps target on a mid-range phone.
+
+**Antigravity (presentation + modes)**
+- A1: Split `game.js` (review note 1). No behaviour changes; tests and screenshots identical.
+- A2: **HOA Patrol** (Domination: pool, clubhouse, gazebo) and **Steal the Casserole** (CTF) on the `Mode` API in `modes.js`, each with a headless test like `receipt check` in `sim.test.mjs`.
+- A3: Killstreak 5 **Dad's Helicopter**: sim-side entity (hp, path, targets), shoot-down → `streakDestroyed` bark, plus the renderer view. Streak rewards hook into `MatchTracker.streakEarned`.
+- A4: Touch-friendly menus. Bigger hit targets in the faction picker and toggles; test with `MOBILE=1 node tools/shot.mjs`.
+
+**Opus (systems, bots, balance)**
+- O1: Bot roles per mode (review note 2) and a difficulty setting (reaction time, aim sigma, burst length) exposed as `?bots=easy|normal|hard`.
+- O2: **Evict the Block** (Search & Destroy: one life, rounds, plant/defuse). It needs round structure in `sim.js` (round reset, no respawn, `mode.respawnDelay = Infinity`). Camping is exempt in this mode per the GDD.
+- O3: Spawn safety. Add line-of-sight to the spawn score in `Sim.respawn` (never spawn in an enemy's view within 25 m), with a test that runs 1,000 respawns.
+- O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
+
+**Sonnet (weapons + factions in code)**
+- S1: Weapon balance harness: `tools/ttk.mjs` prints time-to-kill at 5/15/30/60 m per weapon from `weapons.json`. Tune so no primary dominates every range. The sniper should not out-DPS the AR at 10 m.
+- S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
+- S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
+
+**Muse (content + audit)**
+- M1: Rivalry lines. Missing Phase 0 pairs first (`node tools/script_tools.mjs rivalry`), then the rest. Currently 18+6 of 182 directional pairs.
+- M2: Fix the 28 thin pools in `node tools/script_tools.mjs audit` (2+ lines for kill/headshot/double in every faction).
+- M3: After the owner decides R1, apply it (retire lines with `{"retired": true}`; never delete IDs) and re-run the VO pipeline only for changed IDs.
+- M4: Monthly brain-rot patch format: a `data/patches/YYYY-MM.json` overlay merged by `ContentLibrary`. Spec the schema here first and Claude or Antigravity will wire it.
+- Unity tasks T10/T15/T17 are **on hold** until the owner greenlights a Unity build; maps T12/T16 moved to Opus (O4).
+
+---
+
 ## 🎯 High-Priority / Dedicated Tracks for Muse
 
 ### T10: Complete Unity C# Port of Core Engine (`unity/`) [L - Long Running / Tedious]
@@ -31,7 +90,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - **Delivered 2026-10-15**: 691/691 `.ogg` files in `web/vo/` (valid vorbis, one per recording-sheet row incl. `.alt`/rivalry IDs), rich `web/vo/manifest.json` (file/duration/text/faction/voice/pitch/rate/peak_db per line), deterministic resumable pipeline in `tools/vo_synth.mjs` (14-voice cast, rubberband pitch per faction metadata, 2 synth-text normalizations for backend-hostile tokens recorded as `synth_text`), `audio.js` accepts rich + legacy flat-array manifests and uses real durations for bark timing, `web/tests/audio.test.mjs` (8 tests). 39/39 tests pass, lint 0 problems.
 
 ### T12: Map 2: "The HOA Clubhouse & Pool" [M/L]
-- **Owner**: Ideal for Muse
+- **Owner**: moved to Opus as O4 (2026-10-15)
 - **Contract**:
   - Author `web/src/engine/maps/clubhouse.js` (or export to `map.js` map registry).
   - Geometry:
@@ -75,7 +134,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### T01: All 8 Launch Weapons Implementation (`data/weapons.json`) [S] - done (commit 799de79 / Antigravity)
 - Added `allowance`, `sideHustle`, `divorceSettlement`, `trustFund`, `subdivision`, `permit`, `lawsuit`, and `participationTrophy` with TTK sanity, falloff, spread, pellets, and loadouts.
 
-### T02: Controller / Gamepad Input Support (`web/src/engine/game.js`) [S] - done (Antigravity)
+### T02: Controller / Gamepad Input Support (`web/src/engine/game.js`) [S] - done (Antigravity); superseded by T18 `controls.js` (Claude)
 - Added Xbox / standard gamepad support via Gamepad API: left stick movement, right stick aiming, RT shoot, LT sprint, A jump, X reload, B/RB melee, LB grenade, Y swap weapon, D-pad primary/secondary.
 
 ### T03: Secondary Weapon Switching (Pistol Sidearm) [S] - done (Antigravity)
