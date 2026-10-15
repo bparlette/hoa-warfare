@@ -141,10 +141,18 @@ export class Controls {
     const R = 60;
     const isTouch = e => e.pointerType === 'touch' || e.pointerType === 'pen';
 
+    const dismissLookHint = () => {
+      const hint = root.querySelector('#touchLookHint');
+      if (hint && !hint.classList.contains('hidden-hint')) {
+        hint.classList.add('hidden-hint');
+      }
+    };
+
     root.addEventListener('pointerdown', e => {
       if (!isTouch(e)) return;
       this.device = 'touch';
       this.userPaused = false;
+      dismissLookHint();
       const btn = e.target.closest('[data-t]');
       if (btn) return; // buttons handle themselves
       e.preventDefault();
@@ -188,6 +196,7 @@ export class Controls {
         if (!isTouch(e)) return;
         e.preventDefault(); e.stopPropagation();
         this.device = 'touch';
+        dismissLookHint();
         el.setPointerCapture?.(e.pointerId);
         el.classList.add('on');
         last = { x: e.clientX, y: e.clientY };
