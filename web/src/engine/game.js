@@ -560,8 +560,6 @@ class Game {
     h.style.zIndex = '50';
     h.style.letterSpacing = '0';
     h.style.animation = 'none';
-    h.classList.remove('on');
-    void h.offsetWidth;
     h.classList.add('on');
     if (h.animate) {
       if (this._hitmarkAnim) this._hitmarkAnim.cancel();

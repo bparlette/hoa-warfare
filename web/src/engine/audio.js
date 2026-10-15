@@ -115,25 +115,43 @@ export class Voice {
 }
 
 export class Sfx {
-  constructor() { this.ctx = null; this.enabled = true; }
+  constructor() { this.ctx = null; this.enabled = true; this.slapbackDelay = null; this.slapbackGain = null; }
   unlock() {
     if (!this.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) { this.ctx = new AC(); this.master = this.ctx.createGain(); this.master.gain.value = 0.35; this.master.connect(this.ctx.destination); }
+      if (AC) {
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.35;
+        this.master.connect(this.ctx.destination);
+        try {
+          this.slapbackDelay = this.ctx.createDelay();
+          this.slapbackDelay.delayTime.value = 0.075;
+          this.slapbackGain = this.ctx.createGain();
+          this.slapbackGain.gain.value = 0.22;
+          this.slapbackDelay.connect(this.slapbackGain);
+          this.slapbackGain.connect(this.master);
+        } catch {}
+      }
     }
     this.ctx?.resume();
   }
   echoSlapback(gainNode) {
     if (!this.ctx || !this.enabled || !gainNode) return null;
-    const delay = this.ctx.createDelay();
-    delay.delayTime.value = 0.075; // 75ms
-    const feedback = this.ctx.createGain();
-    feedback.gain.value = 0.25; // 0.25 feedback
-    gainNode.connect(delay);
-    delay.connect(feedback);
-    feedback.connect(delay);
-    delay.connect(this.master);
-    return delay;
+    if (!this.slapbackDelay) {
+      try {
+        this.slapbackDelay = this.ctx.createDelay();
+        this.slapbackDelay.delayTime.value = 0.075;
+        this.slapbackGain = this.ctx.createGain();
+        this.slapbackGain.gain.value = 0.25;
+        this.slapbackDelay.connect(this.slapbackGain);
+        if (this.master) this.slapbackGain.connect(this.master);
+      } catch {}
+    }
+    if (this.slapbackDelay) {
+      try { gainNode.connect(this.slapbackDelay); } catch {}
+    }
+    return this.slapbackDelay;
   }
   tone({ type = 'square', f0 = 800, f1 = 200, dur = 0.08, vol = 0.3, delay = 0, slapback = false }) {
     if (!this.ctx || !this.enabled) return;

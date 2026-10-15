@@ -156,7 +156,7 @@ export class Controls {
       const btn = e.target.closest('[data-t]');
       if (btn) return; // buttons handle themselves
       e.preventDefault();
-      root.setPointerCapture?.(e.pointerId);
+      try { root.setPointerCapture?.(e.pointerId); } catch {}
       if (e.clientX < innerWidth * 0.42 && !this.touch.stick) {
         this.touch.stick = { id: e.pointerId, x0: e.clientX, y0: e.clientY };
         stickBase.style.cssText = `display:block;left:${e.clientX}px;top:${e.clientY}px`;
@@ -197,7 +197,7 @@ export class Controls {
         e.preventDefault(); e.stopPropagation();
         this.device = 'touch';
         dismissLookHint();
-        el.setPointerCapture?.(e.pointerId);
+        try { el.setPointerCapture?.(e.pointerId); } catch {}
         el.classList.add('on');
         last = { x: e.clientX, y: e.clientY };
         if (kind === 'fire') this.touch.fire = true;
@@ -221,13 +221,19 @@ export class Controls {
       };
       el.addEventListener('pointerup', up);
       el.addEventListener('pointercancel', up);
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
+      window.addEventListener('touchend', up);
     }
   }
 
   lookBy(dx, dy) {
+    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+    const clampedDx = Math.max(-120, Math.min(120, dx));
+    const clampedDy = Math.max(-120, Math.min(120, dy));
     const s = LOOK.touchSens * this.assist;
-    this.yaw -= dx * s;
-    this.pitch = clampPitch(this.pitch - dy * s);
+    this.yaw -= clampedDx * s;
+    this.pitch = clampPitch(this.pitch - clampedDy * s);
   }
 
   // ---------------------------------------------------------------- per frame

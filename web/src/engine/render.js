@@ -849,8 +849,13 @@ export class Renderer {
 
   spawnCasing() {
     this.casings ??= [];
+    if (this.quality?.tier === 'low' && this.casings.length >= 4) return;
+    if (this.casings.length >= 14) {
+      const old = this.casings.shift();
+      if (old) this.scene.remove(old.mesh);
+    }
     const geo = SHARED.casing();
-    const mat = new THREE.MeshLambertMaterial({ color: '#c49a45', transparent: true, opacity: 1 });
+    const mat = SHARED.casingMat();
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
@@ -881,8 +886,8 @@ export class Renderer {
       mesh,
       vel: ejectVel,
       rotVel,
-      life: 1.5,
-      max: 1.5,
+      life: 1.2,
+      max: 1.2,
     });
   }
 
@@ -892,7 +897,6 @@ export class Renderer {
       c.life -= dt;
       if (c.life <= 0) {
         this.scene.remove(c.mesh);
-        c.mesh.material.dispose();
         return false;
       }
       c.vel.y -= 9.8 * dt;
@@ -967,7 +971,8 @@ export class Renderer {
 
     this.camera.position.set(a.pos.x, a.pos.y + BODY.eye, a.pos.z);
     this.camera.rotation.set(a.pitch + this.camRecoil, a.yaw, 0, 'YXZ');
-    this.viewmodel.visible = alive;
+    const vm = this.viewmodel;
+    vm.visible = alive;
     const vmType = activeW?.viewmodel || 'blaster';
     if (this.currentVmType !== vmType) {
       this.currentVmType = vmType;
@@ -1000,7 +1005,6 @@ export class Renderer {
       this.muzzleLight.intensity = Math.max(0, this.muzzleLight.intensity - dt * 25);
     }
     this.kick = Math.max(0, this.kick - dt * 12);
-    const vm = this.viewmodel;
     const amp = moving ? 0.018 : 0.004;
     const switchDip = this.switchTimer > 0 ? Math.sin((this.switchTimer / 0.18) * Math.PI) * 0.08 : 0;
     vm.position.set(
@@ -1328,6 +1332,7 @@ const SHARED = (() => {
     octa: once('octa', () => new THREE.OctahedronGeometry(0.12, 0)),
     ico: once('ico', () => new THREE.IcosahedronGeometry(0.5, 0)),
     casing: once('casing', () => new THREE.BoxGeometry(0.015, 0.035, 0.015)),
+    casingMat: once('casingMat', () => new THREE.MeshBasicMaterial({ color: '#c49a45' })),
   };
 })();
 
