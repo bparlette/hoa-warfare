@@ -3039,7 +3039,11 @@
    "killer": "trumpers",
    "victim": "vcBros",
    "clean": [
-    "Globalist down!"
+    {
+     "t": "Globalist down!",
+     "retired": true
+    },
+    "Your stock options? SAD!"
    ]
   },
   {

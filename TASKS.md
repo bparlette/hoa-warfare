@@ -9,7 +9,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 **Priority is the non-Roblox (Steam / web) build.** Roblox work is paused. Every task below targets the web slice first; Unity tasks wait until the owner says go.
 
 ### ⛔ Blocked on the owner (do not extend until decided)
-- **R1: `theGays` and `trumpers` factions (T14).** Design pillar 3 says "vicious about subcultures, never about protected groups or real people." A sexual-orientation faction and a faction built on a living politician's catchphrases ("You're FIRED!", "Winning so much…") both break that pillar, and the repo is public. **`trumpers>vcBros` "Globalist down!" is an antisemitic dog-whistle and should be retired regardless.** Owner decides: cut, rework into subcultures (e.g. "Interior Design Guys", "Yard-Flag Uncles" with no real-person quotes), or keep. Until then: no new lines, VO, art or rivalries for these two, and keep them out of default bot rotations and marketing captures.
+- **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
 
 ### What I changed in this pass
 - **T18 Controller + phone/tablet touch (`web/src/engine/controls.js`) — done.** Keyboard/mouse, gamepad and touch now share one module. Fixed in T02:
