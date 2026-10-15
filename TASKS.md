@@ -11,11 +11,13 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### ⛔ Blocked on the owner (do not extend until decided)
 - **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
 
-### T19: 10 new factions (owner-approved 2026-10-15) — status `draft` in `data/hoa_content.json`
+### T19: 8 new factions + HOA Dads expansion (owner-approved 2026-10-15) — status `draft` in `data/hoa_content.json`
 
-`wokeLibs` · `facebookBoomers` · `mlmHuns` · `furries` · `animeWeebs` · `crunchyMoms` · `tradwives` · `sovereignCitizens` · `discordMods` ("The Mods") · `pickleballRetirees`
+`wokeLibs` · `mlmHuns` · `furries` · `animeWeebs` · `tradwives` · `sovereignCitizens` · `discordMods` ("The Mods") · `pickleballRetirees`
 
 Each draft already has its name, tagline, colors, `look.hat` id, TTS voice and a writer **`brief`**: angle, joke mines, rivals to write first, and what to avoid. Drafts are **gated**: tests and lint skip their event coverage, bots and the menu never pick them, and `node tools/script_tools.mjs audit` shows progress (`DRAFT x/26 events`). **A faction ships when its `"status": "draft"` key is removed.** Tests then require all 26 events.
+
+**Merged (owner, 2026-10-15):** Crunchy Moms → **The Tradwives** (raw milk, toxins and "I did my own research" join the homestead brief). Facebook Boomers → **HOA Dads**: HOA Dads stays live; Muse *appends* Boomer-flavored lines (ALL CAPS group posts, Minion memes, "Amen if you agree") to his existing events per `factions.hoaDads.brief`. Never edit or reorder his recorded lines. Sonnet: give HOA Dads reading glasses on the cap and a phone in hand.
 
 Pipeline per faction (claim per faction, e.g. `T19-furries claimed by Muse`):
 
@@ -29,7 +31,7 @@ Pipeline per faction (claim per faction, e.g. `T19-furries claimed by Muse`):
 | 6. Matchmaking flavor: "rivalry of the week" (bias bot factions toward one featured pair) + per-faction balance check (no faction-specific stats; only cosmetics differ) | **Opus** | headless match test with a featured rivalry |
 | 7. Review every new faction's lines before it ships (dog-whistles, slurs, real names, trademarks, lines that only land as hate) | **Claude** | sign-off noted on the task line |
 
-Suggested order: **wokeLibs → facebookBoomers → mlmHuns** first (Woke Libs balance The Trumpers, which keeps "roasts everyone" credible), then pickleballRetirees, sovereignCitizens, tradwives, crunchyMoms, discordMods, animeWeebs, furries.
+Suggested order: **wokeLibs → HOA Dads Boomer lines → mlmHuns** first (Woke Libs balance The Trumpers, which keeps "roasts everyone" credible), then pickleballRetirees, sovereignCitizens, tradwives, discordMods, animeWeebs, furries.
 
 ### What I changed in this pass
 - **T18 Controller + phone/tablet touch (`web/src/engine/controls.js`) — done.** Keyboard/mouse, gamepad and touch now share one module. Fixed in T02:
@@ -73,7 +75,7 @@ Suggested order: **wokeLibs → facebookBoomers → mlmHuns** first (Woke Libs b
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
 
 **Sonnet (weapons + factions in code)**
-- S0: **T19 step 3**: headwear, props and faces for all 10 new factions (same data-only approach as S3, which this replaces in priority).
+- S0: **T19 step 3**: headwear, props and faces for all 8 new factions + HOA Dads Boomer props (same data-only approach as S3, which this replaces in priority).
 - S1: Weapon balance harness: `tools/ttk.mjs` prints time-to-kill at 5/15/30/60 m per weapon from `weapons.json`. Tune so no primary dominates every range. The sniper should not out-DPS the AR at 10 m.
 - S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
 - S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.

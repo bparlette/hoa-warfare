@@ -2310,6 +2310,28 @@
       "I'm not camping, I'm GRILLING."
      ]
     }
+   },
+   "brief": {
+    "angle": "Merged with Facebook Boomers: the HOA Dad now also posts every violation to the neighborhood group in ALL CAPS. Existing lines stay; APPEND Boomer-flavored lines to his events.",
+    "jokeMines": [
+     "Minion memes",
+     "'Amen if you agree'",
+     "'Type 1 if…'",
+     "posting publicly by accident",
+     "'COPY AND PASTE, don't share'",
+     "reading glasses on the forehead",
+     "'this is NOT a hoax'"
+    ],
+    "rivalsFirst": [
+     "brainRot",
+     "wokeLibs",
+     "cloutStreamers",
+     "oldMoney"
+    ],
+    "avoid": [
+     "platform brand names without a legal-safe alt (Facebook/Minions need alts)",
+     "deleting or reordering existing hoaDads lines (VO IDs are recorded)"
+    ]
    }
   },
   "emoKids": {
@@ -2903,51 +2925,12 @@
     "rivalsFirst": [
      "trumpers",
      "tradwives",
-     "facebookBoomers",
+     "hoaDads",
      "sovereignCitizens"
     ],
     "avoid": [
      "mocking any actual minority group they claim to defend",
      "real politicians' names"
-    ]
-   },
-   "lines": {}
-  },
-  "facebookBoomers": {
-   "name": "Facebook Boomers",
-   "phase0": false,
-   "status": "draft",
-   "tagline": "Shared from a friend of a friend.",
-   "look": {
-    "shirt": "#4a6fa5",
-    "pants": "#c2a878",
-    "accent": "#f5d000",
-    "hat": "visorReaders"
-   },
-   "voice": {
-    "pitch": 0.85,
-    "rate": 1.05,
-    "gender": "m"
-   },
-   "brief": {
-    "angle": "Your uncle on social media. Everything is in ALL CAPS, every kill is a chain post.",
-    "jokeMines": [
-     "Minion memes",
-     "'Amen if you agree'",
-     "'Type 1 if…'",
-     "posting publicly by accident",
-     "'COPY AND PASTE, don't share'",
-     "reading glasses on the forehead",
-     "'this is NOT a hoax'"
-    ],
-    "rivalsFirst": [
-     "brainRot",
-     "wokeLibs",
-     "cloutStreamers",
-     "oldMoney"
-    ],
-    "avoid": [
-     "platform brand names without a legal-safe alt (Facebook/Minions need alts)"
     ]
    },
    "lines": {}
@@ -2981,7 +2964,7 @@
     ],
     "rivalsFirst": [
      "karens",
-     "crunchyMoms",
+     "tradwives",
      "vcBros",
      "wokeLibs"
     ],
@@ -3069,50 +3052,11 @@
    },
    "lines": {}
   },
-  "crunchyMoms": {
-   "name": "Crunchy Moms",
-   "phase0": false,
-   "status": "draft",
-   "tagline": "I did my own research.",
-   "look": {
-    "shirt": "#c9b38a",
-    "pants": "#6b5a3a",
-    "accent": "#7a9a5a",
-    "hat": "sunHatWrap"
-   },
-   "voice": {
-    "pitch": 1.1,
-    "rate": 1.15,
-    "gender": "f"
-   },
-   "brief": {
-    "angle": "Organic everything, baby in a wrap, deeply suspicious of 'toxins'. The joke is the confidence, not health advice.",
-    "jokeMines": [
-     "raw milk",
-     "'toxins'",
-     "amber teething necklace",
-     "homeopathy",
-     "'Big Pharma doesn't want you to know'",
-     "homeschool field trips",
-     "kombucha scoby"
-    ],
-    "rivalsFirst": [
-     "mlmHuns",
-     "karens",
-     "gymRats",
-     "tradwives"
-    ],
-    "avoid": [
-     "lines that read as real medical advice"
-    ]
-   },
-   "lines": {}
-  },
   "tradwives": {
    "name": "The Tradwives",
    "phase0": false,
    "status": "draft",
-   "tagline": "Dinner's at six. You're dead at five.",
+   "tagline": "Raw milk, sourdough, and I did my own research.",
    "look": {
     "shirt": "#f2e3c6",
     "pants": "#8a3a3a",
@@ -3125,7 +3069,7 @@
     "gender": "f"
    },
    "brief": {
-    "angle": "1950s homemaker who is also, somehow, a full-time content creator filming every chore for millions of followers.",
+    "angle": "1950s homesteader who is also a full-time content creator AND deeply suspicious of 'toxins'. Merged with Crunchy Moms: same aesthetic homemaking, now with raw milk and 'I did my own research'. The joke is the confidence, not health advice.",
     "jokeMines": [
      "sourdough starter named like a pet",
      "homestead",
@@ -3133,16 +3077,23 @@
      "apron",
      "milking a cow on camera",
      "'I left my career for this'",
-     "perfectly lit kitchen"
+     "perfectly lit kitchen",
+     "raw milk",
+     "'toxins'",
+     "amber teething necklace",
+     "homeopathy",
+     "'Big Pharma doesn't want you to know'",
+     "homeschool field trips",
+     "kombucha scoby"
     ],
     "rivalsFirst": [
      "wokeLibs",
      "valleyGirls",
-     "crunchyMoms",
      "theGays"
     ],
     "avoid": [
-     "religion itself (mock the aesthetic, not faith)"
+     "religion itself (mock the aesthetic, not faith)",
+     "lines that read as real medical advice"
     ]
    },
    "lines": {}
