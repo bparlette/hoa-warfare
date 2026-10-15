@@ -52,10 +52,10 @@ export class BarkSystem {
       switch (ev.type) {
         case 'roundStart':
           for (const a of sim.actors) push(this.bark(a, this.director(a).request('roundStart', now)));
-          this.announcer.push(A.roundStart);
+          this.announcer.push(ev.round ? `Round ${ev.round}. Post it or tear it down!` : A.roundStart);
           break;
         case 'spawn':
-          if (now > 1.5) push(this.bark(actor, this.director(actor).request('spawn', now)));
+          if (now > 1.5 && !ev.roundReset) push(this.bark(actor, this.director(actor).request('spawn', now)));
           break;
         case 'reload': push(this.bark(actor, this.director(actor).request('reload', now))); break;
         case 'spotted': push(this.bark(actor, this.director(actor).request('spotted', now))); break;
@@ -67,6 +67,15 @@ export class BarkSystem {
           push(this.bark(actor, this.director(actor).request('campingSnitch', now, { skipChance: true }), { snitch: true }));
           break;
         case 'kill': this.onKill(ev, now, localId, out); break;
+        case 'lastAlive': push(this.bark(actor, this.director(actor).request('lastAlive', now, { skipChance: true }))); break;
+        case 'objectiveBark':
+          if (ev.what === 'noticePosted') this.announcer.push(`Eviction notice posted on ${ev.site}!`);
+          if (ev.what === 'noticeTornDown') this.announcer.push('Notice torn down!');
+          push(this.bark(actor, this.director(actor).request('objective', now)));
+          break;
+        case 'noticeTookEffect': this.announcer.push('Eviction complete!'); break;
+        case 'halftime': this.announcer.push('Switching sides!'); break;
+        case 'roundEnd': this.announcer.push(`Round ${ev.round} to the ${ev.winner === 0 ? 'Block' : 'Board'}.`); break;
         case 'receiptConfirmed':
         case 'receiptDenied':
           push(this.bark(actor, this.director(actor).request('objective', now)));

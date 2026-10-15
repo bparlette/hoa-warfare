@@ -112,7 +112,7 @@ export class Sim {
     for (const a of this.actors) this.respawn(a);
     this.assignRoles();
     this.mode.onStart();
-    this.emit({ type: 'roundStart', mode: this.mode.constructor.id });
+    this.emit({ type: 'roundStart', mode: this.mode.constructor.id, round: this.mode.round });
   }
 
   /**
@@ -140,7 +140,8 @@ export class Sim {
       return { t, s: (t.seenClose ? -1000 : 0) - t.seenBy * 40 + Math.min(t.near, 60) - crowd * 50 + this.rng() * 3 };
     };
     let best = null, bestScore = -Infinity, safe = false;
-    for (const p of this.map.spawns[a.team]) {
+    const side = this.mode.spawnSide(a);
+    for (const p of this.map.spawns[side]) {
       const { t, s } = score(p);
       if (s > bestScore) { bestScore = s; best = p; safe = t.seenClose === 0; }
     }
@@ -171,11 +172,18 @@ export class Sim {
     return null;
   }
 
-  respawn(a) {
+  /** Round-based modes: everyone back to their spawns at once, no grenades left over. */
+  resetRound() {
+    this.grenades = [];
+    for (const a of this.actors) a.alive = false; // so spawn threat ignores last round's positions
+    for (const a of this.actors) this.respawn(a, { roundReset: true });
+  }
+
+  respawn(a, { roundReset = false } = {}) {
     const best = this.pickSpawn(a);
     Object.assign(a.pos, { x: best[0], y: 0, z: best[1] });
     Object.assign(a.vel, { x: 0, y: 0, z: 0 });
-    a.yaw = a.team === 0 ? 0 : Math.PI;
+    a.yaw = this.mode.spawnSide(a) === 0 ? 0 : Math.PI;
     a.pitch = 0;
     a.input.yaw = a.yaw; a.input.pitch = 0;
     a.activeSlot = 'primary';
@@ -184,7 +192,7 @@ export class Sim {
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 } });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
-    this.emit({ type: 'spawn', id: a.id });
+    this.emit({ type: 'spawn', id: a.id, roundReset });
   }
 
   activeWeapon(a) {
@@ -616,7 +624,8 @@ export class Sim {
       const node = near || this.map.nodes[b.path[b.pathIdx]];
       if (near) {
         wantYaw = yawTo(near.x - a.pos.x, near.z - a.pos.z);
-        inp.forward = 1;
+        // hold position once inside a goal that has a radius (plant/defuse/zone); otherwise walk onto it
+        inp.forward = near.radius && Math.hypot(near.x - a.pos.x, near.z - a.pos.z) < near.radius * 0.5 ? 0 : 1;
       } else if (node) {
         const dx = node.x - a.pos.x, dz = node.z - a.pos.z;
         if (Math.hypot(dx, dz) < 1.3) b.pathIdx++;

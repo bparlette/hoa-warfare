@@ -404,3 +404,71 @@ test('King of the Lawn: bots split into zone players and flankers instead of one
   assert.ok(share > 0.15 && share < 0.7, `share of bots standing in the zone: ${share.toFixed(2)}`);
   assert.ok(sim.score[0] + sim.score[1] > 40, `zone actually gets held: ${sim.score}`);
 });
+
+test('Evict the Block: one life per round, rounds decided by wipe/post/tear-down/time, halftime swap', () => {
+  const tally = { rounds: 0, posted: 0, objectiveEnds: 0, halftime: 0, multiDeath: 0, lastAlive: 0 };
+  let decided = 0;
+  for (const seed of [1, 2, 3, 4]) {
+    const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(seed), mode: 'evictTheBlock' });
+    for (let i = 0; i < 12; i++) sim.addActor({ id: 'p' + i, name: 'P' + i, team: i % 2, faction: PHASE0[i % PHASE0.length] });
+    sim.start();
+    let deaths = new Map(), attackersBefore = sim.mode.attackers;
+    while (!sim.over) {
+      sim.step(1 / 60);
+      for (const e of sim.drainEvents()) {
+        if (e.type === 'roundStart') deaths = new Map();
+        if (e.type === 'kill') { const n = (deaths.get(e.victimId) || 0) + 1; deaths.set(e.victimId, n); if (n > 1) tally.multiDeath++; }
+        if (e.type === 'roundEnd') { tally.rounds++; if (e.reason === 'torn down' || e.reason === 'evicted') tally.objectiveEnds++; }
+        if (e.type === 'objectiveBark' && e.what === 'noticePosted') tally.posted++;
+        if (e.type === 'lastAlive') tally.lastAlive++;
+        if (e.type === 'halftime') { tally.halftime++; assert.notEqual(sim.mode.attackers, attackersBefore, 'sides swap'); }
+      }
+    }
+    assert.equal(Math.max(...sim.score), 4, `first to 4 rounds: ${sim.score}`);
+    decided++;
+  }
+  assert.equal(decided, 4);
+  assert.equal(tally.multiDeath, 0, 'nobody respawns mid-round');
+  assert.ok(tally.posted >= 1, `the notice gets posted in real bot matches (${tally.posted})`);
+  assert.ok(tally.halftime >= 3 && tally.lastAlive > 4, JSON.stringify(tally));
+});
+
+test('Evict the Block rules: post takes 3 s on a lawn, tear-down 5 s, fuse and clock decide rounds', async () => {
+  const { EvictTheBlock } = await import('../src/engine/modes.js');
+  const E = EvictTheBlock;
+  const setup = () => {
+    const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(5), mode: 'evictTheBlock' });
+    const atk = sim.addActor({ id: 'atk', name: 'A', team: 1, faction: 'karens', isBot: false });
+    const def = sim.addActor({ id: 'def', name: 'D', team: 0, faction: 'fratHouse', isBot: false });
+    sim.start(); sim.drainEvents();
+    assert.equal(sim.mode.attackers, 1);
+    assert.equal(sim.mode.carrierId, 'atk', 'the only attacker carries the notice');
+    return { sim, atk, def };
+  };
+  const run = (sim, sec, each) => { const evs = []; for (let i = 0; i < sec * 60; i++) { each?.(); sim.step(1 / 60); evs.push(...sim.drainEvents()); } return evs; };
+  const site = E.SITES[0];
+
+  // posted after 3 s standing on the lawn; defender then tears it down in 5 s -> defenders take the round
+  let { sim, atk, def } = setup();
+  Object.assign(def.pos, { x: 30, y: 0, z: 40 });
+  let evs = run(sim, E.PLANT_SEC + 0.2, () => Object.assign(atk.pos, { x: site.x, y: 0, z: site.z }));
+  assert.ok(sim.mode.planted, 'notice posted');
+  assert.ok(evs.some(e => e.type === 'objectiveBark' && e.what === 'noticePosted'));
+  Object.assign(atk.pos, { x: -40, y: 0, z: 40 });
+  evs = run(sim, E.DEFUSE_SEC + 0.2, () => Object.assign(def.pos, { x: sim.mode.planted.x, y: 0, z: sim.mode.planted.z }));
+  assert.deepEqual(evs.filter(e => e.type === 'roundEnd').map(e => [e.winner, e.reason]), [[0, 'torn down']]);
+
+  // posted and nobody tears it down -> it takes effect, attackers win
+  ({ sim, atk, def } = setup());
+  Object.assign(def.pos, { x: 30, y: 0, z: 40 });
+  run(sim, E.PLANT_SEC + 0.2, () => Object.assign(atk.pos, { x: site.x, y: 0, z: site.z }));
+  Object.assign(atk.pos, { x: -40, y: 0, z: 40 });
+  evs = run(sim, E.FUSE_SEC + 0.5);
+  assert.deepEqual(evs.filter(e => e.type === 'roundEnd').map(e => [e.winner, e.reason]), [[1, 'evicted']]);
+
+  // nobody posts before the round clock runs out -> defenders win
+  ({ sim, atk, def } = setup());
+  Object.assign(atk.pos, { x: -40, y: 0, z: 40 }); Object.assign(def.pos, { x: 40, y: 0, z: 40 });
+  evs = run(sim, E.ROUND_SEC + 0.5);
+  assert.deepEqual(evs.filter(e => e.type === 'roundEnd').map(e => [e.winner, e.reason]), [[0, 'time']]);
+});

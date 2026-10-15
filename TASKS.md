@@ -44,6 +44,9 @@ Suggested order: **wokeLibs → HOA Dads Boomer lines → mlmHuns** first (Woke 
   - `web/tests/controls.test.mjs` (5 tests); `MOBILE=1 TOUCH='[...]' node tools/shot.mjs` emulates a phone with real touch events.
 - Menu key hints corrected: `[` / `]` toggle script and legal-safe (1/2 are weapon slots now).
 
+### ⚠️ Incident (2026-10-15, Opus) — Antigravity please check `modes.js`
+While editing the shared working copy, Opus accidentally **emptied `web/src/engine/modes.js`** (a script opened the file for writing before reading it). It was restored from the copy git captured when Opus staged files for O1, which already contained your in-progress `HoaPatrol` and `StealTheCasserole`. **Any edits you made to `modes.js` after that point are lost — please diff against your editor buffer and re-apply.** Opus has added `EvictTheBlock` and `Mode.spawnSide` to the same file; keep them. New rule in AGENTS.md: read before you write, and write files atomically.
+
 ### Review notes on recent work (fix these as part of your next task in that area)
 1. **`game.js` is 800+ lines** mixing HUD, styles, gunbarrel, short recorder, killcam and menu. Split HUD into `hud.js` and the style system into `styles.js` before adding more UI. *(Antigravity)*
 2. **King of the Lawn bots all rush the zone** (botGoal always returns it), so fights are one blob. Split roles: about 60% take or hold the zone, 40% flank or hunt. *(Opus)*
@@ -66,11 +69,13 @@ Suggested order: **wokeLibs → HOA Dads Boomer lines → mlmHuns** first (Woke 
 - A2: **HOA Patrol** (Domination: pool, clubhouse, gazebo) and **Steal the Casserole** (CTF) on the `Mode` API in `modes.js`, each with a headless test like `receipt check` in `sim.test.mjs`.
 - A3: Killstreak 5 **Dad's Helicopter**: sim-side entity (hp, path, targets), shoot-down → `streakDestroyed` bark, plus the renderer view. Streak rewards hook into `MatchTracker.streakEarned`.
 - A4: Touch-friendly menus. Bigger hit targets in the faction picker and toggles; test with `MOBILE=1 node tools/shot.mjs`.
+- A5 (small, new): in round-based modes the top clock should show the mode's round time, not the 25-min match limit. `EvictTheBlock` exposes `roundEndsAt` / `planted.at` + `FUSE_SEC`; add a `Mode.clock()` hook and use it in `hud.js`.
 
 **Opus (systems, bots, balance)**
 - O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
 - O1: Bot roles + difficulty — **done**: `BOT_DIFFICULTY` easy/normal/hard (`?bots=`; per-bot `actor.difficulty`). Modes assign roles via `Mode.botRole` (King of the Lawn 60% objective / 40% flank ring; Receipt Check half collectors). Objective bots fight on the move toward the objective; hunters flank. Fixes review note 2; Receipt Check now ends on score instead of timing out. Tests: hard beats easy, KotL role split.
-- O2: **Evict the Block** (Search & Destroy: one life, rounds, plant/defuse). It needs round structure in `sim.js` (round reset, no respawn, `mode.respawnDelay = Infinity`). Camping is exempt in this mode per the GDD.
+- O2: **Evict the Block** — **done**: Search & Destroy on the Mode API (`EvictTheBlock` in `modes.js`). One life per round, first to 4, sides swap after round 3. The attacking carrier posts the Eviction Notice on lawn A or B (stand on it 3 s); defenders tear it down (5 s); 35 s fuse; 100 s round clock. Sim got `resetRound()` and `Mode.spawnSide()`; `lastAlive` barks fire for the first time; announcer calls rounds. Renderer views `evictSite` / `evictNotice`. Tests: rules (post/tear-down/fuse/clock) + full bot matches (one life, halftime).
+- O2b: **Search & Destroy bot tactics** (new): with bots, about 90% of rounds end in a wipe within ~25 s because both teams meet mid-map and duel. Attackers should group behind the carrier and push one lawn together; defenders should hold angles on their lawn instead of strafing in the open. Target: 30%+ of bot rounds involve a posted notice.
 - O3: Spawn safety. Add line-of-sight to the spawn score in `Sim.respawn` (never spawn in an enemy's view within 25 m), with a test that runs 1,000 respawns.
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
 

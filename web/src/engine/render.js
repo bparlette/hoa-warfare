@@ -692,7 +692,43 @@ export { forwardOf };
 
 // Mode object views, keyed by object.kind (see modes.js). Each returns an Object3D; optional
 // userData.update(mesh, object, timeSec) animates it.
+function letterTex(letter, color) {
+  const c = document.createElement('canvas'); c.width = c.height = 16;
+  const g = c.getContext('2d');
+  g.fillStyle = color; g.fillRect(0, 0, 16, 16);
+  g.fillStyle = '#fff1e8'; g.font = 'bold 13px monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, 8, 9);
+  const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return t;
+}
+
 export const OBJECT_VIEWS = {
+  // Evict the Block: lawn site ring + floating letter sign (flashes while a notice is up)
+  evictSite(o) {
+    const g = new THREE.Group();
+    const ringMat = new THREE.MeshBasicMaterial({ color: '#ffa300', side: THREE.DoubleSide });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(o.radius - 0.25, o.radius, 16), ringMat);
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05;
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ map: letterTex(o.letter, '#1d2b53'), side: THREE.DoubleSide }));
+    sign.position.y = 2.8;
+    g.add(ring, sign);
+    g.userData.update = (m, obj, t) => { sign.rotation.y = t * 1.2; ringMat.color.set(obj.active ? (Math.floor(t * 4) % 2 ? '#ff004d' : '#ffec27') : '#ffa300'); };
+    return g;
+  },
+  // the Eviction Notice: paper on a stake when posted or dropped, floating over the carrier's head
+  evictNotice(o) {
+    const g = new THREE.Group();
+    const paper = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.55, 0.03), new THREE.MeshBasicMaterial({ map: T.receipt() }));
+    const stake = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.9, 0.05), new THREE.MeshLambertMaterial({ color: '#6b4a2e' }));
+    paper.position.y = 1.0; stake.position.y = 0.45;
+    g.add(paper, stake);
+    g.userData.update = (m, obj, t) => {
+      stake.visible = !obj.carried;
+      paper.position.y = obj.carried ? 0.2 : 1.0;
+      paper.rotation.y = obj.planted ? 0 : t * 2;
+      paper.scale.setScalar(obj.planted && Math.floor(t * 3) % 2 ? 1.15 : 1);
+    };
+    return g;
+  },
   receipt(o, localTeam) {
     const g = new THREE.Group();
     const paper = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.5, 0.02), new THREE.MeshBasicMaterial({ map: T.receipt() }));
