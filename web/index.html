@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call of Karen: HOA Warfare (web slice)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="score"><span class="t0">BLOCK <b id="s0">0</b></span><span id="clock">5:00</span><span class="t1"><b id="s1">0</b> BOARD</span></div>
+  <div id="feed"></div>
+  <div id="crosshair">+</div>
+  <div id="hitmark"></div>
+  <div id="banner"></div>
+  <div id="loiter" class="hidden"><div class="sign">NO<br>LOITERING</div><div id="loiterT">3</div></div>
+  <div id="subs"></div>
+  <div id="hp"><div class="lbl">HP</div><div class="bar"><div id="hpfill"></div></div></div>
+  <div id="weapon"><div class="wname">The Allowance</div><div id="ammo">30 / 30</div><div id="nades">The Lawsuit x2</div></div>
+  <div id="modes"></div>
+  <div id="bubbles"></div>
+  <div id="vignette"></div>
+  <div id="killcam" class="hidden"><div class="tag">KILLCAM</div><div id="kcWho"></div><div id="kcLine"></div></div>
+  <div id="board" class="hidden"></div>
+</div>
+
+<div id="menu" class="overlay">
+  <div class="panel">
+    <h1>CALL OF KAREN<small>HOA WARFARE</small></h1>
+    <p class="tag">The game that roasts everyone (including you). Web slice: Cul-de-Sac Clash, 6v6 with bots.</p>
+    <h2>Pick your faction</h2>
+    <div id="factions"></div>
+    <h2>Build</h2>
+    <div class="toggles">
+      <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
+      <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
+      <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
+      <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
+    </div>
+    <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
+    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Tab scores<br>1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
+  </div>
+</div>
+
+<div id="pause" class="overlay hidden"><div class="panel small"><h2>Paused</h2><p>Click to keep fighting for the block.</p><button id="toMenu">Quit to menu</button></div></div>
+<div id="end" class="overlay hidden"><div class="panel" id="endPanel"></div></div>
+
+<script type="module" src="src/engine/game.js"></script>
+</body>
+</html>

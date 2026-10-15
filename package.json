@@ -1,0 +1,11 @@
+{
+  "name": "hoa-warfare",
+  "private": true,
+  "type": "module",
+  "description": "Call of Karen: HOA Warfare - content, engine-agnostic logic, and the playable web slice",
+  "scripts": {
+    "test": "node --test web/tests/*.test.mjs",
+    "serve": "node tools/serve.mjs",
+    "lint": "node tools/script_tools.mjs lint"
+  }
+}

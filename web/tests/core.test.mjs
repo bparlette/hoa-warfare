@@ -1,4 +1,4 @@
-// Run: node --test web/tests/
+// Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
