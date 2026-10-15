@@ -1,5 +1,41 @@
 # Steam Deployment & Publishing Strategy
 
+## Distribution Funnel: Free Web Demo → $4.99 Steam Release
+
+The optimal distribution engine is a **Free Web Demo Funnel powering a Steam Paid Release**. Selling directly on web portals yields low conversions, whereas players gladly pay $4.99 on Steam if a zero-friction browser demo hooks them first.
+
+| Platform | Role in Funnel | Monetization / Mechanics | Primary Value |
+|---|---|---|---|
+| Steam | Revenue Engine | $4.99 Full Purchase | Massive buyer pool, impulse price point, handles payments & updates. |
+| itch.io | Viral Hook & Demo | Free In-Browser Demo (HTML5/WebGL) | Streamer discovery, embeddable, links directly to Steam wishlist/store. |
+| CrazyGames | Traffic Multiplier | Free Web Demo + Ad Rev-Share | Access to 50M+ monthly browser players; pushes organic viral volume. |
+| Newgrounds | Cult Culture Seed | Free Web Demo | High tolerance for edgy subculture parodies; core meme catalyst. |
+
+### Execution Strategy
+
+* **Zero-Friction Demo:** Export a lightweight WebGL build containing 4–6 archetypes. Do not require downloads; keep it playable directly inside desktop and mobile browsers.
+* **The $4.99 Steam Funnel:** When a player clears the demo or dies, show an unskippable end-screen CTA: "Unlock all 24 archetypes for $4.99 on Steam" with a direct tracking link.
+* **Streamer / Clip Bait:** Add a dedicated "Clip & Share" or copy-to-clipboard stats summary at run completion to seed TikTok, X, and YouTube Shorts traffic back to the web demo.
+
+### Game Launch Funnel
+
+1. **Primary Store ($4.99 paid game):** https://partner.steamgames.com/
+2. **Free Web Demo Platforms (zero friction, high viral loop):**
+   - itch.io: https://itch.io/
+   - CrazyGames Developer: https://developer.crazygames.com/
+   - Newgrounds: https://www.newgrounds.com/
+
+**Strategy:** Host the playable WebGL browser demo on itch.io & CrazyGames → end screen routes directly to the $4.99 Steam checkout.
+
+### How the web demo implements this (engineering notes)
+
+* `npm run pack` writes `dist/demo/` and `dist/hoa-warfare-web-demo.zip` (~9 MB): a static, relative-path build with `index.html` at the root (the layout itch.io, CrazyGames and Newgrounds all expect). It ships only the demo factions' voice lines and no marketing video, and fails if the zip passes 40 MB.
+* Demo settings live in `data/demo.json`: which factions are playable, the Steam URL and UTM tag per portal, CTA copy, and the unskippable delay. Until the Steam page exists the CTA points at a wishlist placeholder; set `steamUrl` once the app ID is live.
+* Match end shows the Steam CTA (unskippable for a few seconds) plus **Clip & Share**: copies a stats summary + demo link, or opens the phone's share sheet.
+* Archetype count in the CTA is read from the content file so it stays true as factions ship (currently 20 after the merges, not 24).
+
+---
+
 ## TOP SECTION: The Steam Dilemma: Publish Page Immediately, Do Not Launch Early
 
 Put your **"Coming Soon"** Steam Store Page live immediately, but **do not publish the game for purchase right away**.

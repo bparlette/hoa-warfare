@@ -432,7 +432,7 @@ export class Hud {
       `<tr class="t${a.team}${a === me ? ' me' : ''}"><td>${a.name}</td><td>${this.factions[a.faction].name}</td><td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</table>`;
   }
 
-  showEnd({ sim, me, library, rng, onAgain, onMenu, voice, isDemo }) {
+  showEnd({ sim, me, library, rng, onAgain, onMenu, voice, isDemo, funnel = null }) {
     const $ = this.$;
     if (typeof document !== 'undefined') document.exitPointerLock?.();
     const sorted = [...sim.actors].sort((a, b) => b.kills - a.kills || a.deaths - b.deaths);
@@ -444,8 +444,8 @@ export class Hud {
     const demoCard = isDemoMode ? `
       <div class="demo-end-card">
         <h3>THANKS FOR PLAYING THE CALL OF KAREN WEB DEMO!</h3>
-        <p>Wishlist on Steam to unlock all 20 factions, more maps, and online multiplayer!</p>
-        <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
+        <p>The full game unlocks ${funnel ? funnel.pitch(Object.keys(this.factions).length) : 'every faction, weapon and mode'}.</p>
+        <a data-steam="end_card" href="https://bparlette.github.io/hoa-warfare/" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
       </div>` : '';
     $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[0]} - ${sim.score[1]}</small></h1>
       ${demoCard}
@@ -458,18 +458,40 @@ export class Hud {
         <button id="again" style="margin-top:0">RUN IT BACK</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
-        ${!isDemoMode ? '<a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
+        ${!isDemoMode ? '<a data-steam="end_row" href="https://bparlette.github.io/hoa-warfare/" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
     $('end').classList.remove('hidden');
+    funnel?.wireSteamLinks($('endPanel'));
     $('again').onclick = () => onAgain();
     $('endMenu').onclick = () => onMenu();
+    // Demo: the Steam card is unskippable for a few seconds before RUN IT BACK / MENU unlock.
+    const lock = isDemoMode ? (funnel?.cfg.ctaLockSec ?? 4) : 0;
+    if (lock > 0) {
+      const again = $('again'), menu = $('endMenu');
+      const labels = [again.textContent, menu.textContent];
+      let left = lock;
+      const tick = () => {
+        again.disabled = menu.disabled = left > 0;
+        again.textContent = left > 0 ? `${labels[0]} (${left})` : labels[0];
+        if (left-- > 0) this.endLockTimer = setTimeout(tick, 1000);
+      };
+      clearTimeout(this.endLockTimer);
+      tick();
+    }
     const btnShare = $('btnShareScore');
     if (btnShare) {
       btnShare.onclick = async () => {
         const factionName = this.factions[me?.faction]?.name || 'a Karen';
-        const kills = me?.kills || 0;
-        const text = `I just scored ${kills} citations defending the cul-de-sac as ${factionName} in Call of Karen: HOA Warfare! 🏡💥 Can you beat my score? Play free: https://bparlette.github.io/hoa-warfare/web/?demo=1`;
+        const text = funnel
+          ? funnel.shareText({ kills: me?.kills || 0, deaths: me?.deaths || 0, factionName, won: sim.winner === me?.team, modeLabel: sim.mode?.constructor?.label })
+          : `I went ${me?.kills || 0}-${me?.deaths || 0} as ${factionName} in Call of Karen: HOA Warfare! Play free: https://bparlette.github.io/hoa-warfare/web/?demo=1`;
+        const url = funnel ? funnel.shareLink() : 'https://bparlette.github.io/hoa-warfare/web/?demo=1';
+        const touch = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+        // phones: the share sheet (TikTok, Messages, X) is the viral path; desktop: clipboard
+        if (touch && typeof navigator !== 'undefined' && navigator.share) {
+          try { await navigator.share({ title: 'Call of Karen: HOA Warfare', text, url }); return; } catch {}
+        }
         if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
           try {
             await navigator.clipboard.writeText(text);
@@ -478,15 +500,7 @@ export class Hud {
             return;
           } catch {}
         }
-        if (typeof navigator !== 'undefined' && navigator.share) {
-          try {
-            await navigator.share({ title: 'Call of Karen: HOA Warfare', text, url: 'https://bparlette.github.io/hoa-warfare/web/?demo=1' });
-            return;
-          } catch {}
-        }
-        if (typeof window !== 'undefined' && window.prompt) {
-          window.prompt('Copy your score to share:', text);
-        }
+        if (typeof window !== 'undefined' && window.prompt) window.prompt('Copy your score to share:', text);
       };
     }
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });

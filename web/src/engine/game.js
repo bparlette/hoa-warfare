@@ -23,6 +23,7 @@ import { PerfOverlay } from './perf.js';
 import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
 import { NetClient } from './net.js';
+import { Funnel } from './funnel.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
@@ -52,10 +53,14 @@ async function loadJson(path) {
   return await res2.json();
 }
 
-const [content, weaponsData] = await Promise.all([
+const [content, weaponsData, demoConfig] = await Promise.all([
   loadJson('../data/hoa_content.json'),
   loadJson('../data/weapons.json'),
+  loadJson('../data/demo.json').catch(() => ({})),
 ]);
+// Web demo -> Steam funnel (links, CTA copy, share text). Steam buttons in the static HTML are wired now.
+export const funnel = new Funnel(demoConfig || {});
+funnel.wireSteamLinks();
 const factions = content.factions;
 const shippingFactions = Object.keys(factions).filter(id => !factions[id].status || factions[id].status !== 'draft');
 
@@ -108,7 +113,7 @@ export function showDemoModal(factionName, factionTagline = '') {
   }
   const body = $('demoModalBody');
   if (body) {
-    body.innerHTML = `Unlock <strong>${factionName}</strong> and all 20 fully voiced factions, custom weapons, killstreaks, and online multiplayer in the full $4.99 release on Steam!`;
+    body.innerHTML = `Unlock <strong>${factionName}</strong> and ${funnel.pitch(Object.keys(factions).length)} in the full ${funnel.cfg.priceLabel} release on Steam!`;
   }
   modal.classList.remove('hidden');
 }
@@ -441,7 +446,7 @@ class Game {
           setTimeout(() => this.hud.showEnd({
             sim, me, library: this.library, rng: this.rng,
             onAgain: () => startGame(), onMenu: () => toMenu(), voice,
-            isDemo,
+            isDemo, funnel,
           }), 2500);
           break;
       }

@@ -66,13 +66,13 @@
         <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="main-logo" width="380" height="201">
         <h1 class="sr-only">CALL OF KAREN: HOA WARFARE</h1>
       </div>
-      <p class="tag">The game that roasts everyone (including you). Web slice: Cul-de-Sac map, 6v6 with bots.</p>
+      <p class="tag">The game that roasts everyone (including you). Free demo: 6 factions, 6v6 with bots, plays right in your browser.</p>
     </div>
 
     <!-- PRIMARY PLAY ACTIONS - INSTANTLY ACCESSIBLE AT TOP -->
     <div class="menu-actions primary-actions">
       <button id="deploy" class="btn-deploy">▶ DEPLOY TO THE CUL-DE-SAC</button>
-      <a id="btnWishlist" href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
+      <a id="btnWishlist" data-steam="menu" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
     </div>
 
     <div class="faction-header">
@@ -128,7 +128,7 @@
     <p id="pauseHint">Click to keep fighting for the block.</p>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
       <button id="toMenu">Quit to menu</button>
-      <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist-small">★ Wishlist on Steam</a>
+      <a data-steam="pause" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist-small">★ Wishlist on Steam</a>
     </div>
   </div>
 </div>
@@ -138,9 +138,9 @@
   <div class="panel demo-panel">
     <h2 id="demoModalTitle">🔒 LOCKED IN FREE WEB DEMO</h2>
     <div id="demoModalSub" class="demo-modal-sub"></div>
-    <p id="demoModalBody" class="demo-modal-body">Unlock <strong>this faction</strong> and all 20 fully voiced factions, custom weapons, killstreaks, and online multiplayer in the full $4.99 release on Steam!</p>
+    <p id="demoModalBody" class="demo-modal-body">Unlock <strong>this faction</strong> and all 20 fully voiced factions, every weapon and mode in the full $4.99 release on Steam!</p>
     <div class="demo-modal-actions">
-      <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
+      <a data-steam="locked_faction" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
       <button id="closeDemoModal" type="button">CLOSE</button>
     </div>
   </div>

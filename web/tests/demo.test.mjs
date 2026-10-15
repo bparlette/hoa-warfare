@@ -120,7 +120,9 @@ test('Bot Pool: bot spawning in demo mode only selects from DEMO_FACTIONS', () =
 test('HTML: index.html contains #demoModal with required title, copy, and buttons', () => {
   assert.ok(indexHtml.includes('id="demoModal"'), 'index.html must contain #demoModal');
   assert.ok(indexHtml.includes('🔒 LOCKED IN FREE WEB DEMO'), 'index.html must have locked modal title');
-  assert.ok(indexHtml.includes('https://store.steampowered.com/app/hoa-warfare'), 'index.html must link to Steam store');
+  assert.ok(/data-steam="locked_faction"/.test(indexHtml), 'locked-faction modal has a tracked Steam button (href set by funnel.js)');
+  assert.ok(!indexHtml.includes('store.steampowered.com/app/hoa-warfare'), 'no invalid non-numeric Steam app URL');
+  assert.ok(!/online\s+multiplayer/.test(indexHtml), 'do not promise online multiplayer');
   assert.ok(indexHtml.includes('btn-wishlist'), 'index.html must have btn-wishlist class');
   assert.ok(indexHtml.includes('★ WISHLIST ON STEAM ($4.99)'), 'index.html must have Wishlist CTA text');
   assert.ok(indexHtml.includes('id="closeDemoModal"'), 'index.html must have #closeDemoModal button');
@@ -192,7 +194,9 @@ test('HUD: showEnd renders prominent demo completion card when isDemo is true', 
   const panelHtml = $('endPanel').innerHTML;
   assert.ok(panelHtml.includes('demo-end-card'), 'End panel must contain demo-end-card');
   assert.ok(panelHtml.includes('THANKS FOR PLAYING THE CALL OF KAREN WEB DEMO!'), 'End panel must show thank you heading');
-  assert.ok(panelHtml.includes('Wishlist on Steam to unlock all 20 factions, more maps, and online multiplayer!'), 'End panel must show unlock subtext');
+  assert.ok(panelHtml.includes('The full game unlocks'), 'End panel must show unlock subtext');
+  assert.ok(!panelHtml.includes('multiplayer'), 'End panel must not promise multiplayer');
+  assert.ok(panelHtml.includes('data-steam="end_card"'), 'End card Steam button is tracked');
   assert.ok(panelHtml.includes('btn-wishlist-glow'), 'Wishlist button must have glowing class');
 
   // 2. With isDemo = false

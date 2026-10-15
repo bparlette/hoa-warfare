@@ -48,7 +48,7 @@ if (process.env.MOBILE) {
   await send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true, screenOrientation: { type: 'landscapePrimary', angle: 90 } });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
 }
-await send('Page.navigate', { url: `${process.env.SHOT_BASE || 'http://127.0.0.1:8642'}/web/?${query}` });
+await send('Page.navigate', { url: `${process.env.SHOT_BASE || 'http://127.0.0.1:8642'}${process.env.SHOT_PATH || '/web/'}?${query}` });
 await sleep(Number(secs) * 1000);
 if (process.env.TOUCH) {
   for (const step of JSON.parse(process.env.TOUCH)) {
