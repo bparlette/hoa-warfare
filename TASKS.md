@@ -20,7 +20,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - **Done when**: Unity test runner runs headless in CI/CLI and passes all core tests matching Node test suite.
 
 ### T11: Full Audio & VO Manifest Pipeline (`web/vo/`) [L - Long Running / Tedious]
-- **Owner**: Ideal for Muse
+- **Owner**: Muse — claimed by Muse (2026-10-15)
 - **Contract**:
   - The content library now contains 691 voice lines across all 14 factions in `data/hoa_content.json`.
   - Export voice recording sheet: `node tools/script_tools.mjs csv > dist/vo_session_sheet.csv`.

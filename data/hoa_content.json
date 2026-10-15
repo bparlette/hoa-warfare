@@ -2584,7 +2584,7 @@
     },
     "lowHealth": {
      "clean": [
-      "Im fainting! Catch me, girls!"
+      "I'm fainting! Catch me, girls!"
      ]
     },
     "objective": {
@@ -2681,7 +2681,7 @@
     },
     "campingWarn": {
      "clean": [
-      "Im admiring the landscaping!",
+      "I'm admiring the landscaping!",
       "Curating this corner!"
      ],
      "steam": [
@@ -2709,8 +2709,8 @@
    "lines": {
     "kill": {
      "clean": [
-      "Youre FIRED!",
-      "Winning so much, Im tired!",
+      "You're FIRED!",
+      "Winning so much, I'm tired!",
       "Total and complete disaster!"
      ],
      "steam": [
@@ -2780,7 +2780,7 @@
     },
     "enemyStreak": {
      "clean": [
-      "Theyre cheating! Recount the kills!"
+      "They're cheating! Recount the kills!"
      ]
     },
     "lastAlive": {
@@ -2828,7 +2828,7 @@
      ],
      "steam": [
       "Unstoppable! Tremendous energy!",
-      "Cant keep a patriot down!"
+      "Can't keep a patriot down!"
      ]
     },
     "victory": {
@@ -2848,12 +2848,12 @@
      ],
      "steam": [
       "Stolen match! Pure fraud!",
-      "Im appealing to the supreme court!"
+      "I'm appealing to the supreme court!"
      ]
     },
     "killcam": {
      "clean": [
-      "Youre FIRED! Roll tape!",
+      "You're FIRED! Roll tape!",
       "Tremendous shot, everybodys saying it!"
      ],
      "steam": [
