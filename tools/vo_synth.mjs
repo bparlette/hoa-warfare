@@ -42,6 +42,9 @@ const CAST = {
   // tradwives placeholder voice: only its 3 rivalry-vs-wokeLibs lines are synthesized
   // in the wokeLibs turn. Re-voice with a distinct voice when tradwives ships (T19).
   tradwives:      { voice: 'avocado_v2:MAI_03',                    pitch: 1.20, rate: 1.25, gender: 'f' },
+  // PLACEHOLDER voices (T19 wave 1): recast with distinct catalog voices when available.
+  mlmHuns:        { voice: 'avocado_v2:MAI_03',                    pitch: 1.35, rate: 1.30, gender: 'f' },
+  pickleballRetirees: { voice: 'avocado_v2:vdc_22255',            pitch: 0.80, rate: 1.25, gender: 'm' },
 };
 
 const TTS = '/opt/hatch/bin/tts';
