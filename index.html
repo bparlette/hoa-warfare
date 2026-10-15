@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Call of Karen: HOA Warfare — Tactical Suburban FPS</title>
+<meta name="description" content="Call of Karen: HOA Warfare — A satirical 6v6 suburban tactical FPS in your browser. 14 suburban factions, 8 weapons, 691 voice barks, King of the Lawn hardpoints, 17-second camping snitch penalties, and viral cul-de-sac combat.">
+<style>
+  :root {
+    --bg-dark: #0a0f1d;
+    --bg-surface: #111827;
+    --bg-card: #1f293d;
+    --bg-card-hover: #28354f;
+    --border-color: #334155;
+    --border-highlight: #475569;
+    --accent-red: #ef4444;
+    --accent-gold: #f59e0b;
+    --accent-cyan: #06b6d4;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --font-heading: Impact, "Arial Black", -apple-system, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    padding-bottom: 90px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Navigation Bar */
+  .navbar {
+    background: rgba(10, 15, 29, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 24px;
+  }
+  .nav-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+    text-decoration: none;
+  }
+  .nav-logo-badge {
+    background: var(--accent-red);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover {
+    color: var(--accent-gold);
+  }
+
+  /* Hero Section */
+  header.hero {
+    background: linear-gradient(180deg, #162035 0%, #0a0f1d 100%);
+    border-bottom: 1px solid var(--border-color);
+    padding: clamp(40px, 7vw, 76px) 20px 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 15%, rgba(6, 182, 212, 0.12), transparent 60%);
+    pointer-events: none;
+  }
+
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    box-shadow: 0 0 8px var(--accent-red);
+  }
+
+  .hero-title {
+    font-family: var(--font-heading);
+    font-size: clamp(48px, 9vw, 92px);
+    line-height: 1.02;
+    letter-spacing: 1.5px;
+    color: #fff;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .hero-title span {
+    color: var(--accent-gold);
+    display: block;
+  }
+
+  .hero-tagline {
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: var(--text-secondary);
+    max-width: 760px;
+    margin: 0 auto 30px;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 24px;
+    margin-bottom: 32px;
+  }
+  .stat-pill {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .stat-pill b {
+    color: var(--accent-cyan);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+  }
+  .btn-primary:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+  }
+  .btn-secondary {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  .btn-secondary:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-gold);
+    transform: translateY(-2px);
+  }
+
+  /* Content Wrapper */
+  main {
+    max-width: 1280px;
+    margin: 48px auto 0;
+    padding: 0 24px;
+  }
+
+  .section {
+    margin-bottom: 64px;
+  }
+  .section-header {
+    margin-bottom: 24px;
+  }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 4vw, 40px);
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  /* Asset GIFs Showcase Strip */
+  .gif-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .gif-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .gif-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-gold);
+  }
+  .gif-frame {
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .gif-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .gif-info {
+    padding: 16px 20px;
+  }
+  .gif-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-cyan);
+    margin-bottom: 6px;
+  }
+  .gif-title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .gif-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Two Column Layout: Modes & Shorts */
+  .grid-dual {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 920px) {
+    .grid-dual { grid-template-columns: 1fr; }
+  }
+
+  /* Game Modes Card */
+  .modes-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .modes-list {
+    display: grid;
+    gap: 12px;
+  }
+  .mode-row {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .mode-row:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-cyan);
+  }
+  .mode-name {
+    font-family: var(--font-heading);
+    font-size: 19px;
+    letter-spacing: 0.5px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+  }
+  .mode-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .mode-action {
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  /* Phone Video Showcase */
+  .shorts-showcase {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .phone-mockup {
+    width: min(260px, 100%);
+    aspect-ratio: 9 / 16;
+    background: #000;
+    border-radius: 24px;
+    border: 3px solid #334155;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-mockup video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .shorts-caption {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 14px;
+  }
+  .shorts-caption a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  /* Arsenal / Weapons Grid */
+  .weapons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .weapon-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .weapon-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .weapon-name {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .weapon-type {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+  }
+  .weapon-stats {
+    display: flex;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  /* Interactive Faction Soundboard Dial */
+  .dial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .dial-btn {
+    all: unset;
+    cursor: pointer;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+    display: grid;
+    gap: 4px;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  }
+  .dial-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-cyan);
+    transform: translateY(-2px);
+  }
+  .dial-btn.active {
+    border-color: var(--accent-red);
+    background: rgba(239, 68, 68, 0.15);
+  }
+  .dial-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 17px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .dial-quote {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  /* Tactics & Anti-Cheese Rules */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .rule-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .rule-title {
+    font-family: var(--font-heading);
+    font-size: 19px;
+    letter-spacing: 0.5px;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rule-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Controls Table */
+  .controls-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    overflow-x: auto;
+  }
+  table.ctrl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  table.ctrl-table th, table.ctrl-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+  table.ctrl-table th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  kbd {
+    display: inline-block;
+    padding: 3px 8px;
+    background: #1e293b;
+    color: #f8fafc;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #475569;
+    border-radius: 4px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 80px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 36px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  footer a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+      CALL OF KAREN <span class="nav-logo-badge">HOA WARFARE</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#clips">Clips</a></li>
+      <li><a href="#modes">Modes</a></li>
+      <li><a href="#weapons">Arsenal</a></li>
+      <li><a href="#soundboard">Comms Dial</a></li>
+      <li><a href="#tactics">Rules</a></li>
+      <li><a href="#controls">Controls</a></li>
+      <li><a href="web/" style="color: var(--accent-gold);">Play Web Slice &rarr;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="pill-badge">
+    <span class="status-dot"></span> PHASE 0 SURVEILLANCE FEED ACTIVE
+  </div>
+  <h1 class="hero-title">
+    CALL OF KAREN:
+    <span>HOA WARFARE</span>
+  </h1>
+  <p class="hero-tagline">
+    A satirical 6v6 suburban tactical FPS in your browser. Armed with the Allowance AR, Lawsuit Grenades, and 17-second camping snitch penalties, battle for cul-de-sac dominance.
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat-pill">FACTIONS: <b>14 SUBURBAN TEAMS</b></div>
+    <div class="stat-pill">VOICE BARKS: <b>691 AUTHENTIC LINES</b></div>
+    <div class="stat-pill">ENGINE: <b>STANDALONE THREE.JS</b></div>
+    <div class="stat-pill">TEST SUITE: <b>31/31 GREEN</b></div>
+  </div>
+
+  <div class="hero-actions">
+    <a href="web/" class="btn btn-primary">🎮 LAUNCH WEB SLICE (6v6)</a>
+    <a href="web/shorts.html" class="btn btn-secondary">📱 YOUTUBE SHORTS HUB</a>
+    <a href="web/?lineup=1" class="btn btn-secondary">👥 FACTION ROSTER</a>
+    <a href="https://github.com/bparlette/hoa-warfare" class="btn btn-secondary" target="_blank" rel="noopener">⭐️ GITHUB REPO</a>
+  </div>
+</header>
+
+<main>
+  <!-- Gameplay Loop GIFs Strip -->
+  <section class="section" id="clips">
+    <div class="section-header">
+      <div class="section-tag">Telemetry & Visuals</div>
+      <h2 class="section-title">Live Match Gameplay Loops</h2>
+      <p class="section-desc">Real-time gameplay animations captured from the 6v6 Cul-de-Sac simulation:</p>
+    </div>
+    <div class="gif-strip">
+      <div class="gif-card">
+        <div class="gif-frame">
+          <img src="web/clips/01_karen_breach.gif" alt="Breaching the cul-de-sac perimeter">
+        </div>
+        <div class="gif-info">
+          <div class="gif-meta"><span>SCENARIO 01</span><span>PERIMETER BREACH</span></div>
+          <div class="gif-title">Breach & Citation</div>
+          <div class="gif-desc">Advancing past the boundary fence into Court 01 under fire.</div>
+        </div>
+      </div>
+
+      <div class="gif-card">
+        <div class="gif-frame">
+          <img src="web/clips/02_allowance_burst.gif" alt="Allowance AR 3-round burst">
+        </div>
+        <div class="gif-info">
+          <div class="gif-meta"><span>SCENARIO 02</span><span>ALLOWANCE AR</span></div>
+          <div class="gif-title">Cul-de-Sac Gunplay</div>
+          <div class="gif-desc">Tactical burst fire with dynamic spread across suburban driveways.</div>
+        </div>
+      </div>
+
+      <div class="gif-card">
+        <div class="gif-frame">
+          <img src="web/clips/03_subpoena_kill.gif" alt="Lawsuit grenade detonation">
+        </div>
+        <div class="gif-info">
+          <div class="gif-meta"><span>SCENARIO 03</span><span>LAWSUIT GRENADE</span></div>
+          <div class="gif-title">Subpoena Detonation</div>
+          <div class="gif-desc">Briefcase explosive bounce, kill banner trigger, and ragdoll takedown.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Two Column: Game Modes & YouTube Shorts Phone Mockup -->
+  <section class="section" id="modes">
+    <div class="grid-dual">
+      <div class="modes-container">
+        <div class="section-header" style="margin-bottom: 18px;">
+          <div class="section-tag">Operations</div>
+          <h2 class="section-title">Match Modes</h2>
+          <p class="section-desc">Select an operational rule set to launch directly in your browser:</p>
+        </div>
+        <div class="modes-list">
+          <a href="web/?mode=clash" class="mode-row">
+            <div>
+              <div class="mode-name">Cul-de-Sac Clash</div>
+              <div class="mode-desc">Standard 6v6 Team Deathmatch to 30 kills across the neighborhood.</div>
+            </div>
+            <div class="mode-action">LAUNCH 6v6 &rarr;</div>
+          </a>
+
+          <a href="web/?mode=kotl" class="mode-row">
+            <div>
+              <div class="mode-name">King of the Lawn (Hardpoint)</div>
+              <div class="mode-desc">Rotating 60s lawn zones. Hold to score 1 pt/s. Camping exempt in zone.</div>
+            </div>
+            <div class="mode-action">KING OF LAWN &rarr;</div>
+          </a>
+
+          <a href="web/?mode=receipt" class="mode-row">
+            <div>
+              <div class="mode-name">Receipt Check (Kill Confirmed)</div>
+              <div class="mode-desc">Kills drop itemized proof of infraction. Collect receipts to score.</div>
+            </div>
+            <div class="mode-action">RECEIPT CHECK &rarr;</div>
+          </a>
+
+          <a href="web/?autostart=1&spectate=1" class="mode-row">
+            <div>
+              <div class="mode-name">Spectator / Demo Camera</div>
+              <div class="mode-desc">Autonomous bot match with dynamic cinematic third-person chase cam.</div>
+            </div>
+            <div class="mode-action">SPECTATE &rarr;</div>
+          </a>
+
+          <a href="web/?script=steam" class="mode-row">
+            <div>
+              <div class="mode-name">Steam Unrated Script</div>
+              <div class="mode-desc">Enables spicy unrated barks, brutal rivalries, and uncensored killcams.</div>
+            </div>
+            <div class="mode-action">STEAM MODE &rarr;</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Shorts Phone Mockup -->
+      <div class="shorts-showcase">
+        <div class="section-header" style="margin-bottom: 14px;">
+          <div class="section-tag">Broadcast</div>
+          <h2 class="section-title">Viral Shorts</h2>
+          <p class="section-desc">1080×1920 60fps vertical format</p>
+        </div>
+        <div class="phone-mockup">
+          <video src="web/shorts/hoa_warfare_karens_short_720p.mp4" controls autoplay loop muted playsinline></video>
+        </div>
+        <div class="shorts-caption">
+          <b>"When an HOA Board Member snaps..."</b><br>
+          Allowance AR bursts • Lawsuit Grenades • Killcam Taunts<br>
+          <a href="web/shorts.html">Open Dedicated Shorts Player &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Weapons Arsenal -->
+  <section class="section" id="weapons">
+    <div class="section-header">
+      <div class="section-tag">Armory</div>
+      <h2 class="section-title">Suburban Launch Arsenal</h2>
+      <p class="section-desc">Engine-balanced hitscan and projectile weapons from data/weapons.json:</p>
+    </div>
+    <div class="weapons-grid">
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">The Allowance</div>
+          <div class="weapon-type">Assault Rifle</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">Workhorse full-auto rifle. Moderate recoil with balanced TTK.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>24 / 55 (Head)</b></span>
+          <span>MAG: <b>30</b></span>
+          <span>ROF: <b>570 RPM</b></span>
+        </div>
+      </div>
+
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">Side Hustle</div>
+          <div class="weapon-type">SMG</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">High-cyclic close-quarters submachine gun for driveway flanking.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>18 / 38 (Head)</b></span>
+          <span>MAG: <b>32</b></span>
+          <span>ROF: <b>800 RPM</b></span>
+        </div>
+      </div>
+
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">Divorce Settlement</div>
+          <div class="weapon-type">Pump Shotgun</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">8 pellets per shell. Devastating point-blank breach stopping power.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>8x14 (112 Max)</b></span>
+          <span>MAG: <b>6</b></span>
+          <span>ROF: <b>67 RPM</b></span>
+        </div>
+      </div>
+
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">Subdivision</div>
+          <div class="weapon-type">Sniper Rifle</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">Long-range bolt-action rifle designed for second-story window overwatch.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>85 / 190 (Head)</b></span>
+          <span>MAG: <b>5</b></span>
+          <span>RANGE: <b>120m</b></span>
+        </div>
+      </div>
+
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">The Permit</div>
+          <div class="weapon-type">Sidearm Pistol</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">Semi-auto service sidearm. Instant swap with Q / 1 / 2 keybinds.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>26 / 52 (Head)</b></span>
+          <span>MAG: <b>15</b></span>
+          <span>SWAP: <b>Instant</b></span>
+        </div>
+      </div>
+
+      <div class="weapon-card">
+        <div class="weapon-head">
+          <div class="weapon-name">The Lawsuit</div>
+          <div class="weapon-type">Explosive Grenade</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary);">Timed explosive legal document. Bounces off walls and trampolines.</div>
+        <div class="weapon-stats">
+          <span>DMG: <b>140 (Blast)</b></span>
+          <span>FUSE: <b>3.0s</b></span>
+          <span>RADIUS: <b>6.5m</b></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Neighborhood Gossip Dial (Soundboard) -->
+  <section class="section" id="soundboard">
+    <div class="section-header">
+      <div class="section-tag">Audio Wiretap</div>
+      <h2 class="section-title">Neighborhood Gossip Dial</h2>
+      <p class="section-desc">Click any faction to test live dialogue lines synthesized directly in your browser:</p>
+    </div>
+    <div class="dial-grid">
+      <button class="dial-btn" data-text="I demand to speak to your manager right now! That lawn height is an unauthorized code violation!" data-faction="karens">
+        <div class="dial-name">The Karens <span>🔊</span></div>
+        <div class="dial-quote">"I demand to speak to your manager right now!"</div>
+      </button>
+
+      <button class="dial-btn" data-text="Skibidi subpoena, bro! You got zero rizz on this cul-de-sac." data-faction="frat">
+        <div class="dial-name">Frat House / Brain Rot <span>🔊</span></div>
+        <div class="dial-quote">"Skibidi subpoena, bro! You got zero rizz."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Architectural Digest or death, honey! That siding color is an absolute tragedy." data-faction="theGays">
+        <div class="dial-name">The Gays <span>🔊</span></div>
+        <div class="dial-quote">"Architectural Digest or death, honey!"</div>
+      </button>
+
+      <button class="dial-btn" data-text="More yard flags than square footage! That violation is totally fake news, folks!" data-faction="trumpers">
+        <div class="dial-name">The Trumpers <span>🔊</span></div>
+        <div class="dial-quote">"More yard flags than square footage!"</div>
+      </button>
+
+      <button class="dial-btn" data-text="You kids wouldn't last five minutes in 1974 without your central air conditioning." data-faction="boomers">
+        <div class="dial-name">The Boomers <span>🔊</span></div>
+        <div class="dial-quote">"You kids wouldn't last five minutes in 1974."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Section 4, Paragraph B is completely non-negotiable. Fine incoming!" data-faction="hoaBoard">
+        <div class="dial-name">The HOA Board <span>🔊</span></div>
+        <div class="dial-quote">"Section 4, Paragraph B is non-negotiable."</div>
+      </button>
+
+      <button class="dial-btn" data-text="He's friendly, he's friendly, I promise he doesn't bite, he just barks!" data-faction="dogWalkers">
+        <div class="dial-name">Dog Walkers <span>🔊</span></div>
+        <div class="dial-quote">"He's friendly, I promise he doesn't bite!"</div>
+      </button>
+
+      <button class="dial-btn" data-text="We are disrupting suburban landscaping with a decentralized autonomous mower." data-faction="vcBros">
+        <div class="dial-name">Crypto / VC Bros <span>🔊</span></div>
+        <div class="dial-quote">"Disrupting landscaping with a DAO mower."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Bake sale proceeds directly fund our emergency legal injunction against you." data-faction="ptaMoms">
+        <div class="dial-name">PTA Moms <span>🔊</span></div>
+        <div class="dial-quote">"Bake sale proceeds fund our legal injunction."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Your suburban lawn is just a bourgeois cemetery for dying conformist dreams." data-faction="gothTeens">
+        <div class="dial-name">Goth Teens <span>🔊</span></div>
+        <div class="dial-quote">"Your suburban lawn is a bourgeois cemetery."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Namaste off my freshly treated, chemically balanced bermudagrass." data-faction="wellness">
+        <div class="dial-name">Wellness & Yoga <span>🔊</span></div>
+        <div class="dial-quote">"Namaste off my freshly treated grass."</div>
+      </button>
+
+      <button class="dial-btn" data-text="Citizen, respect the flashing yellow light on the security golf cart!" data-faction="mallCops">
+        <div class="dial-name">Mall Cops & Security <span>🔊</span></div>
+        <div class="dial-quote">"Respect the flashing yellow light, citizen!"</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Tactical Systems Breakdown -->
+  <section class="section" id="tactics">
+    <div class="section-header">
+      <div class="section-tag">Rules of Engagement</div>
+      <h2 class="section-title">Tactical Anti-Cheese Systems</h2>
+      <p class="section-desc">Engine-enforced mechanics preventing suburban stagnation:</p>
+    </div>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-title">⏱️ 17s Camping Snitch</div>
+        <div class="rule-text">Loitering in a 3.1m radius triggers a 3-second flashing warning siren. At 20s, your character automatically barks a snitch taunt and is revealed on every opponent's radar for 6 seconds.</div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-title">📡 Rotating Tactical Radar</div>
+        <div class="rule-text">Player-centric rotating HUD compass keeps forward vision UP. Highlights neighborhood road boundaries, suburban houses, active King of the Lawn zones, and gunfire blips for 1.8 seconds.</div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-title">🔫 Sidearm Swap (Q / 1 / 2)</div>
+        <div class="rule-text">Quickly switch between primary rifles and the Permit sidearm. Ammo is banked per weapon slot, preventing lost reloads during rapid tactical exchanges.</div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-title">🦘 Trampoline & Roof Cover</div>
+        <div class="rule-text">Center-court trampoline launches players onto car hoods and patio roof vantage points. Lawsuit grenades can bounce off cars, trampolines, and curbs.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls Table -->
+  <section class="section" id="controls">
+    <div class="controls-card">
+      <div class="section-header" style="margin-bottom: 16px;">
+        <div class="section-tag">Field Manual</div>
+        <h2 class="section-title">Controls & Gamepad Support</h2>
+        <p class="section-desc">Supports keyboard & mouse or Xbox/PlayStation gamepad natively:</p>
+      </div>
+      <table class="ctrl-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Keyboard & Mouse</th>
+            <th>Xbox / Standard Gamepad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Movement / Look</td>
+            <td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> + Mouse Aim</td>
+            <td>Left Stick (Move) / Right Stick (Aim)</td>
+          </tr>
+          <tr>
+            <td>Shoot Weapon</td>
+            <td>Left Mouse Click</td>
+            <td>Right Trigger (<kbd>RT</kbd>)</td>
+          </tr>
+          <tr>
+            <td>Sprint / Jump</td>
+            <td><kbd>Shift</kbd> (Sprint) / <kbd>Space</kbd> (Jump)</td>
+            <td>Left Trigger (<kbd>LT</kbd>) / Button <kbd>A</kbd></td>
+          </tr>
+          <tr>
+            <td>Reload</td>
+            <td><kbd>R</kbd></td>
+            <td>Button <kbd>X</kbd></td>
+          </tr>
+          <tr>
+            <td>Swap Weapon (Sidearm)</td>
+            <td><kbd>Q</kbd> / <kbd>1</kbd> / <kbd>2</kbd></td>
+            <td>Button <kbd>Y</kbd> / D-Pad (Up/Down)</td>
+          </tr>
+          <tr>
+            <td>Melee / Kick</td>
+            <td><kbd>F</kbd> or <kbd>V</kbd></td>
+            <td>Button <kbd>B</kbd> or Right Bumper (<kbd>RB</kbd>)</td>
+          </tr>
+          <tr>
+            <td>Throw Lawsuit Grenade</td>
+            <td><kbd>G</kbd></td>
+            <td>Left Bumper (<kbd>LB</kbd>)</td>
+          </tr>
+          <tr>
+            <td>Retro 16-Bit Dither Toggle</td>
+            <td><kbd>P</kbd></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Mute Voice / Audio</td>
+            <td><kbd>M</kbd></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><b>Call of Karen: HOA Warfare</b> is an open-source project by <a href="https://github.com/bparlette/hoa-warfare">bparlette</a>.</p>
+  <p style="margin-top: 6px;">Standalone Three.js WebGL • 0 backend dependencies • Runs locally and on GitHub Pages.</p>
+</footer>
+
+<script>
+  // Browser Speech Synthesis for Neighborhood Gossip Dial
+  const buttons = document.querySelectorAll('.dial-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.getAttribute('data-text');
+      buttons.forEach(b => b.classList.remove('active'));
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.05;
+        u.pitch = 1.0;
+        btn.classList.add('active');
+        u.onend = () => btn.classList.remove('active');
+        u.onerror = () => btn.classList.remove('active');
+        window.speechSynthesis.speak(u);
+      } else {
+        alert(text);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
