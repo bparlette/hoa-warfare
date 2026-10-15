@@ -3637,11 +3637,19 @@
       "killer": "wokeLibs",
       "victim": "hoaDads",
       "clean": [
-        "Your Minion memes are a hate crime.",
+        {
+          "t": "Your Minion memes are a hate crime.",
+          "alt": "Your cartoon memes are a hate crime.",
+          "flag": "brand"
+        },
         "Amen? More like a-menace."
       ],
       "steam": [
-        "Your Facebook group has been reported."
+        {
+          "t": "Your Facebook group has been reported.",
+          "alt": "Your neighborhood group has been reported.",
+          "flag": "brand"
+        }
       ]
     },
     {
@@ -3671,10 +3679,18 @@
       "victim": "wokeLibs",
       "clean": [
         "You lost? Thoughts and prayers.",
-        "My truck identifies as a tank."
+        {
+          "t": "My truck identifies as a tank.",
+          "retired": true
+        },
+        "Should've stayed in the bike lane!"
       ],
       "steam": [
-        "Cry about it, Prius."
+        {
+          "t": "Cry about it, Prius.",
+          "alt": "Cry about it, hybrid.",
+          "flag": "brand"
+        }
       ]
     }
   ]

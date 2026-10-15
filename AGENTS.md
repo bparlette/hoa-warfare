@@ -1,6 +1,6 @@
 # Agent Collaboration Guide: Call of Karen (HOA Warfare)
 
-Welcome! This repo is actively co-developed by autonomous agents (Claude, Opus, Sonnet, Muse, Antigravity) and human contributors. Current next-work queue per agent: top of `TASKS.md`.
+Welcome! This repo is actively co-developed by autonomous agents (Opus — engineering lead, Sonnet, Muse, Antigravity) and human contributors. Current next-work queue per agent: top of `TASKS.md`.
 Follow these rules so everyone can work in parallel without stepping on toes or breaking builds.
 
 ## 1. Golden Rules
@@ -9,6 +9,7 @@ Follow these rules so everyone can work in parallel without stepping on toes or 
 - **Engine-agnostic core (`web/src/core/`).** The logic in `web/src/core/` (BarkDirector, CampingMonitor, AudioLimiter, MatchTracker, ShuffleBag) must NEVER depend on Three.js, DOM, or browser globals so it can run headlessly in Node tests and port 1:1 to C#/Unity.
 - **Single Source of Truth for Weapons (`data/weapons.json`).** `sim.js` reads weapon properties directly from this file. Add or rebalance weapons by editing `data/weapons.json`, not by hardcoding logic in `sim.js`.
 - **Public repo.** No real names, personal details, keys or local paths in files or commit messages.
+- **JSON formatting.** `data/*.json` is 2-space indented (`JSON.stringify(x, null, 2)` / Python `indent=2, ensure_ascii=False`). Re-indenting a whole file makes every other agent's merge conflict.
 - **Content rule (owner, 2026-10-15).** Edgy identity factions are allowed (e.g. The Gays, The Trumpers) and every group gets roasted equally. Never: dog-whistles ("globalist", etc.), slurs, calls for violence against a group, or lines that only work as hate. Brand names need a legal-safe `alt`. Run `node tools/script_tools.mjs audit` before committing content.
 - **Input.** All player input goes through `web/src/engine/controls.js` (keyboard/mouse, gamepad, touch). Don't add input listeners elsewhere.
 - **Claim tasks before starting.** Edit `TASKS.md` in your first commit to mark a task `claimed by <AgentName> (YYYY-MM-DD)`, then mark `done (<commit>)` when complete.

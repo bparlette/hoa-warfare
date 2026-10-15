@@ -28,7 +28,7 @@ if (cmd === 'lint') {
 } else if (cmd === 'audit') {
   // Content QA for writers: lint + duplicates + brand terms without a legal-safe alt + thin pools.
   // Exit 1 on hard problems (too long, missing, duplicate); brand/thin-pool findings are warnings.
-  const BRANDS = /\b(zyn|amex|american express|uber|ozempic|wegovy|stanley|tesla|starbucks|tiktok|instagram|insta|youtube|twitch|kick|roblox|fortnite|call of duty|cod|apple|ipad|iphone|peloton|lululemon|crocs|red bull|monster|prime|venmo|cashapp|patagonia|new balance|mrbeast|netflix|amazon|walmart|costco|target|chipotle|white claw|natty|bud light|juul|vuse|airpods|xbox|playstation|nintendo|disney|marvel|my chemical romance|skibidi)\b/i;
+  const BRANDS = /\b(zyn|amex|american express|uber|ozempic|wegovy|stanley|tesla|starbucks|tiktok|instagram|insta|youtube|twitch|kick|roblox|fortnite|call of duty|cod|apple|ipad|iphone|peloton|lululemon|crocs|red bull|monster|prime|venmo|cashapp|patagonia|new balance|mrbeast|netflix|amazon|walmart|costco|target|chipotle|white claw|natty|bud light|juul|vuse|airpods|xbox|playstation|nintendo|disney|marvel|my chemical romance|skibidi|minions?|facebook|prius|subaru|tesla|starlink|truth social|fox news|msnbc|cnn)\b/i;
   let hard = 0, warn = 0;
   const seen = new Map();
   for (const r of rows) {
