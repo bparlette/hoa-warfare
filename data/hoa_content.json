@@ -2277,7 +2277,7 @@
    },
    "voice": {
     "pitch": 0.85,
-    "rate": 1.05,
+    "rate": 1.15,
     "gender": "m"
    },
    "lines": {
@@ -3421,7 +3421,7 @@
    },
    "voice": {
     "pitch": 1.35,
-    "rate": 1.3,
+    "rate": 1.4,
     "gender": "f"
    },
    "brief": {
@@ -3703,8 +3703,8 @@
     "hat": "fursuitHead"
    },
    "voice": {
-    "pitch": 1.3,
-    "rate": 1.2,
+    "pitch": 1.4,
+    "rate": 1.3,
     "gender": "m"
    },
    "brief": {
@@ -4033,8 +4033,8 @@
     "hat": "catEarsHeadset"
    },
    "voice": {
-    "pitch": 1.2,
-    "rate": 1.35,
+    "pitch": 1.5,
+    "rate": 1.4,
     "gender": "m"
    },
    "brief": {
@@ -4373,7 +4373,7 @@
     "hat": "headscarfBraid"
    },
    "voice": {
-    "pitch": 1.2,
+    "pitch": 1.05,
     "rate": 1.0,
     "gender": "f"
    },
@@ -4711,8 +4711,8 @@
     "hat": "visorSweatband"
    },
    "voice": {
-    "pitch": 0.8,
-    "rate": 1.0,
+    "pitch": 0.9,
+    "rate": 1.35,
     "gender": "m"
    },
    "brief": {
@@ -5195,10 +5195,13 @@
    "victim": "wokeLibs",
    "clean": [
     "Bless your heart, sweetie.",
-    "My raw milk outlives your takes."
+    "My raw milk outlives your takes.",
+    "Bless your heart, darling.",
+    "My sourdough starter outlives your takes."
    ],
    "steam": [
-    "Go touch grass. Organically."
+    "Go touch grass. Organically.",
+    "Go touch grass. Barefoot."
    ]
   },
   {
@@ -5563,17 +5566,6 @@
    ],
    "steam": [
     "My wall's taller than your stack!"
-   ]
-  },
-  {
-   "killer": "tradwives",
-   "victim": "wokeLibs",
-   "clean": [
-    "Bless your heart, darling.",
-    "My sourdough starter outlives your takes."
-   ],
-   "steam": [
-    "Go touch grass. Barefoot."
    ]
   },
   {
