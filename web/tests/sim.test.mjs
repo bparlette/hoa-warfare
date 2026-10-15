@@ -363,3 +363,44 @@ test('spawn safety: never spawn in an enemy\'s sight within 25 m when a safe spa
   assert.equal(exposedAvoidable, 0, `spawned in sight within ${SPAWN_SAFE_M} m although a safe spawn existed`);
   assert.ok(allExposed < 20, `${allExposed}/1000 trials had nowhere safe to spawn`);
 });
+
+test('bot difficulty: a hard team clearly outfights an easy team', () => {
+  let hardKills = 0, easyKills = 0;
+  for (const seed of [1, 2, 3]) {
+    const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(seed), timeLimit: 120 });
+    for (let i = 0; i < 12; i++) {
+      const a = sim.addActor({ id: 'p' + i, name: 'P' + i, team: i % 2, faction: PHASE0[i % PHASE0.length] });
+      a.difficulty = i % 2 === 0 ? 'hard' : 'easy';
+    }
+    sim.start();
+    while (!sim.over) { sim.step(1 / 60); sim.drainEvents(); }
+    hardKills += sim.score[0]; easyKills += sim.score[1];
+  }
+  assert.ok(hardKills > easyKills * 1.5, `hard ${hardKills} vs easy ${easyKills}`);
+});
+
+test('King of the Lawn: bots split into zone players and flankers instead of one blob', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(12), mode: 'kingOfTheLawn', timeLimit: 240 });
+  for (let i = 0; i < 12; i++) sim.addActor({ id: 'p' + i, name: 'P' + i, team: i % 2, faction: PHASE0[i % PHASE0.length] });
+  sim.start();
+  const roles = sim.actors.map(a => a.brain.role);
+  assert.equal(roles.filter(r => r === 'objective').length, 8, '60% of 6 per team, rounded = 4 each');
+  const dist = { objective: [], hunter: [] };
+  let inZone = 0, samples = 0;
+  for (let i = 0; !sim.over; i++) {
+    sim.step(1 / 60); sim.drainEvents();
+    if (i % 30 || sim.time < 15) continue; // sample twice a second after the opening rush
+    const z = sim.mode.zoneObj;
+    for (const a of sim.actors) {
+      if (!a.alive) continue;
+      const d = Math.hypot(a.pos.x - z.pos.x, a.pos.z - z.pos.z);
+      dist[a.brain.role].push(d);
+      samples++; if (d <= z.radius) inZone++;
+    }
+  }
+  const avg = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
+  assert.ok(avg(dist.hunter) > avg(dist.objective) + 4, `hunters ${avg(dist.hunter).toFixed(1)} m vs objective ${avg(dist.objective).toFixed(1)} m from the zone`);
+  const share = inZone / samples;
+  assert.ok(share > 0.15 && share < 0.7, `share of bots standing in the zone: ${share.toFixed(2)}`);
+  assert.ok(sim.score[0] + sim.score[1] > 40, `zone actually gets held: ${sim.score}`);
+});

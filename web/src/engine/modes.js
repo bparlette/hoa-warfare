@@ -24,6 +24,11 @@ export class Mode {
   campingExempt(actor) { return false; }
   /** Where a bot with no visible enemy should head ({x,z}) or null for default roaming. */
   botGoal(actor) { return null; }
+  /**
+   * Role for the i-th of n bots on a team: 'objective' (plays the mode's botGoal) or 'hunter'
+   * (hunts players; in objective modes it flanks the ring around the objective).
+   */
+  botRole(actor, i, n) { return 'hunter'; }
   respawnDelay(actor) { return actor.isBot ? 3 : 4.5; }
   /** Short HUD line, or null. */
   hud(localActor) { return null; }
@@ -84,6 +89,8 @@ export class ReceiptCheck extends Mode {
     return best;
   }
 
+  botRole(actor, i, n) { return i < Math.ceil(n / 2) ? 'objective' : 'hunter'; }
+
   hud() { return `${this.objects.length} receipt${this.objects.length === 1 ? '' : 's'} on the ground · grab enemy receipts to score`; }
 }
 
@@ -128,6 +135,8 @@ export class KingOfTheLawn extends Mode {
       pos: { ...def.pos }, radius: KingOfTheLawn.ZONE_RADIUS,
       name: def.name, ownerTeam: null, contested: false,
     }];
+    // stable object (bots compare goals by identity); radius lets objective bots stop at the edge
+    this.goal = { x: def.pos.x, z: def.pos.z, radius: KingOfTheLawn.ZONE_RADIUS };
     this.ownerTeam = null;
     this.contested = false;
     this.sim.emit({ type: 'hardpointRotated', name: def.name, pos: { ...def.pos } });
@@ -145,9 +154,10 @@ export class KingOfTheLawn extends Mode {
     return this.isInside(actor);
   }
 
+  botRole(actor, i, n) { return i < Math.round(n * 0.6) ? 'objective' : 'hunter'; }
+
   botGoal(actor) {
-    const z = this.zoneObj;
-    return z ? z.pos : null;
+    return this.zoneObj ? this.goal : null;
   }
 
   update(dt) {

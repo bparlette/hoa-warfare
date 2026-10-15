@@ -164,7 +164,7 @@ class Game {
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
-    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode });
+    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode, botDifficulty: params.get('bots') || 'normal' });
     this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
     this.limiter = new AudioLimiter(content.rules.audioLimiter);
     voice.enabled = state.voice;

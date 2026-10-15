@@ -25,6 +25,17 @@ export function resolveLoadout(weapons, loadout = 'default') {
 
 export const BODY = { radius: 0.4, height: 1.8, eye: 1.6, hitRadius: 0.42, hitHeight: 1.42, headY: 1.62, headR: 0.25 };
 export const SPAWN_SAFE_M = 25;
+
+/**
+ * Bot skill. `normal` is the original tuning. react = seconds before the first shot at a new
+ * target [min, +random]; sigma = aim error (rad) base + per metre + vs moving targets;
+ * burst = shots [min, +random]; pause = seconds between bursts [min, +random].
+ */
+export const BOT_DIFFICULTY = {
+  easy:   { react: [0.55, 0.4], sigma: [0.034, 0.0018, 0.02], burst: [3, 4], pause: [0.45, 0.5], head: 0.06, turn: 4.5, fov: 1.0, range: 45 },
+  normal: { react: [0.3, 0.35], sigma: [0.018, 0.0011, 0.012], burst: [4, 6], pause: [0.25, 0.45], head: 0.18, turn: 7, fov: 1.3, range: 58 },
+  hard:   { react: [0.16, 0.16], sigma: [0.011, 0.0007, 0.008], burst: [5, 6], pause: [0.15, 0.25], head: 0.3, turn: 10, fov: 1.5, range: 66 },
+};
 const STEP = 0.45, GRAVITY = 20, JUMP_V = 6.8, WALK = 5.2, SPRINT = 7.4, TRAMPOLINE_V = 12;
 
 export function forwardOf(yaw, pitch = 0) {
@@ -44,10 +55,11 @@ export class Sim {
    * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number}} o
    * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json
    */
-  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit }) {
+  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty = 'normal' }) {
     if (!weapons) throw new Error('Sim needs weapons (data/weapons.json)');
     this.rules = rules;
     this.weapons = weapons;
+    this.botDifficulty = BOT_DIFFICULTY[botDifficulty] ? botDifficulty : 'normal';
     this.rng = rng;
     this.map = map;
     const defaults = MODES[mode]?.defaults || {};
@@ -98,6 +110,7 @@ export class Sim {
   start() {
     this.started = true;
     for (const a of this.actors) this.respawn(a);
+    this.assignRoles();
     this.mode.onStart();
     this.emit({ type: 'roundStart', mode: this.mode.constructor.id });
   }
@@ -139,6 +152,23 @@ export class Sim {
       if (t.seenClose === 0 && t.near >= 15 && s > bestScore) { bestScore = s; best = p; safe = true; }
     }
     return best;
+  }
+
+  /** Ask the mode how each team's bots split between objective play and hunting. */
+  assignRoles() {
+    for (const team of [0, 1]) {
+      const bots = this.actors.filter(a => a.brain && a.team === team);
+      bots.forEach((a, i) => { a.brain.role = this.mode.botRole(a, i, bots.length); });
+    }
+  }
+
+  skill(a) { return BOT_DIFFICULTY[a.difficulty] || BOT_DIFFICULTY[this.botDifficulty]; }
+
+  /** Objective for this bot given its role: objective players go to it, hunters flank around it. */
+  roleGoal(a) {
+    const g = this.mode.botGoal(a);
+    if (!g || a.brain.role !== 'hunter') return g;
+    return null;
   }
 
   respawn(a) {
@@ -471,7 +501,7 @@ export class Sim {
   }
 
   think(a, dt) {
-    const b = a.brain, now = this.time, inp = a.input, rng = this.rng;
+    const b = a.brain, now = this.time, inp = a.input, rng = this.rng, K = this.skill(a);
     inp.fire = false; inp.melee = false; inp.reload = false; inp.jump = false; inp.grenade = false;
 
     if (now >= b.nextScanAt) {
@@ -482,8 +512,8 @@ export class Sim {
         if (!e.alive || e.team === a.team) continue;
         const dx = e.pos.x - a.pos.x, dz = e.pos.z - a.pos.z;
         const d = Math.hypot(dx, dz);
-        if (d > 58) continue;
-        const inFov = (dx * f.x + dz * f.z) / (d || 1) > Math.cos(1.3);
+        if (d > K.range) continue;
+        const inFov = (dx * f.x + dz * f.z) / (d || 1) > Math.cos(K.fov);
         const alerted = d < 7 || e.revealedUntil > now || (a.lastHitBy === e.id && now - a.lastHurtAt < 1.5) || e === b.target;
         if (!inFov && !alerted) continue;
         if (!this.canSee(a, e)) continue;
@@ -491,7 +521,7 @@ export class Sim {
         if (score < bd) { bd = score; best = e; }
       }
       if (best && best !== b.target) {
-        b.reactAt = now + 0.3 + rng() * 0.35;
+        b.reactAt = now + K.react[0] + rng() * K.react[1];
         b.burstLeft = 0;
         if (!b.spotted.has(best.id)) { b.spotted.add(best.id); this.emit({ type: 'spotted', id: a.id, targetId: best.id }); }
       }
@@ -501,12 +531,12 @@ export class Sim {
         b.path = null;
       }
       if (!b.target) {
-        const g = this.mode.botGoal(a);
+        const g = this.roleGoal(a);
         if (g && g !== b.objective && Math.hypot(g.x - a.pos.x, g.z - a.pos.z) < 18) { b.objective = g; b.path = null; b.lastKnown = null; }
       }
       if (!b.target && !b.lastKnown) {
         const snitch = this.actors.find(e => e.alive && e.team !== a.team && e.revealedUntil > now);
-        if (snitch) { b.lastKnown = { x: snitch.pos.x, z: snitch.pos.z }; b.path = null; }
+        if (snitch && (b.role !== 'objective' || !this.roleGoal(a))) { b.lastKnown = { x: snitch.pos.x, z: snitch.pos.z }; b.path = null; }
       }
     }
 
@@ -523,10 +553,13 @@ export class Sim {
       inp.right = b.strafeDir * 0.8;
       inp.forward = d > 24 ? 0.7 : d < 5 ? -0.5 : 0;
       // mid-fight, drift onto a nearby objective (e.g. a receipt) instead of pure strafing
+      // mid-fight: objective players keep pushing to the objective while they shoot (fight on the
+      // move); hunters only grab something they are practically standing on (e.g. a receipt)
       const g = this.mode.botGoal(a);
       if (g) {
         const gx = g.x - a.pos.x, gz = g.z - a.pos.z, gd = Math.hypot(gx, gz);
-        if (gd < 7 && gd > 0.2) {
+        const reach = b.role === 'objective' ? 40 : 3;
+        if (gd < reach && gd > (g.radius ? g.radius * 0.5 : 0.2)) {
           inp.forward = (gx * -Math.sin(a.yaw) + gz * -Math.cos(a.yaw)) / gd;
           inp.right = (gx * Math.cos(a.yaw) + gz * -Math.sin(a.yaw)) / gd;
         }
@@ -535,10 +568,10 @@ export class Sim {
       const aligned = Math.abs(wrap(wantYaw - a.yaw)) < 0.15;
       if (aligned && now >= b.reactAt && now - b.seenAt < 0.35) {
         if (b.burstLeft <= 0 && now >= b.nextBurstAt) {
-          b.burstLeft = 4 + Math.floor(rng() * 6);
-          b.aimHead = rng() < 0.18;
+          b.burstLeft = K.burst[0] + Math.floor(rng() * K.burst[1]);
+          b.aimHead = rng() < K.head;
           const moving = Math.hypot(t.vel.x, t.vel.z) > 1;
-          const sigma = 0.018 + d * 0.0011 + (moving ? 0.012 : 0);
+          const sigma = K.sigma[0] + d * K.sigma[1] + (moving ? K.sigma[2] : 0);
           b.errYaw = gauss(rng) * sigma;
           b.errPitch = gauss(rng) * sigma * 0.7;
         }
@@ -546,7 +579,7 @@ export class Sim {
           if (now >= a.nextShotAt && a.reloadUntil === 0) {
             inp.fire = true;
             b.burstLeft--;
-            if (b.burstLeft === 0) b.nextBurstAt = now + 0.25 + rng() * 0.45;
+            if (b.burstLeft === 0) b.nextBurstAt = now + K.pause[0] + rng() * K.pause[1];
           }
         }
       }
@@ -556,10 +589,17 @@ export class Sim {
       if (!b.path || b.pathIdx >= b.path.length) {
         const from = nearestNode(this.map.nodes, this.map.boxes, a.pos.x, a.pos.z);
         let goal;
-        const objective = b.objective || (rng() < 0.7 ? this.mode.botGoal(a) : null);
-        if (b.lastKnown) { goal = nearestNode(this.map.nodes, this.map.boxes, b.lastKnown.x, b.lastKnown.z); b.lastKnown = null; }
-        else if (objective) { goal = nearestNode(this.map.nodes, this.map.boxes, objective.x, objective.z); b.objective = objective; }
-        else {
+        const objective = b.objective || (b.role === 'objective' || rng() < 0.7 ? this.roleGoal(a) : null);
+        const flank = b.role === 'hunter' ? this.mode.botGoal(a) : null;
+        if (b.lastKnown && !(b.role === 'objective' && objective)) { goal = nearestNode(this.map.nodes, this.map.boxes, b.lastKnown.x, b.lastKnown.z); b.lastKnown = null; }
+        else if (objective) {
+          b.lastKnown = null; goal = nearestNode(this.map.nodes, this.map.boxes, objective.x, objective.z); b.objective = objective; }
+        else if (flank) {
+          // hunters work the ring around the objective: close enough to catch attackers, not on it
+          const nodes = this.map.nodes;
+          const ring = nodes.map((n, i) => i).filter(i => { const dd = Math.hypot(nodes[i].x - flank.x, nodes[i].z - flank.z); return dd > 9 && dd < 26; });
+          goal = ring.length ? ring[Math.floor(rng() * ring.length)] : nearestNode(nodes, this.map.boxes, flank.x, flank.z);
+        } else {
           const nodes = this.map.nodes;
           const pool = rng() < 0.55 ? nodes.map((n, i) => i).filter(i => Math.abs(nodes[i].x) < 16 && Math.abs(nodes[i].z) < 22) : nodes.map((n, i) => i);
           goal = pool[Math.floor(rng() * pool.length)];
@@ -569,7 +609,7 @@ export class Sim {
       }
       // last few metres to an objective (receipt, flag, zone centre) go straight at it
       if (b.objective) {
-        const live = this.mode.botGoal(a);
+        const live = this.roleGoal(a);
         b.objective = live && Math.hypot(live.x - b.objective.x, live.z - b.objective.z) < 0.1 ? live : null;
       }
       const near = b.objective && Math.hypot(b.objective.x - a.pos.x, b.objective.z - a.pos.z) < 8 ? b.objective : null;
@@ -591,7 +631,7 @@ export class Sim {
     }
 
     // turn toward the wanted direction at a human-ish rate, then apply this burst's aim error
-    const turn = 7 * dt;
+    const turn = K.turn * dt;
     const dy = wrap(wantYaw - b.aimYaw);
     b.aimYaw = wrap(b.aimYaw + Math.max(-turn, Math.min(turn, dy)));
     b.aimPitch += Math.max(-turn, Math.min(turn, wantPitch - b.aimPitch));
@@ -609,7 +649,7 @@ function newBrain(rng) {
 
 function resetBrain(b) {
   Object.assign(b, {
-    target: null, seenAt: 0, reactAt: 0, lastKnown: null, objective: null, path: null, pathIdx: 0,
+    target: null, seenAt: 0, reactAt: 0, lastKnown: null, objective: null, path: null, pathIdx: 0, role: b.role ?? 'hunter',
     strafeDir: 1, strafeUntil: 0, burstLeft: 0, nextBurstAt: 0, errYaw: 0, errPitch: 0, aimHead: false,
     aimYaw: 0, aimPitch: 0, progressAt: 0, progressPos: { x: 0, z: 0 },
   });

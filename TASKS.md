@@ -69,7 +69,7 @@ Suggested order: **wokeLibs → HOA Dads Boomer lines → mlmHuns** first (Woke 
 
 **Opus (systems, bots, balance)**
 - O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
-- O1: Bot roles per mode (review note 2) and a difficulty setting (reaction time, aim sigma, burst length) exposed as `?bots=easy|normal|hard`.
+- O1: Bot roles + difficulty — **done**: `BOT_DIFFICULTY` easy/normal/hard (`?bots=`; per-bot `actor.difficulty`). Modes assign roles via `Mode.botRole` (King of the Lawn 60% objective / 40% flank ring; Receipt Check half collectors). Objective bots fight on the move toward the objective; hunters flank. Fixes review note 2; Receipt Check now ends on score instead of timing out. Tests: hard beats easy, KotL role split.
 - O2: **Evict the Block** (Search & Destroy: one life, rounds, plant/defuse). It needs round structure in `sim.js` (round reset, no respawn, `mode.respawnDelay = Infinity`). Camping is exempt in this mode per the GDD.
 - O3: Spawn safety. Add line-of-sight to the spawn score in `Sim.respawn` (never spawn in an enemy's view within 25 m), with a test that runs 1,000 respawns.
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
