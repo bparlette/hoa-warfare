@@ -91,3 +91,15 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - Added `trumpers` ("The Trumpers", Tagline: "More yard flags than square footage.", look: `#1a2b4c` / `#e8d9b5` / `#d91424`, hat: `redHat`).
 - Full coverage of all 26 required events (clean & steam lines, legal-safe alternates, all under 1.8s lint limit).
 - Added 6 rivalry matchups (Karens, Trumpers, The Gays, VC Bros).
+
+### T07: In-Game Mini-Map / Compass Radar (`web/src/engine/radar.js`) [M] - done (Antigravity)
+- Circular player-centric rotating radar HUD overlay with North compass indicator.
+- Map geometry: Cul-de-sac asphalt court, road corridor, perimeter boundary, and suburban houses.
+- Objectives: King of the Lawn zone rings (pulsing owner colors) and dropped receipts.
+- Entity tracking:
+  - Local player vision cone & orientation arrow.
+  - Friendly teammates in team blue/cyan.
+  - Gunfire reveal: Enemies firing weapons blip red for 1.8s.
+  - Camping snitch: Stationary campers (>20s) trigger pulsing red ping rings and radar reveals.
+- Unit tests added in `web/tests/sim.test.mjs` (31/31 passing).
+

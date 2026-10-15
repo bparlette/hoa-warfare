@@ -236,6 +236,7 @@ export class Sim {
     a.ammo--;
     a.nextShotAt = now + w.intervalSec;
     a.firingUntil = now + 0.15;
+    a.revealedUntil = Math.max(a.revealedUntil || 0, now + 1.8);
     const moving = Math.hypot(a.vel.x, a.vel.z) > 1;
     const spread = w.spread.base * (moving ? w.spread.moveMult : 1) * (a.onGround ? 1 : w.spread.airMult);
     const o = this.eye(a);

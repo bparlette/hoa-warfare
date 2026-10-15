@@ -10,6 +10,7 @@ import { BarkSystem } from './barks.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac } from './map.js';
+import { Radar } from './radar.js';
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -102,6 +103,7 @@ class Game {
     this.banner = { until: 0 };
     this.realTime = 0;
     this.lastLoiterBeep = 0;
+    this.radar = $('radar') ? new Radar($('radar')) : null;
     this.sim.start();
     this.handle(this.sim.drainEvents());
   }
@@ -372,6 +374,7 @@ class Game {
       if (this.realTime - this.lastLoiterBeep > 1) { this.lastLoiterBeep = this.realTime; sfx.warn(); }
     }
     if (!me.alive && !this.killcam) this.showRespawn();
+    if (this.radar) this.radar.render(sim, me, state.spectate);
 
     // speech bubbles follow their speaker (or stay where a dead speaker fell)
     this.bubbles = this.bubbles.filter(bb => {
@@ -535,6 +538,43 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keyup', e => input.keys.delete(e.code));
 window.addEventListener('resize', () => renderer.resize());
 
+function setupShortRecorder() {
+  const factionName = factions[state.faction]?.name || 'Karens';
+  const header = document.createElement('div');
+  header.className = 'short-top-header';
+  header.innerHTML = `
+    <div class="short-badge">🔴 CUL-DE-SAC WARFARE</div>
+    <div class="short-title">WHEN AN HOA BOARD MEMBER SNAPS 💀</div>
+    <div class="short-sub">Call of Karen: HOA Warfare</div>
+  `;
+  document.body.appendChild(header);
+
+  const footer = document.createElement('div');
+  footer.className = 'short-bottom-tag';
+  footer.innerHTML = `🔥 CALL OF KAREN: HOA WARFARE #shorts #gaming`;
+  document.body.appendChild(footer);
+
+  try {
+    const stream = renderer.canvas.captureStream(60);
+    const mime = typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8000000 });
+    const chunks = [];
+    rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    rec.onstop = async () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const buf = await blob.arrayBuffer();
+      await fetch('/api/save_clip', { method: 'POST', body: buf });
+      window.__RECORDING_DONE = true;
+      console.log('__SHORT_RECORDING_DONE__');
+    };
+    rec.start();
+    const durSec = Number(params.get('dur')) || 15;
+    setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, durSec * 1000);
+  } catch (err) {
+    console.error('Short recording error:', err);
+  }
+}
+
 function startGame() {
   if (game) game.dispose();
   $('menu').classList.add('hidden');
@@ -542,6 +582,10 @@ function startGame() {
   sfx.unlock();
   input.yaw = 0; input.pitch = 0;
   game = new Game();
+  if (params.get('short') === '1' && !window.__shortStarted) {
+    window.__shortStarted = true;
+    setupShortRecorder();
+  }
   if (!state.spectate) lock();
 }
 

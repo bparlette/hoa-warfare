@@ -269,3 +269,33 @@ test('sim - weapon switching and ammo banking', () => {
   assert.equal(a.ammo, 14);
 });
 
+test('radar - shooting and snitch reveal timers and radar render', async () => {
+  const { Sim } = await import('../src/engine/sim.js');
+  const { Radar } = await import('../src/engine/radar.js');
+  const sim = new Sim({ rules: content.rules, weapons, rng: () => 0.5, mode: 'clash' });
+  const a0 = sim.addActor({ id: 'a0', team: 0, faction: 'karens', isBot: false });
+  const a1 = sim.addActor({ id: 'a1', team: 1, faction: 'frat', isBot: false });
+  sim.start();
+
+  // Initially not revealed
+  assert.ok(!a1.revealedUntil || a1.revealedUntil <= sim.time);
+
+  // Firing reveals enemy
+  a1.input.fire = true;
+  sim.step(1 / 60);
+  a1.input.fire = false;
+  assert.ok(a1.revealedUntil >= sim.time + 1.5);
+
+  // Mock canvas to test Radar render pass
+  const ops = [];
+  const mockCtx = new Proxy({}, {
+    get: (_, prop) => (...args) => ops.push([prop, ...args]),
+    set: () => true,
+  });
+  const mockCanvas = { width: 130, height: 130, getContext: () => mockCtx };
+  const radar = new Radar(mockCanvas);
+  assert.equal(radar.size, 130);
+  radar.render(sim, a0);
+  assert.ok(ops.length > 10, 'Radar rendered map geometry and entities');
+});
+

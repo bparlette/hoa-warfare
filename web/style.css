@@ -6,6 +6,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 /* chunky 8-bit UI chrome (8-bit is for UI only, never characters) */
 .px { text-shadow: 2px 2px 0 #000; }
 #hud { position: fixed; inset: 0; pointer-events: none; text-shadow: 2px 2px 0 #000; font-weight: bold; }
+#radar { position: absolute; top: 12px; left: 12px; width: 130px; height: 130px; border-radius: 50%; box-shadow: 0 4px 14px rgba(0,0,0,0.7); pointer-events: none; }
 #score { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 18px; align-items: center; font-size: 20px; background: #1d2b53cc; border: 3px solid #fff1e8; padding: 4px 14px; }
 #score .t0 b { color: #29adff; } #score .t1 b { color: #ff004d; }
 #clock { font-size: 16px; color: #ffec27; }
@@ -72,3 +73,57 @@ button:hover { background: #ff6c24; }
 .podium .mvp { border-color: #ffec27; }
 .podium q { display: block; color: #ffec27; margin-top: 6px; }
 select { font-family: inherit; font-size: 15px; background: #111d35; color: #fff1e8; border: 3px solid #fff1e8; padding: 6px; }
+
+/* YouTube Short Mode Styling */
+.short-top-header {
+  position: fixed;
+  top: 24px;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
+  text-align: center;
+  pointer-events: none;
+}
+.short-badge {
+  display: inline-block;
+  background: #ff004d;
+  color: #fff;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+  margin-bottom: 6px;
+  border: 2px solid #fff;
+}
+.short-title {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 28px;
+  color: #ffec27;
+  text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+  letter-spacing: 1px;
+  line-height: 1.15;
+  padding: 0 16px;
+}
+.short-sub {
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+  margin-top: 4px;
+}
+.short-bottom-tag {
+  position: fixed;
+  bottom: 24px;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
+  text-align: center;
+  pointer-events: none;
+  font-family: Impact, sans-serif;
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, 0 0 10px #ff004d;
+}
+
