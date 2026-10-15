@@ -3,6 +3,8 @@
 Comedy low-poly retro FPS. This repo holds the content (single source of truth), the engine-agnostic
 voice/match logic, and a playable **web slice** of the non-Roblox (Steam-look) build.
 
+> **🚀 Steam Deploy Plan**: See [**DEPLOY.md**](DEPLOY.md) for the "Coming Soon" store page, wishlist funnel, and $4.99 release strategy.
+
 ## Play the web slice
 
 ```bash
