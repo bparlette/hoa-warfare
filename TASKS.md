@@ -42,7 +42,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - **Done when**: `web/tests/sim.test.mjs` passes bot match tests on the Clubhouse map without any bot clipping or disconnecting.
 
 ### T13: Content Expansion for Phase 1 Factions (`data/hoa_content.json`) [M - Tedious]
-- **Owner**: Open / Muse
+- **Owner**: Muse — claimed by Muse (2026-10-15)
 - **Contract**:
   - Expand barks for the 8 secondary factions (Old Money, Rednecks, Gym Rats, Theater Kids, VC Bros, HOA Dads, Emo Kids, Valley Girls).
   - Maintain the append-only rule (never change existing array indices).
