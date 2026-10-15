@@ -92,7 +92,7 @@ export class Sim {
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
       ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
       onGround: true, kills: 0, deaths: 0, streak: 0, spawnProtectUntil: 0, lowHealthSaid: false,
-      lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity,
+      lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity, lastShotAt: -Infinity,
       hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 },
       input: emptyInput(), camp: new CampingMonitor(this.rules.camping), campState: { state: 'ok', dwell: 0 },
       brain: isBot ? newBrain(this.rng) : null,
@@ -195,7 +195,7 @@ export class Sim {
     a.activeSlot = 'primary';
     a.ammoBank = {};
     Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: a.weapons.equipment?.count ?? 0, streak: 0,
-      spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 } });
+      spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 }, lastShotAt: -Infinity });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
     this.emit({ type: 'spawn', id: a.id, roundReset });
@@ -213,6 +213,7 @@ export class Sim {
     const w = a.weapons[slot];
     a.reloadUntil = 0;
     a.ammo = typeof a.ammoBank[slot] === 'number' ? a.ammoBank[slot] : w.mag;
+    a.lastShotAt = this.time;
     this.emit({ type: 'switchWeapon', id: a.id, slot, weaponId: w.id });
   }
 
@@ -325,6 +326,7 @@ export class Sim {
     if (!w.auto && a.triggerHeld && !a.isBot) return; // semi-auto: one shot per click
     if (a.ammo <= 0) { this.startReload(a); return; }
     a.ammo--;
+    a.lastShotAt = now;
     a.nextShotAt = now + w.intervalSec;
     a.firingUntil = now + 0.15;
     a.revealedUntil = Math.max(a.revealedUntil || 0, now + 1.8);
@@ -620,6 +622,9 @@ export class Sim {
       if (inp.reload) this.startReload(a);
       if (inp.fire) this.fire(a);
       a.triggerHeld = inp.fire;
+      if (!inp.fire && a.reloadUntil === 0 && a.ammo < (this.activeWeapon(a)?.mag ?? 0) && now - (a.lastShotAt ?? 0) >= 1.0) {
+        this.startReload(a);
+      }
       if (inp.melee) this.melee(a);
       if (inp.grenade) this.throwGrenade(a);
       if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; inp.switchSlot = null; }

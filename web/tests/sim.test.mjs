@@ -173,6 +173,35 @@ test('weapons: pellets fire multiple rays, semi-auto needs a fresh click', () =>
   assert.equal(me.grenades, 0, 'loadout without equipment has no Lawsuits');
 });
 
+test('weapons: auto reload triggers after 1 second of not firing', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(10) });
+  const me = sim.addActor({ id: 'me', name: 'Me', team: 0, faction: 'karens', isBot: false });
+  sim.start();
+  const maxMag = weapons.weapons.allowance.mag;
+  assert.equal(me.ammo, maxMag);
+
+  // Fire one shot
+  me.input.fire = true;
+  sim.step(1 / 60);
+  me.input.fire = false;
+  assert.equal(me.ammo, maxMag - 1);
+  assert.equal(me.reloadUntil, 0);
+
+  // Advance 0.5s (30 ticks) -> still not reloading
+  for (let i = 0; i < 30; i++) sim.step(1 / 60);
+  assert.equal(me.reloadUntil, 0);
+
+  // Advance another 0.6s (36 ticks, total 1.1s since shot) -> auto reload triggers!
+  for (let i = 0; i < 36; i++) sim.step(1 / 60);
+  assert.ok(me.reloadUntil > 0, 'auto-reload initiated after 1s inactivity');
+
+  // Let reload complete
+  const reloadTicks = Math.ceil(weapons.weapons.allowance.reloadSec * 60) + 5;
+  for (let i = 0; i < reloadTicks; i++) sim.step(1 / 60);
+  assert.equal(me.ammo, maxMag, 'mag refilled to full');
+  assert.equal(me.reloadUntil, 0);
+});
+
 test('receipt check: kills drop receipts, only pickups score, bots go for them', () => {
   const { sim, log } = match(21, { mode: 'receiptCheck' });
   const kinds = t => log.events.filter(e => e.type === t).length;
