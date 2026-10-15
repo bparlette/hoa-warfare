@@ -71,3 +71,4 @@ button:hover { background: #ff6c24; }
 .podium div { background: #111d35; border: 3px solid #5f574f; padding: 10px; }
 .podium .mvp { border-color: #ffec27; }
 .podium q { display: block; color: #ffec27; margin-top: 6px; }
+select { font-family: inherit; font-size: 15px; background: #111d35; color: #fff1e8; border: 3px solid #fff1e8; padding: 6px; }

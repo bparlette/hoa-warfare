@@ -4,7 +4,8 @@
 import { ContentLibrary } from '../core/content.js';
 import { AudioLimiter } from '../core/audioLimiter.js';
 import { mulberry32 } from '../core/rng.js';
-import { Sim, WEAPON, GRENADE } from './sim.js';
+import { Sim } from './sim.js';
+import { MODES } from './modes.js';
 import { BarkSystem } from './barks.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
@@ -15,7 +16,7 @@ const params = new URLSearchParams(location.search);
 const FIXED = 1 / 60;
 const KILLCAM_SEC = 3, KILLCAM_HOLD = 1.3;
 
-const content = await (await fetch('../data/hoa_content.json')).json();
+const [content, weaponsData] = await Promise.all(['../data/hoa_content.json', '../data/weapons.json'].map(async u => (await fetch(u)).json()));
 const factions = content.factions;
 const phase0 = Object.keys(factions).filter(id => factions[id].phase0);
 
@@ -26,6 +27,7 @@ const state = {
   retro: params.get('retro') !== '0',
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
+  mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
 };
 
 const renderer = new Renderer($('view'), { map: buildCulDeSac(), factions });
@@ -51,7 +53,9 @@ function buildMenu() {
   $('optLegal').checked = state.legalSafe;
   $('optRetro').checked = state.retro;
   $('optVoice').checked = state.voice;
+  $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
+$('optMode').onchange = e => { state.mode = e.target.value; };
 $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
 $('optRetro').onchange = e => { state.retro = e.target.checked; renderer.setRetro(state.retro); };
@@ -75,7 +79,7 @@ class Game {
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
-    this.sim = new Sim({ rules: content.rules, rng: this.rng, map: renderer.map, scoreLimit: 40, timeLimit: 300 });
+    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode });
     this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
     this.limiter = new AudioLimiter(content.rules.audioLimiter);
     voice.enabled = state.voice;
@@ -110,6 +114,7 @@ class Game {
     for (const f of renderer.fx) renderer.scene.remove(f.obj);
     renderer.fx = [];
     renderer.updateGrenades([]);
+    renderer.updateObjects([], 0);
     $('bubbles').innerHTML = ''; $('feed').innerHTML = ''; $('subs').innerHTML = '';
     voice.stop();
   }
@@ -155,6 +160,7 @@ class Game {
       }
     }
     renderer.updateGrenades(sim.grenades);
+    renderer.updateObjects(sim.mode.objects, this.me.team);
     renderer.updateFx(dt);
     renderer.render();
     this.updateHud();
@@ -192,6 +198,8 @@ class Game {
         case 'reload': if (a === me) sfx.reload(); break;
         case 'swing': if (a === me) sfx.swing(); break;
         case 'campingSnitch': this.showBanner(a === me ? 'YOU SNITCHED ON YOURSELF' : `${a.name} snitched on themselves`, a === me ? 'Enemies can see you for 6s. Move!' : ''); break;
+        case 'receiptConfirmed': if (a === me) { sfx.kill(); this.showBanner('RECEIPT CONFIRMED', `${e.victimName} has been processed`); } break;
+        case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
         case 'matchEnd': setTimeout(() => this.showEnd(), 2500); break;
       }
     }
@@ -293,7 +301,7 @@ class Game {
     const el = document.createElement('div');
     el.className = 'k';
     el.innerHTML = kr
-      ? `<span class="${cls(kr)}">${kr.name}</span> ${k.melee ? '🏆' : k.explosive ? '💼' : '🔫'} <span class="${cls(v)}">${v.name}</span>${tags.length ? `<span class="tagx">${tags.join(' · ')}</span>` : ''}`
+      ? `<span class="${cls(kr)}">${kr.name}</span> ${weaponsData.weapons[k.weaponId]?.feedIcon || '🔫'} <span class="${cls(v)}">${v.name}</span>${tags.length ? `<span class="tagx">${tags.join(' · ')}</span>` : ''}`
       : `<span class="${cls(v)}">${v.name}</span> played themselves`;
     $('feed').prepend(el);
     while ($('feed').children.length > 6) $('feed').lastChild.remove();
@@ -329,9 +337,12 @@ class Game {
     $('clock').textContent = `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
     $('hpfill').style.width = `${me.alive ? me.hp : 0}%`;
     $('hpfill').style.background = me.hp < 25 ? '#ff004d' : me.hp < 60 ? '#ffa300' : '#00e436';
-    $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${WEAPON.mag}`;
-    $('nades').textContent = `${GRENADE.name} x${me.grenades} · Trophy [F]`;
-    $('modes').innerHTML = `${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${this.library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${voice.enabled ? '' : ' · muted'}`;
+    const W = me.weapons;
+    $('wname').textContent = W.primary.name;
+    $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${W.primary.mag}`;
+    $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''}`;
+    const mh = sim.mode.hud(me);
+    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${this.library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${voice.enabled ? '' : ' · muted'}`;
     $('crosshair').style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
 
     const cs = me.campState;
@@ -465,10 +476,26 @@ function frame(t) {
   const dt = Math.min(0.1, (t - last) / 1000);
   last = t;
   if (game) game.update(dt);
+  else if (params.get('lineup') === '1') return;
   else { renderer.orbit(t / 1000); renderer.updateFx(dt); renderer.render(); }
   requestAnimationFrame(frame);
 }
+// ?lineup=1 : all 12 factions side by side for checking silhouettes (no match)
+function showLineup() {
+  $('menu').classList.add('hidden');
+  const ids = Object.keys(factions);
+  ids.forEach((f, i) => {
+    const c = renderer.ensureCharacter({ id: 'lineup' + i, name: f, team: 0, faction: f }, 1);
+    c.update({ x: (i - (ids.length - 1) / 2) * 1.05, y: 0, z: 8, yaw: Math.PI, pitch: 0, speed: 0, alive: true, onGround: true }, 0.016);
+  });
+  renderer.camera.position.set(0, 1.3, 12.6);
+  renderer.camera.lookAt(0, 1.0, 8);
+  renderer.viewmodel.visible = false;
+  const loop = () => { renderer.render(); requestAnimationFrame(loop); };
+  loop();
+}
 buildMenu();
-if (params.get('autostart') === '1' || state.spectate) startGame();
+if (params.get('lineup') === '1') showLineup();
+else if (params.get('autostart') === '1' || state.spectate) startGame();
 requestAnimationFrame(frame);
 window.__hoa = { get game() { return game; }, renderer, state, input };

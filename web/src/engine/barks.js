@@ -61,6 +61,10 @@ export class BarkSystem {
           push(this.bark(actor, this.director(actor).request('campingSnitch', now, { skipChance: true }), { snitch: true }));
           break;
         case 'kill': this.onKill(ev, now, localId, out); break;
+        case 'receiptConfirmed':
+        case 'receiptDenied':
+          push(this.bark(actor, this.director(actor).request('objective', now)));
+          break;
         case 'matchEnd': {
           const local = sim.byId.get(localId);
           if (ev.winner === null) this.announcer.push('Draw. Everyone loses.');

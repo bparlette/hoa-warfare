@@ -337,6 +337,26 @@ export class Renderer {
     this.splat(p, '#ff77a8', 2.2);
   }
 
+  /** Draw mode objects (receipts, flags, zones...) by kind. Add a builder to OBJECT_VIEWS for new kinds. */
+  updateObjects(objects, localTeam) {
+    this.objectMeshes ??= new Map();
+    const live = new Set();
+    for (const o of objects) {
+      live.add(o.id);
+      let m = this.objectMeshes.get(o.id);
+      if (!m) {
+        const build = OBJECT_VIEWS[o.kind];
+        if (!build) continue;
+        m = build(o, localTeam);
+        this.scene.add(m);
+        this.objectMeshes.set(o.id, m);
+      }
+      m.position.set(o.pos.x, o.pos.y, o.pos.z);
+      m.userData.update?.(m, o, performance.now() / 1000);
+    }
+    for (const [id, m] of this.objectMeshes) if (!live.has(id)) { this.scene.remove(m); this.objectMeshes.delete(id); }
+  }
+
   updateGrenades(grenades) {
     this.grenadeMeshes ??= [];
     while (this.grenadeMeshes.length < grenades.length) {
@@ -429,3 +449,18 @@ export class Renderer {
 }
 
 export { forwardOf };
+
+// Mode object views, keyed by object.kind (see modes.js). Each returns an Object3D; optional
+// userData.update(mesh, object, timeSec) animates it.
+export const OBJECT_VIEWS = {
+  receipt(o, localTeam) {
+    const g = new THREE.Group();
+    const paper = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.5, 0.02), new THREE.MeshBasicMaterial({ map: T.receipt() }));
+    paper.position.y = 0.7;
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.45, 0.6, 12), new THREE.MeshBasicMaterial({ color: o.team === localTeam ? '#29adff' : '#ff004d', side: THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05;
+    g.add(paper, ring);
+    g.userData.update = (m, obj, t) => { paper.rotation.y = t * 2.5; paper.position.y = 0.7 + Math.sin(t * 3) * 0.08; };
+    return g;
+  },
+};

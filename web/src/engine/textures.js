@@ -92,6 +92,12 @@ export const T = {
     px(0, 0, shade(color, 0.25), w, 2);
     px(0, 10, '#2b2b2b', w, 1);
   }),
+  receipt: () => pixelTex('receipt', 8, 12, (px) => {
+    px(0, 0, '#fff1e8', 8, 12);
+    for (let y = 2; y < 10; y += 2) px(1, y, '#5f574f', 3 + (y % 4 ? 3 : 1), 1);
+    px(1, 10, '#ff004d', 6, 1);
+    px(0, 11, '#c2c3c7', 1, 1); px(2, 11, '#c2c3c7', 1, 1); px(4, 11, '#c2c3c7', 1, 1); px(6, 11, '#c2c3c7', 1, 1);
+  }),
   stripe: () => pixelTex('stripe', 4, 16, (px) => { px(0, 0, '#55575e', 4, 16); px(1, 0, '#e8c547', 2, 8); }),
 };
 

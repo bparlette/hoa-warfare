@@ -5,16 +5,18 @@ import { readFileSync } from 'node:fs';
 import { ContentLibrary } from '../src/core/content.js';
 import { mulberry32 } from '../src/core/rng.js';
 import { buildCulDeSac, findPath } from '../src/engine/map.js';
-import { Sim, rayActor, BODY } from '../src/engine/sim.js';
+import { Sim, rayActor, BODY, resolveLoadout } from '../src/engine/sim.js';
+import { MODES } from '../src/engine/modes.js';
 import { BarkSystem } from '../src/engine/barks.js';
 
 const content = JSON.parse(readFileSync(new URL('../../data/hoa_content.json', import.meta.url)));
+const weapons = JSON.parse(readFileSync(new URL('../../data/weapons.json', import.meta.url)));
 const PHASE0 = Object.keys(content.factions).filter(f => content.factions[f].phase0);
 
-function match(seed, { script = 'clean', seconds = 300, local = 'p0', step } = {}) {
+function match(seed, { script = 'clean', seconds = 300, local = 'p0', step, mode = 'clash', weaponsData = weapons } = {}) {
   const rng = mulberry32(seed);
   const library = new ContentLibrary(content, { script });
-  const sim = new Sim({ rules: content.rules, rng });
+  const sim = new Sim({ rules: content.rules, weapons: weaponsData, rng, mode });
   for (let i = 0; i < 12; i++) sim.addActor({ id: 'p' + i, name: content.playerNames[i], team: i % 2, faction: PHASE0[i % PHASE0.length] });
   const barks = new BarkSystem({ library, content, rng, sim });
   sim.start();
@@ -40,7 +42,7 @@ function match(seed, { script = 'clean', seconds = 300, local = 'p0', step } = {
 test('map: nav graph is fully connected and spawns are clear', () => {
   const map = buildCulDeSac();
   for (let i = 1; i < map.nodes.length; i++) assert.ok(findPath(map.nodes, 0, i), `node ${i} unreachable`);
-  const sim = new Sim({ rules: content.rules, rng: mulberry32(1), map });
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(1), map });
   for (const t of [0, 1]) for (const [x, z] of map.spawns[t]) assert.equal(sim.blocked(x, z, 0), false, `spawn ${x},${z}`);
 });
 
@@ -92,7 +94,7 @@ test('steam script: steam-only lines can appear', () => {
 test('camping: a player who stands still snitches on themselves and is revealed', () => {
   const rng = mulberry32(2);
   const library = new ContentLibrary(content);
-  const sim = new Sim({ rules: content.rules, rng });
+  const sim = new Sim({ rules: content.rules, weapons, rng });
   const me = sim.addActor({ id: 'me', name: 'Me', team: 0, faction: 'karens', isBot: false });
   const barks = new BarkSystem({ library, content, rng, sim });
   sim.start();
@@ -112,7 +114,7 @@ test('camping: a player who stands still snitches on themselves and is revealed'
 
 test('trampoline bounces, lawsuit grenade can self-kill with a self-roast', () => {
   const rng = mulberry32(4);
-  const sim = new Sim({ rules: content.rules, rng });
+  const sim = new Sim({ rules: content.rules, weapons, rng });
   const me = sim.addActor({ id: 'me', name: 'Me', team: 0, faction: 'fratHouse', isBot: false });
   const barks = new BarkSystem({ library: new ContentLibrary(content), content, rng, sim });
   sim.start();
@@ -136,4 +138,48 @@ test('trampoline bounces, lawsuit grenade can self-kill with a self-roast', () =
   assert.ok(self, 'self kill registered');
   assert.equal(self.barks[0].eventId, 'selfKill');
   assert.deepEqual(sim.score, [0, 0], 'self kills do not score');
+});
+
+test('weapons.json: every loadout resolves and every weapon has the fields its fire type needs', () => {
+  const need = {
+    hitscan: ['mag', 'reloadSec', 'intervalSec', 'damage', 'range', 'spread', 'auto'],
+    projectile: ['count', 'projectile'],
+    melee: ['range', 'damage', 'cooldownSec', 'coneDot'],
+  };
+  for (const [id, w] of Object.entries(weapons.weapons)) {
+    assert.ok(need[w.fire], `${id}: unknown fire type ${w.fire}`);
+    for (const f of need[w.fire]) assert.ok(w[f] !== undefined, `${id} missing ${f}`);
+    assert.ok(w.name && w.slot && w.feedIcon, `${id} needs name/slot/feedIcon`);
+    if (w.fire === 'hitscan') assert.ok(Math.ceil(100 / w.damage.body) >= 2, `${id} one-shots to the body`);
+  }
+  for (const name of Object.keys(weapons.loadouts)) {
+    const l = resolveLoadout(weapons, name);
+    assert.equal(l.primary.slot, 'primary', `${name}.primary`);
+  }
+});
+
+test('weapons: pellets fire multiple rays, semi-auto needs a fresh click', () => {
+  const custom = structuredClone(weapons);
+  custom.weapons.testShotgun = { ...weapons.weapons.allowance, name: 'Test Shotgun', auto: false, pellets: 8, mag: 6 };
+  custom.loadouts.shotgun = { primary: 'testShotgun', melee: 'participationTrophy' };
+  const sim = new Sim({ rules: content.rules, weapons: custom, rng: mulberry32(8) });
+  const me = sim.addActor({ id: 'me', name: 'Me', team: 0, faction: 'karens', isBot: false, loadout: 'shotgun' });
+  sim.start(); sim.drainEvents();
+  me.input.fire = true;
+  for (let i = 0; i < 30; i++) sim.step(1 / 60); // trigger held for 0.5 s
+  const shots = sim.drainEvents().filter(e => e.type === 'shot');
+  assert.equal(shots.length, 8, 'one trigger pull = 8 pellets, no auto refire');
+  assert.equal(me.ammo, 5);
+  assert.equal(me.grenades, 0, 'loadout without equipment has no Lawsuits');
+});
+
+test('receipt check: kills drop receipts, only pickups score, bots go for them', () => {
+  const { sim, log } = match(21, { mode: 'receiptCheck' });
+  const kinds = t => log.events.filter(e => e.type === t).length;
+  assert.ok(kinds('kill') > 20);
+  assert.equal(sim.score[0] + sim.score[1], kinds('receiptConfirmed'), 'score == confirmed receipts');
+  assert.ok(kinds('receiptConfirmed') > 10, `confirmed ${kinds('receiptConfirmed')}`);
+  assert.ok(kinds('receiptDenied') > 0, 'some denies');
+  assert.ok(log.barks.some(b => b.eventId === 'objective'), 'pickup barks');
+  assert.equal(MODES.receiptCheck.defaults.scoreLimit, sim.scoreLimit);
 });

@@ -19,67 +19,90 @@ function part(w, h, d, material, y = 0) {
   return m;
 }
 
-/** Faction-specific headwear. Phase 0 factions get the most love; the rest get a readable silhouette. */
-function addHeadwear(head, look, faction) {
-  const accent = mat({ color: look.accent });
-  const shirt = mat({ color: look.shirt });
-  const hair = (c) => mat({ color: c });
-  switch (look.hat) {
-    case 'backwardsCap': {
-      head.add(part(0.4, 0.1, 0.4, accent, 0.22));
-      const brim = part(0.3, 0.03, 0.18, accent, 0.18); brim.position.z = 0.27; head.add(brim);
-      break;
-    }
-    case 'hoodPhones': {
-      const hood = part(0.46, 0.44, 0.44, shirt, 0.02); hood.position.z = 0.04; head.add(hood);
-      for (const s of [-1, 1]) { const p = part(0.08, 0.16, 0.16, accent, 0.0); p.position.x = s * 0.25; head.add(p); }
-      head.add(part(0.5, 0.05, 0.08, accent, 0.25));
-      break;
-    }
-    case 'bob': {
-      const h = hair('#e3c46a');
-      head.add(part(0.44, 0.14, 0.44, h, 0.18));
-      const back = part(0.44, 0.34, 0.12, h, -0.02); back.position.z = 0.18; head.add(back);
-      const side = part(0.1, 0.3, 0.3, h, 0.0); side.position.set(-0.22, 0, 0.02); head.add(side); // the asymmetric bob
-      const side2 = part(0.06, 0.18, 0.26, h, 0.06); side2.position.set(0.2, 0.06, 0.04); head.add(side2);
-      const shades = part(0.36, 0.05, 0.06, mat({ color: '#141414' }), 0.27); shades.position.z = -0.1; head.add(shades);
-      break;
-    }
-    case 'ringLight': {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.045, 4, 10), mat({ color: look.accent, emissive: '#ffffff', emissiveIntensity: 0.7 }));
-      ring.position.set(0, 0.05, 0.42);
-      head.add(ring);
-      head.add(part(0.42, 0.1, 0.42, hair('#1d1d1d'), 0.2));
-      break;
-    }
-    case 'trucker': case 'whiteCap': {
-      const c = look.hat === 'whiteCap' ? mat({ color: '#ffffff' }) : accent;
-      head.add(part(0.42, 0.12, 0.42, c, 0.22));
-      const brim = part(0.32, 0.03, 0.2, c, 0.17); brim.position.z = -0.28; head.add(brim);
-      break;
-    }
-    case 'beret': {
-      const b = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.07, 8), accent);
-      b.position.set(0.04, 0.22, 0); b.rotation.z = 0.2; head.add(b);
-      break;
-    }
-    case 'ponytail': {
-      const h = hair('#f0d27a');
-      head.add(part(0.42, 0.1, 0.42, h, 0.2));
-      const tail = part(0.12, 0.3, 0.12, h, 0.02); tail.position.z = 0.26; head.add(tail);
-      break;
-    }
-    case 'fringe': {
-      const h = hair('#111111');
-      head.add(part(0.42, 0.12, 0.42, h, 0.2));
-      const f = part(0.26, 0.2, 0.04, h, 0.06); f.position.set(-0.08, 0.06, -0.21); head.add(f);
-      break;
-    }
-    case 'sweaterCane':
-      head.add(part(0.4, 0.06, 0.4, hair('#e6e6e6'), 0.2));
-      break;
-    default:
-      head.add(part(0.4, 0.08, 0.4, hair('#3a2a20'), 0.2));
+// ---------------------------------------------------------------------------------------------
+// RIG (the "prefab"). Every faction shares this hierarchy; only data below changes per faction.
+//
+//   root (Group)            feet at origin, rotation.y = yaw, -z = facing
+//   └ body                  bobs while running
+//     ├ hipL / hipR         (±0.13, 0.80, 0)   leg box + shoe hang along -y; rotation.x = stride
+//     ├ torso               box 0.56 x 0.62 x 0.30 centred at y 1.10  (shirt texture)
+//     ├ head (Group)        y 1.62; head box 0.38 x 0.40 x 0.38, face texture on -z; HEADWEAR parts
+//     ├ shoulderL / R       (±0.37, 1.36, 0)   arm hangs along -y, hand at y -0.56; rotation.x aims
+//     │  └ gun (on R)       barrel along the arm; PROPS attach to handL / handR
+//     └ marker              team diamond at y 2.15
+//
+// Hitboxes live in sim.js BODY and must stay in sync with these proportions:
+//   body cylinder r 0.42 from y 0 to 1.42, head sphere r 0.25 at y 1.62.
+// Ragdoll: on death each of torso, head, hipL, hipR, shoulderL, shoulderR becomes a free piece
+// (Ragdoll class below). No skinning, no bones, so a new faction never needs rig work.
+//
+// Part spec used by HEADWEAR and PROPS:
+//   { s: 'box'|'cyl'|'torus', size: [...three.js geometry args], at: [x,y,z], rot?: [x,y,z],
+//     c: 'accent'|'shirt'|'pants'|'#hex', glow?: '#hex', glowI?: number }
+// HEADWEAR parts are children of the head (origin = head centre, -z = face).
+// PROPS add `hand: 'L'|'R'` and are children of that shoulder (arm along -y, hand at y -0.56).
+// Pick headwear with `look.hat` in hoa_content.json; PROPS are keyed by faction id.
+// ---------------------------------------------------------------------------------------------
+
+export const HEADWEAR = {
+  backwardsCap: [
+    { s: 'box', size: [0.4, 0.1, 0.4], at: [0, 0.22, 0], c: 'accent' },
+    { s: 'box', size: [0.3, 0.03, 0.18], at: [0, 0.18, 0.27], c: 'accent' }, // brim faces backwards
+  ],
+  hoodPhones: [
+    { s: 'box', size: [0.46, 0.44, 0.44], at: [0, 0.02, 0.04], c: 'shirt' },
+    { s: 'box', size: [0.08, 0.16, 0.16], at: [-0.25, 0, 0], c: 'accent' },
+    { s: 'box', size: [0.08, 0.16, 0.16], at: [0.25, 0, 0], c: 'accent' },
+    { s: 'box', size: [0.5, 0.05, 0.08], at: [0, 0.25, 0], c: 'accent' },
+  ],
+  bob: [
+    { s: 'box', size: [0.44, 0.14, 0.44], at: [0, 0.18, 0], c: '#e3c46a' },
+    { s: 'box', size: [0.44, 0.34, 0.12], at: [0, -0.02, 0.18], c: '#e3c46a' },
+    { s: 'box', size: [0.1, 0.3, 0.3], at: [-0.22, 0, 0.02], c: '#e3c46a' }, // the asymmetric bob
+    { s: 'box', size: [0.06, 0.18, 0.26], at: [0.2, 0.06, 0.04], c: '#e3c46a' },
+    { s: 'box', size: [0.36, 0.05, 0.06], at: [0, 0.27, -0.1], c: '#141414' }, // sunglasses on head
+  ],
+  ringLight: [
+    { s: 'torus', size: [0.34, 0.045, 4, 10], at: [0, 0.05, 0.42], c: 'accent', glow: '#ffffff', glowI: 0.7 },
+    { s: 'box', size: [0.42, 0.1, 0.42], at: [0, 0.2, 0], c: '#1d1d1d' },
+  ],
+  trucker: [
+    { s: 'box', size: [0.42, 0.12, 0.42], at: [0, 0.22, 0], c: 'accent' },
+    { s: 'box', size: [0.32, 0.03, 0.2], at: [0, 0.17, -0.28], c: 'accent' },
+  ],
+  whiteCap: [
+    { s: 'box', size: [0.42, 0.12, 0.42], at: [0, 0.22, 0], c: '#ffffff' },
+    { s: 'box', size: [0.32, 0.03, 0.2], at: [0, 0.17, -0.28], c: '#ffffff' },
+  ],
+  beret: [{ s: 'cyl', size: [0.26, 0.26, 0.07, 8], at: [0.04, 0.22, 0], rot: [0, 0, 0.2], c: 'accent' }],
+  ponytail: [
+    { s: 'box', size: [0.42, 0.1, 0.42], at: [0, 0.2, 0], c: '#f0d27a' },
+    { s: 'box', size: [0.12, 0.3, 0.12], at: [0, 0.02, 0.26], c: '#f0d27a' },
+  ],
+  fringe: [
+    { s: 'box', size: [0.42, 0.12, 0.42], at: [0, 0.2, 0], c: '#111111' },
+    { s: 'box', size: [0.26, 0.2, 0.04], at: [-0.08, 0.06, -0.21], c: '#111111' },
+  ],
+  sweaterCane: [{ s: 'box', size: [0.4, 0.06, 0.4], at: [0, 0.2, 0], c: '#e6e6e6' }],
+  default: [{ s: 'box', size: [0.4, 0.08, 0.4], at: [0, 0.2, 0], c: '#3a2a20' }],
+};
+
+export const PROPS = {
+  brainRot: [{ hand: 'L', s: 'box', size: [0.24, 0.32, 0.03], at: [0, -0.5, -0.12], c: '#222222', glow: '#7ff7ff', glowI: 0.6 }], // the iPad
+  cloutStreamers: [{ hand: 'L', s: 'box', size: [0.08, 0.15, 0.02], at: [0, -0.58, -0.1], c: '#111111', glow: '#e8f4ff', glowI: 0.5 }], // phone, always filming
+};
+
+function buildParts(parent, specs, look) {
+  for (const p of specs) {
+    const color = p.c === 'accent' || p.c === 'shirt' || p.c === 'pants' ? look[p.c] : p.c;
+    const g = p.s === 'cyl' ? new THREE.CylinderGeometry(...p.size)
+      : p.s === 'torus' ? new THREE.TorusGeometry(...p.size)
+      : geo(...p.size);
+    const m = new THREE.Mesh(g, mat(p.glow ? { color, emissive: p.glow, emissiveIntensity: p.glowI ?? 0.6 } : { color }));
+    m.position.set(...p.at);
+    if (p.rot) m.rotation.set(...p.rot);
+    m.castShadow = true;
+    parent.add(m);
   }
 }
 
@@ -115,7 +138,7 @@ export class CharacterView {
     const headMesh = new THREE.Mesh(geo(0.38, 0.4, 0.38), headMats);
     headMesh.castShadow = true;
     this.head.add(headMesh);
-    addHeadwear(this.head, look, faction);
+    buildParts(this.head, HEADWEAR[look.hat] || HEADWEAR.default, look);
     this.body.add(this.head);
 
     this.arms = [-1, 1].map(s => {
@@ -137,14 +160,7 @@ export class CharacterView {
     this.gun.position.set(0, -0.66, 0.02);
     this.arms[1].add(this.gun);
 
-    if (faction === 'brainRot') { // the iPad glow
-      const tab = part(0.24, 0.32, 0.03, mat({ color: '#222', emissive: '#7ff7ff', emissiveIntensity: 0.6 }), -0.5);
-      tab.position.z = -0.12; this.arms[0].add(tab);
-    }
-    if (faction === 'cloutStreamers') {
-      const phone = part(0.08, 0.15, 0.02, mat({ color: '#111', emissive: '#e8f4ff', emissiveIntensity: 0.5 }), -0.58);
-      phone.position.z = -0.1; this.arms[0].add(phone);
-    }
+    for (const p of PROPS[faction] || []) buildParts(this.arms[p.hand === 'L' ? 0 : 1], [p], look);
 
     // Team marker for friendlies; enemies get a red one only when snitched
     this.marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshBasicMaterial({ color: isLocalTeam ? '#29adff' : '#ff004d', depthTest: !isLocalTeam ? false : true }));

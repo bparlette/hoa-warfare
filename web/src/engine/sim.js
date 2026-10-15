@@ -1,4 +1,5 @@
-// Match simulation: movement, hitscan, melee, grenades, scoring, respawns, camping, bots.
+// Match simulation: movement, weapons (data/weapons.json), respawns, camping, bots.
+// Scoring and objectives belong to the active game mode (modes.js).
 // No three.js and no DOM, so the whole match can run headlessly in tests (see web/tests/sim.test.mjs).
 // The sim only emits gameplay events; barks.js turns them into voice lines and the renderer draws them.
 //
@@ -7,10 +8,20 @@
 
 import { CampingMonitor } from '../core/campingMonitor.js';
 import { buildCulDeSac, rayBox, rayGround, findPath, nearestNode } from './map.js';
+import { createMode, MODES } from './modes.js';
 
-export const WEAPON = { name: 'The Allowance', mag: 30, reload: 1.7, interval: 0.105, body: 24, head: 55, range: 90, falloffAt: 35, spread: 0.01 };
-export const MELEE = { name: 'The Participation Trophy', range: 2.1, damage: 100, cooldown: 0.9 };
-export const GRENADE = { name: 'The Lawsuit', fuse: 1.6, radius: 5, damage: 130, count: 2, speed: 15 };
+/** Resolve a named loadout from weapons.json into {primary, equipment, melee} definitions (with ids). */
+export function resolveLoadout(weapons, loadout = 'default') {
+  const slots = typeof loadout === 'string' ? weapons.loadouts[loadout] : loadout;
+  if (!slots) throw new Error(`unknown loadout ${loadout}`);
+  const out = {};
+  for (const [slot, id] of Object.entries(slots)) {
+    const w = weapons.weapons[id];
+    if (!w) throw new Error(`loadout ${JSON.stringify(slots)} references unknown weapon ${id}`);
+    out[slot] = { id, ...w };
+  }
+  return out;
+}
 
 export const BODY = { radius: 0.4, height: 1.8, eye: 1.6, hitRadius: 0.42, hitHeight: 1.42, headY: 1.62, headR: 0.25 };
 const STEP = 0.45, GRAVITY = 20, JUMP_V = 6.8, WALK = 5.2, SPRINT = 7.4, TRAMPOLINE_V = 12;
@@ -29,15 +40,18 @@ export function emptyInput() {
 
 export class Sim {
   /**
-   * @param {{rules:object, rng:()=>number, map?:object, scoreLimit?:number, timeLimit?:number}} o
-   * rules = hoa_content.json "rules" (camping tuning lives there)
+   * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number}} o
+   * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json
    */
-  constructor({ rules, rng, map = buildCulDeSac(), scoreLimit = 40, timeLimit = 300 }) {
+  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit }) {
+    if (!weapons) throw new Error('Sim needs weapons (data/weapons.json)');
     this.rules = rules;
+    this.weapons = weapons;
     this.rng = rng;
     this.map = map;
-    this.scoreLimit = scoreLimit;
-    this.timeLimit = timeLimit;
+    const defaults = MODES[mode]?.defaults || {};
+    this.scoreLimit = scoreLimit ?? defaults.scoreLimit ?? 40;
+    this.timeLimit = timeLimit ?? defaults.timeLimit ?? 300;
     this.time = 0;
     this.actors = [];
     this.byId = new Map();
@@ -47,14 +61,16 @@ export class Sim {
     this.over = false;
     this.winner = null;
     this.started = false;
+    this.mode = createMode(mode, this);
   }
 
-  addActor({ id, name, team, faction, isBot = true }) {
+  addActor({ id, name, team, faction, isBot = true, loadout = 'default' }) {
+    const weapons = resolveLoadout(this.weapons, loadout);
     const a = {
-      id, name, team, faction, isBot,
+      id, name, team, faction, isBot, weapons, triggerHeld: false,
       pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 }, yaw: 0, pitch: 0,
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
-      ammo: WEAPON.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: GRENADE.count,
+      ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
       onGround: true, kills: 0, deaths: 0, streak: 0, spawnProtectUntil: 0, lowHealthSaid: false,
       lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity,
       input: emptyInput(), camp: new CampingMonitor(this.rules.camping), campState: { state: 'ok', dwell: 0 },
@@ -71,7 +87,8 @@ export class Sim {
   start() {
     this.started = true;
     for (const a of this.actors) this.respawn(a);
-    this.emit({ type: 'roundStart' });
+    this.mode.onStart();
+    this.emit({ type: 'roundStart', mode: this.mode.constructor.id });
   }
 
   respawn(a) {
@@ -90,7 +107,7 @@ export class Sim {
     a.yaw = a.team === 0 ? 0 : Math.PI;
     a.pitch = 0;
     a.input.yaw = a.yaw; a.input.pitch = 0;
-    Object.assign(a, { hp: 100, alive: true, ammo: WEAPON.mag, reloadUntil: 0, grenades: GRENADE.count, streak: 0,
+    Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: a.weapons.equipment?.count ?? 0, streak: 0,
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
@@ -194,74 +211,81 @@ export class Sim {
   eye(a) { return { x: a.pos.x, y: a.pos.y + BODY.eye, z: a.pos.z }; }
 
   fire(a) {
-    const now = this.time;
+    const now = this.time, w = a.weapons.primary;
     if (now < a.nextShotAt || a.reloadUntil > 0) return;
+    if (!w.auto && a.triggerHeld && !a.isBot) return; // semi-auto: one shot per click
     if (a.ammo <= 0) { this.startReload(a); return; }
     a.ammo--;
-    a.nextShotAt = now + WEAPON.interval;
+    a.nextShotAt = now + w.intervalSec;
     a.firingUntil = now + 0.15;
     const moving = Math.hypot(a.vel.x, a.vel.z) > 1;
-    const spread = WEAPON.spread * (moving ? 1.8 : 1) * (a.onGround ? 1 : 3);
-    const yaw = a.yaw + gauss(this.rng) * spread, pitch = a.pitch + gauss(this.rng) * spread;
-    const o = this.eye(a), dir = forwardOf(yaw, pitch);
-    const hit = this.raycast(o, dir, WEAPON.range, a.id);
-    this.emit({ type: 'shot', id: a.id, from: o, to: hit.point, hitId: hit.actor?.id ?? null, head: hit.head, kind: hit.kind });
-    if (hit.actor && hit.actor.team !== a.team) {
-      let dmg = hit.head ? WEAPON.head : WEAPON.body;
-      if (hit.t > WEAPON.falloffAt) dmg *= 0.8;
-      this.damage(hit.actor, dmg, a, { headshot: hit.head, dir });
+    const spread = w.spread.base * (moving ? w.spread.moveMult : 1) * (a.onGround ? 1 : w.spread.airMult);
+    const o = this.eye(a);
+    for (let p = 0; p < (w.pellets || 1); p++) {
+      const yaw = a.yaw + gauss(this.rng) * spread, pitch = a.pitch + gauss(this.rng) * spread;
+      const dir = forwardOf(yaw, pitch);
+      const hit = this.raycast(o, dir, w.range, a.id);
+      this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? null, head: hit.head, kind: hit.kind });
+      if (hit.actor && hit.actor.team !== a.team) {
+        let dmg = hit.head ? w.damage.head : w.damage.body;
+        if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
+        this.damage(hit.actor, dmg, a, { headshot: hit.head, dir, weaponId: w.id });
+      }
     }
     if (a.ammo === 0) this.startReload(a);
   }
 
   startReload(a) {
-    if (a.reloadUntil > 0 || a.ammo >= WEAPON.mag) return;
-    a.reloadUntil = this.time + WEAPON.reload;
+    const w = a.weapons.primary;
+    if (a.reloadUntil > 0 || a.ammo >= w.mag) return;
+    a.reloadUntil = this.time + w.reloadSec;
     this.emit({ type: 'reload', id: a.id });
   }
 
   melee(a) {
-    const now = this.time;
-    if (now < a.nextMeleeAt) return;
-    a.nextMeleeAt = now + MELEE.cooldown;
+    const now = this.time, m = a.weapons.melee;
+    if (!m || now < a.nextMeleeAt) return;
+    a.nextMeleeAt = now + m.cooldownSec;
     a.meleeAt = now;
     this.emit({ type: 'swing', id: a.id });
     const f = forwardOf(a.yaw);
-    let best = null, bd = MELEE.range;
+    let best = null, bd = m.range;
     for (const e of this.actors) {
       if (!e.alive || e.team === a.team) continue;
       const dx = e.pos.x - a.pos.x, dz = e.pos.z - a.pos.z, dy = e.pos.y - a.pos.y;
       const d = Math.hypot(dx, dz);
       if (d > bd || Math.abs(dy) > 1.2) continue;
-      if ((dx * f.x + dz * f.z) / (d || 1) < 0.45) continue;
+      if ((dx * f.x + dz * f.z) / (d || 1) < m.coneDot) continue;
       best = e; bd = d;
     }
-    if (best) this.damage(best, MELEE.damage, a, { melee: true, dir: f });
+    if (best) this.damage(best, m.damage, a, { melee: true, dir: f, weaponId: m.id });
   }
 
   throwGrenade(a) {
-    if (a.grenades <= 0 || this.grenades.some(g => g.ownerId === a.id)) return;
+    const e = a.weapons.equipment;
+    if (!e || a.grenades <= 0 || this.grenades.some(g => g.ownerId === a.id)) return;
     a.grenades--;
+    const P = e.projectile;
     const d = forwardOf(a.yaw, a.pitch + 0.15);
     const o = this.eye(a);
     this.grenades.push({
-      ownerId: a.id, team: a.team, explodeAt: this.time + GRENADE.fuse,
+      ownerId: a.id, team: a.team, weaponId: e.id, def: P, explodeAt: this.time + P.fuseSec,
       pos: { x: o.x + d.x * 0.6, y: o.y + d.y * 0.6, z: o.z + d.z * 0.6 },
-      vel: { x: d.x * GRENADE.speed + a.vel.x, y: d.y * GRENADE.speed + 2, z: d.z * GRENADE.speed + a.vel.z },
+      vel: { x: d.x * P.speed + a.vel.x, y: d.y * P.speed + P.upBoost, z: d.z * P.speed + a.vel.z },
     });
     this.emit({ type: 'throw', id: a.id });
   }
 
   stepGrenades(dt) {
     for (const g of this.grenades) {
-      g.vel.y -= GRAVITY * dt;
+      g.vel.y -= g.def.gravity * dt;
       for (const axis of ['x', 'y', 'z']) {
         const prev = g.pos[axis];
         g.pos[axis] += g.vel[axis] * dt;
         const inside = this.map.boxes.some(b => g.pos.x > b.minX && g.pos.x < b.maxX && g.pos.y > b.minY && g.pos.y < b.maxY && g.pos.z > b.minZ && g.pos.z < b.maxZ);
         if (inside || (axis === 'y' && g.pos.y < 0.08)) {
           g.pos[axis] = axis === 'y' && g.pos.y < 0.08 && !inside ? 0.08 : prev;
-          g.vel[axis] *= -0.35;
+          g.vel[axis] *= -g.def.bounce;
           if (axis === 'y') { g.vel.x *= 0.6; g.vel.z *= 0.6; }
         }
       }
@@ -273,17 +297,17 @@ export class Sim {
       const owner = this.byId.get(g.ownerId);
       for (const e of this.actors) {
         if (!e.alive) continue;
-        if (e.team === g.team && e.id !== g.ownerId) continue;
+        if (e.id === g.ownerId ? !g.def.selfDamage : e.team === g.team && !g.def.friendlyDamage) continue;
         const c = { x: e.pos.x, y: e.pos.y + 0.9, z: e.pos.z };
         const d = Math.hypot(c.x - g.pos.x, c.y - g.pos.y, c.z - g.pos.z);
-        if (d >= GRENADE.radius) continue;
+        if (d >= g.def.radius) continue;
         const dir = { x: (c.x - g.pos.x) / (d || 1), y: 0.6, z: (c.z - g.pos.z) / (d || 1) };
-        this.damage(e, GRENADE.damage * (1 - d / GRENADE.radius), owner, { explosive: true, dir });
+        this.damage(e, g.def.damage * (1 - d / g.def.radius), owner, { explosive: true, dir, weaponId: g.weaponId });
       }
     }
   }
 
-  damage(target, amount, attacker, { headshot = false, melee = false, explosive = false, dir = null } = {}) {
+  damage(target, amount, attacker, { headshot = false, melee = false, explosive = false, dir = null, weaponId = null } = {}) {
     if (!target.alive || this.time < target.spawnProtectUntil || this.over) return;
     target.hp -= amount;
     target.lastHitBy = attacker?.id ?? null;
@@ -297,15 +321,23 @@ export class Sim {
     target.hp = 0;
     target.deaths++;
     target.deathAt = this.time;
-    target.respawnAt = this.time + (target.isBot ? 3 : 4.5);
+    target.respawnAt = this.time + this.mode.respawnDelay(target);
     target.streak = 0;
     const killer = attacker && attacker.id !== target.id ? attacker : null;
-    if (killer) { killer.kills++; killer.streak++; this.score[killer.team]++; }
-    this.emit({
-      type: 'kill', killerId: killer?.id ?? null, victimId: target.id, headshot, melee, explosive,
+    if (killer) { killer.kills++; killer.streak++; }
+    const ev = {
+      type: 'kill', killerId: killer?.id ?? null, victimId: target.id, headshot, melee, explosive, weaponId,
       dir: dir || { x: 0, y: 0, z: 0 }, victimPos: { ...target.pos }, killerPos: killer ? { ...killer.pos } : null,
-    });
-    if (killer && this.score[killer.team] >= this.scoreLimit) this.end(killer.team);
+    };
+    this.emit(ev);
+    this.mode.onKill(ev, killer, target);
+  }
+
+  /** Modes award points through here so the score limit is checked in one place. */
+  addScore(team, n = 1) {
+    if (this.over) return;
+    this.score[team] += n;
+    if (this.score[team] >= this.scoreLimit) this.end(team);
   }
 
   end(winner) {
@@ -324,19 +356,21 @@ export class Sim {
     for (const a of this.actors) {
       if (!a.alive) { if (now >= a.respawnAt) this.respawn(a); continue; }
       if (a.brain) this.think(a, dt);
-      if (a.reloadUntil > 0 && now >= a.reloadUntil) { a.reloadUntil = 0; a.ammo = WEAPON.mag; }
+      if (a.reloadUntil > 0 && now >= a.reloadUntil) { a.reloadUntil = 0; a.ammo = a.weapons.primary.mag; }
       this.move(a, dt);
       const inp = a.input;
       if (inp.reload) this.startReload(a);
       if (inp.fire) this.fire(a);
+      a.triggerHeld = inp.fire;
       if (inp.melee) this.melee(a);
       if (inp.grenade) this.throwGrenade(a);
       if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; }
-      const c = a.camp.update(now, dt, a.pos, { alive: a.alive });
+      const c = a.camp.update(now, dt, a.pos, { alive: a.alive, exempt: this.mode.campingExempt(a) });
       a.campState = c;
       if (c.state === 'snitch') { a.revealedUntil = now + 6; this.emit({ type: 'campingSnitch', id: a.id }); }
     }
     this.stepGrenades(dt);
+    this.mode.update(dt);
     if (now >= this.timeLimit) this.end(this.score[0] === this.score[1] ? null : this.score[0] > this.score[1] ? 0 : 1);
   }
 
@@ -385,6 +419,10 @@ export class Sim {
         b.target = null;
         b.path = null;
       }
+      if (!b.target) {
+        const g = this.mode.botGoal(a);
+        if (g && g !== b.objective && Math.hypot(g.x - a.pos.x, g.z - a.pos.z) < 18) { b.objective = g; b.path = null; b.lastKnown = null; }
+      }
       if (!b.target && !b.lastKnown) {
         const snitch = this.actors.find(e => e.alive && e.team !== a.team && e.revealedUntil > now);
         if (snitch) { b.lastKnown = { x: snitch.pos.x, z: snitch.pos.z }; b.path = null; }
@@ -403,6 +441,15 @@ export class Sim {
       if (now >= b.strafeUntil) { b.strafeDir = rng() < 0.5 ? -1 : 1; b.strafeUntil = now + 0.5 + rng() * 0.9; }
       inp.right = b.strafeDir * 0.8;
       inp.forward = d > 24 ? 0.7 : d < 5 ? -0.5 : 0;
+      // mid-fight, drift onto a nearby objective (e.g. a receipt) instead of pure strafing
+      const g = this.mode.botGoal(a);
+      if (g) {
+        const gx = g.x - a.pos.x, gz = g.z - a.pos.z, gd = Math.hypot(gx, gz);
+        if (gd < 7 && gd > 0.2) {
+          inp.forward = (gx * -Math.sin(a.yaw) + gz * -Math.cos(a.yaw)) / gd;
+          inp.right = (gx * Math.cos(a.yaw) + gz * -Math.sin(a.yaw)) / gd;
+        }
+      }
       if (d < 1.8) inp.melee = true;
       const aligned = Math.abs(wrap(wantYaw - a.yaw)) < 0.15;
       if (aligned && now >= b.reactAt && now - b.seenAt < 0.35) {
@@ -428,7 +475,9 @@ export class Sim {
       if (!b.path || b.pathIdx >= b.path.length) {
         const from = nearestNode(this.map.nodes, this.map.boxes, a.pos.x, a.pos.z);
         let goal;
+        const objective = b.objective || (rng() < 0.7 ? this.mode.botGoal(a) : null);
         if (b.lastKnown) { goal = nearestNode(this.map.nodes, this.map.boxes, b.lastKnown.x, b.lastKnown.z); b.lastKnown = null; }
+        else if (objective) { goal = nearestNode(this.map.nodes, this.map.boxes, objective.x, objective.z); b.objective = objective; }
         else {
           const nodes = this.map.nodes;
           const pool = rng() < 0.55 ? nodes.map((n, i) => i).filter(i => Math.abs(nodes[i].x) < 16 && Math.abs(nodes[i].z) < 22) : nodes.map((n, i) => i);
@@ -437,8 +486,17 @@ export class Sim {
         b.path = findPath(this.map.nodes, from, goal) || [goal];
         b.pathIdx = 0;
       }
-      const node = this.map.nodes[b.path[b.pathIdx]];
-      if (node) {
+      // last few metres to an objective (receipt, flag, zone centre) go straight at it
+      if (b.objective) {
+        const live = this.mode.botGoal(a);
+        b.objective = live && Math.hypot(live.x - b.objective.x, live.z - b.objective.z) < 0.1 ? live : null;
+      }
+      const near = b.objective && Math.hypot(b.objective.x - a.pos.x, b.objective.z - a.pos.z) < 8 ? b.objective : null;
+      const node = near || this.map.nodes[b.path[b.pathIdx]];
+      if (near) {
+        wantYaw = yawTo(near.x - a.pos.x, near.z - a.pos.z);
+        inp.forward = 1;
+      } else if (node) {
         const dx = node.x - a.pos.x, dz = node.z - a.pos.z;
         if (Math.hypot(dx, dz) < 1.3) b.pathIdx++;
         wantYaw = yawTo(dx, dz);
@@ -470,7 +528,7 @@ function newBrain(rng) {
 
 function resetBrain(b) {
   Object.assign(b, {
-    target: null, seenAt: 0, reactAt: 0, lastKnown: null, path: null, pathIdx: 0,
+    target: null, seenAt: 0, reactAt: 0, lastKnown: null, objective: null, path: null, pathIdx: 0,
     strafeDir: 1, strafeUntil: 0, burstLeft: 0, nextBurstAt: 0, errYaw: 0, errPitch: 0, aimHead: false,
     aimYaw: 0, aimPitch: 0, progressAt: 0, progressPos: { x: 0, z: 0 },
   });

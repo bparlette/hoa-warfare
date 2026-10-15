@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "notes": [
+    "Weapon definitions. sim.js reads ONLY this file for weapon behaviour; add a weapon by adding an entry, not code.",
+    "fire: 'hitscan' (instant rays, `pellets` per shot for shotguns), 'projectile' (thrown/launched, explodes), 'melee'.",
+    "Angles are radians. Spread is the gaussian sigma of the aim error per ray. Distances are metres, times seconds.",
+    "Hitboxes: body cylinder r=0.42 h=1.42, head sphere r=0.25 at 1.62 (sim.js BODY). Headshot = damage.head.",
+    "TTK sanity: body hits to kill = ceil(100 / damage.body). Keep ARs at 4-5, SMGs 5-6 at their faster interval.",
+    "The 8 launch weapons from the GDD: allowance (AR), sideHustle (SMG), divorceSettlement (shotgun), trustFund (sniper), subdivision (LMG), permit (pistol), lawsuit (launcher; here as thrown briefcase), participationTrophy (melee). Missing ones are TODO for the systems AI."
+  ],
+  "weapons": {
+    "allowance": {
+      "name": "The Allowance", "class": "ar", "slot": "primary", "fire": "hitscan", "auto": true,
+      "mag": 30, "reloadSec": 1.7, "intervalSec": 0.105, "pellets": 1,
+      "damage": { "body": 24, "head": 55 },
+      "range": 90, "falloff": { "startM": 35, "mult": 0.8 },
+      "spread": { "base": 0.01, "moveMult": 1.8, "airMult": 3 },
+      "recoil": { "viewKick": 0.12 },
+      "feedIcon": "🔫", "tracer": "faction", "viewmodel": "blaster"
+    },
+    "lawsuit": {
+      "name": "The Lawsuit", "class": "explosive", "slot": "equipment", "fire": "projectile", "count": 2,
+      "projectile": { "speed": 15, "upBoost": 2, "gravity": 20, "fuseSec": 1.6, "bounce": 0.35, "radius": 5, "damage": 130, "selfDamage": true, "friendlyDamage": false },
+      "feedIcon": "💼", "viewmodel": "briefcase"
+    },
+    "participationTrophy": {
+      "name": "The Participation Trophy", "class": "melee", "slot": "melee", "fire": "melee",
+      "range": 2.1, "damage": 100, "cooldownSec": 0.9, "coneDot": 0.45,
+      "feedIcon": "🏆", "viewmodel": "trophy"
+    }
+  },
+  "loadouts": {
+    "default": { "primary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" }
+  }
+}
