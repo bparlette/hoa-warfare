@@ -1149,14 +1149,15 @@
       <li><a href="#weapons">Arsenal</a></li>
       <li><a href="#soundboard">Comms</a></li>
       <li><a href="#controls">Controls</a></li>
-      <li><a href="web/" style="color: var(--accent-gold);">Play Web Slice &rarr;</a></li>
+      <li><a href="web/?demo=1" style="color: var(--accent-gold); font-weight: 700;">🟡 Play Demo</a></li>
+      <li><a href="web/" style="color: var(--accent-cyan); font-weight: 700;">🟢 Full Game (20 Factions) &rarr;</a></li>
     </ul>
   </div>
 </nav>
 
 <header class="hero">
   <div class="pill-badge">
-    <span class="status-dot"></span> PHASE 0 SURVEILLANCE FEED ACTIVE
+    <span class="status-dot"></span> LIVE ON GITHUB PAGES & BROWSER READY
   </div>
   <h1 class="hero-title">
     CALL OF KAREN:
@@ -1167,17 +1168,18 @@
   </p>
 
   <div class="hero-stats">
-    <div class="stat-pill">FACTIONS: <b>18 SUBURBAN TEAMS</b></div>
-    <div class="stat-pill">VOICE BARKS: <b>1,163 AUTHENTIC LINES</b></div>
-    <div class="stat-pill">ENGINE: <b>STANDALONE THREE.JS</b></div>
-    <div class="stat-pill">TEST SUITE: <b>39/39 GREEN</b></div>
+    <div class="stat-pill">FACTIONS: <b>20 SUBURBAN TEAMS</b></div>
+    <div class="stat-pill">VOICE BARKS: <b>1,618 AUTHENTIC LINES</b></div>
+    <div class="stat-pill">ENGINE: <b>STANDALONE THREE.JS (60 FPS)</b></div>
+    <div class="stat-pill">TEST SUITE: <b>114/114 GREEN</b></div>
   </div>
 
   <div class="hero-actions">
-    <a href="web/" class="btn btn-primary">🎮 LAUNCH WEB SLICE (6v6)</a>
-    <a href="web/?style=007" class="btn btn-secondary" style="border-color: #ffec27; color: #ffec27;">🍸 007 GOLDENEYE MODE</a>
-    <a href="web/shorts.html" class="btn btn-secondary">📱 YOUTUBE SHORTS HUB</a>
-    <a href="web/?lineup=1" class="btn btn-secondary">👥 FACTION ROSTER</a>
+    <a href="web/?demo=1" class="btn" style="background: #f59e0b; color: #0a0f1d; font-weight: 800; box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45);">🟡 PLAY FREE WEB DEMO (6 FACTIONS)</a>
+    <a href="web/" class="btn btn-primary">🟢 PLAY FULL GAME (ALL 20 FACTIONS)</a>
+    <a href="https://store.steampowered.com/app/hoa-warfare" class="btn btn-secondary" target="_blank" rel="noopener" style="border-color: #f59e0b; color: #f59e0b;">★ WISHLIST ON STEAM ($4.99)</a>
+    <a href="web/?style=007" class="btn btn-secondary">🍸 007 MODE</a>
+    <a href="web/shorts.html" class="btn btn-secondary">📱 SHORTS HUB</a>
     <a href="https://github.com/bparlette/hoa-warfare" class="btn btn-secondary" target="_blank" rel="noopener">⭐️ GITHUB REPO</a>
   </div>
 </header>
@@ -1549,13 +1551,44 @@
           <h2 class="section-title">Match Modes</h2>
           <p class="section-desc">Select an operational rule set to launch directly in your browser:</p>
         </div>
-        <div class="modes-list">
+          <a href="web/?demo=1" class="mode-row" style="border-left: 4px solid var(--accent-gold);">
+            <div>
+              <div class="mode-name" style="color: var(--accent-gold);">★ Free Web Demo (Itch / Browser)</div>
+              <div class="mode-desc">6 core factions unlocked with full tactical gunplay, camping snitch, and Steam wishlist CTA.</div>
+            </div>
+            <div class="mode-action" style="color: var(--accent-gold);">PLAY DEMO &rarr;</div>
+          </a>
+
           <a href="web/?mode=clash" class="mode-row">
             <div>
-              <div class="mode-name">Cul-de-Sac Clash</div>
+              <div class="mode-name">Cul-de-Sac Clash (TDM)</div>
               <div class="mode-desc">Standard 6v6 Team Deathmatch to 30 kills across the neighborhood.</div>
             </div>
             <div class="mode-action">LAUNCH 6v6 &rarr;</div>
+          </a>
+
+          <a href="web/?mode=patrol" class="mode-row">
+            <div>
+              <div class="mode-name">HOA Patrol (Domination)</div>
+              <div class="mode-desc">Capture and defend 3 key zones: Gazebo (A), Clubhouse (B), and Pool Patio (C).</div>
+            </div>
+            <div class="mode-action">HOA PATROL &rarr;</div>
+          </a>
+
+          <a href="web/?mode=casserole" class="mode-row">
+            <div>
+              <div class="mode-name">Steal the Casserole (CTF)</div>
+              <div class="mode-desc">Infiltrate the enemy cul-de-sac kitchen, grab their steaming dish, and sprint home.</div>
+            </div>
+            <div class="mode-action">CASSEROLE CTF &rarr;</div>
+          </a>
+
+          <a href="web/?mode=evict" class="mode-row">
+            <div>
+              <div class="mode-name">Evict the Block (Search & Destroy)</div>
+              <div class="mode-desc">One life per round. Attackers post the 35s eviction notice; defenders tear it down.</div>
+            </div>
+            <div class="mode-action">EVICT THE BLOCK &rarr;</div>
           </a>
 
           <a href="web/?mode=kotl" class="mode-row">
