@@ -34,17 +34,18 @@ const CAST = {
   theaterKids:    { voice: 'avocado_v2:vd2_r82_rep5k_0497_v068_28k_g5k', pitch: 1.30, rate: 1.25, gender: 'f' },
   cloutStreamers: { voice: 'avocado_v2:vdc_3944',                 pitch: 1.10, rate: 1.30, gender: 'm' },
   vcBros:         { voice: 'avocado_v2:qvd_01114',                 pitch: 0.95, rate: 1.30, gender: 'm' },
-  hoaDads:        { voice: 'avocado_v2:vdc_22255',                 pitch: 0.85, rate: 1.25, gender: 'm' },
   emoKids:        { voice: 'avocado_v2:vd_sinister_chalice',       pitch: 0.90, rate: 1.25, gender: 'm' },
   theGays:        { voice: 'avocado_v2:qvd_00262',                 pitch: 1.15, rate: 1.25, gender: 'm' },
   trumpers:       { voice: 'avocado_v2:vdc_13210',                 pitch: 0.80, rate: 1.25, gender: 'm' },
   wokeLibs:       { voice: 'avocado_v2:MAI_03',                    pitch: 1.10, rate: 1.25, gender: 'f' },
-  // tradwives placeholder voice: only its 3 rivalry-vs-wokeLibs lines are synthesized
-  // in the wokeLibs turn. Re-voice with a distinct voice when tradwives ships (T19).
-  tradwives:      { voice: 'avocado_v2:MAI_03',                    pitch: 1.20, rate: 1.25, gender: 'f' },
-  // PLACEHOLDER voices (T19 wave 1): recast with distinct catalog voices when available.
-  mlmHuns:        { voice: 'avocado_v2:MAI_03',                    pitch: 1.35, rate: 1.30, gender: 'f' },
-  pickleballRetirees: { voice: 'avocado_v2:vdc_22255',            pitch: 0.80, rate: 1.25, gender: 'm' },
+  // Shared voices differentiated by pace/pitch per character (Cherie 2026-10-15):
+  // same voice is fine — the pace makes them distinct.
+  tradwives:      { voice: 'avocado_v2:MAI_03',                    pitch: 1.05, rate: 1.00, gender: 'f' },
+  mlmHuns:        { voice: 'avocado_v2:MAI_03',                    pitch: 1.35, rate: 1.40, gender: 'f' },
+  pickleballRetirees: { voice: 'avocado_v2:vdc_22255',            pitch: 0.90, rate: 1.35, gender: 'm' },
+  hoaDads:        { voice: 'avocado_v2:vdc_22255',                 pitch: 0.85, rate: 1.15, gender: 'm' },
+  animeWeebs:     { voice: 'avocado_v2:qvd_00173',                 pitch: 1.50, rate: 1.40, gender: 'm' },
+  furries:        { voice: 'avocado_v2:qvd_00262',                 pitch: 1.40, rate: 1.30, gender: 'm' },
 };
 
 const TTS = '/opt/hatch/bin/tts';
