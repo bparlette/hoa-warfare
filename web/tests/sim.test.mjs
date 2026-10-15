@@ -332,3 +332,34 @@ test('sim - bullet flinch hitAgo, hitDir, and takeDamage tracking', async () => 
   assert.equal(a1.hitDir.x, 1);
 });
 
+
+test('spawn safety: never spawn in an enemy\'s sight within 25 m when a safe spawn exists (1,000 trials)', async () => {
+  const { SPAWN_SAFE_M } = await import('../src/engine/sim.js');
+  const rng = mulberry32(77);
+  const sim = new Sim({ rules: content.rules, weapons, rng });
+  const me = sim.addActor({ id: 'me', name: 'Me', team: 0, faction: 'karens', isBot: false });
+  const foes = [0, 1, 2, 3, 4, 5].map(i => sim.addActor({ id: 'f' + i, name: 'F' + i, team: 1, faction: 'fratHouse', isBot: false }));
+  sim.start();
+  const { bounds } = sim.map;
+  let checked = 0, exposedAvoidable = 0, allExposed = 0;
+  for (let trial = 0; trial < 1000; trial++) {
+    for (const f of foes) {
+      // enemies anywhere, biased toward our spawn area half the time (the spawn-camping case)
+      let x, z;
+      do {
+        x = bounds.minX + rng() * (bounds.maxX - bounds.minX);
+        z = rng() < 0.5 ? 20 + rng() * 27 : bounds.minZ + rng() * (bounds.maxZ - bounds.minZ);
+      } while (sim.blocked(x, z, 0));
+      Object.assign(f.pos, { x, y: 0, z });
+      f.alive = true;
+    }
+    const candidates = [...sim.map.spawns[0], ...sim.map.nodes.map(n => [n.x, n.z])];
+    const anySafe = candidates.some(p => { const x = sim.spawnThreat(0, p); return x.seenClose === 0 && x.near >= 15; });
+    const chosen = sim.pickSpawn(me);
+    const t = sim.spawnThreat(0, chosen);
+    if (anySafe) { checked++; if (t.seenClose > 0) exposedAvoidable++; }
+    else allExposed++;
+  }
+  assert.equal(exposedAvoidable, 0, `spawned in sight within ${SPAWN_SAFE_M} m although a safe spawn existed`);
+  assert.ok(allExposed < 20, `${allExposed}/1000 trials had nowhere safe to spawn`);
+});

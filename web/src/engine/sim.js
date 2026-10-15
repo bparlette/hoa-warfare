@@ -24,6 +24,7 @@ export function resolveLoadout(weapons, loadout = 'default') {
 }
 
 export const BODY = { radius: 0.4, height: 1.8, eye: 1.6, hitRadius: 0.42, hitHeight: 1.42, headY: 1.62, headR: 0.25 };
+export const SPAWN_SAFE_M = 25;
 const STEP = 0.45, GRAVITY = 20, JUMP_V = 6.8, WALK = 5.2, SPRINT = 7.4, TRAMPOLINE_V = 12;
 
 export function forwardOf(yaw, pitch = 0) {
@@ -101,17 +102,47 @@ export class Sim {
     this.emit({ type: 'roundStart', mode: this.mode.constructor.id });
   }
 
-  respawn(a) {
-    const pts = this.map.spawns[a.team];
-    const enemies = this.actors.filter(e => e.alive && e.team !== a.team);
-    let best = pts[0], bestScore = -Infinity;
-    for (const p of pts) {
-      let near = Infinity;
-      for (const e of enemies) near = Math.min(near, Math.hypot(e.pos.x - p[0], e.pos.z - p[1]));
-      const crowd = this.actors.filter(o => o.alive && o !== a && Math.hypot(o.pos.x - p[0], o.pos.z - p[1]) < 1).length;
-      const s = Math.min(near, 60) - crowd * 50 + this.rng() * 3;
-      if (s > bestScore) { bestScore = s; best = p; }
+  /**
+   * Spawn choice. Hard rule: never spawn where a living enemy within SPAWN_SAFE_M has line of sight,
+   * if any spawn avoids that. Then prefer spawns no enemy can see, far from enemies, not stacked.
+   */
+  spawnThreat(team, p) {
+    const chest = { x: p[0], y: 1.2, z: p[1] };
+    let near = Infinity, seenBy = 0, seenClose = 0;
+    for (const e of this.actors) {
+      if (!e.alive || e.team === team) continue;
+      const d = Math.hypot(e.pos.x - p[0], e.pos.z - p[1]);
+      near = Math.min(near, d);
+      if (d > 60 || !this.lineClear(this.eye(e), chest)) continue;
+      seenBy++;
+      if (d < SPAWN_SAFE_M) seenClose++;
     }
+    return { near, seenBy, seenClose };
+  }
+
+  pickSpawn(a) {
+    const score = p => {
+      const t = this.spawnThreat(a.team, p);
+      const crowd = this.actors.filter(o => o.alive && o !== a && Math.hypot(o.pos.x - p[0], o.pos.z - p[1]) < 1).length;
+      return { t, s: (t.seenClose ? -1000 : 0) - t.seenBy * 40 + Math.min(t.near, 60) - crowd * 50 + this.rng() * 3 };
+    };
+    let best = null, bestScore = -Infinity, safe = false;
+    for (const p of this.map.spawns[a.team]) {
+      const { t, s } = score(p);
+      if (s > bestScore) { bestScore = s; best = p; safe = t.seenClose === 0; }
+    }
+    if (safe) return best;
+    // Base is camped: fall back to any nav point no enemy can see up close and none is within 15 m of.
+    for (const n of this.map.nodes) {
+      const p = [n.x, n.z];
+      const { t, s } = score(p);
+      if (t.seenClose === 0 && t.near >= 15 && s > bestScore) { bestScore = s; best = p; safe = true; }
+    }
+    return best;
+  }
+
+  respawn(a) {
+    const best = this.pickSpawn(a);
     Object.assign(a.pos, { x: best[0], y: 0, z: best[1] });
     Object.assign(a.vel, { x: 0, y: 0, z: 0 });
     a.yaw = a.team === 0 ? 0 : Math.PI;
