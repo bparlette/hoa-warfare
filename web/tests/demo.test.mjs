@@ -56,7 +56,7 @@ function createMockDom() {
 // ------------------------------------------------------------------ 1. DEMO_FACTIONS tests
 
 test('DEMO_FACTIONS: contains exactly the 6 required factions', () => {
-  const expected = ['karens', 'hoaDads', 'vcBros', 'wokeLibs', 'rednecks', 'fratHouse'];
+  const expected = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
   assert.equal(DEMO_FACTIONS.length, 6, 'DEMO_FACTIONS must contain exactly 6 factions');
   assert.deepEqual([...DEMO_FACTIONS].sort(), [...expected].sort(), 'Must match required 6 demo factions');
   for (const id of expected) {
