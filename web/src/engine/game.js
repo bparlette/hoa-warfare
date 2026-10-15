@@ -705,12 +705,14 @@ function frame(t) {
 function showLineup() {
   $('menu').classList.add('hidden');
   const ids = Object.keys(factions);
-  ids.forEach((f, i) => {
-    const c = renderer.ensureCharacter({ id: 'lineup' + i, name: f, team: 0, faction: f }, 1);
-    c.update({ x: (i - (ids.length - 1) / 2) * 1.05, y: 0, z: 8, yaw: Math.PI, pitch: 0, speed: 0, alive: true, onGround: true }, 0.016);
-  });
-  renderer.camera.position.set(0, 1.3, 12.6);
-  renderer.camera.lookAt(0, 1.0, 8);
+  // two rows (shipping factions in front, drafts behind) so 25+ silhouettes fit on screen
+  const rows = [ids.filter(f => factions[f].status !== 'draft'), ids.filter(f => factions[f].status === 'draft')];
+  rows.forEach((row, r) => row.forEach((f, i) => {
+    const c = renderer.ensureCharacter({ id: 'lineup' + f, name: f, team: 0, faction: f }, 1);
+    c.update({ x: (i - (row.length - 1) / 2) * 1.05, y: 0, z: 8 - r * 2.4, yaw: Math.PI, pitch: 0, speed: 0, alive: true, onGround: true }, 0.016);
+  }));
+  renderer.camera.position.set(0, 4.2, 14.2);
+  renderer.camera.lookAt(0, 0.9, 6.8);
   renderer.viewmodel.visible = false;
   const loop = () => { renderer.render(); requestAnimationFrame(loop); };
   loop();

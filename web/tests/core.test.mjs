@@ -14,9 +14,22 @@ const content = JSON.parse(readFileSync(new URL('../../data/hoa_content.json', i
 const lib = (o) => new ContentLibrary(content, o);
 const dir = (l, f = 'karens', busy) => new BarkDirector({ library: l, faction: f, rng: mulberry32(1), isAnnouncerBusy: busy });
 
-test('content: every faction covers every required event', () => {
-  for (const [id, f] of Object.entries(content.factions))
+test('content: every shipping faction covers every required event', () => {
+  for (const [id, f] of Object.entries(content.factions)) {
+    if (f.status === 'draft') continue; // drafts are gated below; remove "status" when lines are complete
     for (const ev of content.requiredEvents) assert.ok(f.lines[ev]?.clean?.length, `${id} missing ${ev}`);
+  }
+});
+
+test('content: draft factions are complete briefs and never ship by accident', () => {
+  for (const [id, f] of Object.entries(content.factions)) {
+    if (f.status === undefined) continue;
+    assert.equal(f.status, 'draft', `${id}: only "draft" is a valid status`);
+    assert.ok(!f.phase0, `${id}: a draft cannot be a Phase 0 faction`);
+    assert.ok(f.name && f.tagline && f.look?.hat && f.voice?.gender, `${id}: needs name, tagline, look, voice`);
+    assert.ok(f.brief?.angle && f.brief.jokeMines?.length && f.brief.rivalsFirst?.length, `${id}: needs a writer brief`);
+    for (const r of f.brief.rivalsFirst) assert.ok(content.factions[r], `${id}: unknown rival ${r}`);
+  }
 });
 
 test('content: 1.8-second rule (lint estimate) on every line', () => {

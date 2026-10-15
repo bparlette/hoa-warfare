@@ -11,6 +11,27 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### ⛔ Blocked on the owner (do not extend until decided)
 - **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
 
+### T19: 11 new factions (owner-approved 2026-10-15) — status `draft` in `data/hoa_content.json`
+
+`wokeLibs` · `facebookBoomers` · `mlmHuns` · `furries` · `animeWeebs` · `crunchyMoms` · `tradwives` · `sovereignCitizens` · `discordMods` ("The Mods") · `pickleballRetirees` · `megachurchPastors`
+
+Each draft already has its name, tagline, colors, `look.hat` id, TTS voice and a writer **`brief`**: angle, joke mines, rivals to write first, and what to avoid. Drafts are **gated**: tests and lint skip their event coverage, bots and the menu never pick them, and `node tools/script_tools.mjs audit` shows progress (`DRAFT x/26 events`). **A faction ships when its `"status": "draft"` key is removed.** Tests then require all 26 events.
+
+Pipeline per faction (claim per faction, e.g. `T19-furries claimed by Muse`):
+
+| Step | Owner | Done when |
+|---|---|---|
+| 1. Lines: all 26 `requiredEvents`, clean + steam, `alt` for every brand, 2+ lines for kill/headshot/double; follow `brief.avoid` and the content rule in AGENTS.md | **Muse** | `audit` shows 26/26, 0 hard problems |
+| 2. Rivalries: both directions vs every faction in `brief.rivalsFirst` | **Muse** | `script_tools rivalry` shows those pairs |
+| 3. Look: `HEADWEAR[look.hat]` + signature `PROPS` + a face feature in `faceTex` (one shape readable at 30 m, e.g. tote bag, fursuit head and ears, cat-ear headband, baby wrap, headset mic) | **Sonnet** | `?lineup=1` back row: every draft reads at a glance, none uses the fallback hair |
+| 4. Remove `status`, run VO for that faction's new IDs only | **Muse** | `npm test` green with the faction shipping |
+| 5. Faction picker shows every shipping faction (not only Phase 0) with paging that works on touch and controller; bot rotation draws from all shipping factions | **Antigravity** | menu screenshot desktop + `MOBILE=1` |
+| 6. Matchmaking flavor: "rivalry of the week" (bias bot factions toward one featured pair) + per-faction balance check (no faction-specific stats; only cosmetics differ) | **Opus** | headless match test with a featured rivalry |
+| 7. Review every new faction's lines before it ships (dog-whistles, slurs, real names, trademarks, lines that only land as hate) | **Claude** | sign-off noted on the task line |
+
+Suggested order: **wokeLibs → facebookBoomers → mlmHuns** first (Woke Libs balance The Trumpers, which keeps "roasts everyone" credible), then pickleballRetirees, sovereignCitizens, tradwives, crunchyMoms, megachurchPastors, discordMods, animeWeebs, furries.
+Hard lines from the owner: no race or ethnicity factions, nothing sexual (furries stay SFW), religion through behavior only (megachurch business, not faith), and no real people's names.
+
 ### What I changed in this pass
 - **T18 Controller + phone/tablet touch (`web/src/engine/controls.js`) — done.** Keyboard/mouse, gamepad and touch now share one module. Fixed in T02:
   - controller-only (and touch) players were stuck on the pause screen forever, because play required mouse pointer lock;
@@ -33,28 +54,33 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### Next work, by agent
 
 **Claude (engineering lead)**
+- C0: T19 draft gate: done (tests, lint, audit, lineup rows). Step 7 content review for each faction as it ships.
 - C1: CI workflow (`.github/workflows/test.yml`): `npm test` + lint on every push.
 - C2: **Online multiplayer prototype.** `sim.js` is deterministic and headless, so run it authoritatively in a Node WebSocket server. Clients send inputs and receive snapshots, with client-side prediction for your own movement and interpolation for others; bots fill empty slots. This is the biggest gap between the slice and a real game.
 - C3: Performance budget for phones: shadow-map size by device, a frame-time HUD (`?perf=1`), and a 60 fps target on a mid-range phone.
 
 **Antigravity (presentation + modes)**
+- A0: **T19 step 5**: faction picker for every shipping faction (touch + controller friendly) and bot rotation beyond Phase 0.
 - A1: Split `game.js` (review note 1). No behaviour changes; tests and screenshots identical.
 - A2: **HOA Patrol** (Domination: pool, clubhouse, gazebo) and **Steal the Casserole** (CTF) on the `Mode` API in `modes.js`, each with a headless test like `receipt check` in `sim.test.mjs`.
 - A3: Killstreak 5 **Dad's Helicopter**: sim-side entity (hp, path, targets), shoot-down → `streakDestroyed` bark, plus the renderer view. Streak rewards hook into `MatchTracker.streakEarned`.
 - A4: Touch-friendly menus. Bigger hit targets in the faction picker and toggles; test with `MOBILE=1 node tools/shot.mjs`.
 
 **Opus (systems, bots, balance)**
+- O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
 - O1: Bot roles per mode (review note 2) and a difficulty setting (reaction time, aim sigma, burst length) exposed as `?bots=easy|normal|hard`.
 - O2: **Evict the Block** (Search & Destroy: one life, rounds, plant/defuse). It needs round structure in `sim.js` (round reset, no respawn, `mode.respawnDelay = Infinity`). Camping is exempt in this mode per the GDD.
 - O3: Spawn safety. Add line-of-sight to the spawn score in `Sim.respawn` (never spawn in an enemy's view within 25 m), with a test that runs 1,000 respawns.
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
 
 **Sonnet (weapons + factions in code)**
+- S0: **T19 step 3**: headwear, props and faces for all 11 new factions (same data-only approach as S3, which this replaces in priority).
 - S1: Weapon balance harness: `tools/ttk.mjs` prints time-to-kill at 5/15/30/60 m per weapon from `weapons.json`. Tune so no primary dominates every range. The sniper should not out-DPS the AR at 10 m.
 - S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
 - S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
 
 **Muse (content + audit)**
+- M0: **T19 steps 1, 2 and 4**, one faction at a time in the suggested order (this is now Muse's top priority).
 - M1: Rivalry lines. Missing Phase 0 pairs first (`node tools/script_tools.mjs rivalry`), then the rest. Currently 18+6 of 182 directional pairs.
 - M2: Fix the 28 thin pools in `node tools/script_tools.mjs audit` (2+ lines for kill/headshot/double in every faction).
 - M3: After the owner decides R1, apply it (retire lines with `{"retired": true}`; never delete IDs) and re-run the VO pipeline only for changed IDs.

@@ -16,7 +16,7 @@ if (cmd === 'lint') {
     if (s > max) { fails++; console.log(`TOO LONG ${s.toFixed(2)}s  ${r.id}  "${r.text}"`); }
   }
   for (const [id, f] of Object.entries(content.factions))
-    for (const ev of content.requiredEvents) if (!f.lines[ev]?.clean?.length) { fails++; console.log(`MISSING  ${id}.${ev}`); }
+    if (f.status !== 'draft') for (const ev of content.requiredEvents) if (!f.lines[ev]?.clean?.length) { fails++; console.log(`MISSING  ${id}.${ev}`); }
   const flagged = rows.filter(r => r.flag);
   console.log(`${rows.length} lines, ${flagged.length} legal-flagged, ${fails} problems`);
   process.exit(fails ? 1 : 0);
@@ -38,15 +38,21 @@ if (cmd === 'lint') {
     const s = estimateSeconds(r.text, wps);
     if (s > max) { hard++; console.log(`TOO LONG   ${s.toFixed(2)}s  ${r.id}  "${r.text}"`); }
   }
-  for (const [id, f] of Object.entries(content.factions))
+  for (const [id, f] of Object.entries(content.factions)) {
+    if (f.status === 'draft') {
+      const done = content.requiredEvents.filter(ev => f.lines[ev]?.clean?.length).length;
+      warn++; console.log(`DRAFT      ${id}: ${done}/${content.requiredEvents.length} events written (remove "status" when complete)`);
+      continue;
+    }
     for (const ev of content.requiredEvents) if (!f.lines[ev]?.clean?.length) { hard++; console.log(`MISSING    ${id}.${ev}`); }
+  }
   const hasAlt = new Set(rows.filter(r => r.variant === 'legal-alt').map(r => r.id.replace(/\.alt$/, '')));
   for (const r of rows.filter(r => r.variant === 'primary')) {
     const m = r.text.match(BRANDS);
     if (m && !hasAlt.has(r.id)) { warn++; console.log(`BRAND      ${r.id}  "${m[0]}" has no legal-safe alt  "${r.text}"`); }
   }
   for (const [id, f] of Object.entries(content.factions))
-    for (const ev of ['kill', 'headshot', 'double']) {
+    for (const ev of f.status === 'draft' ? [] : ['kill', 'headshot', 'double']) {
       const n = (f.lines[ev]?.clean || []).length;
       if (n < 2) { warn++; console.log(`THIN POOL  ${id}.${ev}.clean has ${n} line(s); players will hear repeats`); }
     }
