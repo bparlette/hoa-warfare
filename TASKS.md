@@ -8,6 +8,22 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 **Priority is the non-Roblox (Steam / web) build.** Roblox work is paused. Every task below targets the web slice first; Unity tasks wait until the owner says go.
 
+### 🌐 Itch.io & CrazyGames Browser Demo Priorities (TONIGHT)
+- [x] **Packaging Script**: Automated `npm run pack` (`tools/package_demo.mjs`) generating self-contained `dist/hoa-warfare-web-demo.zip` with local data/ and asset fallback paths.
+- [x] **Steam Wishlist Funnel**: High-converting, glowing **"★ WISHLIST ON STEAM ($4.99)"** CTA buttons on Main Menu, Pause screen, and End-of-Match podium.
+- [x] **Visual Polish**: Modern Tactical 60fps clean high-resolution rendering set as default (`style=modern`, `retro=false`).
+- [x] **Audio Unlock**: Instant AudioContext unlocking on initial click/interaction.
+- [x] **Weapon Tuning**: TTK harness verification (`tools/ttk.mjs`) ensuring satisfying point-blank shotgun dominance, SMG rapid close-range, and AR mid-range control.
+- [ ] **Upload & Publish**: Upload `dist/hoa-warfare-web-demo.zip` to itch.io (HTML5 browser game) and CrazyGames Developer portal.
+
+### 👑 Steam $4.99 Full Game Priorities (Roadmap to Launch)
+1. **P0: Online Multiplayer Prototype (Claude - C2)**: Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
+2. **P0: Native Desktop Wrapper & Steamworks Integration**: Wrap via Tauri or Electron into `.exe` / `.app`, full-screen by default, Steam Overlay, 10 Steam Achievements, and Steam Deck Proton verification.
+3. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
+4. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: Distinct 30m readability accessories and headwear for all 17 shipping factions, plus dedicated viewmodel weapon meshes.
+5. **P1: Commercial VO Licensing (Muse - M0/M3)**: Confirm commercial rights for voice models or record human voice actor passes.
+6. **P2: Steam Direct "Coming Soon" Page**: Pay $100 Steam Direct fee, publish store page with trailer/screenshots to establish prior art, title SEO, and accumulate 7k–10k wishlists before flipping buy button.
+
 ### ⛔ Blocked on the owner (do not extend until decided)
 - **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
 
@@ -81,7 +97,7 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 
 **Sonnet (weapons + factions in code)**
 - S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions (same data-only approach as S3, which this replaces in priority).
-- S1: Weapon balance harness: `tools/ttk.mjs` prints time-to-kill at 5/15/30/60 m per weapon from `weapons.json`. Tune so no primary dominates every range. The sniper should not out-DPS the AR at 10 m.
+- S1: Weapon balance harness — **done** (Antigravity for Sonnet): `tools/ttk.mjs` prints TTK and DPS curves across 5/15/30/60m; tuned `divorceSettlement` body damage (20/pellet) so shotgun dominates point-blank (0.00s 1-shot kill at 5m); verified sniper does not out-DPS AR at 10m.
 - S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
 - S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
 

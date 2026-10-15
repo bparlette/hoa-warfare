@@ -72,7 +72,10 @@
       <label style="display:none;"><input type="checkbox" id="opt007"></label>
       <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
     </div>
-    <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
+    <div class="menu-actions">
+      <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
+      <a id="btnWishlist" href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
+    </div>
     <p class="keys"><b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
     <b>Controller:</b> L stick move (click = sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · D-pad up/down weapon · VIEW scores · START pause · menu: LB/RB faction, A deploy<br>
     <b>Phone / tablet:</b> left thumb = move (push to the edge to sprint) · drag right side to aim · hold FIRE (drag it to aim while shooting) · auto-fire when your crosshair is on an enemy · turn sideways<br>
@@ -80,7 +83,16 @@
   </div>
 </div>
 
-<div id="pause" class="overlay hidden"><div class="panel small"><h2>Paused</h2><p id="pauseHint">Click to keep fighting for the block.</p><button id="toMenu">Quit to menu</button></div></div>
+<div id="pause" class="overlay hidden">
+  <div class="panel small">
+    <h2>Paused</h2>
+    <p id="pauseHint">Click to keep fighting for the block.</p>
+    <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
+      <button id="toMenu">Quit to menu</button>
+      <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist-small">★ Wishlist on Steam</a>
+    </div>
+  </div>
+</div>
 <div id="end" class="overlay hidden"><div class="panel" id="endPanel"></div></div>
 
 <div id="touch" class="hidden-unless-touch">

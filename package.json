@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test web/tests/*.test.mjs",
     "serve": "node tools/serve.mjs",
-    "lint": "node tools/script_tools.mjs lint"
+    "lint": "node tools/script_tools.mjs lint",
+    "pack": "node tools/package_demo.mjs"
   }
 }

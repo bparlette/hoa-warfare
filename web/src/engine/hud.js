@@ -219,7 +219,11 @@ export class Hud {
         <div><b>Bottom fragger: ${worst.name}</b><br>${this.factions[worst.faction].name}<q>${worst.name} went ${worst.kills}-and-${worst.deaths}. Participation trophy's in the mail.</q></div>
       </div>
       <div id="endBoard" style="margin-top:12px"></div>
-      <button id="again">RUN IT BACK</button> <button id="endMenu">MENU</button>`;
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px">
+        <button id="again" style="margin-top:0">RUN IT BACK</button>
+        <button id="endMenu" style="margin-top:0">MENU</button>
+        <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>
+      </div>`;
     this.renderBoard($('endBoard'), sim, me);
     $('end').classList.remove('hidden');
     $('again').onclick = () => onAgain();

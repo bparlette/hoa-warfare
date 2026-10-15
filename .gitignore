@@ -5,3 +5,5 @@ dist/*.png
 dist/*.mp4
 dist/*.webm
 dist/shorts/
+dist/demo/
+dist/*.zip

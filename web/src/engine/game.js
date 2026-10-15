@@ -26,7 +26,20 @@ const params = new URLSearchParams(location.search);
 const FIXED = 1 / 60;
 const KILLCAM_SEC = 3.2;
 
-const [content, weaponsData] = await Promise.all(['../data/hoa_content.json', '../data/weapons.json'].map(async u => (await fetch(u)).json()));
+async function loadJson(path) {
+  try {
+    const res = await fetch(path);
+    if (res.ok) return await res.json();
+  } catch {}
+  const alt = path.startsWith('../') ? path.slice(3) : '../' + path;
+  const res2 = await fetch(alt);
+  return await res2.json();
+}
+
+const [content, weaponsData] = await Promise.all([
+  loadJson('../data/hoa_content.json'),
+  loadJson('../data/weapons.json'),
+]);
 const factions = content.factions;
 const shippingFactions = Object.keys(factions).filter(id => !factions[id].status || factions[id].status !== 'draft');
 
@@ -34,7 +47,7 @@ const state = {
   faction: params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens',
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
   legalSafe: params.get('legal') !== '0',
-  retro: params.get('retro') !== '0',
+  retro: params.get('retro') === '1',
   style: getInitialStyle(params),
   get style007() { return this.style === '007'; },
   set style007(v) { this.style = v ? '007' : 'modern'; },

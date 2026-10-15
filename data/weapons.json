@@ -29,8 +29,8 @@
     },
     "divorceSettlement": {
       "name": "The Divorce Settlement", "class": "shotgun", "slot": "primary", "fire": "hitscan", "auto": false,
-      "mag": 6, "reloadSec": 2.2, "intervalSec": 0.72, "pellets": 8,
-      "damage": { "body": 14, "head": 22 },
+      "mag": 6, "reloadSec": 2.2, "intervalSec": 0.75, "pellets": 8,
+      "damage": { "body": 20, "head": 32 },
       "range": 35, "falloff": { "startM": 10, "mult": 0.4 },
       "spread": { "base": 0.055, "moveMult": 1.25, "airMult": 1.8 },
       "recoil": { "viewKick": 0.28 },
