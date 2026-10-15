@@ -64,6 +64,29 @@ funnel.wireSteamLinks();
 const factions = content.factions;
 const shippingFactions = Object.keys(factions).filter(id => !factions[id].status || factions[id].status !== 'draft');
 
+export const FACTION_METADATA = {
+  karens: { icon: '💇‍♀️', role: 'TACTICAL ENFORCER', gear: 'Violation Megaphone', nemesis: 'VC / Finance Bros', quote: '"I want to speak to the PRESIDENT of this cul-de-sac!"', voLine: 'karens.roundStart.c.0' },
+  hoaDads: { icon: '📋', role: 'LAWN COMMANDER', gear: 'Grass Measuring Tape', nemesis: 'The Furries', quote: '"Grass is measuring 2.8 inches. Acceptable. Move out."', voLine: 'hoaDads.roundStart.c.0' },
+  tradwives: { icon: '🍞', role: 'HOMESTEAD HEAVY', gear: 'Sourdough Bread Basket', nemesis: 'The Woke Libs', quote: '"My sourdough starter has been alive longer than your KD ratio."', voLine: 'tradwives.roundStart.c.0' },
+  furries: { icon: '🦊', role: 'MASCOT BRAWLER', gear: 'Oversized Fluffy Tail', nemesis: 'HOA Dads', quote: '"OwO what\'s this? A tactical engagement?!"', voLine: 'furries.roundStart.c.0' },
+  pickleballRetirees: { icon: '🏓', role: 'KITCHEN SNIPER', gear: 'Graphite Paddle & Visor', nemesis: 'Frat House', quote: '"Dink it into the kitchen, boys!"', voLine: 'pickleballRetirees.roundStart.c.0' },
+  trumpers: { icon: '🧢', role: 'RALLY CAPTAIN', gear: 'Golden Megaphone', nemesis: 'The Woke Libs', quote: '"Nobody defends a cul-de-sac like me, folks."', voLine: 'trumpers.roundStart.c.0' },
+  vcBros: { icon: '📈', role: 'DISRUPTOR', gear: 'Patagonia Fleece & AirPods', nemesis: 'The Karens', quote: '"Pre-revenue, pre-product, post-up on the cul-de-sac."', voLine: 'vcBros.roundStart.c.0' },
+  wokeLibs: { icon: '☕', role: 'ORGANIZER', gear: 'Organic Canvas Tote Bag', nemesis: 'The Trumpers', quote: '"Your lawn violates three city carbon ordinances!"', voLine: 'wokeLibs.roundStart.c.0' },
+  rednecks: { icon: '🚚', role: 'FRONT-YARD GUNNER', gear: 'Fringe Trucker Cap', nemesis: 'The Woke Libs', quote: '"I do not create joinder with this HOA!"', voLine: 'rednecks.roundStart.c.0' },
+  fratHouse: { icon: '🍺', role: 'RUSHER', gear: 'Red Solo Cup & Zyn', nemesis: 'Pickleball Retirees', quote: '"Rush week is OVER for you!"', voLine: 'fratHouse.roundStart.c.0' },
+  gymRats: { icon: '💪', role: 'TANK BRUTE', gear: 'Frosted Protein Shaker', nemesis: 'The Weeb Mods', quote: '"Chest day is every day. No excuses!"', voLine: 'gymRats.roundStart.c.0' },
+  mlmHuns: { icon: '✨', role: 'PYRAMID STRATEGIST', gear: '40oz Stanley Tumbler', nemesis: 'The Karens', quote: '"Hey boss babe! Ready to invest in defeat?"', voLine: 'mlmHuns.roundStart.c.0' },
+  animeWeebs: { icon: '⚔️', role: 'MALL NINJA MOD', gear: 'Heavy Ban-Hammer & Katana', nemesis: 'Gym Rats', quote: '"While you cut grass, I studied the blade."', voLine: 'animeWeebs.roundStart.c.0' },
+  cloutStreamers: { icon: '📱', role: 'CONTENT SNIPER', gear: 'LED Ring Light & Tripod', nemesis: 'Old Money', quote: '"Chat, are we clipping this 360 citation?!"', voLine: 'cloutStreamers.roundStart.c.0' },
+  oldMoney: { icon: '🏛️', role: 'ESTATE OVERSEER', gear: 'Cashmere Wrap & Cane', nemesis: 'Clout Streamers', quote: '"Our family founded this cul-de-sac in 1842."', voLine: 'oldMoney.roundStart.c.0' },
+  valleyGirls: { icon: '🛍️', role: 'SOCIALITE ASSAULT', gear: 'Iced Oat Latte & Scrunchie', nemesis: 'Emo Kids', quote: '"Like, literally get evicted right now."', voLine: 'valleyGirls.roundStart.c.0' },
+  theGays: { icon: '💅', role: 'AESTHETIC VANGUARD', gear: 'Designer Shades & Pastels', nemesis: 'The Trumpers', quote: '"Your property values are simply unlivable, darling."', voLine: 'theGays.roundStart.c.0' },
+  brainRot: { icon: '💀', role: 'SKIBIDI CHAOS', gear: 'Noise-Canceling Cans', nemesis: 'HOA Dads', quote: '"Zero fanum tax on this cul-de-sac, unc."', voLine: 'brainRot.roundStart.c.0' },
+  theaterKids: { icon: '🎭', role: 'DRAMA BOMBARDIER', gear: 'Black Beret & Masks', nemesis: 'Valley Girls', quote: '"This whole neighborhood is my opening act!"', voLine: 'theaterKids.roundStart.c.0' },
+  emoKids: { icon: '🖤', role: 'ANGST SHADOW', gear: 'Studded Belt & Eyeliner', nemesis: 'Valley Girls', quote: '"Nobody understands the pain of this cul-de-sac."', voLine: 'emoKids.roundStart.c.0' },
+};
+
 const initialFaction = params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens';
 const state = {
   faction: isDemo && !DEMO_FACTIONS.includes(initialFaction) ? 'karens' : initialFaction,
@@ -154,14 +177,40 @@ export function buildMenu() {
       const f = factions[id];
       const el = document.createElement('div');
       const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
+      const meta = FACTION_METADATA[id] || { icon: '🎖️', role: 'OPERATIVE', gear: f.tagline, nemesis: 'Cul-de-Sac', quote: f.tagline };
 
       if (isLocked) {
         el.className = 'fc locked';
-        el.innerHTML = `<div class="sw"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.pants}"></i><i style="background:${f.look.accent}"></i></div><b>${f.name}</b><span>${f.tagline}</span><span class="demo-lock">🔒 STEAM ONLY</span>`;
+        el.innerHTML = `
+          <div class="fc-badge" style="border-color:${f.look.accent};">
+            <span class="fc-icon">${meta.icon}</span>
+            <div class="fc-pip"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.accent}"></i></div>
+          </div>
+          <div class="fc-info">
+            <div class="fc-name-row">
+              <b class="fc-name">${f.name}</b>
+              <span class="fc-role" style="color:${f.look.accent};">[${meta.role}]</span>
+            </div>
+            <div class="fc-gear">🎒 ${meta.gear}</div>
+            <span class="demo-lock">🔒 STEAM ONLY</span>
+          </div>
+        `;
         el.onclick = () => showDemoModal(f.name, f.tagline);
       } else {
         el.className = 'fc' + (id === state.faction ? ' sel' : '');
-        el.innerHTML = `<div class="sw"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.pants}"></i><i style="background:${f.look.accent}"></i></div><b>${f.name}</b><span>${f.tagline}</span>`;
+        el.innerHTML = `
+          <div class="fc-badge" style="border-color:${f.look.accent};">
+            <span class="fc-icon">${meta.icon}</span>
+            <div class="fc-pip"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.accent}"></i></div>
+          </div>
+          <div class="fc-info">
+            <div class="fc-name-row">
+              <b class="fc-name">${f.name}</b>
+              <span class="fc-role" style="color:${f.look.accent};">[${meta.role}]</span>
+            </div>
+            <div class="fc-gear">🎒 ${meta.gear}</div>
+          </div>
+        `;
         el.onclick = () => { state.faction = id; buildMenu(); };
       }
       box.appendChild(el);
@@ -182,6 +231,72 @@ export function buildMenu() {
   }
 
   renderPage();
+
+  const dossier = $('heroDossier');
+  if (dossier) {
+    const selF = factions[state.faction] || factions.karens;
+    const selMeta = FACTION_METADATA[state.faction] || FACTION_METADATA.karens;
+    const isLocked = demoActive && !DEMO_FACTIONS.includes(state.faction);
+    dossier.innerHTML = `
+      <div class="dossier-card" style="border-color:${selF.look.accent};">
+        <div class="dossier-top">
+          <div class="dossier-avatar" style="border-color:${selF.look.accent};">
+            <span class="dossier-big-icon">${selMeta.icon}</span>
+          </div>
+          <div class="dossier-titles">
+            <div class="dossier-role-pill" style="color:${selF.look.accent};">[ ${selMeta.role} ]</div>
+            <h2 class="dossier-title">${selF.name}</h2>
+            <div class="dossier-tagline">${selF.tagline}</div>
+          </div>
+        </div>
+
+        <div class="dossier-balloon">
+          <div class="balloon-lbl">BATTLE CRY</div>
+          <div class="balloon-text">${selMeta.quote}</div>
+          <button type="button" id="btnHearCry" class="btn-battle-cry">🔊 HEAR BATTLE CRY</button>
+        </div>
+
+        <div class="dossier-stats-grid">
+          <div class="dossier-cell">
+            <span class="cell-label">SIGNATURE TOOL</span>
+            <span class="cell-val">🎒 ${selMeta.gear}</span>
+          </div>
+          <div class="dossier-cell">
+            <span class="cell-label">ARCH-NEMESIS</span>
+            <span class="cell-val cell-nemesis">⚔️ vs ${selMeta.nemesis}</span>
+          </div>
+          <div class="dossier-cell full">
+            <span class="cell-label">DEFAULT LOADOUT</span>
+            <span class="cell-val">🔫 The Allowance (AR) · 🗡️ Trophy · 💣 Lawsuit x2</span>
+          </div>
+        </div>
+
+        <div class="dossier-action">
+          ${isLocked ? `
+            <button type="button" id="deploy" class="btn-deploy btn-locked">🔒 LOCKED IN DEMO (WISHLIST ON STEAM)</button>
+          ` : `
+            <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY AS ${selF.name.toUpperCase()}</button>
+          `}
+        </div>
+      </div>
+    `;
+    const cryBtn = $('btnHearCry');
+    if (cryBtn) {
+      cryBtn.onclick = (e) => {
+        e.stopPropagation();
+        sfx.tone({ type: 'sine', f0: 440, f1: 880, dur: 0.05, vol: 0.1 });
+        voice.say({ text: selMeta.quote, lineId: selMeta.voLine, faction: state.faction, priority: 9, force: true });
+      };
+    }
+    const depBtn = $('deploy');
+    if (depBtn) {
+      if (isLocked) {
+        depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
+      } else {
+        depBtn.onclick = () => startGame();
+      }
+    }
+  }
 
   if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
   if ($('optLegal')) $('optLegal').checked = state.legalSafe;

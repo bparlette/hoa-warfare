@@ -60,36 +60,43 @@
 <canvas id="gunbarrel" class="hidden"></canvas>
 
 <div id="menu" class="overlay">
-  <div class="panel">
-    <div class="menu-top">
-      <div class="logo-wrap">
+  <div class="lobby-container">
+    <!-- TOP HEADER -->
+    <header class="lobby-header">
+      <div class="lobby-brand">
         <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="main-logo" width="380" height="201">
         <h1 class="sr-only">CALL OF KAREN: HOA WARFARE</h1>
+        <p class="tag">The Satirical Suburban FPS · 6v6 Cul-de-Sac Combat</p>
       </div>
-      <p class="tag">The game that roasts everyone (including you). Free demo: 6 factions, 6v6 with bots, plays right in your browser.</p>
-    </div>
+      <div class="lobby-quick-bar">
+        <div class="lobby-mode-select">
+          <label for="optMode">MODE:</label>
+          <select id="optMode"></select>
+        </div>
+        <a id="btnWishlist" data-steam="menu" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist btn-wishlist-compact">★ WISHLIST ON STEAM ($4.99)</a>
+      </div>
+    </header>
 
-    <!-- PRIMARY PLAY ACTIONS - INSTANTLY ACCESSIBLE AT TOP -->
-    <div class="menu-actions primary-actions">
-      <button id="deploy" class="btn-deploy">▶ DEPLOY TO THE CUL-DE-SAC</button>
-      <a id="btnWishlist" data-steam="menu" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
-    </div>
+    <!-- MAIN LOBBY SPLIT -->
+    <div class="lobby-main">
+      <!-- LEFT: FACTION ROSTER -->
+      <section class="lobby-roster">
+        <div class="faction-header">
+          <h2>PICK YOUR FACTION</h2>
+          <div id="factionPagination" class="faction-pagination"></div>
+        </div>
+        <div id="factions"></div>
+      </section>
 
-    <div class="faction-header">
-      <h2>Pick your faction</h2>
-      <div id="factionPagination" class="faction-pagination"></div>
+      <!-- RIGHT: HERO DOSSIER -->
+      <aside class="lobby-dossier" id="heroDossier"></aside>
     </div>
-    <div id="factions"></div>
 
     <!-- COLLAPSED SETTINGS & CONTROLS ACCORDION -->
     <details id="menuSettings" class="menu-settings">
-      <summary class="settings-summary">⚙️ Settings, Game Modes & Controls</summary>
+      <summary class="settings-summary">⚙️ Settings, Visual Styles & Controls Reference</summary>
       <div class="settings-drawer">
         <div class="settings-grid">
-          <div class="settings-block">
-            <h3>Mode</h3>
-            <select id="optMode"></select>
-          </div>
           <div class="settings-block">
             <h3>Visual Style</h3>
             <select id="optStyle">
@@ -101,15 +108,16 @@
               <option value="gameboy">🕹️ Game Boy 1989 (DMG-01 4-Shade LCD)</option>
             </select>
           </div>
-        </div>
-
-        <h3>Build & Audio Options</h3>
-        <div class="toggles">
-          <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
-          <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
-          <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
-          <label style="display:none;"><input type="checkbox" id="opt007"></label>
-          <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
+          <div class="settings-block">
+            <h3>Build & Audio Options</h3>
+            <div class="toggles">
+              <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
+              <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
+              <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
+              <label style="display:none;"><input type="checkbox" id="opt007"></label>
+              <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
+            </div>
+          </div>
         </div>
 
         <h3>Controls Reference</h3>
