@@ -102,12 +102,22 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - S3: Silhouette pass for the 8 non-Phase-0 factions — **done** (Sonnet): all 20 factions now resolve to distinct, non-default `HEADWEAR` and signature `PROPS` with custom attachment targets.
 
 **Muse (content + audit)**
-- M0: **T19 steps 1, 2 and 4** (Muse's top priority). `T19-wokeLibs done (2026-10-15)`. `T19 wave 1 done by Muse (2026-10-15)` — hoaDads Boomer append (52 lines), mlmHuns NEW faction shipping (26 events), rednecks sovereign append (52 lines), pickleballRetirees NEW faction shipping (26 events); 28 rivalry pairs; 360 VO files; 54/54 tests, lint/audit 0 hard problems. NOTE: Claude step-7 content reviews pending for all new content. Placeholder voices: tradwives (MAI_03@1.2), mlmHuns (MAI_03@1.35), pickleballRetirees (vdc_22255@0.8) — recast with distinct catalog voices when available.
-- M1: Rivalry lines. Missing Phase 0 pairs first (`node tools/script_tools.mjs rivalry`), then the rest. Currently 18+6 of 182 directional pairs.
-- M2: Fix the 28 thin pools in `node tools/script_tools.mjs audit` (2+ lines for kill/headshot/double in every faction).
-- M3: After the owner decides R1, apply it (retire lines with `{"retired": true}`; never delete IDs) and re-run the VO pipeline only for changed IDs.
-- M4: Monthly brain-rot patch format: a `data/patches/YYYY-MM.json` overlay merged by `ContentLibrary`. Spec the schema here first and Claude or Antigravity will wire it.
-- Unity tasks T10/T15/T17 are **on hold** until the owner greenlights a Unity build; maps T12/T16 moved to Opus (O4).
+- M0: **T19 Wave 2 — Ship Final 3 Factions** (Top Priority):
+  - In `data/hoa_content.json`, complete all 26 required events for `tradwives`, `animeWeebs` (The Weeb Mods), and `furries` following their writer briefs.
+  - Add initial priority rivalry pairs (`tradwives` vs `wokeLibs`, `animeWeebs` vs `gymRats`, `furries` vs `hoaDads`).
+  - Run `tools/vo_synth.mjs` to generate audio for new IDs and update `web/vo/manifest.json`.
+  - Remove `"status": "draft"` so the full 20-faction roster is unlocked for Steam!
+- M1: **Legal-Safe Brand Alt Swaps** (Fix 4 audit warnings):
+  - In `data/hoa_content.json`, provide clean `alt` lines without brand names for:
+    - `rivalry.wokeLibs-hoaDads.c.0` ("Minion" → e.g. "yellow cartoon")
+    - `rivalry.wokeLibs-hoaDads.s.0` ("Facebook" → e.g. "boomer group")
+    - `rivalry.rednecks-wokeLibs.s.0` ("Prius" → e.g. "battery buggy")
+    - `rivalry.pickleballRetirees-hoaDads.c.0` ("Minion" → e.g. "yellow cartoon meme")
+- M2: **Fix 24 Thin Pools** (`node tools/script_tools.mjs audit`):
+  - Add a 2nd line for `headshot` and `double` across Phase 0 factions to eliminate immediate repetition.
+- M3: **Storefront & Demo Pitch Copy** (`docs/launch/store-copy.md`):
+  - Polish Steam capsule copy, trailer script, and demo lock-out CTA ("Unlock all 20 factions for $4.99 on Steam").
+- M4: **Monthly Brain-Rot Patch Schema**: Spec JSON format for `data/patches/YYYY-MM.json`.
 
 ---
 
