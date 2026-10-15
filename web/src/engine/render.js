@@ -237,16 +237,88 @@ export class Renderer {
   buildViewmodel() {
     const vm = new THREE.Group();
     const lam = (c, e) => new THREE.MeshLambertMaterial({ color: c, emissive: e || '#000', emissiveIntensity: e ? 0.4 : 0 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.11, 0.5), lam('#29adff'));
-    const top = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.3), lam('#ffec27'));
-    top.position.set(0, 0.08, 0.02);
-    const tip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.06), lam('#ff6c24', '#ff6c24'));
-    tip.position.z = -0.27;
-    const grip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.07), lam('#1d2b53'));
-    grip.position.set(0, -0.1, 0.13); grip.rotation.x = 0.3;
-    const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.1, 8), lam('#ff77a8'));
-    drum.rotation.z = Math.PI / 2; drum.position.set(0, -0.02, -0.08);
-    vm.add(body, top, tip, grip, drum);
+    this.vmMeshes = {};
+
+    // 1. Blaster / AR (The Allowance)
+    const blaster = new THREE.Group();
+    const bBody = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.11, 0.5), lam('#29adff'));
+    const bTop = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.3), lam('#ffec27'));
+    bTop.position.set(0, 0.08, 0.02);
+    const bTip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.06), lam('#ff6c24', '#ff6c24'));
+    bTip.position.z = -0.27;
+    const bGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.07), lam('#1d2b53'));
+    bGrip.position.set(0, -0.1, 0.13); bGrip.rotation.x = 0.3;
+    const bDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.1, 8), lam('#ff77a8'));
+    bDrum.rotation.z = Math.PI / 2; bDrum.position.set(0, -0.02, -0.08);
+    blaster.add(bBody, bTop, bTip, bGrip, bDrum);
+    this.vmMeshes.blaster = blaster;
+
+    // 2. SMG (The Side Hustle)
+    const smg = new THREE.Group();
+    const sBody = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.34), lam('#008751'));
+    const sMag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.18, 0.06), lam('#ab5236'));
+    sMag.position.set(0, -0.11, -0.04); sMag.rotation.x = 0.2;
+    const sGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.12, 0.06), lam('#1d2b53'));
+    sGrip.position.set(0, -0.09, 0.11); sGrip.rotation.x = 0.35;
+    const sComp = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, 8), lam('#00e436', '#00e436'));
+    sComp.rotation.x = Math.PI / 2; sComp.position.z = -0.2;
+    smg.add(sBody, sMag, sGrip, sComp);
+    smg.visible = false;
+    this.vmMeshes.smg = smg;
+
+    // 3. Shotgun (The Divorce Settlement)
+    const shotgun = new THREE.Group();
+    const shBarL = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.52, 8), lam('#5f574f'));
+    shBarL.rotation.x = Math.PI / 2; shBarL.position.set(-0.035, 0.03, -0.12);
+    const shBarR = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.52, 8), lam('#5f574f'));
+    shBarR.rotation.x = Math.PI / 2; shBarR.position.set(0.035, 0.03, -0.12);
+    const shPump = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.18), lam('#8a4820'));
+    shPump.position.set(0, -0.02, -0.12);
+    const shStock = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.26), lam('#8a4820'));
+    shStock.position.set(0, -0.06, 0.18); shStock.rotation.x = -0.15;
+    shotgun.add(shBarL, shBarR, shPump, shStock);
+    shotgun.visible = false;
+    this.vmMeshes.shotgun = shotgun;
+
+    // 4. Sniper (The Trust Fund)
+    const sniper = new THREE.Group();
+    const snBar = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.022, 0.75, 8), lam('#1d2b53'));
+    snBar.rotation.x = Math.PI / 2; snBar.position.set(0, 0.02, -0.22);
+    const snScope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.32, 10), lam('#29adff', '#1d2b53'));
+    snScope.rotation.x = Math.PI / 2; snScope.position.set(0, 0.1, 0.02);
+    const snBody = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.38), lam('#e8c547'));
+    snBody.position.set(0, 0, 0.08);
+    const snGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.06), lam('#1d2b53'));
+    snGrip.position.set(0, -0.1, 0.14); snGrip.rotation.x = 0.3;
+    sniper.add(snBar, snScope, snBody, snGrip);
+    sniper.visible = false;
+    this.vmMeshes.sniper = sniper;
+
+    // 5. LMG (The Subdivision)
+    const lmg = new THREE.Group();
+    const lBody = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.55), lam('#4a7e5a'));
+    const lDrum = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.18, 0.16), lam('#2f6b3a'));
+    lDrum.position.set(0, -0.14, 0.02);
+    const lBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 8), lam('#373737'));
+    lBar.rotation.x = Math.PI / 2; lBar.position.set(0, 0.02, -0.32);
+    const lGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.15, 0.07), lam('#1d2b53'));
+    lGrip.position.set(0, -0.09, 0.2); lGrip.rotation.x = 0.25;
+    lmg.add(lBody, lDrum, lBar, lGrip);
+    lmg.visible = false;
+    this.vmMeshes.lmg = lmg;
+
+    // 6. Pistol (The Building Permit)
+    const pistol = new THREE.Group();
+    const pSlide = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.24), lam('#c2c3c7'));
+    pSlide.position.set(0, 0.04, -0.04);
+    const pGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.13, 0.07), lam('#292831'));
+    pGrip.position.set(0, -0.06, 0.05); pGrip.rotation.x = 0.32;
+    pistol.add(pSlide, pGrip);
+    pistol.visible = false;
+    this.vmMeshes.pistol = pistol;
+
+    vm.add(blaster, smg, shotgun, sniper, lmg, pistol);
+
     // The Participation Trophy (melee)
     this.trophy = new THREE.Group();
     const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.035, 0.12, 8), lam('#e8c547', '#806010'));
@@ -267,8 +339,16 @@ export class Renderer {
     this.vmBase = vm.position.clone();
     this.viewmodel = vm;
     this.camera.add(vm);
+    this.currentVmType = 'blaster';
     this.bob = 0;
     this.kick = 0;
+  }
+
+  setWeapon(viewmodelName) {
+    const target = this.vmMeshes[viewmodelName] || this.vmMeshes.blaster;
+    for (const [k, m] of Object.entries(this.vmMeshes)) {
+      m.visible = (m === target);
+    }
   }
 
   ensureCharacter(actor, localTeam) {
@@ -394,6 +474,12 @@ export class Renderer {
     this.camera.position.set(a.pos.x, a.pos.y + BODY.eye, a.pos.z);
     this.camera.rotation.set(a.pitch, a.yaw, 0, 'YXZ');
     this.viewmodel.visible = alive;
+    const activeW = a.weapons?.[a.activeSlot || 'primary'] || a.weapons?.primary;
+    const vmType = activeW?.viewmodel || 'blaster';
+    if (this.currentVmType !== vmType) {
+      this.currentVmType = vmType;
+      this.setWeapon(vmType);
+    }
     this.bob += dt * (moving ? 9 : 2);
     if (firing) { this.kick = 1; this.flash.visible = Math.random() < 0.7; } else this.flash.visible = false;
     this.kick = Math.max(0, this.kick - dt * 12);
@@ -461,6 +547,34 @@ export const OBJECT_VIEWS = {
     ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05;
     g.add(paper, ring);
     g.userData.update = (m, obj, t) => { paper.rotation.y = t * 2.5; paper.position.y = 0.7 + Math.sin(t * 3) * 0.08; };
+    return g;
+  },
+  lawnZone(o, localTeam) {
+    const g = new THREE.Group();
+    const r = o.radius || 5.2;
+    const ringMat = new THREE.MeshBasicMaterial({ color: '#ffffff', side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(r - 0.25, r + 0.15, 32), ringMat);
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.06;
+
+    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.8, 6), new THREE.MeshLambertMaterial({ color: '#5f574f' }));
+    flagPole.position.y = 1.4;
+    const flag = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.55, 0.03), new THREE.MeshLambertMaterial({ color: '#ffec27' }));
+    flag.position.set(0.44, 2.3, 0);
+
+    g.add(ring, flagPole, flag);
+    g.userData.update = (m, obj, t) => {
+      const col = obj.contested
+        ? '#ffec27'
+        : obj.ownerTeam === null
+        ? '#00e436'
+        : obj.ownerTeam === localTeam
+        ? '#29adff'
+        : '#ff004d';
+      ringMat.color.set(col);
+      flag.material.color.set(col);
+      ringMat.opacity = 0.55 + 0.35 * Math.sin(t * (obj.contested ? 10 : 4));
+      flag.rotation.y = Math.sin(t * 2) * 0.2;
+    };
     return g;
   },
 };

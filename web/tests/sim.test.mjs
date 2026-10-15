@@ -183,3 +183,89 @@ test('receipt check: kills drop receipts, only pickups score, bots go for them',
   assert.ok(log.barks.some(b => b.eventId === 'objective'), 'pickup barks');
   assert.equal(MODES.receiptCheck.defaults.scoreLimit, sim.scoreLimit);
 });
+
+test('king of the lawn: zone rotation, uncontested hold scores, contested stops, camping exempt', () => {
+  const rng = mulberry32(19);
+  const sim = new Sim({ rules: content.rules, weapons, rng, mode: 'kingOfTheLawn' });
+  const a0 = sim.addActor({ id: 'a0', name: 'Alpha', team: 0, faction: 'karens', isBot: false });
+  const b1 = sim.addActor({ id: 'b1', name: 'Bravo', team: 1, faction: 'fratHouse', isBot: false });
+  sim.start();
+
+  const mode = sim.mode;
+  assert.equal(mode.zoneIndex, 0);
+  const z = mode.zoneObj;
+  assert.ok(z && z.pos);
+
+  // Put a0 inside the active zone
+  Object.assign(a0.pos, { x: z.pos.x, y: 0, z: z.pos.z });
+  // Put b1 far away
+  Object.assign(b1.pos, { x: z.pos.x + 30, y: 0, z: z.pos.z + 30 });
+
+  assert.ok(mode.campingExempt(a0), 'actor in zone is camping-exempt');
+  assert.ok(!mode.campingExempt(b1), 'actor outside zone is not exempt');
+
+  // Step 2 seconds: uncontested hold should score
+  for (let i = 0; i < 120; i++) sim.step(1 / 60);
+  assert.ok(sim.score[0] >= 1, `Team 0 should have scored, got ${sim.score[0]}`);
+  assert.equal(sim.score[1], 0);
+
+  // Move b1 into the zone -> contested
+  Object.assign(b1.pos, { x: z.pos.x + 1, y: 0, z: z.pos.z + 1 });
+  const scoreBefore = sim.score[0];
+  for (let i = 0; i < 120; i++) sim.step(1 / 60);
+  assert.ok(mode.contested, 'zone is contested');
+  assert.equal(sim.score[0], scoreBefore, 'contested zone does not award points');
+
+  // Fast forward rotation
+  sim.time = mode.rotateAt + 0.1;
+  sim.step(1 / 60);
+  assert.equal(mode.zoneIndex, 1, 'zone rotated to index 1');
+});
+
+test('sim - weapon switching and ammo banking', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(123) });
+  const a = sim.addActor({ id: 'hero', name: 'Hero', team: 0, faction: 'karens', isBot: false });
+  sim.start();
+
+  assert.equal(a.activeSlot, 'primary');
+  assert.equal(a.ammo, a.weapons.primary.mag); // Allowance: 30
+
+  // Fire one shot from primary
+  a.input.fire = true;
+  sim.step(1 / 60);
+  a.input.fire = false;
+  assert.equal(a.ammo, 29);
+  const primaryShot = sim.drainEvents().find(e => e.type === 'shot');
+  assert.equal(primaryShot.weaponId, 'allowance');
+
+  // Switch to secondary (Permit)
+  a.input.switchSlot = 'secondary';
+  sim.step(1 / 60);
+  assert.equal(a.activeSlot, 'secondary');
+  assert.equal(a.ammo, a.weapons.secondary.mag); // Permit: 15
+  const switchEv = sim.drainEvents().find(e => e.type === 'switchWeapon');
+  assert.equal(switchEv.slot, 'secondary');
+  assert.equal(switchEv.weaponId, 'permit');
+
+  // Fire one shot from secondary
+  sim.time += 0.5; // pass cooldown
+  a.input.fire = true;
+  sim.step(1 / 60);
+  a.input.fire = false;
+  assert.equal(a.ammo, 14);
+  const secondaryShot = sim.drainEvents().find(e => e.type === 'shot');
+  assert.equal(secondaryShot.weaponId, 'permit');
+
+  // Switch back to primary: ammo should be restored to 29
+  a.input.switchSlot = 'primary';
+  sim.step(1 / 60);
+  assert.equal(a.activeSlot, 'primary');
+  assert.equal(a.ammo, 29);
+
+  // Switch back to secondary: ammo should be restored to 14
+  a.input.switchSlot = 'secondary';
+  sim.step(1 / 60);
+  assert.equal(a.activeSlot, 'secondary');
+  assert.equal(a.ammo, 14);
+});
+

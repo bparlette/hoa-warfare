@@ -35,7 +35,7 @@ function wrap(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a 
 function gauss(rng) { return Math.sqrt(-2 * Math.log(rng() + 1e-12)) * Math.cos(2 * Math.PI * rng()); }
 
 export function emptyInput() {
-  return { forward: 0, right: 0, jump: false, sprint: false, fire: false, reload: false, melee: false, grenade: false, yaw: 0, pitch: 0 };
+  return { forward: 0, right: 0, jump: false, sprint: false, fire: false, reload: false, melee: false, grenade: false, switchSlot: null, yaw: 0, pitch: 0 };
 }
 
 export class Sim {
@@ -68,6 +68,7 @@ export class Sim {
     const weapons = resolveLoadout(this.weapons, loadout);
     const a = {
       id, name, team, faction, isBot, weapons, triggerHeld: false,
+      activeSlot: 'primary', ammoBank: {},
       pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 }, yaw: 0, pitch: 0,
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
       ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
@@ -107,11 +108,28 @@ export class Sim {
     a.yaw = a.team === 0 ? 0 : Math.PI;
     a.pitch = 0;
     a.input.yaw = a.yaw; a.input.pitch = 0;
+    a.activeSlot = 'primary';
+    a.ammoBank = {};
     Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: a.weapons.equipment?.count ?? 0, streak: 0,
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
     this.emit({ type: 'spawn', id: a.id });
+  }
+
+  activeWeapon(a) {
+    return (a.weapons && a.weapons[a.activeSlot]) || a.weapons?.primary || null;
+  }
+
+  switchWeapon(a, slot) {
+    if (!a.weapons || !a.weapons[slot] || a.activeSlot === slot) return;
+    const oldSlot = a.activeSlot;
+    a.ammoBank[oldSlot] = a.ammo;
+    a.activeSlot = slot;
+    const w = a.weapons[slot];
+    a.reloadUntil = 0;
+    a.ammo = typeof a.ammoBank[slot] === 'number' ? a.ammoBank[slot] : w.mag;
+    this.emit({ type: 'switchWeapon', id: a.id, slot, weaponId: w.id });
   }
 
   // ---------------------------------------------------------------- physics helpers
@@ -211,8 +229,8 @@ export class Sim {
   eye(a) { return { x: a.pos.x, y: a.pos.y + BODY.eye, z: a.pos.z }; }
 
   fire(a) {
-    const now = this.time, w = a.weapons.primary;
-    if (now < a.nextShotAt || a.reloadUntil > 0) return;
+    const now = this.time, w = this.activeWeapon(a);
+    if (!w || now < a.nextShotAt || a.reloadUntil > 0) return;
     if (!w.auto && a.triggerHeld && !a.isBot) return; // semi-auto: one shot per click
     if (a.ammo <= 0) { this.startReload(a); return; }
     a.ammo--;
@@ -236,10 +254,10 @@ export class Sim {
   }
 
   startReload(a) {
-    const w = a.weapons.primary;
-    if (a.reloadUntil > 0 || a.ammo >= w.mag) return;
+    const w = this.activeWeapon(a);
+    if (!w || a.reloadUntil > 0 || a.ammo >= w.mag) return;
     a.reloadUntil = this.time + w.reloadSec;
-    this.emit({ type: 'reload', id: a.id });
+    this.emit({ type: 'reload', id: a.id, weaponId: w.id });
   }
 
   melee(a) {
@@ -356,15 +374,23 @@ export class Sim {
     for (const a of this.actors) {
       if (!a.alive) { if (now >= a.respawnAt) this.respawn(a); continue; }
       if (a.brain) this.think(a, dt);
-      if (a.reloadUntil > 0 && now >= a.reloadUntil) { a.reloadUntil = 0; a.ammo = a.weapons.primary.mag; }
+      if (a.reloadUntil > 0 && now >= a.reloadUntil) {
+        a.reloadUntil = 0;
+        const w = this.activeWeapon(a);
+        if (w) a.ammo = w.mag;
+      }
       this.move(a, dt);
       const inp = a.input;
+      if (inp.switchSlot) {
+        this.switchWeapon(a, inp.switchSlot);
+        if (!a.isBot) inp.switchSlot = null;
+      }
       if (inp.reload) this.startReload(a);
       if (inp.fire) this.fire(a);
       a.triggerHeld = inp.fire;
       if (inp.melee) this.melee(a);
       if (inp.grenade) this.throwGrenade(a);
-      if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; }
+      if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; inp.switchSlot = null; }
       const c = a.camp.update(now, dt, a.pos, { alive: a.alive, exempt: this.mode.campingExempt(a) });
       a.campState = c;
       if (c.state === 'snitch') { a.revealedUntil = now + 6; this.emit({ type: 'campingSnitch', id: a.id }); }

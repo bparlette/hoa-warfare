@@ -177,10 +177,20 @@ class Game {
           const col = factions[a.faction].look.accent;
           if (live) { renderer.tracer(e.from, e.to, col); renderer.impact(e.to, col); }
           const d = Math.hypot(a.pos.x - me.pos.x, a.pos.z - me.pos.z);
-          if (a === me) sfx.shot(1); else if (d < 40) sfx.shot(0.6 * (1 - d / 40));
+          const wdef = weaponsData.weapons[e.weaponId];
+          const playShot = () => {
+            if (wdef?.class === 'shotgun') sfx.shotgun();
+            else if (wdef?.class === 'sniper') sfx.sniper();
+            else if (wdef?.class === 'smg') sfx.smg();
+            else if (wdef?.class === 'lmg') sfx.lmg();
+            else if (wdef?.class === 'pistol') sfx.pistol();
+            else sfx.shot(1);
+          };
+          if (a === me) playShot(); else if (d < 40) sfx.shot(0.6 * (1 - d / 40));
           if (a === me && e.hitId && sim.byId.get(e.hitId).team !== me.team) {
             this.hitmark(e.head ? 'BONK!' : ['POW!', 'SPLAT!', 'ZAP!'][Math.floor(Math.random() * 3)]);
-            e.head ? sfx.headshot() : sfx.hit();
+            sfx.hitmarker();
+            if (e.head) sfx.headshot();
           }
           break;
         }
@@ -197,9 +207,17 @@ class Game {
         case 'boing': if (a === me || Math.hypot(a.pos.x - me.pos.x, a.pos.z - me.pos.z) < 20) sfx.boing(); break;
         case 'reload': if (a === me) sfx.reload(); break;
         case 'swing': if (a === me) sfx.swing(); break;
+        case 'switchWeapon':
+          if (a === me) {
+            sfx.reload();
+            const w = me.weapons[e.slot];
+            if (w?.viewmodel && renderer.setWeapon) renderer.setWeapon(w.viewmodel);
+          }
+          break;
         case 'campingSnitch': this.showBanner(a === me ? 'YOU SNITCHED ON YOURSELF' : `${a.name} snitched on themselves`, a === me ? 'Enemies can see you for 6s. Move!' : ''); break;
         case 'receiptConfirmed': if (a === me) { sfx.kill(); this.showBanner('RECEIPT CONFIRMED', `${e.victimName} has been processed`); } break;
         case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
+        case 'hardpointRotated': this.showBanner('NEW LAWN ACTIVE', e.name); break;
         case 'matchEnd': setTimeout(() => this.showEnd(), 2500); break;
       }
     }
@@ -338,9 +356,10 @@ class Game {
     $('hpfill').style.width = `${me.alive ? me.hp : 0}%`;
     $('hpfill').style.background = me.hp < 25 ? '#ff004d' : me.hp < 60 ? '#ffa300' : '#00e436';
     const W = me.weapons;
-    $('wname').textContent = W.primary.name;
-    $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${W.primary.mag}`;
-    $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''}`;
+    const activeW = (W && W[me.activeSlot]) || W.primary;
+    $('wname').textContent = `${activeW.name}${me.activeSlot === 'secondary' ? ' [SECONDARY]' : ''}`;
+    $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${activeW.mag}`;
+    $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''} · [Q/1/2] Swap`;
     const mh = sim.mode.hud(me);
     $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${this.library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${voice.enabled ? '' : ' · muted'}`;
     $('crosshair').style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
@@ -469,7 +488,9 @@ const input = {
       if (edge(2)) a.input.reload = true; // X = Reload
       if (edge(1) || edge(5)) a.input.melee = true; // B or RB = Melee Trophy
       if (edge(4)) a.input.grenade = true; // LB = Throw Lawsuit
-      if (edge(3)) { state.retro = !state.retro; renderer.setRetro(state.retro); } // Y = Toggle 16-bit retro
+      if (edge(3)) a.input.switchSlot = a.activeSlot === 'primary' ? 'secondary' : 'primary'; // Y = Swap Weapon
+      if (edge(12)) a.input.switchSlot = 'primary'; // D-pad Up = Primary
+      if (edge(13)) a.input.switchSlot = 'secondary'; // D-pad Down = Secondary
       if (btn(9)) this.keys.add('Tab'); else if (!k.has('TabKey')) this.keys.delete('Tab'); // Start/View = Scoreboard
     }
 
@@ -503,10 +524,13 @@ document.addEventListener('keydown', e => {
   if (e.code === 'KeyR') me.input.reload = true;
   if (e.code === 'KeyF' || e.code === 'KeyV') me.input.melee = true;
   if (e.code === 'KeyG') me.input.grenade = true;
+  if (e.code === 'KeyQ') me.input.switchSlot = me.activeSlot === 'primary' ? 'secondary' : 'primary';
+  if (e.code === 'Digit1') me.input.switchSlot = 'primary';
+  if (e.code === 'Digit2') me.input.switchSlot = 'secondary';
   if (e.code === 'KeyP') { state.retro = !state.retro; renderer.setRetro(state.retro); }
   if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
-  if (e.code === 'Digit1') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
-  if (e.code === 'Digit2') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
+  if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
+  if (e.code === 'BracketRight') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
 });
 document.addEventListener('keyup', e => input.keys.delete(e.code));
 window.addEventListener('resize', () => renderer.resize());

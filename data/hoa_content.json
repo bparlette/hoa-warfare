@@ -272,7 +272,7 @@
     "hat": "backwardsCap"
    },
    "voice": {
-    "pitch": 1.0,
+    "pitch": 1,
     "rate": 1.25,
     "gender": "m"
    },
@@ -2490,6 +2490,388 @@
      ]
     }
    }
+  },
+  "theGays": {
+   "name": "The Gays",
+   "phase0": false,
+   "tagline": "Architectural Digest or death.",
+   "look": {
+    "shirt": "#2c2c54",
+    "pants": "#e8e1d0",
+    "accent": "#ff70a6",
+    "hat": "designerShades"
+   },
+   "voice": {
+    "pitch": 1.15,
+    "rate": 1.25,
+    "gender": "m"
+   },
+   "lines": {
+    "kill": {
+     "clean": [
+      "Dreadful posture! Go lie down!",
+      "Your outfit? A hate crime!",
+      "Evicted on aesthetic grounds!"
+     ],
+     "steam": [
+      {
+       "t": "Take that back to HomeGoods!",
+       "alt": "Take that back to clearance!",
+       "flag": "brand"
+      },
+      "Taste level: absolutely subterranean!"
+     ]
+    },
+    "headshot": {
+     "clean": [
+      "HEADSHOT! That bone structure, ruined!"
+     ],
+     "steam": [
+      "DOME! Bad haircut regardless!"
+     ]
+    },
+    "revenge": {
+     "clean": [
+      "Never cross a queen, sweetie!"
+     ]
+    },
+    "shutdown": {
+     "clean": [
+      "Your streak was so last season!"
+     ]
+    },
+    "melee": {
+     "clean": [
+      "Slapped with pure disdain!"
+     ]
+    },
+    "humiliated": {
+     "clean": [
+      "Not the linen trousers!"
+     ]
+    },
+    "double": {
+     "clean": [
+      "DOUBLE! Both looks: tragic!"
+     ]
+    },
+    "triple": {
+     "clean": [
+      "TRIPLE! Serving pure dominance!"
+     ]
+    },
+    "rampage": {
+     "clean": [
+      "RAMPAGE! Icon status confirmed!"
+     ]
+    },
+    "reload": {
+     "clean": [
+      "Reloading! Refreshing my spritz!"
+     ],
+     "steam": [
+      {
+       "t": "Reloading! Where is my iced latte?!",
+       "alt": "Reloading! Where is my iced coffee?!",
+       "flag": "brand"
+      }
+     ]
+    },
+    "spotted": {
+     "clean": [
+      "Fashion disaster at twelve oclock!"
+     ]
+    },
+    "lowHealth": {
+     "clean": [
+      "Im fainting! Catch me, girls!"
+     ]
+    },
+    "objective": {
+     "clean": [
+      "Claimed! Total interior redesign starting now!"
+     ]
+    },
+    "enemyStreak": {
+     "clean": [
+      "They are doing entirely too much!"
+     ]
+    },
+    "lastAlive": {
+     "clean": [
+      "Solo runway. I can carry this!"
+     ]
+    },
+    "roundStart": {
+     "clean": [
+      "Time to elevate this neighborhood!"
+     ]
+    },
+    "ownStreak": {
+     "clean": [
+      "AIRSTRIKE! Chic destruction incoming!"
+     ]
+    },
+    "firstBlood": {
+     "clean": [
+      "FIRST BLOOD! First on the guestlist!"
+     ]
+    },
+    "selfKill": {
+     "clean": [
+      "That was embarrassing. Erase that!"
+     ]
+    },
+    "campingSnitch": {
+     "clean": [
+      "Not camping! Admiring the sconces!"
+     ],
+     "steam": [
+      {
+       "t": "Waiting on my West Elm delivery!",
+       "alt": "Waiting on my couch delivery!",
+       "flag": "brand"
+      }
+     ]
+    },
+    "streakDestroyed": {
+     "clean": [
+      "Down it goes! Tacky paint job!"
+     ]
+    },
+    "spawn": {
+     "clean": [
+      "Back and looking fabulous!",
+      "Respawned in mint condition!"
+     ],
+     "steam": [
+      "Runway reset, darlings!",
+      "Step aside, the look arrived!"
+     ]
+    },
+    "victory": {
+     "clean": [
+      "VICTORY! We transformed this block!",
+      "Flawless win! Immaculate taste!"
+     ],
+     "steam": [
+      "Aesthetic supremacy achieved!",
+      "Neighborhood property values DOUBLED!"
+     ]
+    },
+    "defeat": {
+     "clean": [
+      "Dreadful! Simply dreadful!",
+      "I refuse to acknowledge this!"
+     ],
+     "steam": [
+      "Total taste disaster!",
+      "Call the architect, we lost!"
+     ]
+    },
+    "killcam": {
+     "clean": [
+      "Smile for the moodboard!",
+      "Your posture was your downfall!"
+     ],
+     "steam": [
+      "Tragic demise, tragic outfit!",
+      "Clipped in forty-eight frames!"
+     ]
+    },
+    "campingWarn": {
+     "clean": [
+      "Im admiring the landscaping!",
+      "Curating this corner!"
+     ],
+     "steam": [
+      "Just basking in my radiance!",
+      "Protected space, sweetie!"
+     ]
+    }
+   }
+  },
+  "trumpers": {
+   "name": "The Trumpers",
+   "phase0": false,
+   "tagline": "More yard flags than square footage.",
+   "look": {
+    "shirt": "#1a2b4c",
+    "pants": "#e8d9b5",
+    "accent": "#d91424",
+    "hat": "redHat"
+   },
+   "voice": {
+    "pitch": 0.8,
+    "rate": 1.15,
+    "gender": "m"
+   },
+   "lines": {
+    "kill": {
+     "clean": [
+      "Youre FIRED!",
+      "Winning so much, Im tired!",
+      "Total and complete disaster!"
+     ],
+     "steam": [
+      "Rigged! But I still won!",
+      "Enjoy the landslide, snowflake!"
+     ]
+    },
+    "headshot": {
+     "clean": [
+      "HEADSHOT! Tremendous accuracy, huge!"
+     ]
+    },
+    "revenge": {
+     "clean": [
+      "Vindication! We won again!"
+     ]
+    },
+    "shutdown": {
+     "clean": [
+      "Fake streak! Totally discredited!"
+     ]
+    },
+    "melee": {
+     "clean": [
+      "Tough handshake! The strongest!"
+     ]
+    },
+    "humiliated": {
+     "clean": [
+      "Deep state interference!"
+     ]
+    },
+    "double": {
+     "clean": [
+      "DOUBLE! Two terms of dominance!"
+     ]
+    },
+    "triple": {
+     "clean": [
+      "TRIPLE! Millions and millions watching!"
+     ]
+    },
+    "rampage": {
+     "clean": [
+      "RAMPAGE! Nobody has seen anything like it!"
+     ]
+    },
+    "reload": {
+     "clean": [
+      "Reloading! Tremendous magazine size!"
+     ]
+    },
+    "spotted": {
+     "clean": [
+      "Hostile caravan spotted ahead!"
+     ]
+    },
+    "lowHealth": {
+     "clean": [
+      "Just a scratch! Witch hunt!"
+     ]
+    },
+    "objective": {
+     "clean": [
+      "Claimed! Putting up forty-seven flags!"
+     ]
+    },
+    "enemyStreak": {
+     "clean": [
+      "Theyre cheating! Recount the kills!"
+     ]
+    },
+    "lastAlive": {
+     "clean": [
+      "Last patriot standing! Huge rally!"
+     ]
+    },
+    "roundStart": {
+     "clean": [
+      "Make this cul-de-sac GREAT!"
+     ]
+    },
+    "ownStreak": {
+     "clean": [
+      "PATRIOT AIR FORCE INBOUND!"
+     ]
+    },
+    "firstBlood": {
+     "clean": [
+      "FIRST BLOOD! Biggest opening day ever!"
+     ]
+    },
+    "selfKill": {
+     "clean": [
+      "Fake news! That never happened!"
+     ]
+    },
+    "campingSnitch": {
+     "clean": [
+      "Not camping! Guarding the perimeter, folks!"
+     ],
+     "steam": [
+      "Defending the mailbox from socialism!"
+     ]
+    },
+    "streakDestroyed": {
+     "clean": [
+      "Who shot down the patriot chopper?!"
+     ]
+    },
+    "spawn": {
+     "clean": [
+      "The comeback is ON, folks!",
+      "Back and stronger than ever!"
+     ],
+     "steam": [
+      "Unstoppable! Tremendous energy!",
+      "Cant keep a patriot down!"
+     ]
+    },
+    "victory": {
+     "clean": [
+      "VICTORY! We won by ALOT!",
+      "Landslide! Complete and total triumph!"
+     ],
+     "steam": [
+      "So much winning! Unbelievable!",
+      "Make this cul-de-sac proud!"
+     ]
+    },
+    "defeat": {
+     "clean": [
+      "Rigged! Demand a full audit!",
+      "Fake scoreboard! We won!"
+     ],
+     "steam": [
+      "Stolen match! Pure fraud!",
+      "Im appealing to the supreme court!"
+     ]
+    },
+    "killcam": {
+     "clean": [
+      "Youre FIRED! Roll tape!",
+      "Tremendous shot, everybodys saying it!"
+     ],
+     "steam": [
+      "Total disaster for your team!",
+      "Nobody shoots like me, nobody!"
+     ]
+    },
+    "campingWarn": {
+     "clean": [
+      "Securing the perimeter, folks!",
+      "Patrolling the lawn!"
+     ],
+     "steam": [
+      "Guarding against border violations!",
+      "Not camping, holding the line!"
+     ]
+    }
+   }
   }
  },
  "rivalry": [
@@ -2623,6 +3005,48 @@
    "victim": "fratHouse",
    "clean": [
     "Pledge got clipped!"
+   ]
+  },
+  {
+   "killer": "theGays",
+   "victim": "karens",
+   "clean": [
+    "That haircut? An emergency!"
+   ]
+  },
+  {
+   "killer": "karens",
+   "victim": "theGays",
+   "clean": [
+    "Your pride flag violates bylaws!"
+   ]
+  },
+  {
+   "killer": "theGays",
+   "victim": "trumpers",
+   "clean": [
+    "Forty-seven flags is a visual tragedy!"
+   ]
+  },
+  {
+   "killer": "trumpers",
+   "victim": "theGays",
+   "clean": [
+    "Too fabulous for this block!"
+   ]
+  },
+  {
+   "killer": "trumpers",
+   "victim": "vcBros",
+   "clean": [
+    "Globalist down!"
+   ]
+  },
+  {
+   "killer": "vcBros",
+   "victim": "trumpers",
+   "clean": [
+    "Tariff this, buddy!"
    ]
   }
  ]

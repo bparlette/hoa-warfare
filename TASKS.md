@@ -41,14 +41,8 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
   - Fully connected navigation waypoint graph for bots (`sim.js` nav helpers).
 - **Done when**: `web/tests/sim.test.mjs` passes bot match tests on the Clubhouse map without any bot clipping or disconnecting.
 
-### T13: Content Expansion for Phase 1 Factions (`data/hoa_content.json`) [M - Tedious]
-- **Owner**: Muse — claimed by Muse (2026-10-15)
-- **Contract**:
-  - Expand barks for the 8 secondary factions (Old Money, Rednecks, Gym Rats, Theater Kids, VC Bros, HOA Dads, Emo Kids, Valley Girls).
-  - Maintain the append-only rule (never change existing array indices).
-  - Ensure every faction has full coverage across all events: `firstBlood`, `revenge`, `shutdown`, `multikill_double/triple/quad`, `campingWarn`, `campingSnitch`, `humiliated`, `killcam`, `spawn`, `defeat`, `victory`.
-  - Run `node tools/script_tools.mjs lint` to enforce the 1.8-second rule and legal-safe alternates.
-- **Done when**: `node tools/script_tools.mjs lint` passes with 0 errors across all 12 factions.
+### T13: Content Expansion for Phase 1 Factions (`data/hoa_content.json`) [M - Tedious] - done (faa6c5b / Muse)
+- Expanded barks for all 12 factions with spawn, victory, defeat, killcam, and campingWarn events.
 
 ---
 
@@ -58,14 +52,19 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - Added `allowance`, `sideHustle`, `divorceSettlement`, `trustFund`, `subdivision`, `permit`, `lawsuit`, and `participationTrophy` with TTK sanity, falloff, spread, pellets, and loadouts.
 
 ### T02: Controller / Gamepad Input Support (`web/src/engine/game.js`) [S] - done (Antigravity)
-- Added Xbox / standard gamepad support via Gamepad API: left stick movement, right stick aiming, RT shoot, LT sprint, A jump, X reload, B/RB melee, LB grenade, Y toggle 16-bit.
+- Added Xbox / standard gamepad support via Gamepad API: left stick movement, right stick aiming, RT shoot, LT sprint, A jump, X reload, B/RB melee, LB grenade, Y swap weapon, D-pad primary/secondary.
 
-### T03: Secondary Weapon Switching (Pistol Sidearm) [S] - open
-- **Contract**: Allow players to switch between primary weapon and `permit` (pistol sidearm) using `Q`, `1/2` or D-pad Up/Down.
+### T03: Secondary Weapon Switching (Pistol Sidearm) [S] - done (Antigravity)
+- Allows players to switch between primary weapon and secondary weapon (`permit`) using `Q`, `1`/`2`, Gamepad Y or D-pad.
+- Implemented ammo banking per weapon slot, viewmodel switching, and unit tests in `sim.test.mjs`.
 
-### T04: King of the Lawn (Hardpoint) Mode (`web/src/engine/modes.js`) [M] - open
-- **Contract**:
-  - Mode subclass `KingOfTheLawn`.
-  - Moving objective zone (front lawns across the cul-de-sac) that rotates every 60s.
-  - Team in zone earns 1 pt per second uncontested. Contested = locked.
-  - Objective zones exempt players inside from the camping monitor.
+### T04: King of the Lawn (Hardpoint) Mode (`web/src/engine/modes.js`) [M] - done (Antigravity)
+- Mode subclass `KingOfTheLawn` with rotating front lawns across the cul-de-sac every 60s.
+- Team in zone scores 1 pt/s uncontested; contested stops scoring; players in zone are exempt from camping penalties.
+- Animated 3D objective indicator mesh with pulsing lawn ring and team colors.
+
+### T14: "The Gays" and "The Trumpers" Factions [M] - done (Antigravity)
+- Added `theGays` ("The Gays", Tagline: "Architectural Digest or death.", look: `#2c2c54` / `#e8e1d0` / `#ff70a6`, hat: `designerShades`).
+- Added `trumpers` ("The Trumpers", Tagline: "More yard flags than square footage.", look: `#1a2b4c` / `#e8d9b5` / `#d91424`, hat: `redHat`).
+- Full coverage of all 26 required events (clean & steam lines, legal-safe alternates, all under 1.8s lint limit).
+- Added 6 rivalry matchups (Karens, Trumpers, The Gays, VC Bros).
