@@ -11,6 +11,7 @@ import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac } from './map.js';
 import { Radar } from './radar.js';
+import { GunbarrelIntro } from './gunbarrel.js';
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -26,6 +27,7 @@ const state = {
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
   legalSafe: params.get('legal') !== '0',
   retro: params.get('retro') !== '0',
+  style007: params.get('style') === '007' || params.get('007') === '1',
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
@@ -36,6 +38,44 @@ renderer.setRetro(state.retro);
 const voice = new Voice({ factions });
 const sfx = new Sfx();
 let game = null;
+
+const gunbarrel = $('gunbarrel') ? new GunbarrelIntro($('gunbarrel'), sfx) : null;
+if (gunbarrel) {
+  $('gunbarrel').addEventListener('click', () => gunbarrel.stop());
+  window.addEventListener('keydown', e => {
+    if (gunbarrel.active && (e.code === 'Space' || e.code === 'Escape' || e.code === 'Enter')) {
+      gunbarrel.stop();
+    }
+  });
+}
+
+function init007Meters() {
+  const hpMeter = $('geHpMeter');
+  const armorMeter = $('geArmorMeter');
+  if (hpMeter && !hpMeter.children.length) {
+    for (let i = 0; i < 10; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'ge-seg on';
+      hpMeter.appendChild(seg);
+    }
+  }
+  if (armorMeter && !armorMeter.children.length) {
+    for (let i = 0; i < 10; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'ge-seg on';
+      armorMeter.appendChild(seg);
+    }
+  }
+}
+
+function apply007Style(on) {
+  state.style007 = on;
+  document.body.classList.toggle('style-007', on);
+  init007Meters();
+  if (on) renderer.setRetro(true);
+  if ($('opt007')) $('opt007').checked = on;
+}
+apply007Style(state.style007);
 
 // ------------------------------------------------------------------ menu
 
@@ -53,6 +93,7 @@ function buildMenu() {
   $('optSteam').checked = state.script === 'steam';
   $('optLegal').checked = state.legalSafe;
   $('optRetro').checked = state.retro;
+  if ($('opt007')) $('opt007').checked = state.style007;
   $('optVoice').checked = state.voice;
   $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
@@ -60,6 +101,7 @@ $('optMode').onchange = e => { state.mode = e.target.value; };
 $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
 $('optRetro').onchange = e => { state.retro = e.target.checked; renderer.setRetro(state.retro); };
+if ($('opt007')) $('opt007').onchange = e => { apply007Style(e.target.checked); };
 $('optVoice').onchange = e => { state.voice = e.target.checked; };
 $('deploy').onclick = () => startGame();
 $('toMenu').onclick = () => toMenu();
@@ -363,8 +405,14 @@ class Game {
     $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${activeW.mag}`;
     $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''} · [Q/1/2] Swap`;
     const mh = sim.mode.hud(me);
-    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${this.library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${voice.enabled ? '' : ' · muted'}`;
+    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${this.library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice.enabled ? '' : ' · muted'}`;
     $('crosshair').style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
+
+    if (state.style007) {
+      const hp = me.alive ? me.hp : 0;
+      const sanity = me.campState?.secondsLeft != null ? (me.campState.secondsLeft / 5) * 100 : 100;
+      this.update007Meters(hp, 100, Math.min(100, sanity));
+    }
 
     const cs = me.campState;
     const warn = me.alive && cs.state === 'warning';
@@ -401,6 +449,18 @@ class Game {
     }
     $('board').classList.toggle('hidden', !input.keys.has('Tab'));
     if (input.keys.has('Tab')) this.renderBoard($('board'));
+  }
+
+  update007Meters(hp, maxHp = 100, armor = 100, maxArmor = 100) {
+    const hpMeter = $('geHpMeter');
+    const armorMeter = $('geArmorMeter');
+    if (!hpMeter || !armorMeter) return;
+    const hpCount = Math.max(0, Math.min(10, Math.ceil((hp / maxHp) * 10)));
+    const armorCount = Math.max(0, Math.min(10, Math.ceil((armor / maxArmor) * 10)));
+    for (let i = 0; i < 10; i++) {
+      if (hpMeter.children[i]) hpMeter.children[i].classList.toggle('on', i < hpCount);
+      if (armorMeter.children[i]) armorMeter.children[i].classList.toggle('on', i < armorCount);
+    }
   }
 
   showRespawn() {
@@ -522,6 +582,10 @@ document.addEventListener('mouseup', e => { if (e.button === 0) input.fire = fal
 document.addEventListener('keydown', e => {
   if (e.code === 'Tab') e.preventDefault();
   input.keys.add(e.code);
+  if (e.code === 'KeyO' || e.code === 'Digit0') {
+    apply007Style(!state.style007);
+    if (game) game.showBanner(state.style007 ? 'GOLDENEYE 007 MODE' : 'MODERN TACTICAL MODE');
+  }
   if (!game) return;
   const me = game.me;
   if (e.code === 'KeyR') me.input.reload = true;
@@ -586,7 +650,14 @@ function startGame() {
     window.__shortStarted = true;
     setupShortRecorder();
   }
-  if (!state.spectate) lock();
+  if (state.style007 && gunbarrel && !window.__introPlayed && params.get('short') !== '1') {
+    window.__introPlayed = true;
+    gunbarrel.start(() => {
+      if (!state.spectate) lock();
+    });
+  } else {
+    if (!state.spectate) lock();
+  }
 }
 
 // ------------------------------------------------------------------ loop
@@ -595,6 +666,7 @@ let last = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - last) / 1000);
   last = t;
+  if (gunbarrel && gunbarrel.active) gunbarrel.update(dt);
   if (game) game.update(dt);
   else if (params.get('lineup') === '1') return;
   else { renderer.orbit(t / 1000); renderer.updateFx(dt); renderer.render(); }

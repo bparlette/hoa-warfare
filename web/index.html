@@ -19,6 +19,16 @@
   <div id="loiter" class="hidden"><div class="sign">NO<br>LOITERING</div><div id="loiterT">3</div></div>
   <div id="subs"></div>
   <div id="hp"><div class="lbl">HP</div><div class="bar"><div id="hpfill"></div></div></div>
+  <div id="geBars" class="hidden">
+    <div class="ge-col ge-armor">
+      <div class="ge-title">SANITY</div>
+      <div class="ge-meter" id="geArmorMeter"></div>
+    </div>
+    <div class="ge-col ge-health">
+      <div class="ge-title">HP</div>
+      <div class="ge-meter" id="geHpMeter"></div>
+    </div>
+  </div>
   <div id="weapon"><div class="wname" id="wname"></div><div id="ammo">30 / 30</div><div id="nades">The Lawsuit x2</div></div>
   <div id="modes"></div>
   <div id="bubbles"></div>
@@ -26,6 +36,8 @@
   <div id="killcam" class="hidden"><div class="tag">KILLCAM</div><div id="kcWho"></div><div id="kcLine"></div></div>
   <div id="board" class="hidden"></div>
 </div>
+
+<canvas id="gunbarrel" class="hidden"></canvas>
 
 <div id="menu" class="overlay">
   <div class="panel">
@@ -40,10 +52,11 @@
       <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
       <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
       <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
+      <label><input type="checkbox" id="opt007"> GoldenEye 007 Mode (O / 0 to toggle)</label>
       <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
     </div>
     <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
-    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Tab scores<br>1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
+    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores<br>O/0 GoldenEye 007 toggle · 1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
   </div>
 </div>
 

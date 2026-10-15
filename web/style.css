@@ -127,3 +127,121 @@ select { font-family: inherit; font-size: 15px; background: #111d35; color: #fff
   text-shadow: 2px 2px 0 #000, 0 0 10px #ff004d;
 }
 
+/* GoldenEye 007 Mode Styling */
+#gunbarrel {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 500;
+  cursor: pointer;
+}
+
+body.style-007 #hp {
+  display: none !important;
+}
+
+body.style-007 #geBars {
+  display: flex !important;
+  position: absolute;
+  left: 20px;
+  top: 48%;
+  transform: translateY(-50%);
+  gap: 12px;
+  z-index: 20;
+}
+
+.ge-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ge-title {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.ge-armor .ge-title { color: #29adff; }
+.ge-health .ge-title { color: #ff004d; }
+
+.ge-meter {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 5px;
+  border: 3px solid #000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  border-radius: 4px;
+}
+
+.ge-seg {
+  width: 22px;
+  height: 10px;
+  border-radius: 2px;
+  background: #222;
+  border: 1px solid #111;
+  transition: background 0.1s, opacity 0.1s;
+}
+
+.ge-health .ge-seg.on {
+  background: #ff004d;
+  box-shadow: 0 0 6px rgba(255, 0, 77, 0.8);
+}
+
+.ge-armor .ge-seg.on {
+  background: #29adff;
+  box-shadow: 0 0 6px rgba(41, 173, 255, 0.8);
+}
+
+/* GoldenEye 007 Crosshair */
+body.style-007 #crosshair {
+  width: 32px;
+  height: 32px;
+  font-size: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid transparent;
+}
+
+body.style-007 #crosshair::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: #ff004d;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 4px #ff004d;
+}
+
+body.style-007 #crosshair::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(255, 236, 39, 0.7);
+  border-radius: 50%;
+}
+
+/* GoldenEye 007 Weapon Box */
+body.style-007 #weapon {
+  background: rgba(6, 11, 26, 0.88);
+  border: 3px solid #ffec27;
+  box-shadow: 4px 4px 0 #000;
+}
+
+body.style-007 #weapon .wname {
+  color: #ffec27;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+
