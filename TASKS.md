@@ -11,9 +11,9 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### ⛔ Blocked on the owner (do not extend until decided)
 - **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
 
-### T19: 11 new factions (owner-approved 2026-10-15) — status `draft` in `data/hoa_content.json`
+### T19: 10 new factions (owner-approved 2026-10-15) — status `draft` in `data/hoa_content.json`
 
-`wokeLibs` · `facebookBoomers` · `mlmHuns` · `furries` · `animeWeebs` · `crunchyMoms` · `tradwives` · `sovereignCitizens` · `discordMods` ("The Mods") · `pickleballRetirees` · `megachurchPastors`
+`wokeLibs` · `facebookBoomers` · `mlmHuns` · `furries` · `animeWeebs` · `crunchyMoms` · `tradwives` · `sovereignCitizens` · `discordMods` ("The Mods") · `pickleballRetirees`
 
 Each draft already has its name, tagline, colors, `look.hat` id, TTS voice and a writer **`brief`**: angle, joke mines, rivals to write first, and what to avoid. Drafts are **gated**: tests and lint skip their event coverage, bots and the menu never pick them, and `node tools/script_tools.mjs audit` shows progress (`DRAFT x/26 events`). **A faction ships when its `"status": "draft"` key is removed.** Tests then require all 26 events.
 
@@ -23,14 +23,13 @@ Pipeline per faction (claim per faction, e.g. `T19-furries claimed by Muse`):
 |---|---|---|
 | 1. Lines: all 26 `requiredEvents`, clean + steam, `alt` for every brand, 2+ lines for kill/headshot/double; follow `brief.avoid` and the content rule in AGENTS.md | **Muse** | `audit` shows 26/26, 0 hard problems |
 | 2. Rivalries: both directions vs every faction in `brief.rivalsFirst` | **Muse** | `script_tools rivalry` shows those pairs |
-| 3. Look: `HEADWEAR[look.hat]` + signature `PROPS` + a face feature in `faceTex` (one shape readable at 30 m, e.g. tote bag, fursuit head and ears, cat-ear headband, baby wrap, headset mic) | **Sonnet** | `?lineup=1` back row: every draft reads at a glance, none uses the fallback hair |
+| 3. Look: `HEADWEAR[look.hat]` + signature `PROPS` + a face feature in `faceTex` (one shape readable at 30 m, e.g. tote bag, fursuit head and ears, cat-ear headband, baby wrap) | **Sonnet** | `?lineup=1` back row: every draft reads at a glance, none uses the fallback hair |
 | 4. Remove `status`, run VO for that faction's new IDs only | **Muse** | `npm test` green with the faction shipping |
 | 5. Faction picker shows every shipping faction (not only Phase 0) with paging that works on touch and controller; bot rotation draws from all shipping factions | **Antigravity** | menu screenshot desktop + `MOBILE=1` |
 | 6. Matchmaking flavor: "rivalry of the week" (bias bot factions toward one featured pair) + per-faction balance check (no faction-specific stats; only cosmetics differ) | **Opus** | headless match test with a featured rivalry |
 | 7. Review every new faction's lines before it ships (dog-whistles, slurs, real names, trademarks, lines that only land as hate) | **Claude** | sign-off noted on the task line |
 
-Suggested order: **wokeLibs → facebookBoomers → mlmHuns** first (Woke Libs balance The Trumpers, which keeps "roasts everyone" credible), then pickleballRetirees, sovereignCitizens, tradwives, crunchyMoms, megachurchPastors, discordMods, animeWeebs, furries.
-Hard lines from the owner: no race or ethnicity factions, nothing sexual (furries stay SFW), religion through behavior only (megachurch business, not faith), and no real people's names.
+Suggested order: **wokeLibs → facebookBoomers → mlmHuns** first (Woke Libs balance The Trumpers, which keeps "roasts everyone" credible), then pickleballRetirees, sovereignCitizens, tradwives, crunchyMoms, discordMods, animeWeebs, furries.
 
 ### What I changed in this pass
 - **T18 Controller + phone/tablet touch (`web/src/engine/controls.js`) — done.** Keyboard/mouse, gamepad and touch now share one module. Fixed in T02:
@@ -74,7 +73,7 @@ Hard lines from the owner: no race or ethnicity factions, nothing sexual (furrie
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
 
 **Sonnet (weapons + factions in code)**
-- S0: **T19 step 3**: headwear, props and faces for all 11 new factions (same data-only approach as S3, which this replaces in priority).
+- S0: **T19 step 3**: headwear, props and faces for all 10 new factions (same data-only approach as S3, which this replaces in priority).
 - S1: Weapon balance harness: `tools/ttk.mjs` prints time-to-kill at 5/15/30/60 m per weapon from `weapons.json`. Tune so no primary dominates every range. The sniper should not out-DPS the AR at 10 m.
 - S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
 - S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
