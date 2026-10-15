@@ -299,3 +299,36 @@ test('radar - shooting and snitch reveal timers and radar render', async () => {
   assert.ok(ops.length > 10, 'Radar rendered map geometry and entities');
 });
 
+test('sim - bullet flinch hitAgo, hitDir, and takeDamage tracking', async () => {
+  const { Sim } = await import('../src/engine/sim.js');
+  const sim = new Sim({ rules: content.rules, weapons, rng: () => 0.5, mode: 'clash' });
+  const a0 = sim.addActor({ id: 'a0', team: 0, faction: 'karens', isBot: false });
+  const a1 = sim.addActor({ id: 'a1', team: 1, faction: 'frat', isBot: false });
+  sim.start();
+  a1.spawnProtectUntil = 0;
+
+  assert.equal(a1.hitAgo, Infinity);
+  assert.deepEqual(a1.hitDir, { x: 0, y: 0, z: 0 });
+
+  // Apply damage with direction from attacker
+  sim.damage(a1, 10, a0, { dir: { x: 0, y: 0, z: -1 } });
+  assert.equal(a1.hitAgo, 0);
+  assert.equal(a1.hitDir.z, -1);
+
+  // Stepping advances hitAgo
+  sim.step(0.1);
+  assert.ok(Math.abs(a1.hitAgo - 0.1) < 1e-4);
+
+  // Snapshot contains hitAgo and hitDir
+  const snap = sim.snapshot();
+  const s1 = snap.find(s => s.id === 'a1');
+  assert.ok(s1);
+  assert.ok(Math.abs(s1.hitAgo - 0.1) < 1e-4);
+  assert.equal(s1.hitDir.z, -1);
+
+  // Direct takeDamage call
+  a1.takeDamage(10, a0, { dir: { x: 1, y: 0, z: 0 } });
+  assert.equal(a1.hitAgo, 0);
+  assert.equal(a1.hitDir.x, 1);
+});
+

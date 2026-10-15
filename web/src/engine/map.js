@@ -11,7 +11,13 @@ export function buildCulDeSac() {
   const boxes = [];
   const box = (x, z, w, d, h, kind, extra = {}) => {
     const minY = extra.minY ?? 0;
-    const b = { minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2, minY, maxY: minY + h, kind, ...extra };
+    const isCar = kind === 'car' || extra.isCar ? true : undefined;
+    const b = {
+      minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2, minY, maxY: minY + h,
+      kind,
+      ...(isCar ? { isCar: true } : {}),
+      ...extra,
+    };
     boxes.push(b);
     return b;
   };
@@ -39,8 +45,8 @@ export function buildCulDeSac() {
   }
 
   // Court cover
-  box(-7.5, 5, 2, 4.4, 1.5, 'car', { color: '#d9483b' });
-  box(8, -6, 4.4, 2, 1.5, 'car', { color: '#3b6fd9' });
+  box(-7.5, 5, 2, 4.4, 1.5, 'car', { color: '#d9483b', isCar: true });
+  box(8, -6, 4.4, 2, 1.5, 'car', { color: '#3b6fd9', isCar: true });
   box(0, -7, 3, 3, 0.9, 'trampoline');
   box(-9, -14, 5, 1.2, 1.6, 'hedge');
   box(9, -14, 5, 1.2, 1.6, 'hedge');
@@ -49,8 +55,8 @@ export function buildCulDeSac() {
   for (const [x, z] of [[-6.2, 10], [6.2, 12], [-13.5, 16], [13.5, -16]]) box(x, z, 0.35, 0.35, 1.2, 'mailbox');
 
   // Street + south spawn cover
-  box(3, 30, 2, 4.4, 1.5, 'car', { color: '#f2f2f2' });
-  box(-3.5, 21, 2, 4.4, 1.5, 'car', { color: '#5a5a5a' });
+  box(3, 30, 2, 4.4, 1.5, 'car', { color: '#f2f2f2', isCar: true });
+  box(-3.5, 21, 2, 4.4, 1.5, 'car', { color: '#5a5a5a', isCar: true });
   box(-9, 36, 0.7, 0.7, 1.1, 'trash');
   box(9, 33, 0.7, 0.7, 1.1, 'trash');
 
@@ -63,6 +69,26 @@ export function buildCulDeSac() {
   // Backyard trees (trunks are solid, canopies are decoration)
   const trees = [[-38, -28], [38, -28], [-38, 30], [38, 30], [-38, 0], [38, 0], [-26, -40], [26, -40], [-28, 41], [28, 41], [-12, -44], [12, 44]];
   trees.forEach(([x, z]) => box(x, z, 0.6, 0.6, 3.2, 'tree'));
+
+  // Lawn sprinkler nodes placed across residential front lawns
+  const sprinklerCoords = [
+    [-18, -4], [-18, 4],    // House 0 lawn (west)
+    [18, -4], [18, 4],      // House 1 lawn (east)
+    [-15, -16], [-21, -16], // House 2 lawn (northwest)
+    [15, -16], [21, -16],   // House 3 lawn (northeast)
+    [-13, 20], [-13, 28],   // House 4 lawn (southwest)
+    [13, 20], [13, 28],     // House 5 lawn (southeast)
+  ];
+  const sprinklers = sprinklerCoords.map(([x, z], id) => Object.assign([x, z], {
+    id,
+    x,
+    y: 0,
+    z,
+    radius: 4,
+    arc: Math.PI,
+    active: true,
+    isSprinkler: true,
+  }));
 
   // Spawns: team 0 = south street end, team 1 = north greenbelt
   const spawns = {
@@ -96,7 +122,7 @@ export function buildCulDeSac() {
     }
   }
 
-  return { boxes, spawns, nodes, bounds: BOUNDS, court: COURT, street: STREET, trees };
+  return { boxes, spawns, nodes, bounds: BOUNDS, court: COURT, street: STREET, trees, sprinklers, sprinklerNodes: sprinklers };
 }
 
 /** True if a disc of `radius` can slide from (ax,az) to (bx,bz) without hitting a box taller than `stepH`. */
@@ -182,3 +208,13 @@ export function nearestNode(nodes, boxes, x, z) {
   }
   return best;
 }
+
+export const SPRINKLER_NODES = [
+  [-18, -4], [-18, 4],    // House 0 lawn (west)
+  [18, -4], [18, 4],      // House 1 lawn (east)
+  [-15, -16], [-21, -16], // House 2 lawn (northwest)
+  [15, -16], [21, -16],   // House 3 lawn (northeast)
+  [-13, 20], [-13, 28],   // House 4 lawn (southwest)
+  [13, 20], [13, 28],     // House 5 lawn (southeast)
+];
+

@@ -117,7 +117,19 @@ export class Sfx {
     }
     this.ctx?.resume();
   }
-  tone({ type = 'square', f0 = 800, f1 = 200, dur = 0.08, vol = 0.3, delay = 0 }) {
+  echoSlapback(gainNode) {
+    if (!this.ctx || !this.enabled || !gainNode) return null;
+    const delay = this.ctx.createDelay();
+    delay.delayTime.value = 0.075; // 75ms
+    const feedback = this.ctx.createGain();
+    feedback.gain.value = 0.25; // 0.25 feedback
+    gainNode.connect(delay);
+    delay.connect(feedback);
+    feedback.connect(delay);
+    delay.connect(this.master);
+    return delay;
+  }
+  tone({ type = 'square', f0 = 800, f1 = 200, dur = 0.08, vol = 0.3, delay = 0, slapback = false }) {
     if (!this.ctx || !this.enabled) return;
     const t = this.ctx.currentTime + delay;
     const o = this.ctx.createOscillator(), g = this.ctx.createGain();
@@ -127,7 +139,9 @@ export class Sfx {
     g.gain.setValueAtTime(vol, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     o.connect(g).connect(this.master);
-    o.start(t); o.stop(t + dur + 0.02);
+    if (slapback) this.echoSlapback(g);
+    o.start(t); o.stop(t + dur + (slapback ? 0.35 : 0.02));
+    return g;
   }
   noise(dur = 0.4, vol = 0.5) {
     if (!this.ctx || !this.enabled) return;
@@ -139,13 +153,77 @@ export class Sfx {
     s.buffer = buf; g.gain.value = vol;
     s.connect(g).connect(this.master);
     s.start();
+    return s;
   }
-  shot(vol = 1) { this.tone({ f0: 900, f1: 180, dur: 0.07, vol: 0.18 * vol }); }
-  shotgun() { this.noise(0.18, 0.45); this.tone({ f0: 320, f1: 60, dur: 0.14, vol: 0.35 }); }
-  sniper() { this.tone({ type: 'sawtooth', f0: 1600, f1: 240, dur: 0.22, vol: 0.35 }); this.noise(0.25, 0.3); }
-  smg() { this.tone({ f0: 1100, f1: 260, dur: 0.05, vol: 0.16 }); }
-  lmg() { this.tone({ type: 'sawtooth', f0: 550, f1: 110, dur: 0.11, vol: 0.24 }); }
-  pistol() { this.tone({ f0: 950, f1: 280, dur: 0.06, vol: 0.19 }); }
+  carAlarm(dur = 2.0, vol = 0.25) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    // 3 Hz alternation: 880Hz / 660Hz two-tone electronic horn
+    const halfPeriod = 1 / 6;
+    const steps = Math.floor(dur / halfPeriod);
+    for (let i = 0; i < steps; i++) {
+      const t = t0 + i * halfPeriod;
+      osc.frequency.setValueAtTime(i % 2 === 0 ? 880 : 660, t);
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.setValueAtTime(vol, t + halfPeriod - 0.02);
+      gain.gain.setValueAtTime(vol * 0.08, t + halfPeriod - 0.005);
+    }
+    gain.gain.setValueAtTime(0.001, t0 + dur);
+    osc.connect(gain).connect(this.master);
+    osc.start(t0);
+    osc.stop(t0 + dur);
+    return { osc, gain };
+  }
+  footstep(surface = 'grass') {
+    if (!this.ctx || !this.enabled) return;
+    const isTurf = !surface || surface === 'grass' || surface === 'turf';
+    if (isTurf) {
+      // Muffled turf rustle (low-pass smoothed noise)
+      const dur = 0.07;
+      const n = Math.floor(this.ctx.sampleRate * dur);
+      const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      let filter = 0;
+      for (let i = 0; i < n; i++) {
+        filter = filter * 0.78 + (Math.random() * 2 - 1) * 0.22;
+        d[i] = filter * (1 - i / n) ** 2;
+      }
+      const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+      s.buffer = buf; g.gain.value = 0.16;
+      s.connect(g).connect(this.master);
+      s.start();
+    } else {
+      // Crisp click for asphalt/concrete
+      const t = this.ctx.currentTime;
+      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(1400, t);
+      o.frequency.exponentialRampToValueAtTime(350, t + 0.025);
+      g.gain.setValueAtTime(0.14, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+      o.connect(g).connect(this.master);
+      o.start(t); o.stop(t + 0.03);
+
+      const dur = 0.02;
+      const n = Math.floor(this.ctx.sampleRate * dur);
+      const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 3;
+      const s = this.ctx.createBufferSource(), ng = this.ctx.createGain();
+      s.buffer = buf; ng.gain.value = 0.1;
+      s.connect(ng).connect(this.master);
+      s.start(t);
+    }
+  }
+  shot(vol = 1) { this.tone({ f0: 900, f1: 180, dur: 0.07, vol: 0.18 * vol, slapback: true }); }
+  shotgun() { this.noise(0.18, 0.45); this.tone({ f0: 320, f1: 60, dur: 0.14, vol: 0.35, slapback: true }); }
+  sniper() { this.tone({ type: 'sawtooth', f0: 1600, f1: 240, dur: 0.22, vol: 0.35, slapback: true }); this.noise(0.25, 0.3); }
+  smg() { this.tone({ f0: 1100, f1: 260, dur: 0.05, vol: 0.16, slapback: true }); }
+  lmg() { this.tone({ type: 'sawtooth', f0: 550, f1: 110, dur: 0.11, vol: 0.24, slapback: true }); }
+  pistol() { this.tone({ f0: 950, f1: 280, dur: 0.06, vol: 0.19, slapback: true }); }
   hitmarker() { this.tone({ type: 'square', f0: 2400, f1: 2400, dur: 0.03, vol: 0.18 }); }
   hit() { this.tone({ type: 'triangle', f0: 1200, f1: 900, dur: 0.05, vol: 0.25 }); }
   headshot() { this.tone({ type: 'square', f0: 300, f1: 1400, dur: 0.12, vol: 0.25 }); }

@@ -39,13 +39,29 @@ const noise = (base, amt) => (px, w, h, r) => {
 
 export const T = {
   grass: rep => pixelTex('grass', 16, 16, (px, w, h, r) => {
-    noise('#5aa03c', 0.22)(px, w, h, r);
-    for (let i = 0; i < 14; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#7cc24e');
-    for (let i = 0; i < 6; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#3f7d2c');
+    // Alternating lawn mower mowing stripes (lighter #48873f and darker #3f7b37 green)
+    for (let y = 0; y < h; y++) {
+      const stripe = Math.floor(y / 4) % 2 === 0;
+      const base = stripe ? '#48873f' : '#3f7b37';
+      for (let x = 0; x < w; x++) {
+        px(x, y, shade(base, (r() - 0.5) * 0.16));
+      }
+    }
+    // Manicured turf blade flecks & highlights
+    for (let i = 0; i < 12; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#63a84e');
+    for (let i = 0; i < 6; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#336329');
   }, rep),
   asphalt: rep => pixelTex('asphalt', 16, 16, (px, w, h, r) => {
-    noise('#55575e', 0.18)(px, w, h, r);
-    for (let i = 0; i < 5; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#6d7079');
+    noise('#4b4d54', 0.16)(px, w, h, r);
+    // Subtle aggregate gravel & tar road noise
+    for (let i = 0; i < 10; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#62656d');
+    for (let i = 0; i < 8; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#323439');
+    for (let i = 0; i < 4; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#797c85');
+    // Subtle curb edge markings and asphalt seams
+    for (let x = 0; x < w; x++) {
+      if (r() > 0.45) px(x, 0, shade('#585a62', 0.1));
+      if (r() > 0.75) px(x, h - 1, '#2c2e33');
+    }
   }, rep),
   concrete: rep => pixelTex('concrete', 16, 16, (px, w, h, r) => {
     noise('#c9c4b8', 0.1)(px, w, h, r);

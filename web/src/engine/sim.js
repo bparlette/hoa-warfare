@@ -74,8 +74,17 @@ export class Sim {
       ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
       onGround: true, kills: 0, deaths: 0, streak: 0, spawnProtectUntil: 0, lowHealthSaid: false,
       lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity,
+      hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 },
       input: emptyInput(), camp: new CampingMonitor(this.rules.camping), campState: { state: 'ok', dwell: 0 },
       brain: isBot ? newBrain(this.rng) : null,
+      takeDamage(amount, attacker, { dir = null } = {}) {
+        this.hitAgo = 0;
+        let dx = dir?.x ?? (attacker ? this.pos.x - attacker.pos.x : 0);
+        let dy = dir?.y ?? (attacker ? this.pos.y - attacker.pos.y : 0);
+        let dz = dir?.z ?? (attacker ? this.pos.z - attacker.pos.z : 0);
+        const len = Math.hypot(dx, dy, dz) || 1;
+        this.hitDir = { x: dx / len, y: dy / len, z: dz / len };
+      },
     };
     this.actors.push(a);
     this.byId.set(id, a);
@@ -111,7 +120,7 @@ export class Sim {
     a.activeSlot = 'primary';
     a.ammoBank = {};
     Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: a.weapons.equipment?.count ?? 0, streak: 0,
-      spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true });
+      spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 } });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
     this.emit({ type: 'spawn', id: a.id });
@@ -331,6 +340,16 @@ export class Sim {
     target.hp -= amount;
     target.lastHitBy = attacker?.id ?? null;
     target.lastHurtAt = this.time;
+    if (typeof target.takeDamage === 'function') {
+      target.takeDamage(amount, attacker, { dir });
+    } else {
+      target.hitAgo = 0;
+      let dx = dir?.x ?? (attacker ? target.pos.x - attacker.pos.x : 0);
+      let dy = dir?.y ?? (attacker ? target.pos.y - attacker.pos.y : 0);
+      let dz = dir?.z ?? (attacker ? target.pos.z - attacker.pos.z : 0);
+      const len = Math.hypot(dx, dy, dz) || 1;
+      target.hitDir = { x: dx / len, y: dy / len, z: dz / len };
+    }
     this.emit({ type: 'hurt', id: target.id, attackerId: attacker?.id ?? null, amount, headshot, hp: Math.max(0, target.hp) });
     if (target.hp > 0) {
       if (target.hp < 25 && !target.lowHealthSaid) { target.lowHealthSaid = true; this.emit({ type: 'lowHealth', id: target.id }); }
@@ -373,6 +392,7 @@ export class Sim {
     this.time += dt;
     const now = this.time;
     for (const a of this.actors) {
+      if (typeof a.hitAgo === 'number') a.hitAgo += dt;
       if (!a.alive) { if (now >= a.respawnAt) this.respawn(a); continue; }
       if (a.brain) this.think(a, dt);
       if (a.reloadUntil > 0 && now >= a.reloadUntil) {
@@ -406,6 +426,8 @@ export class Sim {
     return this.actors.map(a => ({
       id: a.id, x: a.pos.x, y: a.pos.y, z: a.pos.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive,
       speed: Math.hypot(a.vel.x, a.vel.z), firing: this.time < a.firingUntil, onGround: a.onGround,
+      hitAgo: a.hitAgo ?? Infinity,
+      hitDir: a.hitDir ? { x: a.hitDir.x, y: a.hitDir.y, z: a.hitDir.z } : { x: 0, y: 0, z: 0 },
     }));
   }
 

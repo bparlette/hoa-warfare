@@ -195,6 +195,14 @@ class Game {
     renderer.ragdolls = [];
     for (const f of renderer.fx) renderer.scene.remove(f.obj);
     renderer.fx = [];
+    if (renderer.casings) {
+      for (const c of renderer.casings) {
+        renderer.scene.remove(c.mesh);
+        c.mesh.geometry.dispose();
+        c.mesh.material.dispose();
+      }
+      renderer.casings = [];
+    }
     renderer.updateGrenades([]);
     renderer.updateObjects([], 0);
     $('bubbles').innerHTML = ''; $('feed').innerHTML = ''; $('subs').innerHTML = '';
@@ -236,7 +244,9 @@ class Game {
         renderer.firstPerson(me, dt, {
           moving: Math.hypot(me.vel.x, me.vel.z) > 1 && me.onGround, firing: sim.time < me.firingUntil,
           reloading: me.reloadUntil > 0, meleeAgo: sim.time - me.meleeAt, alive: true,
+          shotFired: this.meFiredThisStep,
         });
+        this.meFiredThisStep = false;
       } else {
         renderer.chase({ x: me.pos.x, y: me.pos.y + 4, z: me.pos.z + 3 }, me.pos, 4);
       }
@@ -268,9 +278,12 @@ class Game {
             else if (wdef?.class === 'pistol') sfx.pistol();
             else sfx.shot(1);
           };
-          if (a === me) playShot(); else if (d < 40) sfx.shot(0.6 * (1 - d / 40));
+          if (a === me) {
+            playShot();
+            this.meFiredThisStep = true;
+          } else if (d < 40) sfx.shot(0.6 * (1 - d / 40));
           if (a === me && e.hitId && sim.byId.get(e.hitId).team !== me.team) {
-            this.hitmark(e.head ? 'BONK!' : ['POW!', 'SPLAT!', 'ZAP!'][Math.floor(Math.random() * 3)]);
+            this.hitmark(e.head ? '★' : '✕', !!e.head);
             sfx.hitmarker();
             if (e.head) sfx.headshot();
           }
@@ -381,10 +394,42 @@ class Game {
     this.bannerT = setTimeout(() => $('banner').classList.remove('on'), 1800);
   }
 
-  hitmark(word) {
+  hitmark(word, isHeadshot = false) {
     const h = $('hitmark');
-    h.textContent = word;
-    h.classList.remove('on'); void h.offsetWidth; h.classList.add('on');
+    if (!h) return;
+    const isHead = isHeadshot || word === '★' || word === 'BONK!';
+    h.textContent = isHead ? '★' : '✕';
+    h.style.color = isHead ? '#ffd700' : '#ff004d';
+    h.style.textShadow = isHead
+      ? '0 0 10px #ffec27, 2px 2px 0 #000, -2px -2px 0 #000'
+      : '0 0 8px #ff004d, 2px 2px 0 #000, -2px -2px 0 #000';
+    h.style.webkitTextStroke = '1.5px #000';
+    h.style.fontSize = isHead ? '34px' : '28px';
+    h.style.fontFamily = 'Impact, "Arial Black", sans-serif';
+    h.style.fontWeight = '900';
+    h.style.position = 'absolute';
+    h.style.left = '50%';
+    h.style.top = '50%';
+    h.style.pointerEvents = 'none';
+    h.style.zIndex = '50';
+    h.style.letterSpacing = '0';
+    h.style.animation = 'none';
+    h.classList.remove('on');
+    void h.offsetWidth;
+    h.classList.add('on');
+    if (h.animate) {
+      if (this._hitmarkAnim) this._hitmarkAnim.cancel();
+      this._hitmarkAnim = h.animate([
+        { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 1 },
+        { transform: 'translate(-50%, -50%) scale(1.45)', opacity: 1, offset: 0.2 },
+        { transform: 'translate(-50%, -50%) scale(1.05)', opacity: 0.95, offset: 0.55 },
+        { transform: 'translate(-50%, -50%) scale(0.85)', opacity: 0 }
+      ], {
+        duration: 220,
+        fill: 'forwards',
+        easing: 'cubic-bezier(0.12, 0.9, 0.25, 1)'
+      });
+    }
   }
 
   flashVignette() {

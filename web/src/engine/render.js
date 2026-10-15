@@ -57,6 +57,9 @@ export class Renderer {
     this.camera = new THREE.PerspectiveCamera(75, 16 / 9, 0.05, 400);
     this.scene.add(this.camera);
 
+    this.muzzleLight = new THREE.PointLight('#ffec27', 0, 15);
+    this.camera.add(this.muzzleLight);
+
     this.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, depthBuffer: true });
     this.post = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
       uniforms: {
@@ -74,6 +77,8 @@ export class Renderer {
     this.characters = new Map();
     this.ragdolls = [];
     this.fx = [];
+    this.casings = [];
+    this.camRecoil = 0;
     this.buildLights();
     this.buildWorld();
     this.buildViewmodel();
@@ -455,6 +460,81 @@ export class Renderer {
     });
   }
 
+  spawnCasing() {
+    this.casings ??= [];
+    const geo = new THREE.BoxGeometry(0.015, 0.035, 0.015);
+    const mat = new THREE.MeshLambertMaterial({ color: '#c49a45', transparent: true, opacity: 1 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
+
+    // Viewmodel ejection port in camera space
+    const spawnPos = new THREE.Vector3(0.18, -0.15, -0.35);
+    spawnPos.applyEuler(this.camera.rotation);
+    spawnPos.add(this.camera.position);
+    mesh.position.copy(spawnPos);
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+    // Eject to the right (+x), slightly up (+y), backward (+z) in camera space
+    const ejectVel = new THREE.Vector3(
+      1.8 + Math.random() * 0.8,
+      1.2 + Math.random() * 0.5,
+      0.8 + Math.random() * 0.5
+    );
+    ejectVel.applyEuler(this.camera.rotation);
+
+    const rotVel = new THREE.Vector3(
+      (Math.random() - 0.5) * 25,
+      (Math.random() - 0.5) * 20,
+      (Math.random() - 0.5) * 25
+    );
+
+    this.scene.add(mesh);
+    this.casings.push({
+      mesh,
+      vel: ejectVel,
+      rotVel,
+      life: 1.5,
+      max: 1.5,
+    });
+  }
+
+  updateCasings(dt) {
+    if (!this.casings) this.casings = [];
+    this.casings = this.casings.filter(c => {
+      c.life -= dt;
+      if (c.life <= 0) {
+        this.scene.remove(c.mesh);
+        c.mesh.geometry.dispose();
+        c.mesh.material.dispose();
+        return false;
+      }
+      c.vel.y -= 9.8 * dt;
+      c.mesh.position.addScaledVector(c.vel, dt);
+
+      if (c.mesh.position.y <= 0.02) {
+        c.mesh.position.y = 0.02;
+        c.vel.y = -c.vel.y * 0.35;
+        c.vel.x *= 0.65;
+        c.vel.z *= 0.65;
+        c.rotVel.multiplyScalar(0.65);
+        if (Math.abs(c.vel.y) < 0.1) {
+          c.vel.set(0, 0, 0);
+          c.rotVel.set(0, 0, 0);
+        }
+      }
+
+      c.mesh.rotation.x += c.rotVel.x * dt;
+      c.mesh.rotation.y += c.rotVel.y * dt;
+      c.mesh.rotation.z += c.rotVel.z * dt;
+
+      if (c.life < 0.5) {
+        c.mesh.material.opacity = Math.max(0, c.life / 0.5);
+      }
+      return true;
+    });
+  }
+
   updateFx(dt) {
     this.fx = this.fx.filter(f => {
       f.life -= dt;
@@ -466,22 +546,51 @@ export class Renderer {
       return true;
     });
     this.ragdolls = this.ragdolls.filter(r => r.update(dt));
+    this.updateCasings(dt);
   }
 
   // ---------------------------------------------------------------- cameras
 
-  firstPerson(a, dt, { moving, firing, reloading, meleeAgo, alive }) {
-    this.camera.position.set(a.pos.x, a.pos.y + BODY.eye, a.pos.z);
-    this.camera.rotation.set(a.pitch, a.yaw, 0, 'YXZ');
-    this.viewmodel.visible = alive;
+  firstPerson(a, dt, { moving, firing, reloading, meleeAgo, alive, shotFired }) {
     const activeW = a.weapons?.[a.activeSlot || 'primary'] || a.weapons?.primary;
+    const interval = activeW?.intervalSec || 0.1;
+    let isNewShot = false;
+    if (shotFired !== undefined) {
+      isNewShot = shotFired;
+    } else if (firing) {
+      this.shotTimer = (this.shotTimer || 0) - dt;
+      if (!this.wasFiring || this.shotTimer <= 0) {
+        isNewShot = true;
+        this.shotTimer = interval;
+      }
+    }
+    this.wasFiring = !!firing;
+
+    if (isNewShot) {
+      this.camRecoil = Math.min(0.04, (this.camRecoil || 0) + 0.016);
+      this.spawnCasing();
+    }
+    this.camRecoil = Math.max(0, (this.camRecoil || 0) - dt * 0.22);
+
+    this.camera.position.set(a.pos.x, a.pos.y + BODY.eye, a.pos.z);
+    this.camera.rotation.set(a.pitch + this.camRecoil, a.yaw, 0, 'YXZ');
+    this.viewmodel.visible = alive;
     const vmType = activeW?.viewmodel || 'blaster';
     if (this.currentVmType !== vmType) {
       this.currentVmType = vmType;
       this.setWeapon(vmType);
     }
     this.bob += dt * (moving ? 9 : 2);
-    if (firing) { this.kick = 1; this.flash.visible = Math.random() < 0.7; } else this.flash.visible = false;
+    if (firing) {
+      if (this.muzzleLight) this.muzzleLight.intensity = 3.5;
+      this.kick = 1;
+      this.flash.visible = Math.random() < 0.7;
+    } else {
+      this.flash.visible = false;
+    }
+    if (this.muzzleLight) {
+      this.muzzleLight.intensity = Math.max(0, this.muzzleLight.intensity - dt * 25);
+    }
     this.kick = Math.max(0, this.kick - dt * 12);
     const vm = this.viewmodel;
     const amp = moving ? 0.018 : 0.004;
@@ -498,6 +607,7 @@ export class Renderer {
 
   /** Over-the-shoulder camera behind `from`, looking at `at` (killcam / spectator). */
   chase(from, at, dist = 3.2) {
+    if (this.muzzleLight) this.muzzleLight.intensity = 0;
     const dx = at.x - from.x, dz = at.z - from.z;
     const d = Math.hypot(dx, dz) || 1;
     const back = { x: -dx / d, z: -dz / d };
@@ -508,6 +618,7 @@ export class Renderer {
   }
 
   orbit(t) {
+    if (this.muzzleLight) this.muzzleLight.intensity = 0;
     const r = 38;
     this.camera.position.set(Math.cos(t * 0.08) * r, 22, Math.sin(t * 0.08) * r);
     this.camera.lookAt(0, 0, 0);

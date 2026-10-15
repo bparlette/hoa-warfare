@@ -148,7 +148,10 @@ export class CharacterView {
     const headMesh = new THREE.Mesh(geo(0.38, 0.4, 0.38), headMats);
     headMesh.castShadow = true;
     this.head.add(headMesh);
-    buildParts(this.head, HEADWEAR[look.hat] || HEADWEAR.default, look);
+    this.headwear = new THREE.Group();
+    this.headwear.name = 'headwear';
+    buildParts(this.headwear, HEADWEAR[look.hat] || HEADWEAR.default, look);
+    this.head.add(this.headwear);
     this.body.add(this.head);
 
     this.arms = [-1, 1].map(s => {
@@ -185,10 +188,14 @@ export class CharacterView {
     this.meleeT = 1;
   }
 
-  /** s = sim snapshot entry */
-  update(s, dt, { revealed = false, firing = false, meleeAgo = 9 } = {}) {
+  /** snap = sim snapshot entry */
+  update(snap, dt, { revealed = false, firing = false, meleeAgo = 9, hitAgo, hitDir } = {}) {
+    const s = snap;
     this.root.visible = s.alive;
     if (!s.alive) return;
+    if (this.headwear && this.headwear.parent !== this.head) {
+      this.head.add(this.headwear);
+    }
     this.root.position.set(s.x, s.y, s.z);
     this.root.rotation.y = s.yaw;
     const sp = Math.min(s.speed / 7, 1);
@@ -213,12 +220,33 @@ export class CharacterView {
       this.arms[0].rotation.x = aim + k * 1.2;
       this.arms[0].rotation.z = -0.35 - k * 0.6;
     }
+
+    // Procedural Bullet Flinch / Stagger
+    const hAgo = hitAgo !== undefined ? hitAgo : (s.hitAgo !== undefined ? s.hitAgo : Infinity);
+    const hDir = hitDir || s.hitDir;
+    if (hAgo < 0.25) {
+      const k = 1 - (hAgo / 0.25);
+      const ease = Math.sin(k * Math.PI * 0.5);
+      const yaw = s.yaw || 0;
+      const hx = hDir?.x ?? 0;
+      const hz = hDir?.z ?? 0;
+      // Local X: positive means hit impulse is moving towards character's right
+      const localX = hx * Math.cos(yaw) - hz * Math.sin(yaw);
+      const twistSign = Math.abs(localX) > 0.05 ? Math.sign(localX) : 1;
+      this.torso.rotation.x = 0.12 * ease; // leaning back slightly
+      this.torso.rotation.y = -twistSign * 0.12 * ease; // twist torso slightly away from hit direction
+      this.torso.rotation.z = -twistSign * 0.04 * ease;
+    } else {
+      this.torso.rotation.set(0, 0, 0);
+    }
+
     this.marker.visible = this.isLocalTeam || revealed;
     this.marker.rotation.y += dt * 3;
   }
 
   /** Split into independent boxes and fling them. Returns a Ragdoll that owns the pieces. */
-  ragdoll(scene, impulse, { headshot = false, explosive = false } = {}) {
+  ragdoll(scene, dir, { headshot = false, explosive = false } = {}) {
+    const impulse = dir || { x: 0, y: 0, z: 0 };
     this.root.updateMatrixWorld(true);
     const pieces = [];
     const take = (obj, mass = 1) => {
@@ -237,6 +265,34 @@ export class CharacterView {
         half: 0.12,
       });
     };
+
+    if (headshot && this.headwear && this.headwear.children.length > 0) {
+      const g = new THREE.Group();
+      this.headwear.matrixWorld.decompose(g.position, g.quaternion, g.scale);
+      const clone = this.headwear.clone(true);
+      clone.position.set(0, 0, 0); clone.rotation.set(0, 0, 0); clone.scale.set(1, 1, 1);
+      g.add(clone);
+      scene.add(g);
+      const dx = (dir && dir.x) || 0;
+      const dz = (dir && dir.z) || 0;
+      pieces.push({
+        obj: g,
+        v: new THREE.Vector3(
+          dx * 2.5 + (Math.random() - 0.5) * 1.5,
+          4.5 + Math.random() * 2,
+          dz * 2.5 + (Math.random() - 0.5) * 1.5
+        ),
+        w: new THREE.Vector3(
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 16
+        ),
+        half: 0.08,
+        isHat: true,
+      });
+      this.head.remove(this.headwear);
+    }
+
     take(this.torso, 1);
     take(this.head, headshot ? 2.2 : 1.2);
     this.legs.forEach(l => take(l, 0.9));
