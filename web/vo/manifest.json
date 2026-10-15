@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-10-15T17:39:40.623Z",
+ "generated": "2026-10-15T18:59:14.049Z",
  "lines": {
   "fratHouse.kill.c.0": {
    "file": "fratHouse_kill_c_0.ogg",
@@ -2875,7 +2875,7 @@
   },
   "valleyGirls.kill.c.0": {
    "file": "valleyGirls_kill_c_0.ogg",
-   "duration": 1.341,
+   "duration": 1.340958,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "You're violating my boundaries.",
@@ -2886,7 +2886,7 @@
   },
   "valleyGirls.kill.c.1": {
    "file": "valleyGirls_kill_c_1.ogg",
-   "duration": 1.034,
+   "duration": 1.03425,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Gatekeeping this lane.",
@@ -2897,7 +2897,7 @@
   },
   "valleyGirls.kill.c.2": {
    "file": "valleyGirls_kill_c_2.ogg",
-   "duration": 1.382,
+   "duration": 1.382125,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "That's so toxic of you?",
@@ -2908,7 +2908,7 @@
   },
   "valleyGirls.kill.s.0": {
    "file": "valleyGirls_kill_s_0.ogg",
-   "duration": 1.718,
+   "duration": 1.717542,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Ozempic face! Bye!",
@@ -2919,7 +2919,7 @@
   },
   "valleyGirls.kill.s.0.alt": {
    "file": "valleyGirls_kill_s_0_alt.ogg",
-   "duration": 1.668,
+   "duration": 1.667542,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Shot-diet face! Bye!",
@@ -2930,7 +2930,7 @@
   },
   "valleyGirls.kill.s.1": {
    "file": "valleyGirls_kill_s_1.ogg",
-   "duration": 1.418,
+   "duration": 1.417708,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Go cry to your BetterHelp therapist!",
@@ -2941,7 +2941,7 @@
   },
   "valleyGirls.kill.s.1.alt": {
    "file": "valleyGirls_kill_s_1_alt.ogg",
-   "duration": 1.161,
+   "duration": 1.161292,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Go cry to your app therapist!",
@@ -2952,7 +2952,7 @@
   },
   "valleyGirls.kill.s.2": {
    "file": "valleyGirls_kill_s_2.ogg",
-   "duration": 0.964,
+   "duration": 0.963833,
    "faction": "valleyGirls",
    "event": "kill",
    "text": "Wait, are you poor?",
@@ -2963,7 +2963,7 @@
   },
   "valleyGirls.headshot.c.0": {
    "file": "valleyGirls_headshot_c_0.ogg",
-   "duration": 1.283,
+   "duration": 1.282583,
    "faction": "valleyGirls",
    "event": "headshot",
    "text": "Blocked. And reported.",
@@ -2974,7 +2974,7 @@
   },
   "valleyGirls.headshot.s.0": {
    "file": "valleyGirls_headshot_s_0.ogg",
-   "duration": 1.481,
+   "duration": 1.480667,
    "faction": "valleyGirls",
    "event": "headshot",
    "text": "Botox can't fix THAT forehead!",
@@ -2985,7 +2985,7 @@
   },
   "valleyGirls.headshot.s.0.alt": {
    "file": "valleyGirls_headshot_s_0_alt.ogg",
-   "duration": 1.389,
+   "duration": 1.388792,
    "faction": "valleyGirls",
    "event": "headshot",
    "text": "Filler can't fix THAT forehead!",
@@ -2996,7 +2996,7 @@
   },
   "valleyGirls.revenge.c.0": {
    "file": "valleyGirls_revenge_c_0.ogg",
-   "duration": 1.854,
+   "duration": 1.853542,
    "faction": "valleyGirls",
    "event": "revenge",
    "text": "I kept the receipts, narcissist.",
@@ -3007,7 +3007,7 @@
   },
   "valleyGirls.shutdown.c.0": {
    "file": "valleyGirls_shutdown_c_0.ogg",
-   "duration": 1.985,
+   "duration": 1.984583,
    "faction": "valleyGirls",
    "event": "shutdown",
    "text": "Your era is over. Muted.",
@@ -3018,7 +3018,7 @@
   },
   "valleyGirls.melee.c.0": {
    "file": "valleyGirls_melee_c_0.ogg",
-   "duration": 1.712,
+   "duration": 1.71175,
    "faction": "valleyGirls",
    "event": "melee",
    "text": "Ew! Six feet, creep!",
@@ -3029,7 +3029,7 @@
   },
   "valleyGirls.humiliated.c.0": {
    "file": "valleyGirls_humiliated_c_0.ogg",
-   "duration": 1.022,
+   "duration": 1.02175,
    "faction": "valleyGirls",
    "event": "humiliated",
    "text": "I need to process this.",
@@ -3040,7 +3040,7 @@
   },
   "valleyGirls.double.c.0": {
    "file": "valleyGirls_double_c_0.ogg",
-   "duration": 1.558,
+   "duration": 1.558417,
    "faction": "valleyGirls",
    "event": "double",
    "text": "Double! That's self-care!",
@@ -3051,7 +3051,7 @@
   },
   "valleyGirls.triple.c.0": {
    "file": "valleyGirls_triple_c_0.ogg",
-   "duration": 1.399,
+   "duration": 1.3995,
    "faction": "valleyGirls",
    "event": "triple",
    "text": "Triple! I'm thriving!",
@@ -3073,7 +3073,7 @@
   },
   "valleyGirls.reload.c.0": {
    "file": "valleyGirls_reload_c_0.ogg",
-   "duration": 1.475,
+   "duration": 1.475333,
    "faction": "valleyGirls",
    "event": "reload",
    "text": "Reloading! Give me space!",
@@ -3084,7 +3084,7 @@
   },
   "valleyGirls.reload.s.0": {
    "file": "valleyGirls_reload_s_0.ogg",
-   "duration": 2.582,
+   "duration": 2.582292,
    "faction": "valleyGirls",
    "event": "reload",
    "text": "Reloading! My cortisol is spiking!",
@@ -3095,7 +3095,7 @@
   },
   "valleyGirls.spotted.c.0": {
    "file": "valleyGirls_spotted_c_0.ogg",
-   "duration": 1.127,
+   "duration": 1.127458,
    "faction": "valleyGirls",
    "event": "spotted",
    "text": "Red flag at twelve o'clock?",
@@ -3106,7 +3106,7 @@
   },
   "valleyGirls.lowHealth.c.0": {
    "file": "valleyGirls_lowHealth_c_0.ogg",
-   "duration": 1.721,
+   "duration": 1.721125,
    "faction": "valleyGirls",
    "event": "lowHealth",
    "text": "My boundaries are collapsing!",
@@ -3117,7 +3117,7 @@
   },
   "valleyGirls.objective.c.0": {
    "file": "valleyGirls_objective_c_0.ogg",
-   "duration": 1.477,
+   "duration": 1.477042,
    "faction": "valleyGirls",
    "event": "objective",
    "text": "Mine. I manifested it.",
@@ -3128,7 +3128,7 @@
   },
   "valleyGirls.enemyStreak.c.0": {
    "file": "valleyGirls_enemyStreak_c_0.ogg",
-   "duration": 0.978,
+   "duration": 0.978167,
    "faction": "valleyGirls",
    "event": "enemyStreak",
    "text": "She's doing the most!",
@@ -3139,7 +3139,7 @@
   },
   "valleyGirls.lastAlive.c.0": {
    "file": "valleyGirls_lastAlive_c_0.ogg",
-   "duration": 1.469,
+   "duration": 1.468958,
    "faction": "valleyGirls",
    "event": "lastAlive",
    "text": "Fine. My own healing arc.",
@@ -3150,7 +3150,7 @@
   },
   "valleyGirls.roundStart.c.0": {
    "file": "valleyGirls_roundStart_c_0.ogg",
-   "duration": 1.009,
+   "duration": 1.008708,
    "faction": "valleyGirls",
    "event": "roundStart",
    "text": "Let's set intentions!",
@@ -3161,7 +3161,7 @@
   },
   "valleyGirls.ownStreak.c.0": {
    "file": "valleyGirls_ownStreak_c_0.ogg",
-   "duration": 1.543,
+   "duration": 1.543208,
    "faction": "valleyGirls",
    "event": "ownStreak",
    "text": "My followers are WATCHING!",
@@ -3183,7 +3183,7 @@
   },
   "valleyGirls.selfKill.c.0": {
    "file": "valleyGirls_selfKill_c_0.ogg",
-   "duration": 2.01,
+   "duration": 2.010125,
    "faction": "valleyGirls",
    "event": "selfKill",
    "text": "That was a choice. A bad one.",
@@ -3194,7 +3194,7 @@
   },
   "valleyGirls.campingSnitch.c.0": {
    "file": "valleyGirls_campingSnitch_c_0.ogg",
-   "duration": 2.077,
+   "duration": 2.077167,
    "faction": "valleyGirls",
    "event": "campingSnitch",
    "text": "I'm not camping, I'm protecting my peace!",
@@ -3205,7 +3205,7 @@
   },
   "valleyGirls.streakDestroyed.c.0": {
    "file": "valleyGirls_streakDestroyed_c_0.ogg",
-   "duration": 1.441,
+   "duration": 1.441375,
    "faction": "valleyGirls",
    "event": "streakDestroyed",
    "text": "Your helicopter was giving desperate!",
@@ -3216,7 +3216,7 @@
   },
   "valleyGirls.spawn.c.0": {
    "file": "valleyGirls_spawn_c_0.ogg",
-   "duration": 0.712,
+   "duration": 0.712333,
    "faction": "valleyGirls",
    "event": "spawn",
    "text": "Like, I'm BACK!",
@@ -3249,7 +3249,7 @@
   },
   "valleyGirls.spawn.s.1": {
    "file": "valleyGirls_spawn_s_1.ogg",
-   "duration": 2.172,
+   "duration": 2.171792,
    "faction": "valleyGirls",
    "event": "spawn",
    "text": "Whatever. Let's, like, WIN.",
@@ -3260,7 +3260,7 @@
   },
   "valleyGirls.victory.c.0": {
    "file": "valleyGirls_victory_c_0.ogg",
-   "duration": 2.122,
+   "duration": 2.122333,
    "faction": "valleyGirls",
    "event": "victory",
    "text": "Oh my god, we WON!",
@@ -3271,7 +3271,7 @@
   },
   "valleyGirls.victory.c.1": {
    "file": "valleyGirls_victory_c_1.ogg",
-   "duration": 1.312,
+   "duration": 1.312333,
    "faction": "valleyGirls",
    "event": "victory",
    "text": "That's, like, AMAZING!",
@@ -3282,7 +3282,7 @@
   },
   "valleyGirls.victory.s.0": {
    "file": "valleyGirls_victory_s_0.ogg",
-   "duration": 0.748,
+   "duration": 0.74825,
    "faction": "valleyGirls",
    "event": "victory",
    "text": "Bye, LOSERS!",
@@ -3293,7 +3293,7 @@
   },
   "valleyGirls.victory.s.1": {
    "file": "valleyGirls_victory_s_1.ogg",
-   "duration": 1.672,
+   "duration": 1.671833,
    "faction": "valleyGirls",
    "event": "victory",
    "text": "Stay pressed. Literally.",
@@ -3304,7 +3304,7 @@
   },
   "valleyGirls.defeat.c.0": {
    "file": "valleyGirls_defeat_c_0.ogg",
-   "duration": 1.216,
+   "duration": 1.216333,
    "faction": "valleyGirls",
    "event": "defeat",
    "text": "Whatever. I'm over it.",
@@ -3315,7 +3315,7 @@
   },
   "valleyGirls.defeat.c.1": {
    "file": "valleyGirls_defeat_c_1.ogg",
-   "duration": 1.357,
+   "duration": 1.35725,
    "faction": "valleyGirls",
    "event": "defeat",
    "text": "Like, that was RIGGED.",
@@ -3326,7 +3326,7 @@
   },
   "valleyGirls.defeat.s.0": {
    "file": "valleyGirls_defeat_s_0.ogg",
-   "duration": 1.282,
+   "duration": 1.282375,
    "faction": "valleyGirls",
    "event": "defeat",
    "text": "As IF you beat me.",
@@ -3337,7 +3337,7 @@
   },
   "valleyGirls.defeat.s.1": {
    "file": "valleyGirls_defeat_s_1.ogg",
-   "duration": 1.174,
+   "duration": 1.174208,
    "faction": "valleyGirls",
    "event": "defeat",
    "text": "You're, like, CANCELED.",
@@ -3348,7 +3348,7 @@
   },
   "valleyGirls.killcam.c.0": {
    "file": "valleyGirls_killcam_c_0.ogg",
-   "duration": 0.781,
+   "duration": 0.780833,
    "faction": "valleyGirls",
    "event": "killcam",
    "text": "Did you SEE that?!",
@@ -3359,7 +3359,7 @@
   },
   "valleyGirls.killcam.c.1": {
    "file": "valleyGirls_killcam_c_1.ogg",
-   "duration": 1.465,
+   "duration": 1.465333,
    "faction": "valleyGirls",
    "event": "killcam",
    "text": "Oh. My. GOD.",
@@ -3370,7 +3370,7 @@
   },
   "valleyGirls.killcam.s.0": {
    "file": "valleyGirls_killcam_s_0.ogg",
-   "duration": 1.687,
+   "duration": 1.687083,
    "faction": "valleyGirls",
    "event": "killcam",
    "text": "You're, like, EMBARRASSING.",
@@ -3381,7 +3381,7 @@
   },
   "valleyGirls.killcam.s.1": {
    "file": "valleyGirls_killcam_s_1.ogg",
-   "duration": 1.28,
+   "duration": 1.279875,
    "faction": "valleyGirls",
    "event": "killcam",
    "text": "Bye! Don't text me!",
@@ -3392,7 +3392,7 @@
   },
   "valleyGirls.campingWarn.c.0": {
    "file": "valleyGirls_campingWarn_c_0.ogg",
-   "duration": 1.549,
+   "duration": 1.548792,
    "faction": "valleyGirls",
    "event": "campingWarn",
    "text": "I'm not camping, I'm RESTING.",
@@ -3403,7 +3403,7 @@
   },
   "valleyGirls.campingWarn.c.1": {
    "file": "valleyGirls_campingWarn_c_1.ogg",
-   "duration": 1.943,
+   "duration": 1.94325,
    "faction": "valleyGirls",
    "event": "campingWarn",
    "text": "Like, am I camping? RUDE.",
@@ -3414,7 +3414,7 @@
   },
   "valleyGirls.campingWarn.s.0": {
    "file": "valleyGirls_campingWarn_s_0.ogg",
-   "duration": 1.529,
+   "duration": 1.528542,
    "faction": "valleyGirls",
    "event": "campingWarn",
    "text": "Snitch and you're, like, BLOCKED.",
@@ -3425,7 +3425,7 @@
   },
   "valleyGirls.campingWarn.s.1": {
    "file": "valleyGirls_campingWarn_s_1.ogg",
-   "duration": 1.474,
+   "duration": 1.473625,
    "faction": "valleyGirls",
    "event": "campingWarn",
    "text": "I'm literally just standing here!",
@@ -3436,7 +3436,7 @@
   },
   "oldMoney.kill.c.0": {
    "file": "oldMoney_kill_c_0.ogg",
-   "duration": 1.718,
+   "duration": 1.717708,
    "faction": "oldMoney",
    "event": "kill",
    "text": "Do you KNOW who my father was?!",
@@ -3447,7 +3447,7 @@
   },
   "oldMoney.kill.c.1": {
    "file": "oldMoney_kill_c_1.ogg",
-   "duration": 1.997,
+   "duration": 1.997208,
    "faction": "oldMoney",
    "event": "kill",
    "text": "Back in MY day, we dueled properly.",
@@ -3458,7 +3458,7 @@
   },
   "oldMoney.kill.c.2": {
    "file": "oldMoney_kill_c_2.ogg",
-   "duration": 1.153,
+   "duration": 1.152917,
    "faction": "oldMoney",
    "event": "kill",
    "text": "Consider yourself disinherited.",
@@ -3469,7 +3469,7 @@
   },
   "oldMoney.kill.s.0": {
    "file": "oldMoney_kill_s_0.ogg",
-   "duration": 1.292,
+   "duration": 1.291708,
    "faction": "oldMoney",
    "event": "kill",
    "text": "Your whole bloodline is new money!",
@@ -3480,7 +3480,7 @@
   },
   "oldMoney.kill.s.1": {
    "file": "oldMoney_kill_s_1.ogg",
-   "duration": 1.617,
+   "duration": 1.617458,
    "faction": "oldMoney",
    "event": "kill",
    "text": "I'll buy your house. And bulldoze it.",
@@ -3491,7 +3491,7 @@
   },
   "oldMoney.headshot.c.0": {
    "file": "oldMoney_headshot_c_0.ogg",
-   "duration": 1.77,
+   "duration": 1.77025,
    "faction": "oldMoney",
    "event": "headshot",
    "text": "A clean shot. Like my portfolio.",
@@ -3502,7 +3502,7 @@
   },
   "oldMoney.revenge.c.0": {
    "file": "oldMoney_revenge_c_0.ogg",
-   "duration": 1.465,
+   "duration": 1.464875,
    "faction": "oldMoney",
    "event": "revenge",
    "text": "I remember everything. I'm old.",
@@ -3513,7 +3513,7 @@
   },
   "oldMoney.shutdown.c.0": {
    "file": "oldMoney_shutdown_c_0.ogg",
-   "duration": 1.978,
+   "duration": 1.97775,
    "faction": "oldMoney",
    "event": "shutdown",
    "text": "The trust has been... dissolved.",
@@ -3524,7 +3524,7 @@
   },
   "oldMoney.melee.c.0": {
    "file": "oldMoney_melee_c_0.ogg",
-   "duration": 0.995,
+   "duration": 0.995458,
    "faction": "oldMoney",
    "event": "melee",
    "text": "A cane! To the shin!",
@@ -3535,7 +3535,7 @@
   },
   "oldMoney.humiliated.c.0": {
    "file": "oldMoney_humiliated_c_0.ogg",
-   "duration": 2.599,
+   "duration": 2.599042,
    "faction": "oldMoney",
    "event": "humiliated",
    "text": "In my day, we had RESPAWN ETIQUETTE.",
@@ -3546,7 +3546,7 @@
   },
   "oldMoney.double.c.0": {
    "file": "oldMoney_double_c_0.ogg",
-   "duration": 1.231,
+   "duration": 1.231042,
    "faction": "oldMoney",
    "event": "double",
    "text": "Double! Like my net worth!",
@@ -3557,7 +3557,7 @@
   },
   "oldMoney.double.s.0": {
    "file": "oldMoney_double_s_0.ogg",
-   "duration": 0.998,
+   "duration": 0.99775,
    "faction": "oldMoney",
    "event": "double",
    "text": "Double! Like my scotch!",
@@ -3568,7 +3568,7 @@
   },
   "oldMoney.triple.c.0": {
    "file": "oldMoney_triple_c_0.ogg",
-   "duration": 1.133,
+   "duration": 1.1335,
    "faction": "oldMoney",
    "event": "triple",
    "text": "Triple! The club approves!",
@@ -3579,7 +3579,7 @@
   },
   "oldMoney.rampage.c.0": {
    "file": "oldMoney_rampage_c_0.ogg",
-   "duration": 1.446,
+   "duration": 1.44575,
    "faction": "oldMoney",
    "event": "rampage",
    "text": "RAMPAGE! Tell the papers!",
@@ -3590,7 +3590,7 @@
   },
   "oldMoney.reload.c.0": {
    "file": "oldMoney_reload_c_0.ogg",
-   "duration": 1.641,
+   "duration": 1.641292,
    "faction": "oldMoney",
    "event": "reload",
    "text": "Reloading... these hands aren't what they were.",
@@ -3601,7 +3601,7 @@
   },
   "oldMoney.spotted.c.0": {
    "file": "oldMoney_spotted_c_0.ogg",
-   "duration": 1.011,
+   "duration": 1.011458,
    "faction": "oldMoney",
    "event": "spotted",
    "text": "Ruffians on the green!",
@@ -3612,7 +3612,7 @@
   },
   "oldMoney.lowHealth.c.0": {
    "file": "oldMoney_lowHealth_c_0.ogg",
-   "duration": 0.967,
+   "duration": 0.966833,
    "faction": "oldMoney",
    "event": "lowHealth",
    "text": "My hip! My other hip!",
@@ -3623,7 +3623,7 @@
   },
   "oldMoney.objective.c.0": {
    "file": "oldMoney_objective_c_0.ogg",
-   "duration": 0.786,
+   "duration": 0.786458,
    "faction": "oldMoney",
    "event": "objective",
    "text": "Ours. As is everything.",
@@ -3634,7 +3634,7 @@
   },
   "oldMoney.enemyStreak.c.0": {
    "file": "oldMoney_enemyStreak_c_0.ogg",
-   "duration": 2.224,
+   "duration": 2.22375,
    "faction": "oldMoney",
    "event": "enemyStreak",
    "text": "Young people. So energetic. So rude.",
@@ -3645,7 +3645,7 @@
   },
   "oldMoney.lastAlive.c.0": {
    "file": "oldMoney_lastAlive_c_0.ogg",
-   "duration": 1.038,
+   "duration": 1.038292,
    "faction": "oldMoney",
    "event": "lastAlive",
    "text": "One gentleman against the rabble.",
@@ -3656,7 +3656,7 @@
   },
   "oldMoney.roundStart.c.0": {
    "file": "oldMoney_roundStart_c_0.ogg",
-   "duration": 2.127,
+   "duration": 2.12725,
    "faction": "oldMoney",
    "event": "roundStart",
    "text": "Gentlemen. Start your... whatever this is.",
@@ -3667,7 +3667,7 @@
   },
   "oldMoney.ownStreak.c.0": {
    "file": "oldMoney_ownStreak_c_0.ogg",
-   "duration": 0.641,
+   "duration": 0.641167,
    "faction": "oldMoney",
    "event": "ownStreak",
    "text": "CALL MY PILOT!",
@@ -3678,7 +3678,7 @@
   },
   "oldMoney.firstBlood.c.0": {
    "file": "oldMoney_firstBlood_c_0.ogg",
-   "duration": 1.471,
+   "duration": 1.471333,
    "faction": "oldMoney",
    "event": "firstBlood",
    "text": "First blood! Like the old days!",
@@ -3689,7 +3689,7 @@
   },
   "oldMoney.selfKill.c.0": {
    "file": "oldMoney_selfKill_c_0.ogg",
-   "duration": 1.427,
+   "duration": 1.426708,
    "faction": "oldMoney",
    "event": "selfKill",
    "text": "Alert the estate lawyer... I'm down.",
@@ -3711,7 +3711,7 @@
   },
   "oldMoney.streakDestroyed.c.0": {
    "file": "oldMoney_streakDestroyed_c_0.ogg",
-   "duration": 1.111,
+   "duration": 1.110917,
    "faction": "oldMoney",
    "event": "streakDestroyed",
    "text": "That helicopter was a GIFT!",
@@ -3722,7 +3722,7 @@
   },
   "oldMoney.spawn.c.0": {
    "file": "oldMoney_spawn_c_0.ogg",
-   "duration": 0.636,
+   "duration": 0.635667,
    "faction": "oldMoney",
    "event": "spawn",
    "text": "I have RETURNED.",
@@ -3733,7 +3733,7 @@
   },
   "oldMoney.spawn.c.1": {
    "file": "oldMoney_spawn_c_1.ogg",
-   "duration": 0.773,
+   "duration": 0.773167,
    "faction": "oldMoney",
    "event": "spawn",
    "text": "One does not stay dead.",
@@ -3744,7 +3744,7 @@
   },
   "oldMoney.spawn.s.0": {
    "file": "oldMoney_spawn_s_0.ogg",
-   "duration": 1.236,
+   "duration": 1.235875,
    "faction": "oldMoney",
    "event": "spawn",
    "text": "The help respawned me. FINALLY.",
@@ -3766,7 +3766,7 @@
   },
   "oldMoney.victory.c.0": {
    "file": "oldMoney_victory_c_0.ogg",
-   "duration": 1.214,
+   "duration": 1.213792,
    "faction": "oldMoney",
    "event": "victory",
    "text": "As expected. Naturally.",
@@ -3777,7 +3777,7 @@
   },
   "oldMoney.victory.c.1": {
    "file": "oldMoney_victory_c_1.ogg",
-   "duration": 0.638,
+   "duration": 0.6385,
    "faction": "oldMoney",
    "event": "victory",
    "text": "The club sends regards.",
@@ -3788,7 +3788,7 @@
   },
   "oldMoney.victory.s.0": {
    "file": "oldMoney_victory_s_0.ogg",
-   "duration": 1.357,
+   "duration": 1.356583,
    "faction": "oldMoney",
    "event": "victory",
    "text": "New money LOSES again.",
@@ -3799,7 +3799,7 @@
   },
   "oldMoney.victory.s.1": {
    "file": "oldMoney_victory_s_1.ogg",
-   "duration": 0.845,
+   "duration": 0.844833,
    "faction": "oldMoney",
    "event": "victory",
    "text": "Buy a better pedigree.",
@@ -3810,7 +3810,7 @@
   },
   "oldMoney.defeat.c.0": {
    "file": "oldMoney_defeat_c_0.ogg",
-   "duration": 1.264,
+   "duration": 1.264333,
    "faction": "oldMoney",
    "event": "defeat",
    "text": "How... unfortunate.",
@@ -3821,7 +3821,7 @@
   },
   "oldMoney.defeat.c.1": {
    "file": "oldMoney_defeat_c_1.ogg",
-   "duration": 0.617,
+   "duration": 0.617417,
    "faction": "oldMoney",
    "event": "defeat",
    "text": "I'll take the course alone.",
@@ -3832,7 +3832,7 @@
   },
   "oldMoney.defeat.s.0": {
    "file": "oldMoney_defeat_s_0.ogg",
-   "duration": 0.695,
+   "duration": 0.694833,
    "faction": "oldMoney",
    "event": "defeat",
    "text": "This NEVER happened.",
@@ -3843,7 +3843,7 @@
   },
   "oldMoney.defeat.s.1": {
    "file": "oldMoney_defeat_s_1.ogg",
-   "duration": 0.924,
+   "duration": 0.924208,
    "faction": "oldMoney",
    "event": "defeat",
    "text": "Do you know who I AM?",
@@ -3854,7 +3854,7 @@
   },
   "oldMoney.killcam.c.0": {
    "file": "oldMoney_killcam_c_0.ogg",
-   "duration": 1.409,
+   "duration": 1.408917,
    "faction": "oldMoney",
    "event": "killcam",
    "text": "Observe. A masterclass.",
@@ -3865,7 +3865,7 @@
   },
   "oldMoney.killcam.c.1": {
    "file": "oldMoney_killcam_c_1.ogg",
-   "duration": 1.342,
+   "duration": 1.34225,
    "faction": "oldMoney",
    "event": "killcam",
    "text": "Terribly sorry. Not really.",
@@ -3876,7 +3876,7 @@
   },
   "oldMoney.killcam.s.0": {
    "file": "oldMoney_killcam_s_0.ogg",
-   "duration": 1.058,
+   "duration": 1.058083,
    "faction": "oldMoney",
    "event": "killcam",
    "text": "The poor. So fragile.",
@@ -3887,7 +3887,7 @@
   },
   "oldMoney.killcam.s.1": {
    "file": "oldMoney_killcam_s_1.ogg",
-   "duration": 0.95,
+   "duration": 0.950167,
    "faction": "oldMoney",
    "event": "killcam",
    "text": "Mind the blood on the rug.",
@@ -3898,7 +3898,7 @@
   },
   "oldMoney.campingWarn.c.0": {
    "file": "oldMoney_campingWarn_c_0.ogg",
-   "duration": 1.279,
+   "duration": 1.278625,
    "faction": "oldMoney",
    "event": "campingWarn",
    "text": "I'm holding ground. Tactically.",
@@ -3909,7 +3909,7 @@
   },
   "oldMoney.campingWarn.c.1": {
    "file": "oldMoney_campingWarn_c_1.ogg",
-   "duration": 1.276,
+   "duration": 1.275833,
    "faction": "oldMoney",
    "event": "campingWarn",
    "text": "Patience is a VIRTUE.",
@@ -3920,7 +3920,7 @@
   },
   "oldMoney.campingWarn.s.0": {
    "file": "oldMoney_campingWarn_s_0.ogg",
-   "duration": 1.118,
+   "duration": 1.117583,
    "faction": "oldMoney",
    "event": "campingWarn",
    "text": "Report me, lose MEMBERSHIP.",
@@ -3931,7 +3931,7 @@
   },
   "oldMoney.campingWarn.s.1": {
    "file": "oldMoney_campingWarn_s_1.ogg",
-   "duration": 2.06,
+   "duration": 2.060042,
    "faction": "oldMoney",
    "event": "campingWarn",
    "text": "I'm surveying MY estate.",
@@ -3942,7 +3942,7 @@
   },
   "rednecks.kill.c.0": {
    "file": "rednecks_kill_c_0.ogg",
-   "duration": 0.462,
+   "duration": 0.462458,
    "faction": "rednecks",
    "event": "kill",
    "text": "YEEHAW!",
@@ -3954,7 +3954,7 @@
   },
   "rednecks.kill.c.1": {
    "file": "rednecks_kill_c_1.ogg",
-   "duration": 1.517,
+   "duration": 1.517333,
    "faction": "rednecks",
    "event": "kill",
    "text": "Catalytic converter's MINE now!",
@@ -3965,7 +3965,7 @@
   },
   "rednecks.kill.c.2": {
    "file": "rednecks_kill_c_2.ogg",
-   "duration": 0.337,
+   "duration": 0.337292,
    "faction": "rednecks",
    "event": "kill",
    "text": "Propane'd!",
@@ -3976,7 +3976,7 @@
   },
   "rednecks.kill.s.0": {
    "file": "rednecks_kill_s_0.ogg",
-   "duration": 0.681,
+   "duration": 0.680625,
    "faction": "rednecks",
    "event": "kill",
    "text": "Stripped you for parts!",
@@ -3987,7 +3987,7 @@
   },
   "rednecks.kill.s.1": {
    "file": "rednecks_kill_s_1.ogg",
-   "duration": 0.677,
+   "duration": 0.676958,
    "faction": "rednecks",
    "event": "kill",
    "text": "Your truck's a lease, ain't it?",
@@ -3998,7 +3998,7 @@
   },
   "rednecks.headshot.c.0": {
    "file": "rednecks_headshot_c_0.ogg",
-   "duration": 0.76,
+   "duration": 0.759708,
    "faction": "rednecks",
    "event": "headshot",
    "text": "Right 'tween the eyes!",
@@ -4009,7 +4009,7 @@
   },
   "rednecks.revenge.c.0": {
    "file": "rednecks_revenge_c_0.ogg",
-   "duration": 1.046,
+   "duration": 1.0465,
    "faction": "rednecks",
    "event": "revenge",
    "text": "I remember you. From last time.",
@@ -4020,7 +4020,7 @@
   },
   "rednecks.shutdown.c.0": {
    "file": "rednecks_shutdown_c_0.ogg",
-   "duration": 1.97,
+   "duration": 1.970208,
    "faction": "rednecks",
    "event": "shutdown",
    "text": "Streak's done. Like my truck's warranty.",
@@ -4031,7 +4031,7 @@
   },
   "rednecks.melee.c.0": {
    "file": "rednecks_melee_c_0.ogg",
-   "duration": 0.295,
+   "duration": 0.295125,
    "faction": "rednecks",
    "event": "melee",
    "text": "Wrassled!",
@@ -4043,7 +4043,7 @@
   },
   "rednecks.humiliated.c.0": {
    "file": "rednecks_humiliated_c_0.ogg",
-   "duration": 0.881,
+   "duration": 0.88125,
    "faction": "rednecks",
    "event": "humiliated",
    "text": "Scratched the clear coat?!",
@@ -4054,7 +4054,7 @@
   },
   "rednecks.double.c.0": {
    "file": "rednecks_double_c_0.ogg",
-   "duration": 1.256,
+   "duration": 1.255833,
    "faction": "rednecks",
    "event": "double",
    "text": "DOUBLE! Like my lift kit!",
@@ -4065,7 +4065,7 @@
   },
   "rednecks.triple.c.0": {
    "file": "rednecks_triple_c_0.ogg",
-   "duration": 1.127,
+   "duration": 1.127042,
    "faction": "rednecks",
    "event": "triple",
    "text": "TRIPLE! Mama's proud!",
@@ -4076,7 +4076,7 @@
   },
   "rednecks.rampage.c.0": {
    "file": "rednecks_rampage_c_0.ogg",
-   "duration": 1.149,
+   "duration": 1.148667,
    "faction": "rednecks",
    "event": "rampage",
    "text": "RAMPAGE! YEEHAW!",
@@ -4098,7 +4098,7 @@
   },
   "rednecks.spotted.c.0": {
    "file": "rednecks_spotted_c_0.ogg",
-   "duration": 0.747,
+   "duration": 0.746667,
    "faction": "rednecks",
    "event": "spotted",
    "text": "We got company, y'all!",
@@ -4109,7 +4109,7 @@
   },
   "rednecks.lowHealth.c.0": {
    "file": "rednecks_lowHealth_c_0.ogg",
-   "duration": 1.067,
+   "duration": 1.0665,
    "faction": "rednecks",
    "event": "lowHealth",
    "text": "Hurtin' worse than tax season.",
@@ -4120,7 +4120,7 @@
   },
   "rednecks.objective.c.0": {
    "file": "rednecks_objective_c_0.ogg",
-   "duration": 1.202,
+   "duration": 1.202375,
    "faction": "rednecks",
    "event": "objective",
    "text": "Got it! The HOA can't have it!",
@@ -4131,7 +4131,7 @@
   },
   "rednecks.enemyStreak.c.0": {
    "file": "rednecks_enemyStreak_c_0.ogg",
-   "duration": 1.226,
+   "duration": 1.226458,
    "faction": "rednecks",
    "event": "enemyStreak",
    "text": "They're squattin' on our streak!",
@@ -4142,7 +4142,7 @@
   },
   "rednecks.lastAlive.c.0": {
    "file": "rednecks_lastAlive_c_0.ogg",
-   "duration": 0.883,
+   "duration": 0.883292,
    "faction": "rednecks",
    "event": "lastAlive",
    "text": "Just me? Born ready.",
@@ -4153,7 +4153,7 @@
   },
   "rednecks.roundStart.c.0": {
    "file": "rednecks_roundStart_c_0.ogg",
-   "duration": 0.494,
+   "duration": 0.493667,
    "faction": "rednecks",
    "event": "roundStart",
    "text": "Let's go huntin'!",
@@ -4164,7 +4164,7 @@
   },
   "rednecks.ownStreak.c.0": {
    "file": "rednecks_ownStreak_c_0.ogg",
-   "duration": 0.904,
+   "duration": 0.903625,
    "faction": "rednecks",
    "event": "ownStreak",
    "text": "Releasin' the hounds!",
@@ -4175,7 +4175,7 @@
   },
   "rednecks.firstBlood.c.0": {
    "file": "rednecks_firstBlood_c_0.ogg",
-   "duration": 1.213,
+   "duration": 1.212542,
    "faction": "rednecks",
    "event": "firstBlood",
    "text": "FIRST BLOOD! Hoo-wee!",
@@ -4186,7 +4186,7 @@
   },
   "rednecks.selfKill.c.0": {
    "file": "rednecks_selfKill_c_0.ogg",
-   "duration": 1.304,
+   "duration": 1.303542,
    "faction": "rednecks",
    "event": "selfKill",
    "text": "Hair trigger. Like my temper.",
@@ -4197,7 +4197,7 @@
   },
   "rednecks.campingSnitch.c.0": {
    "file": "rednecks_campingSnitch_c_0.ogg",
-   "duration": 1.107,
+   "duration": 1.106583,
    "faction": "rednecks",
    "event": "campingSnitch",
    "text": "I ain't campin', I'm tailgatin'!",
@@ -4219,7 +4219,7 @@
   },
   "rednecks.spawn.c.0": {
    "file": "rednecks_spawn_c_0.ogg",
-   "duration": 1.313,
+   "duration": 1.313333,
    "faction": "rednecks",
    "event": "spawn",
    "text": "Back from the dead, Y'ALL!",
@@ -4230,7 +4230,7 @@
   },
   "rednecks.spawn.c.1": {
    "file": "rednecks_spawn_c_1.ogg",
-   "duration": 1.534,
+   "duration": 1.533792,
    "faction": "rednecks",
    "event": "spawn",
    "text": "Respawned! Hold my tea!",
@@ -4252,7 +4252,7 @@
   },
   "rednecks.spawn.s.1": {
    "file": "rednecks_spawn_s_1.ogg",
-   "duration": 1.61,
+   "duration": 1.60975,
    "faction": "rednecks",
    "event": "spawn",
    "text": "Bless your heart. NOT.",
@@ -4263,7 +4263,7 @@
   },
   "rednecks.victory.c.0": {
    "file": "rednecks_victory_c_0.ogg",
-   "duration": 0.522,
+   "duration": 0.522083,
    "faction": "rednecks",
    "event": "victory",
    "text": "GIT-R-DONE!",
@@ -4274,7 +4274,7 @@
   },
   "rednecks.victory.c.1": {
    "file": "rednecks_victory_c_1.ogg",
-   "duration": 1.113,
+   "duration": 1.1125,
    "faction": "rednecks",
    "event": "victory",
    "text": "Mud on their boots!",
@@ -4285,7 +4285,7 @@
   },
   "rednecks.victory.s.0": {
    "file": "rednecks_victory_s_0.ogg",
-   "duration": 0.757,
+   "duration": 0.757083,
    "faction": "rednecks",
    "event": "victory",
    "text": "Go back to the CITY!",
@@ -4296,7 +4296,7 @@
   },
   "rednecks.victory.s.1": {
    "file": "rednecks_victory_s_1.ogg",
-   "duration": 0.669,
+   "duration": 0.668917,
    "faction": "rednecks",
    "event": "victory",
    "text": "That's how we do it HERE.",
@@ -4307,7 +4307,7 @@
   },
   "rednecks.defeat.c.0": {
    "file": "rednecks_defeat_c_0.ogg",
-   "duration": 0.756,
+   "duration": 0.755625,
    "faction": "rednecks",
    "event": "defeat",
    "text": "Dang. Good hunt, y'all.",
@@ -4318,7 +4318,7 @@
   },
   "rednecks.defeat.c.1": {
    "file": "rednecks_defeat_c_1.ogg",
-   "duration": 1.715,
+   "duration": 1.714833,
    "faction": "rednecks",
    "event": "defeat",
    "text": "Truck's still runnin'. Fine.",
@@ -4329,7 +4329,7 @@
   },
   "rednecks.defeat.s.0": {
    "file": "rednecks_defeat_s_0.ogg",
-   "duration": 1.702,
+   "duration": 1.701833,
    "faction": "rednecks",
    "event": "defeat",
    "text": "Y'all cheated. PROBABLY.",
@@ -4340,7 +4340,7 @@
   },
   "rednecks.defeat.s.1": {
    "file": "rednecks_defeat_s_1.ogg",
-   "duration": 0.782,
+   "duration": 0.782333,
    "faction": "rednecks",
    "event": "defeat",
    "text": "Rematch at the DERBY.",
@@ -4351,7 +4351,7 @@
   },
   "rednecks.killcam.c.0": {
    "file": "rednecks_killcam_c_0.ogg",
-   "duration": 0.666,
+   "duration": 0.666125,
    "faction": "rednecks",
    "event": "killcam",
    "text": "BULLSEYE, baby!",
@@ -4362,7 +4362,7 @@
   },
   "rednecks.killcam.c.1": {
    "file": "rednecks_killcam_c_1.ogg",
-   "duration": 0.691,
+   "duration": 0.69075,
    "faction": "rednecks",
    "event": "killcam",
    "text": "That's a TROPHY kill!",
@@ -4373,7 +4373,7 @@
   },
   "rednecks.killcam.s.0": {
    "file": "rednecks_killcam_s_0.ogg",
-   "duration": 0.815,
+   "duration": 0.814792,
    "faction": "rednecks",
    "event": "killcam",
    "text": "Gut shot. OOPS.",
@@ -4384,7 +4384,7 @@
   },
   "rednecks.killcam.s.1": {
    "file": "rednecks_killcam_s_1.ogg",
-   "duration": 0.832,
+   "duration": 0.83225,
    "faction": "rednecks",
    "event": "killcam",
    "text": "Shoulda stayed on the PORCH.",
@@ -4395,7 +4395,7 @@
   },
   "rednecks.campingWarn.c.0": {
    "file": "rednecks_campingWarn_c_0.ogg",
-   "duration": 0.887,
+   "duration": 0.8875,
    "faction": "rednecks",
    "event": "campingWarn",
    "text": "I'm huntin', not campin'!",
@@ -4406,7 +4406,7 @@
   },
   "rednecks.campingWarn.c.1": {
    "file": "rednecks_campingWarn_c_1.ogg",
-   "duration": 0.733,
+   "duration": 0.733208,
    "faction": "rednecks",
    "event": "campingWarn",
    "text": "This here's a deer stand.",
@@ -4417,7 +4417,7 @@
   },
   "rednecks.campingWarn.s.0": {
    "file": "rednecks_campingWarn_s_0.ogg",
-   "duration": 0.903,
+   "duration": 0.902917,
    "faction": "rednecks",
    "event": "campingWarn",
    "text": "Snitch and get the HOSE.",
@@ -4428,7 +4428,7 @@
   },
   "rednecks.campingWarn.s.1": {
    "file": "rednecks_campingWarn_s_1.ogg",
-   "duration": 0.538,
+   "duration": 0.53825,
    "faction": "rednecks",
    "event": "campingWarn",
    "text": "I'm fishin'. Mind it.",
@@ -4439,7 +4439,7 @@
   },
   "karens.kill.c.0": {
    "file": "karens_kill_c_0.ogg",
-   "duration": 1.384,
+   "duration": 1.384417,
    "faction": "karens",
    "event": "kill",
    "text": "I want to speak to your MANAGER!",
@@ -4450,7 +4450,7 @@
   },
   "karens.kill.c.1": {
    "file": "karens_kill_c_1.ogg",
-   "duration": 1.406,
+   "duration": 1.40625,
    "faction": "karens",
    "event": "kill",
    "text": "Consider yourself REPORTED.",
@@ -4461,7 +4461,7 @@
   },
   "karens.kill.c.2": {
    "file": "karens_kill_c_2.ogg",
-   "duration": 1.637,
+   "duration": 1.63675,
    "faction": "karens",
    "event": "kill",
    "text": "One star. Would not respawn.",
@@ -4472,7 +4472,7 @@
   },
   "karens.kill.s.0": {
    "file": "karens_kill_s_0.ogg",
-   "duration": 1.272,
+   "duration": 1.272292,
    "faction": "karens",
    "event": "kill",
    "text": "Your lawn has a LIEN now!",
@@ -4483,7 +4483,7 @@
   },
   "karens.kill.s.1": {
    "file": "karens_kill_s_1.ogg",
-   "duration": 1.14,
+   "duration": 1.139708,
    "faction": "karens",
    "event": "kill",
    "text": "This is why your husband left!",
@@ -4494,7 +4494,7 @@
   },
   "karens.kill.s.2": {
    "file": "karens_kill_s_2.ogg",
-   "duration": 1.269,
+   "duration": 1.268583,
    "faction": "karens",
    "event": "kill",
    "text": "My essential-oil guy warned me!",
@@ -4516,7 +4516,7 @@
   },
   "karens.revenge.c.0": {
    "file": "karens_revenge_c_0.ogg",
-   "duration": 0.7,
+   "duration": 0.700042,
    "faction": "karens",
    "event": "revenge",
    "text": "I REMEMBER you.",
@@ -4527,7 +4527,7 @@
   },
   "karens.shutdown.c.0": {
    "file": "karens_shutdown_c_0.ogg",
-   "duration": 1.131,
+   "duration": 1.130708,
    "faction": "karens",
    "event": "shutdown",
    "text": "Your manager's been notified.",
@@ -4538,7 +4538,7 @@
   },
   "karens.melee.c.0": {
    "file": "karens_melee_c_0.ogg",
-   "duration": 0.918,
+   "duration": 0.918167,
    "faction": "karens",
    "event": "melee",
    "text": "Let me show you the door!",
@@ -4549,7 +4549,7 @@
   },
   "karens.humiliated.c.0": {
    "file": "karens_humiliated_c_0.ogg",
-   "duration": 1.182,
+   "duration": 1.182042,
    "faction": "karens",
    "event": "humiliated",
    "text": "This is UNACCEPTABLE.",
@@ -4560,7 +4560,7 @@
   },
   "karens.double.c.0": {
    "file": "karens_double_c_0.ogg",
-   "duration": 1.629,
+   "duration": 1.629208,
    "faction": "karens",
    "event": "double",
    "text": "Double! I'm telling BOTH your mothers!",
@@ -4571,7 +4571,7 @@
   },
   "karens.triple.c.0": {
    "file": "karens_triple_c_0.ogg",
-   "duration": 2.278,
+   "duration": 2.278333,
    "faction": "karens",
    "event": "triple",
    "text": "Triple! Corporate hears about ALL of you!",
@@ -4582,7 +4582,7 @@
   },
   "karens.rampage.c.0": {
    "file": "karens_rampage_c_0.ogg",
-   "duration": 2.303,
+   "duration": 2.303208,
    "faction": "karens",
    "event": "rampage",
    "text": "RAMPAGE! I AM the manager now!",
@@ -4593,7 +4593,7 @@
   },
   "karens.reload.c.0": {
    "file": "karens_reload_c_0.ogg",
-   "duration": 2.54,
+   "duration": 2.539708,
    "faction": "karens",
    "event": "reload",
    "text": "Reloading! I have 47 coupons!",
@@ -4604,7 +4604,7 @@
   },
   "karens.spotted.c.0": {
    "file": "karens_spotted_c_0.ogg",
-   "duration": 2.023,
+   "duration": 2.023042,
    "faction": "karens",
    "event": "spotted",
    "text": "Excuse me?! EXCUSE me?!",
@@ -4615,7 +4615,7 @@
   },
   "karens.lowHealth.c.0": {
    "file": "karens_lowHealth_c_0.ogg",
-   "duration": 0.606,
+   "duration": 0.605583,
    "faction": "karens",
    "event": "lowHealth",
    "text": "I know my rights!",
@@ -4626,7 +4626,7 @@
   },
   "karens.objective.c.0": {
    "file": "karens_objective_c_0.ogg",
-   "duration": 1.394,
+   "duration": 1.394083,
    "faction": "karens",
    "event": "objective",
    "text": "MINE. I was here first.",
@@ -4637,7 +4637,7 @@
   },
   "karens.enemyStreak.c.0": {
    "file": "karens_enemyStreak_c_0.ogg",
-   "duration": 0.859,
+   "duration": 0.858667,
    "faction": "karens",
    "event": "enemyStreak",
    "text": "This is harassment!",
@@ -4648,7 +4648,7 @@
   },
   "karens.lastAlive.c.0": {
    "file": "karens_lastAlive_c_0.ogg",
-   "duration": 1.449,
+   "duration": 1.448667,
    "faction": "karens",
    "event": "lastAlive",
    "text": "Fine. I'll do it MYSELF.",
@@ -4659,7 +4659,7 @@
   },
   "karens.roundStart.c.0": {
    "file": "karens_roundStart_c_0.ogg",
-   "duration": 0.812,
+   "duration": 0.81175,
    "faction": "karens",
    "event": "roundStart",
    "text": "Let's get this sorted!",
@@ -4670,7 +4670,7 @@
   },
   "karens.ownStreak.c.0": {
    "file": "karens_ownStreak_c_0.ogg",
-   "duration": 1.506,
+   "duration": 1.506458,
    "faction": "karens",
    "event": "ownStreak",
    "text": "I've called EVERYONE'S manager!",
@@ -4681,7 +4681,7 @@
   },
   "karens.firstBlood.c.0": {
    "file": "karens_firstBlood_c_0.ogg",
-   "duration": 1.925,
+   "duration": 1.925375,
    "faction": "karens",
    "event": "firstBlood",
    "text": "FIRST IN LINE! Nobody cuts me!",
@@ -4692,7 +4692,7 @@
   },
   "karens.selfKill.c.0": {
    "file": "karens_selfKill_c_0.ogg",
-   "duration": 1.692,
+   "duration": 1.6925,
    "faction": "karens",
    "event": "selfKill",
    "text": "I demand a refund on that grenade!",
@@ -4703,7 +4703,7 @@
   },
   "karens.campingSnitch.c.0": {
    "file": "karens_campingSnitch_c_0.ogg",
-   "duration": 1.556,
+   "duration": 1.556167,
    "faction": "karens",
    "event": "campingSnitch",
    "text": "NOT loitering! I have a receipt!",
@@ -4714,7 +4714,7 @@
   },
   "karens.campingSnitch.s.0": {
    "file": "karens_campingSnitch_s_0.ogg",
-   "duration": 1.987,
+   "duration": 1.987208,
    "faction": "karens",
    "event": "campingSnitch",
    "text": "My emotional support dog needs this spot!",
@@ -4725,7 +4725,7 @@
   },
   "karens.streakDestroyed.c.0": {
    "file": "karens_streakDestroyed_c_0.ogg",
-   "duration": 1.29,
+   "duration": 1.289875,
    "faction": "karens",
    "event": "streakDestroyed",
    "text": "I'm calling the FAA!",
@@ -4736,7 +4736,7 @@
   },
   "karens.spawn.c.0": {
    "file": "karens_spawn_c_0.ogg",
-   "duration": 1.508,
+   "duration": 1.508208,
    "faction": "karens",
    "event": "spawn",
    "text": "Back, and I brought COMPLAINTS.",
@@ -4747,7 +4747,7 @@
   },
   "karens.spawn.c.1": {
    "file": "karens_spawn_c_1.ogg",
-   "duration": 1.969,
+   "duration": 1.969083,
    "faction": "karens",
    "event": "spawn",
    "text": "Respawned. Meeting adjourned, NEVER.",
@@ -4758,7 +4758,7 @@
   },
   "karens.spawn.s.0": {
    "file": "karens_spawn_s_0.ogg",
-   "duration": 1.309,
+   "duration": 1.308792,
    "faction": "karens",
    "event": "spawn",
    "text": "I'm escalating to CORPORATE.",
@@ -4769,7 +4769,7 @@
   },
   "karens.spawn.s.1": {
    "file": "karens_spawn_s_1.ogg",
-   "duration": 1.172,
+   "duration": 1.171875,
    "faction": "karens",
    "event": "spawn",
    "text": "You can't keep doing this to me!",
@@ -4780,7 +4780,7 @@
   },
   "karens.victory.c.0": {
    "file": "karens_victory_c_0.ogg",
-   "duration": 1.457,
+   "duration": 1.456708,
    "faction": "karens",
    "event": "victory",
    "text": "Motion PASSES. I win.",
@@ -4791,7 +4791,7 @@
   },
   "karens.victory.c.1": {
    "file": "karens_victory_c_1.ogg",
-   "duration": 1.501,
+   "duration": 1.50075,
    "faction": "karens",
    "event": "victory",
    "text": "Minutes will reflect my VICTORY.",
@@ -4802,7 +4802,7 @@
   },
   "karens.victory.s.0": {
    "file": "karens_victory_s_0.ogg",
-   "duration": 1.583,
+   "duration": 1.582708,
    "faction": "karens",
    "event": "victory",
    "text": "Read the bylaws, LOSERS.",
@@ -4813,7 +4813,7 @@
   },
   "karens.victory.s.1": {
    "file": "karens_victory_s_1.ogg",
-   "duration": 0.987,
+   "duration": 0.986792,
    "faction": "karens",
    "event": "victory",
    "text": "I OWN this neighborhood.",
@@ -4824,7 +4824,7 @@
   },
   "karens.defeat.c.0": {
    "file": "karens_defeat_c_0.ogg",
-   "duration": 1.279,
+   "duration": 1.278917,
    "faction": "karens",
    "event": "defeat",
    "text": "I'm filing an APPEAL.",
@@ -4835,7 +4835,7 @@
   },
   "karens.defeat.c.1": {
    "file": "karens_defeat_c_1.ogg",
-   "duration": 2.049,
+   "duration": 2.049458,
    "faction": "karens",
    "event": "defeat",
    "text": "This outcome is UNACCEPTABLE.",
@@ -4846,7 +4846,7 @@
   },
   "karens.defeat.s.0": {
    "file": "karens_defeat_s_0.ogg",
-   "duration": 1.674,
+   "duration": 1.673917,
    "faction": "karens",
    "event": "defeat",
    "text": "Rigged. I'm calling my LAWYER.",
@@ -4857,7 +4857,7 @@
   },
   "karens.defeat.s.1": {
    "file": "karens_defeat_s_1.ogg",
-   "duration": 1.722,
+   "duration": 1.722083,
    "faction": "karens",
    "event": "defeat",
    "text": "Enjoy it. I'm disputing EVERYTHING.",
@@ -4868,7 +4868,7 @@
   },
   "karens.killcam.c.0": {
    "file": "karens_killcam_c_0.ogg",
-   "duration": 1.541,
+   "duration": 1.54075,
    "faction": "karens",
    "event": "killcam",
    "text": "Exhibit A: your DEFEAT.",
@@ -4879,7 +4879,7 @@
   },
   "karens.killcam.c.1": {
    "file": "karens_killcam_c_1.ogg",
-   "duration": 1.199,
+   "duration": 1.199375,
    "faction": "karens",
    "event": "killcam",
    "text": "Caught on camera. Obviously.",
@@ -4890,7 +4890,7 @@
   },
   "karens.killcam.s.0": {
    "file": "karens_killcam_s_0.ogg",
-   "duration": 1.424,
+   "duration": 1.424292,
    "faction": "karens",
    "event": "killcam",
    "text": "Smile! You're TRESPASSING.",
@@ -4901,7 +4901,7 @@
   },
   "karens.killcam.s.1": {
    "file": "karens_killcam_s_1.ogg",
-   "duration": 1.095,
+   "duration": 1.0945,
    "faction": "karens",
    "event": "killcam",
    "text": "That's going in the NEWSLETTER.",
@@ -4912,7 +4912,7 @@
   },
   "karens.campingWarn.c.0": {
    "file": "karens_campingWarn_c_0.ogg",
-   "duration": 1.398,
+   "duration": 1.397667,
    "faction": "karens",
    "event": "campingWarn",
    "text": "Am I loitering? NEVER.",
@@ -4934,7 +4934,7 @@
   },
   "karens.campingWarn.s.0": {
    "file": "karens_campingWarn_s_0.ogg",
-   "duration": 1.234,
+   "duration": 1.233917,
    "faction": "karens",
    "event": "campingWarn",
    "text": "Snitch and I'll FINE you.",
@@ -4945,7 +4945,7 @@
   },
   "karens.campingWarn.s.1": {
    "file": "karens_campingWarn_s_1.ogg",
-   "duration": 1.491,
+   "duration": 1.491292,
    "faction": "karens",
    "event": "campingWarn",
    "text": "I'm supervising. Mind yourself.",
@@ -4956,7 +4956,7 @@
   },
   "gymRats.kill.c.0": {
    "file": "gymRats_kill_c_0.ogg",
-   "duration": 0.809,
+   "duration": 0.808833,
    "faction": "gymRats",
    "event": "kill",
    "text": "LIGHT WEIGHT, BABY!",
@@ -4967,7 +4967,7 @@
   },
   "gymRats.kill.c.1": {
    "file": "gymRats_kill_c_1.ogg",
-   "duration": 1.632,
+   "duration": 1.632417,
    "faction": "gymRats",
    "event": "kill",
    "text": "Do you even aim, bro?",
@@ -4978,7 +4978,7 @@
   },
   "gymRats.kill.c.2": {
    "file": "gymRats_kill_c_2.ogg",
-   "duration": 0.434,
+   "duration": 0.4345,
    "faction": "gymRats",
    "event": "kill",
    "text": "GAINS!",
@@ -4989,7 +4989,7 @@
   },
   "gymRats.kill.s.0": {
    "file": "gymRats_kill_s_0.ogg",
-   "duration": 2.426,
+   "duration": 2.426375,
    "faction": "gymRats",
    "event": "kill",
    "text": "Skipped leg day, skipped LIFE!",
@@ -5000,7 +5000,7 @@
   },
   "gymRats.kill.s.1": {
    "file": "gymRats_kill_s_1.ogg",
-   "duration": 1.881,
+   "duration": 1.880625,
    "faction": "gymRats",
    "event": "kill",
    "text": "My TRT just kicked in!",
@@ -5011,7 +5011,7 @@
   },
   "gymRats.headshot.c.0": {
    "file": "gymRats_headshot_c_0.ogg",
-   "duration": 1.957,
+   "duration": 1.95725,
    "faction": "gymRats",
    "event": "headshot",
    "text": "Skull PR! Light weight!",
@@ -5022,7 +5022,7 @@
   },
   "gymRats.revenge.c.0": {
    "file": "gymRats_revenge_c_0.ogg",
-   "duration": 2.152,
+   "duration": 2.152292,
    "faction": "gymRats",
    "event": "revenge",
    "text": "Caught me on rest day. Never again.",
@@ -5033,7 +5033,7 @@
   },
   "gymRats.shutdown.c.0": {
    "file": "gymRats_shutdown_c_0.ogg",
-   "duration": 1.694,
+   "duration": 1.694125,
    "faction": "gymRats",
    "event": "shutdown",
    "text": "Your streak skipped leg day.",
@@ -5044,7 +5044,7 @@
   },
   "gymRats.melee.c.0": {
    "file": "gymRats_melee_c_0.ogg",
-   "duration": 1.847,
+   "duration": 1.846917,
    "faction": "gymRats",
    "event": "melee",
    "text": "Close-grip! To the face!",
@@ -5055,7 +5055,7 @@
   },
   "gymRats.humiliated.c.0": {
    "file": "gymRats_humiliated_c_0.ogg",
-   "duration": 0.906,
+   "duration": 0.90575,
    "faction": "gymRats",
    "event": "humiliated",
    "text": "I wasn't warmed up...",
@@ -5066,7 +5066,7 @@
   },
   "gymRats.double.c.0": {
    "file": "gymRats_double_c_0.ogg",
-   "duration": 1.074,
+   "duration": 1.074417,
    "faction": "gymRats",
    "event": "double",
    "text": "DOUBLE! Superset!",
@@ -5077,7 +5077,7 @@
   },
   "gymRats.triple.c.0": {
    "file": "gymRats_triple_c_0.ogg",
-   "duration": 1.239,
+   "duration": 1.239333,
    "faction": "gymRats",
    "event": "triple",
    "text": "TRIPLE! Drop set of DEATH!",
@@ -5088,7 +5088,7 @@
   },
   "gymRats.rampage.c.0": {
    "file": "gymRats_rampage_c_0.ogg",
-   "duration": 1.851,
+   "duration": 1.850792,
    "faction": "gymRats",
    "event": "rampage",
    "text": "RAMPAGE! BEAST MODE!",
@@ -5099,7 +5099,7 @@
   },
   "gymRats.reload.c.0": {
    "file": "gymRats_reload_c_0.ogg",
-   "duration": 2.691,
+   "duration": 2.690833,
    "faction": "gymRats",
    "event": "reload",
    "text": "Reloading! Rest between sets!",
@@ -5110,7 +5110,7 @@
   },
   "gymRats.spotted.c.0": {
    "file": "gymRats_spotted_c_0.ogg",
-   "duration": 0.74,
+   "duration": 0.739917,
    "faction": "gymRats",
    "event": "spotted",
    "text": "Cardio time!",
@@ -5121,7 +5121,7 @@
   },
   "gymRats.lowHealth.c.0": {
    "file": "gymRats_lowHealth_c_0.ogg",
-   "duration": 1.475,
+   "duration": 1.474708,
    "faction": "gymRats",
    "event": "lowHealth",
    "text": "Spot me! SPOT ME!",
@@ -5132,7 +5132,7 @@
   },
   "gymRats.objective.c.0": {
    "file": "gymRats_objective_c_0.ogg",
-   "duration": 3.067,
+   "duration": 3.067167,
    "faction": "gymRats",
    "event": "objective",
    "text": "MINE. Called dibs. With my chest.",
@@ -5143,7 +5143,7 @@
   },
   "gymRats.enemyStreak.c.0": {
    "file": "gymRats_enemyStreak_c_0.ogg",
-   "duration": 1.013,
+   "duration": 1.012542,
    "faction": "gymRats",
    "event": "enemyStreak",
    "text": "They're on MY streak!",
@@ -5154,7 +5154,7 @@
   },
   "gymRats.lastAlive.c.0": {
    "file": "gymRats_lastAlive_c_0.ogg",
-   "duration": 1.943,
+   "duration": 1.943167,
    "faction": "gymRats",
    "event": "lastAlive",
    "text": "One rep left. One kill left.",
@@ -5165,7 +5165,7 @@
   },
   "gymRats.roundStart.c.0": {
    "file": "gymRats_roundStart_c_0.ogg",
-   "duration": 0.473,
+   "duration": 0.473375,
    "faction": "gymRats",
    "event": "roundStart",
    "text": "CHEST DAY!",
@@ -5176,7 +5176,7 @@
   },
   "gymRats.ownStreak.c.0": {
    "file": "gymRats_ownStreak_c_0.ogg",
-   "duration": 1.813,
+   "duration": 1.813167,
    "faction": "gymRats",
    "event": "ownStreak",
    "text": "PRE-WORKOUT KICKING IN!",
@@ -5187,7 +5187,7 @@
   },
   "gymRats.firstBlood.c.0": {
    "file": "gymRats_firstBlood_c_0.ogg",
-   "duration": 1.856,
+   "duration": 1.855875,
    "faction": "gymRats",
    "event": "firstBlood",
    "text": "FIRST BLOOD! First PR!",
@@ -5209,7 +5209,7 @@
   },
   "gymRats.campingSnitch.c.0": {
    "file": "gymRats_campingSnitch_c_0.ogg",
-   "duration": 3.039,
+   "duration": 3.038792,
    "faction": "gymRats",
    "event": "campingSnitch",
    "text": "I'm not camping, I'm resting between sets!",
@@ -5220,7 +5220,7 @@
   },
   "gymRats.streakDestroyed.c.0": {
    "file": "gymRats_streakDestroyed_c_0.ogg",
-   "duration": 1.876,
+   "duration": 1.87575,
    "faction": "gymRats",
    "event": "streakDestroyed",
    "text": "They benched our helicopter?!",
@@ -5231,7 +5231,7 @@
   },
   "gymRats.spawn.c.0": {
    "file": "gymRats_spawn_c_0.ogg",
-   "duration": 1.277,
+   "duration": 1.277042,
    "faction": "gymRats",
    "event": "spawn",
    "text": "BACK! No rest days!",
@@ -5242,7 +5242,7 @@
   },
   "gymRats.spawn.c.1": {
    "file": "gymRats_spawn_c_1.ogg",
-   "duration": 2.135,
+   "duration": 2.134542,
    "faction": "gymRats",
    "event": "spawn",
    "text": "Respawn equals active recovery!",
@@ -5253,7 +5253,7 @@
   },
   "gymRats.spawn.s.0": {
    "file": "gymRats_spawn_s_0.ogg",
-   "duration": 1.713,
+   "duration": 1.713083,
    "faction": "gymRats",
    "event": "spawn",
    "text": "Spot me, BRO!",
@@ -5264,7 +5264,7 @@
   },
   "gymRats.spawn.s.1": {
    "file": "gymRats_spawn_s_1.ogg",
-   "duration": 1.982,
+   "duration": 1.981917,
    "faction": "gymRats",
    "event": "spawn",
    "text": "Lightweight respawn. Whatever.",
@@ -5275,7 +5275,7 @@
   },
   "gymRats.victory.c.0": {
    "file": "gymRats_victory_c_0.ogg",
-   "duration": 1.367,
+   "duration": 1.36725,
    "faction": "gymRats",
    "event": "victory",
    "text": "GAINS! We got GAINS!",
@@ -5286,7 +5286,7 @@
   },
   "gymRats.victory.c.1": {
    "file": "gymRats_victory_c_1.ogg",
-   "duration": 2.509,
+   "duration": 2.509333,
    "faction": "gymRats",
    "event": "victory",
    "text": "PR! Personal RECORD!",
@@ -5297,7 +5297,7 @@
   },
   "gymRats.victory.s.0": {
    "file": "gymRats_victory_s_0.ogg",
-   "duration": 1.098,
+   "duration": 1.097667,
    "faction": "gymRats",
    "event": "victory",
    "text": "Do you even LIFT?",
@@ -5308,7 +5308,7 @@
   },
   "gymRats.victory.s.1": {
    "file": "gymRats_victory_s_1.ogg",
-   "duration": 1.793,
+   "duration": 1.792833,
    "faction": "gymRats",
    "event": "victory",
    "text": "Stay small, LOSERS.",
@@ -5319,7 +5319,7 @@
   },
   "gymRats.defeat.c.0": {
    "file": "gymRats_defeat_c_0.ogg",
-   "duration": 0.961,
+   "duration": 0.960875,
    "faction": "gymRats",
    "event": "defeat",
    "text": "Good set. We go again.",
@@ -5330,7 +5330,7 @@
   },
   "gymRats.defeat.c.1": {
    "file": "gymRats_defeat_c_1.ogg",
-   "duration": 1.853,
+   "duration": 1.853458,
    "faction": "gymRats",
    "event": "defeat",
    "text": "Deload week. It's fine.",
@@ -5341,7 +5341,7 @@
   },
   "gymRats.defeat.s.0": {
    "file": "gymRats_defeat_s_0.ogg",
-   "duration": 1.043,
+   "duration": 1.043333,
    "faction": "gymRats",
    "event": "defeat",
    "text": "Y'all skipped LEG DAY.",
@@ -5352,7 +5352,7 @@
   },
   "gymRats.defeat.s.1": {
    "file": "gymRats_defeat_s_1.ogg",
-   "duration": 1.292,
+   "duration": 1.2925,
    "faction": "gymRats",
    "event": "defeat",
    "text": "Cardio. That's your problem.",
@@ -5363,7 +5363,7 @@
   },
   "gymRats.killcam.c.0": {
    "file": "gymRats_killcam_c_0.ogg",
-   "duration": 1.541,
+   "duration": 1.54125,
    "faction": "gymRats",
    "event": "killcam",
    "text": "REPPED! Count it!",
@@ -5374,7 +5374,7 @@
   },
   "gymRats.killcam.c.1": {
    "file": "gymRats_killcam_c_1.ogg",
-   "duration": 1.127,
+   "duration": 1.126958,
    "faction": "gymRats",
    "event": "killcam",
    "text": "That's a PR, baby!",
@@ -5385,7 +5385,7 @@
   },
   "gymRats.killcam.s.0": {
    "file": "gymRats_killcam_s_0.ogg",
-   "duration": 1.439,
+   "duration": 1.438667,
    "faction": "gymRats",
    "event": "killcam",
    "text": "Lightweight! NOTHING!",
@@ -5396,7 +5396,7 @@
   },
   "gymRats.killcam.s.1": {
    "file": "gymRats_killcam_s_1.ogg",
-   "duration": 1.888,
+   "duration": 1.887875,
    "faction": "gymRats",
    "event": "killcam",
    "text": "Curl THIS, bro!",
@@ -5407,7 +5407,7 @@
   },
   "gymRats.campingWarn.c.0": {
    "file": "gymRats_campingWarn_c_0.ogg",
-   "duration": 1.559,
+   "duration": 1.558583,
    "faction": "gymRats",
    "event": "campingWarn",
    "text": "I'm resting between SETS.",
@@ -5418,7 +5418,7 @@
   },
   "gymRats.campingWarn.c.1": {
    "file": "gymRats_campingWarn_c_1.ogg",
-   "duration": 2.251,
+   "duration": 2.251417,
    "faction": "gymRats",
    "event": "campingWarn",
    "text": "Isometric hold. Obviously.",
@@ -5429,7 +5429,7 @@
   },
   "gymRats.campingWarn.s.0": {
    "file": "gymRats_campingWarn_s_0.ogg",
-   "duration": 1.561,
+   "duration": 1.561083,
    "faction": "gymRats",
    "event": "campingWarn",
    "text": "Snitch and do BURPEES.",
@@ -5440,7 +5440,7 @@
   },
   "gymRats.campingWarn.s.1": {
    "file": "gymRats_campingWarn_s_1.ogg",
-   "duration": 2.053,
+   "duration": 2.052792,
    "faction": "gymRats",
    "event": "campingWarn",
    "text": "I'm not camping, I'm BULKING.",
@@ -5451,7 +5451,7 @@
   },
   "theaterKids.kill.c.0": {
    "file": "theaterKids_kill_c_0.ogg",
-   "duration": 0.689,
+   "duration": 0.689083,
    "faction": "theaterKids",
    "event": "kill",
    "text": "And... SCENE!",
@@ -5462,7 +5462,7 @@
   },
   "theaterKids.kill.c.1": {
    "file": "theaterKids_kill_c_1.ogg",
-   "duration": 1.316,
+   "duration": 1.316208,
    "faction": "theaterKids",
    "event": "kill",
    "text": "The reunion starts NOW.",
@@ -5473,7 +5473,7 @@
   },
   "theaterKids.kill.c.2": {
    "file": "theaterKids_kill_c_2.ogg",
-   "duration": 1.023,
+   "duration": 1.023292,
    "faction": "theaterKids",
    "event": "kill",
    "text": "I'm not here to make friends!",
@@ -5484,7 +5484,7 @@
   },
   "theaterKids.kill.s.0": {
    "file": "theaterKids_kill_s_0.ogg",
-   "duration": 1.807,
+   "duration": 1.807458,
    "faction": "theaterKids",
    "event": "kill",
    "text": "Your edit? Unwatchable!",
@@ -5495,7 +5495,7 @@
   },
   "theaterKids.kill.s.1": {
    "file": "theaterKids_kill_s_1.ogg",
-   "duration": 0.981,
+   "duration": 0.981167,
    "faction": "theaterKids",
    "event": "kill",
    "text": "Sign the release form, corpse!",
@@ -5506,7 +5506,7 @@
   },
   "theaterKids.headshot.c.0": {
    "file": "theaterKids_headshot_c_0.ogg",
-   "duration": 0.915,
+   "duration": 0.915208,
    "faction": "theaterKids",
    "event": "headshot",
    "text": "Close-up! DEATH!",
@@ -5517,7 +5517,7 @@
   },
   "theaterKids.revenge.c.0": {
    "file": "theaterKids_revenge_c_0.ogg",
-   "duration": 1.692,
+   "duration": 1.692083,
    "faction": "theaterKids",
    "event": "revenge",
    "text": "You voted me out. Big mistake.",
@@ -5528,7 +5528,7 @@
   },
   "theaterKids.shutdown.c.0": {
    "file": "theaterKids_shutdown_c_0.ogg",
-   "duration": 1.302,
+   "duration": 1.3015,
    "faction": "theaterKids",
    "event": "shutdown",
    "text": "Your storyline is OVER.",
@@ -5539,7 +5539,7 @@
   },
   "theaterKids.melee.c.0": {
    "file": "theaterKids_melee_c_0.ogg",
-   "duration": 0.897,
+   "duration": 0.897417,
    "faction": "theaterKids",
    "event": "melee",
    "text": "The ol' table flip!",
@@ -5550,7 +5550,7 @@
   },
   "theaterKids.humiliated.c.0": {
    "file": "theaterKids_humiliated_c_0.ogg",
-   "duration": 1.278,
+   "duration": 1.2775,
    "faction": "theaterKids",
    "event": "humiliated",
    "text": "That was NOT in the script!",
@@ -5561,7 +5561,7 @@
   },
   "theaterKids.double.c.0": {
    "file": "theaterKids_double_c_0.ogg",
-   "duration": 1.025,
+   "duration": 1.024875,
    "faction": "theaterKids",
    "event": "double",
    "text": "Double! Roll the footage!",
@@ -5572,7 +5572,7 @@
   },
   "theaterKids.triple.c.0": {
    "file": "theaterKids_triple_c_0.ogg",
-   "duration": 1.021,
+   "duration": 1.020583,
    "faction": "theaterKids",
    "event": "triple",
    "text": "Triple! A TRIUMPH!",
@@ -5583,7 +5583,7 @@
   },
   "theaterKids.rampage.c.0": {
    "file": "theaterKids_rampage_c_0.ogg",
-   "duration": 1.759,
+   "duration": 1.75875,
    "faction": "theaterKids",
    "event": "rampage",
    "text": "RAMPAGE! Villain edit unlocked!",
@@ -5594,7 +5594,7 @@
   },
   "theaterKids.reload.c.0": {
    "file": "theaterKids_reload_c_0.ogg",
-   "duration": 0.421,
+   "duration": 0.42075,
    "faction": "theaterKids",
    "event": "reload",
    "text": "Commercial break!",
@@ -5605,7 +5605,7 @@
   },
   "theaterKids.spotted.c.0": {
    "file": "theaterKids_spotted_c_0.ogg",
-   "duration": 1.605,
+   "duration": 1.604583,
    "faction": "theaterKids",
    "event": "spotted",
    "text": "Enter, stage left: victim.",
@@ -5616,7 +5616,7 @@
   },
   "theaterKids.lowHealth.c.0": {
    "file": "theaterKids_lowHealth_c_0.ogg",
-   "duration": 1.325,
+   "duration": 1.325375,
    "faction": "theaterKids",
    "event": "lowHealth",
    "text": "I'm dying... beautifully...",
@@ -5627,7 +5627,7 @@
   },
   "theaterKids.objective.c.0": {
    "file": "theaterKids_objective_c_0.ogg",
-   "duration": 1.231,
+   "duration": 1.231292,
    "faction": "theaterKids",
    "event": "objective",
    "text": "The objective! MINE!",
@@ -5638,7 +5638,7 @@
   },
   "theaterKids.enemyStreak.c.0": {
    "file": "theaterKids_enemyStreak_c_0.ogg",
-   "duration": 1.118,
+   "duration": 1.118375,
    "faction": "theaterKids",
    "event": "enemyStreak",
    "text": "They're stealing my spotlight!",
@@ -5649,7 +5649,7 @@
   },
   "theaterKids.lastAlive.c.0": {
    "file": "theaterKids_lastAlive_c_0.ogg",
-   "duration": 1.581,
+   "duration": 1.581042,
    "faction": "theaterKids",
    "event": "lastAlive",
    "text": "A one-person show. My dream.",
@@ -5660,7 +5660,7 @@
   },
   "theaterKids.roundStart.c.0": {
    "file": "theaterKids_roundStart_c_0.ogg",
-   "duration": 0.541,
+   "duration": 0.541042,
    "faction": "theaterKids",
    "event": "roundStart",
    "text": "Places, everyone!",
@@ -5671,7 +5671,7 @@
   },
   "theaterKids.ownStreak.c.0": {
    "file": "theaterKids_ownStreak_c_0.ogg",
-   "duration": 1.7,
+   "duration": 1.699917,
    "faction": "theaterKids",
    "event": "ownStreak",
    "text": "STANDING OVATION INCOMING!",
@@ -5682,7 +5682,7 @@
   },
   "theaterKids.firstBlood.c.0": {
    "file": "theaterKids_firstBlood_c_0.ogg",
-   "duration": 1.194,
+   "duration": 1.194125,
    "faction": "theaterKids",
    "event": "firstBlood",
    "text": "FIRST BLOOD! Opening night!",
@@ -5693,7 +5693,7 @@
   },
   "theaterKids.selfKill.c.0": {
    "file": "theaterKids_selfKill_c_0.ogg",
-   "duration": 1.974,
+   "duration": 1.973542,
    "faction": "theaterKids",
    "event": "selfKill",
    "text": "That death was... interpretive.",
@@ -5704,7 +5704,7 @@
   },
   "theaterKids.campingSnitch.c.0": {
    "file": "theaterKids_campingSnitch_c_0.ogg",
-   "duration": 1.934,
+   "duration": 1.933792,
    "faction": "theaterKids",
    "event": "campingSnitch",
    "text": "I'm not camping, I'm in my confessional!",
@@ -5715,7 +5715,7 @@
   },
   "theaterKids.streakDestroyed.c.0": {
    "file": "theaterKids_streakDestroyed_c_0.ogg",
-   "duration": 0.986,
+   "duration": 0.986375,
    "faction": "theaterKids",
    "event": "streakDestroyed",
    "text": "Who cancelled my helicopter?!",
@@ -5726,7 +5726,7 @@
   },
   "theaterKids.spawn.c.0": {
    "file": "theaterKids_spawn_c_0.ogg",
-   "duration": 1.337,
+   "duration": 1.337417,
    "faction": "theaterKids",
    "event": "spawn",
    "text": "Places, everyone! I'M BACK!",
@@ -5737,7 +5737,7 @@
   },
   "theaterKids.spawn.c.1": {
    "file": "theaterKids_spawn_c_1.ogg",
-   "duration": 1.102,
+   "duration": 1.101583,
    "faction": "theaterKids",
    "event": "spawn",
    "text": "Act Two! My ENTRANCE!",
@@ -5748,7 +5748,7 @@
   },
   "theaterKids.spawn.s.0": {
    "file": "theaterKids_spawn_s_0.ogg",
-   "duration": 0.874,
+   "duration": 0.873625,
    "faction": "theaterKids",
    "event": "spawn",
    "text": "The show MUST go on!",
@@ -5759,7 +5759,7 @@
   },
   "theaterKids.spawn.s.1": {
    "file": "theaterKids_spawn_s_1.ogg",
-   "duration": 0.955,
+   "duration": 0.954833,
    "faction": "theaterKids",
    "event": "spawn",
    "text": "Understudies stay SEATED.",
@@ -5770,7 +5770,7 @@
   },
   "theaterKids.victory.c.0": {
    "file": "theaterKids_victory_c_0.ogg",
-   "duration": 1.268,
+   "duration": 1.26775,
    "faction": "theaterKids",
    "event": "victory",
    "text": "STANDING OVATION!",
@@ -5781,7 +5781,7 @@
   },
   "theaterKids.victory.c.1": {
    "file": "theaterKids_victory_c_1.ogg",
-   "duration": 1.333,
+   "duration": 1.332917,
    "faction": "theaterKids",
    "event": "victory",
    "text": "Encore! ENCORE!",
@@ -5792,7 +5792,7 @@
   },
   "theaterKids.victory.s.0": {
    "file": "theaterKids_victory_s_0.ogg",
-   "duration": 1.725,
+   "duration": 1.725458,
    "faction": "theaterKids",
    "event": "victory",
    "text": "The critics AGREE. I won.",
@@ -5803,7 +5803,7 @@
   },
   "theaterKids.victory.s.1": {
    "file": "theaterKids_victory_s_1.ogg",
-   "duration": 1.055,
+   "duration": 1.054792,
    "faction": "theaterKids",
    "event": "victory",
    "text": "Take a BOW, losers.",
@@ -5814,7 +5814,7 @@
   },
   "theaterKids.defeat.c.0": {
    "file": "theaterKids_defeat_c_0.ogg",
-   "duration": 1.117,
+   "duration": 1.116917,
    "faction": "theaterKids",
    "event": "defeat",
    "text": "The show must... end?",
@@ -5825,7 +5825,7 @@
   },
   "theaterKids.defeat.c.1": {
    "file": "theaterKids_defeat_c_1.ogg",
-   "duration": 1.567,
+   "duration": 1.56675,
    "faction": "theaterKids",
    "event": "defeat",
    "text": "Tragic. Beautiful. Fine.",
@@ -5836,7 +5836,7 @@
   },
   "theaterKids.defeat.s.0": {
    "file": "theaterKids_defeat_s_0.ogg",
-   "duration": 1.291,
+   "duration": 1.291417,
    "faction": "theaterKids",
    "event": "defeat",
    "text": "The director HATES me.",
@@ -5847,7 +5847,7 @@
   },
   "theaterKids.defeat.s.1": {
    "file": "theaterKids_defeat_s_1.ogg",
-   "duration": 0.927,
+   "duration": 0.926625,
    "faction": "theaterKids",
    "event": "defeat",
    "text": "I was ROBBED of my Tony.",
@@ -5858,7 +5858,7 @@
   },
   "theaterKids.killcam.c.0": {
    "file": "theaterKids_killcam_c_0.ogg",
-   "duration": 2.377,
+   "duration": 2.377167,
    "faction": "theaterKids",
    "event": "killcam",
    "text": "CURTAIN CALL! You're DONE!",
@@ -5869,7 +5869,7 @@
   },
   "theaterKids.killcam.c.1": {
    "file": "theaterKids_killcam_c_1.ogg",
-   "duration": 1.129,
+   "duration": 1.12925,
    "faction": "theaterKids",
    "event": "killcam",
    "text": "Jazz hands of DOOM!",
@@ -5880,7 +5880,7 @@
   },
   "theaterKids.killcam.s.0": {
    "file": "theaterKids_killcam_s_0.ogg",
-   "duration": 0.547,
+   "duration": 0.54675,
    "faction": "theaterKids",
    "event": "killcam",
    "text": "You're just an EXTRA.",
@@ -5891,7 +5891,7 @@
   },
   "theaterKids.killcam.s.1": {
    "file": "theaterKids_killcam_s_1.ogg",
-   "duration": 1.358,
+   "duration": 1.358042,
    "faction": "theaterKids",
    "event": "killcam",
    "text": "Break a leg. LITERALLY.",
@@ -5902,7 +5902,7 @@
   },
   "theaterKids.campingWarn.c.0": {
    "file": "theaterKids_campingWarn_c_0.ogg",
-   "duration": 0.889,
+   "duration": 0.889417,
    "faction": "theaterKids",
    "event": "campingWarn",
    "text": "I'm in CHARACTER. Still.",
@@ -5913,7 +5913,7 @@
   },
   "theaterKids.campingWarn.c.1": {
    "file": "theaterKids_campingWarn_c_1.ogg",
-   "duration": 1.374,
+   "duration": 1.374292,
    "faction": "theaterKids",
    "event": "campingWarn",
    "text": "Method acting. Obviously.",
@@ -5924,7 +5924,7 @@
   },
   "theaterKids.campingWarn.s.0": {
    "file": "theaterKids_campingWarn_s_0.ogg",
-   "duration": 0.854,
+   "duration": 0.854292,
    "faction": "theaterKids",
    "event": "campingWarn",
    "text": "Snitch and you're CUT.",
@@ -5935,7 +5935,7 @@
   },
   "theaterKids.campingWarn.s.1": {
    "file": "theaterKids_campingWarn_s_1.ogg",
-   "duration": 1.1,
+   "duration": 1.099792,
    "faction": "theaterKids",
    "event": "campingWarn",
    "text": "I'm holding for APPLAUSE.",
@@ -5957,7 +5957,7 @@
   },
   "hoaDads.kill.c.1": {
    "file": "hoaDads_kill_c_1.ogg",
-   "duration": 1.523,
+   "duration": 1.522542,
    "faction": "hoaDads",
    "event": "kill",
    "text": "The HOA sends its regards!",
@@ -5968,7 +5968,7 @@
   },
   "hoaDads.kill.c.2": {
    "file": "hoaDads_kill_c_2.ogg",
-   "duration": 1.795,
+   "duration": 1.794583,
    "faction": "hoaDads",
    "event": "kill",
    "text": "Grass at three inches? FINED.",
@@ -5979,7 +5979,7 @@
   },
   "hoaDads.kill.s.0": {
    "file": "hoaDads_kill_s_0.ogg",
-   "duration": 2.186,
+   "duration": 2.185625,
    "faction": "hoaDads",
    "event": "kill",
    "text": "Your kid's chalk art? Pressure-washed!",
@@ -5990,7 +5990,7 @@
   },
   "hoaDads.kill.s.1": {
    "file": "hoaDads_kill_s_1.ogg",
-   "duration": 2.105,
+   "duration": 2.104833,
    "faction": "hoaDads",
    "event": "kill",
    "text": "Lien on your house AND your soul!",
@@ -6001,7 +6001,7 @@
   },
   "hoaDads.headshot.c.0": {
    "file": "hoaDads_headshot_c_0.ogg",
-   "duration": 1.791,
+   "duration": 1.790833,
    "faction": "hoaDads",
    "event": "headshot",
    "text": "Measured twice, shot once.",
@@ -6012,7 +6012,7 @@
   },
   "hoaDads.revenge.c.0": {
    "file": "hoaDads_revenge_c_0.ogg",
-   "duration": 1.558,
+   "duration": 1.55775,
    "faction": "hoaDads",
    "event": "revenge",
    "text": "I remember your fence. And you.",
@@ -6023,7 +6023,7 @@
   },
   "hoaDads.shutdown.c.0": {
    "file": "hoaDads_shutdown_c_0.ogg",
-   "duration": 2.306,
+   "duration": 2.306208,
    "faction": "hoaDads",
    "event": "shutdown",
    "text": "Section four, paragraph two. DENIED.",
@@ -6045,7 +6045,7 @@
   },
   "hoaDads.humiliated.c.0": {
    "file": "hoaDads_humiliated_c_0.ogg",
-   "duration": 1.039,
+   "duration": 1.03925,
    "faction": "hoaDads",
    "event": "humiliated",
    "text": "This is going in the newsletter.",
@@ -6056,7 +6056,7 @@
   },
   "hoaDads.double.c.0": {
    "file": "hoaDads_double_c_0.ogg",
-   "duration": 1.611,
+   "duration": 1.610542,
    "faction": "hoaDads",
    "event": "double",
    "text": "Double! Like my property values!",
@@ -6067,7 +6067,7 @@
   },
   "hoaDads.triple.c.0": {
    "file": "hoaDads_triple_c_0.ogg",
-   "duration": 2.1,
+   "duration": 2.100042,
    "faction": "hoaDads",
    "event": "triple",
    "text": "Triple! Neighborhood watch approves!",
@@ -6078,7 +6078,7 @@
   },
   "hoaDads.rampage.c.0": {
    "file": "hoaDads_rampage_c_0.ogg",
-   "duration": 1.29,
+   "duration": 1.289958,
    "faction": "hoaDads",
    "event": "rampage",
    "text": "RAMPAGE! For the community!",
@@ -6089,7 +6089,7 @@
   },
   "hoaDads.reload.c.0": {
    "file": "hoaDads_reload_c_0.ogg",
-   "duration": 1.093,
+   "duration": 1.092583,
    "faction": "hoaDads",
    "event": "reload",
    "text": "Reloading! Pull start!",
@@ -6100,7 +6100,7 @@
   },
   "hoaDads.spotted.c.0": {
    "file": "hoaDads_spotted_c_0.ogg",
-   "duration": 1.419,
+   "duration": 1.419375,
    "faction": "hoaDads",
    "event": "spotted",
    "text": "Unapproved visitor on the greenbelt!",
@@ -6111,7 +6111,7 @@
   },
   "hoaDads.lowHealth.c.0": {
    "file": "hoaDads_lowHealth_c_0.ogg",
-   "duration": 1.748,
+   "duration": 1.747583,
    "faction": "hoaDads",
    "event": "lowHealth",
    "text": "My back! My beautiful back!",
@@ -6122,7 +6122,7 @@
   },
   "hoaDads.objective.c.0": {
    "file": "hoaDads_objective_c_0.ogg",
-   "duration": 1.254,
+   "duration": 1.253958,
    "faction": "hoaDads",
    "event": "objective",
    "text": "COMMON AREA. Mine.",
@@ -6133,7 +6133,7 @@
   },
   "hoaDads.enemyStreak.c.0": {
    "file": "hoaDads_enemyStreak_c_0.ogg",
-   "duration": 1.248,
+   "duration": 1.248208,
    "faction": "hoaDads",
    "event": "enemyStreak",
    "text": "Filing a complaint with the board!",
@@ -6144,7 +6144,7 @@
   },
   "hoaDads.lastAlive.c.0": {
    "file": "hoaDads_lastAlive_c_0.ogg",
-   "duration": 2.042,
+   "duration": 2.041583,
    "faction": "hoaDads",
    "event": "lastAlive",
    "text": "One dad. One grill. One mission.",
@@ -6155,7 +6155,7 @@
   },
   "hoaDads.roundStart.c.0": {
    "file": "hoaDads_roundStart_c_0.ogg",
-   "duration": 1.025,
+   "duration": 1.025208,
    "faction": "hoaDads",
    "event": "roundStart",
    "text": "Mow the competition!",
@@ -6166,7 +6166,7 @@
   },
   "hoaDads.ownStreak.c.0": {
    "file": "hoaDads_ownStreak_c_0.ogg",
-   "duration": 1.795,
+   "duration": 1.795042,
    "faction": "hoaDads",
    "event": "ownStreak",
    "text": "The board approved... AN AIRSTRIKE.",
@@ -6177,7 +6177,7 @@
   },
   "hoaDads.firstBlood.c.0": {
    "file": "hoaDads_firstBlood_c_0.ogg",
-   "duration": 1.888,
+   "duration": 1.887625,
    "faction": "hoaDads",
    "event": "firstBlood",
    "text": "FIRST BLOOD! First on the block!",
@@ -6188,7 +6188,7 @@
   },
   "hoaDads.selfKill.c.0": {
    "file": "hoaDads_selfKill_c_0.ogg",
-   "duration": 1.427,
+   "duration": 1.427042,
    "faction": "hoaDads",
    "event": "selfKill",
    "text": "That was NOT up to code.",
@@ -6199,7 +6199,7 @@
   },
   "hoaDads.campingSnitch.c.0": {
    "file": "hoaDads_campingSnitch_c_0.ogg",
-   "duration": 1.381,
+   "duration": 1.380792,
    "faction": "hoaDads",
    "event": "campingSnitch",
    "text": "I'm not camping, I'm inspecting!",
@@ -6210,7 +6210,7 @@
   },
   "hoaDads.streakDestroyed.c.0": {
    "file": "hoaDads_streakDestroyed_c_0.ogg",
-   "duration": 1.511,
+   "duration": 1.510583,
    "faction": "hoaDads",
    "event": "streakDestroyed",
    "text": "That helicopter was board-approved!",
@@ -6221,7 +6221,7 @@
   },
   "hoaDads.spawn.c.0": {
    "file": "hoaDads_spawn_c_0.ogg",
-   "duration": 1.722,
+   "duration": 1.721833,
    "faction": "hoaDads",
    "event": "spawn",
    "text": "Back! Who moved my LAWN?",
@@ -6232,7 +6232,7 @@
   },
   "hoaDads.spawn.c.1": {
    "file": "hoaDads_spawn_c_1.ogg",
-   "duration": 1.666,
+   "duration": 1.666083,
    "faction": "hoaDads",
    "event": "spawn",
    "text": "Respawned. Grill's still hot!",
@@ -6243,7 +6243,7 @@
   },
   "hoaDads.spawn.s.0": {
    "file": "hoaDads_spawn_s_0.ogg",
-   "duration": 0.678,
+   "duration": 0.677542,
    "faction": "hoaDads",
    "event": "spawn",
    "text": "Dad's HOME.",
@@ -6254,7 +6254,7 @@
   },
   "hoaDads.spawn.s.1": {
    "file": "hoaDads_spawn_s_1.ogg",
-   "duration": 2.2,
+   "duration": 2.199583,
    "faction": "hoaDads",
    "event": "spawn",
    "text": "Back in MY day, respawns took LONGER.",
@@ -6265,7 +6265,7 @@
   },
   "hoaDads.victory.c.0": {
    "file": "hoaDads_victory_c_0.ogg",
-   "duration": 0.739,
+   "duration": 0.739292,
    "faction": "hoaDads",
    "event": "victory",
    "text": "That's how DAD does it!",
@@ -6276,7 +6276,7 @@
   },
   "hoaDads.victory.c.1": {
    "file": "hoaDads_victory_c_1.ogg",
-   "duration": 1.318,
+   "duration": 1.318125,
    "faction": "hoaDads",
    "event": "victory",
    "text": "Victory! Who wants BURGERS?",
@@ -6287,7 +6287,7 @@
   },
   "hoaDads.victory.s.0": {
    "file": "hoaDads_victory_s_0.ogg",
-   "duration": 0.893,
+   "duration": 0.892667,
    "faction": "hoaDads",
    "event": "victory",
    "text": "Respect your ELDERS.",
@@ -6298,7 +6298,7 @@
   },
   "hoaDads.victory.s.1": {
    "file": "hoaDads_victory_s_1.ogg",
-   "duration": 1.19,
+   "duration": 1.190333,
    "faction": "hoaDads",
    "event": "victory",
    "text": "I pay the MORTGAGE here.",
@@ -6309,7 +6309,7 @@
   },
   "hoaDads.defeat.c.0": {
    "file": "hoaDads_defeat_c_0.ogg",
-   "duration": 1.343,
+   "duration": 1.342708,
    "faction": "hoaDads",
    "event": "defeat",
    "text": "Good game. Mow anyway.",
@@ -6320,7 +6320,7 @@
   },
   "hoaDads.defeat.c.1": {
    "file": "hoaDads_defeat_c_1.ogg",
-   "duration": 0.719,
+   "duration": 0.718708,
    "faction": "hoaDads",
    "event": "defeat",
    "text": "We'll get 'em next weekend.",
@@ -6331,7 +6331,7 @@
   },
   "hoaDads.defeat.s.0": {
    "file": "hoaDads_defeat_s_0.ogg",
-   "duration": 0.911,
+   "duration": 0.911375,
    "faction": "hoaDads",
    "event": "defeat",
    "text": "Back in MY day...",
@@ -6342,7 +6342,7 @@
   },
   "hoaDads.defeat.s.1": {
    "file": "hoaDads_defeat_s_1.ogg",
-   "duration": 0.803,
+   "duration": 0.803083,
    "faction": "hoaDads",
    "event": "defeat",
    "text": "I'm telling your MOTHER.",
@@ -6353,7 +6353,7 @@
   },
   "hoaDads.killcam.c.0": {
    "file": "hoaDads_killcam_c_0.ogg",
-   "duration": 1.757,
+   "duration": 1.756958,
    "faction": "hoaDads",
    "event": "killcam",
    "text": "Dad joke? Dad JOKE!",
@@ -6364,7 +6364,7 @@
   },
   "hoaDads.killcam.c.1": {
    "file": "hoaDads_killcam_c_1.ogg",
-   "duration": 1.072,
+   "duration": 1.071958,
    "faction": "hoaDads",
    "event": "killcam",
    "text": "That's a teachable MOMENT!",
@@ -6375,7 +6375,7 @@
   },
   "hoaDads.killcam.s.0": {
    "file": "hoaDads_killcam_s_0.ogg",
-   "duration": 1.594,
+   "duration": 1.593708,
    "faction": "hoaDads",
    "event": "killcam",
    "text": "Grounded. Two WEEKS.",
@@ -6386,7 +6386,7 @@
   },
   "hoaDads.killcam.s.1": {
    "file": "hoaDads_killcam_s_1.ogg",
-   "duration": 1.258,
+   "duration": 1.2575,
    "faction": "hoaDads",
    "event": "killcam",
    "text": "Ask your mother. OH WAIT.",
@@ -6397,7 +6397,7 @@
   },
   "hoaDads.campingWarn.c.0": {
    "file": "hoaDads_campingWarn_c_0.ogg",
-   "duration": 1.159,
+   "duration": 1.158792,
    "faction": "hoaDads",
    "event": "campingWarn",
    "text": "I'm supervising the YARD.",
@@ -6408,7 +6408,7 @@
   },
   "hoaDads.campingWarn.c.1": {
    "file": "hoaDads_campingWarn_c_1.ogg",
-   "duration": 1.313,
+   "duration": 1.312708,
    "faction": "hoaDads",
    "event": "campingWarn",
    "text": "Just resting my KNEES.",
@@ -6419,7 +6419,7 @@
   },
   "hoaDads.campingWarn.s.0": {
    "file": "hoaDads_campingWarn_s_0.ogg",
-   "duration": 1.423,
+   "duration": 1.423042,
    "faction": "hoaDads",
    "event": "campingWarn",
    "text": "Snitch and no DESSERT.",
@@ -6430,7 +6430,7 @@
   },
   "hoaDads.campingWarn.s.1": {
    "file": "hoaDads_campingWarn_s_1.ogg",
-   "duration": 1.175,
+   "duration": 1.175458,
    "faction": "hoaDads",
    "event": "campingWarn",
    "text": "I'm not camping, I'm GRILLING.",
@@ -6441,7 +6441,7 @@
   },
   "emoKids.kill.c.0": {
    "file": "emoKids_kill_c_0.ogg",
-   "duration": 0.297,
+   "duration": 0.297125,
    "faction": "emoKids",
    "event": "kill",
    "text": "I'M FINE!",
@@ -6452,7 +6452,7 @@
   },
   "emoKids.kill.c.1": {
    "file": "emoKids_kill_c_1.ogg",
-   "duration": 0.897,
+   "duration": 0.896542,
    "faction": "emoKids",
    "event": "kill",
    "text": "This changes nothing!",
@@ -6463,7 +6463,7 @@
   },
   "emoKids.kill.c.2": {
    "file": "emoKids_kill_c_2.ogg",
-   "duration": 1.008,
+   "duration": 1.008125,
    "faction": "emoKids",
    "event": "kill",
    "text": "Another one for the playlist!",
@@ -6474,7 +6474,7 @@
   },
   "emoKids.kill.s.0": {
    "file": "emoKids_kill_s_0.ogg",
-   "duration": 1.185,
+   "duration": 1.184958,
    "faction": "emoKids",
    "event": "kill",
    "text": "Your vibe? Store-bought!",
@@ -6485,7 +6485,7 @@
   },
   "emoKids.kill.s.1": {
    "file": "emoKids_kill_s_1.ogg",
-   "duration": 1.303,
+   "duration": 1.302708,
    "faction": "emoKids",
    "event": "kill",
    "text": "Mall-goth? You're mall-GONE!",
@@ -6496,7 +6496,7 @@
   },
   "emoKids.headshot.c.0": {
    "file": "emoKids_headshot_c_0.ogg",
-   "duration": 1.864,
+   "duration": 1.863917,
    "faction": "emoKids",
    "event": "headshot",
    "text": "HEADSHOT! Black parade of ONE!",
@@ -6507,7 +6507,7 @@
   },
   "emoKids.revenge.c.0": {
    "file": "emoKids_revenge_c_0.ogg",
-   "duration": 1.893,
+   "duration": 1.893417,
    "faction": "emoKids",
    "event": "revenge",
    "text": "I wrote a song about you. REVENGE.",
@@ -6518,7 +6518,7 @@
   },
   "emoKids.shutdown.c.0": {
    "file": "emoKids_shutdown_c_0.ogg",
-   "duration": 1.218,
+   "duration": 1.218375,
    "faction": "emoKids",
    "event": "shutdown",
    "text": "Your happiness: CANCELED.",
@@ -6529,7 +6529,7 @@
   },
   "emoKids.melee.c.0": {
    "file": "emoKids_melee_c_0.ogg",
-   "duration": 0.816,
+   "duration": 0.816417,
    "faction": "emoKids",
    "event": "melee",
    "text": "Hug! With a TROPHY!",
@@ -6540,7 +6540,7 @@
   },
   "emoKids.humiliated.c.0": {
    "file": "emoKids_humiliated_c_0.ogg",
-   "duration": 1.21,
+   "duration": 1.210292,
    "faction": "emoKids",
    "event": "humiliated",
    "text": "Even my death is mid.",
@@ -6551,7 +6551,7 @@
   },
   "emoKids.double.c.0": {
    "file": "emoKids_double_c_0.ogg",
-   "duration": 1.465,
+   "duration": 1.464542,
    "faction": "emoKids",
    "event": "double",
    "text": "DOUBLE! The void doubles!",
@@ -6562,7 +6562,7 @@
   },
   "emoKids.triple.c.0": {
    "file": "emoKids_triple_c_0.ogg",
-   "duration": 0.988,
+   "duration": 0.988292,
    "faction": "emoKids",
    "event": "triple",
    "text": "TRIPLE! Scream it back!",
@@ -6573,7 +6573,7 @@
   },
   "emoKids.rampage.c.0": {
    "file": "emoKids_rampage_c_0.ogg",
-   "duration": 1.828,
+   "duration": 1.828375,
    "faction": "emoKids",
    "event": "rampage",
    "text": "RAMPAGE! Track four on the mixtape!",
@@ -6584,7 +6584,7 @@
   },
   "emoKids.reload.c.0": {
    "file": "emoKids_reload_c_0.ogg",
-   "duration": 1.488,
+   "duration": 1.487875,
    "faction": "emoKids",
    "event": "reload",
    "text": "Reloading! Everything ends!",
@@ -6595,7 +6595,7 @@
   },
   "emoKids.spotted.c.0": {
    "file": "emoKids_spotted_c_0.ogg",
-   "duration": 1.343,
+   "duration": 1.3435,
    "faction": "emoKids",
    "event": "spotted",
    "text": "Oh GREAT. People.",
@@ -6606,7 +6606,7 @@
   },
   "emoKids.lowHealth.c.0": {
    "file": "emoKids_lowHealth_c_0.ogg",
-   "duration": 1.724,
+   "duration": 1.7235,
    "faction": "emoKids",
    "event": "lowHealth",
    "text": "Almost dead! Finally, a vibe!",
@@ -6617,7 +6617,7 @@
   },
   "emoKids.objective.c.0": {
    "file": "emoKids_objective_c_0.ogg",
-   "duration": 1.291,
+   "duration": 1.291167,
    "faction": "emoKids",
    "event": "objective",
    "text": "Took it. It won't fix me.",
@@ -6628,7 +6628,7 @@
   },
   "emoKids.enemyStreak.c.0": {
    "file": "emoKids_enemyStreak_c_0.ogg",
-   "duration": 1.427,
+   "duration": 1.4265,
    "faction": "emoKids",
    "event": "enemyStreak",
    "text": "They're happy. DISGUSTING.",
@@ -6639,7 +6639,7 @@
   },
   "emoKids.lastAlive.c.0": {
    "file": "emoKids_lastAlive_c_0.ogg",
-   "duration": 1.122,
+   "duration": 1.121583,
    "faction": "emoKids",
    "event": "lastAlive",
    "text": "Alone. As it should be.",
@@ -6650,7 +6650,7 @@
   },
   "emoKids.roundStart.c.0": {
    "file": "emoKids_roundStart_c_0.ogg",
-   "duration": 0.909,
+   "duration": 0.909042,
    "faction": "emoKids",
    "event": "roundStart",
    "text": "Let's get this OVER WITH!",
@@ -6661,7 +6661,7 @@
   },
   "emoKids.ownStreak.c.0": {
    "file": "emoKids_ownStreak_c_0.ogg",
-   "duration": 1.091,
+   "duration": 1.090958,
    "faction": "emoKids",
    "event": "ownStreak",
    "text": "THE DARKNESS HUNGERS!",
@@ -6672,7 +6672,7 @@
   },
   "emoKids.firstBlood.c.0": {
    "file": "emoKids_firstBlood_c_0.ogg",
-   "duration": 1.315,
+   "duration": 1.315125,
    "faction": "emoKids",
    "event": "firstBlood",
    "text": "FIRST BLOOD! Track one!",
@@ -6683,7 +6683,7 @@
   },
   "emoKids.selfKill.c.0": {
    "file": "emoKids_selfKill_c_0.ogg",
-   "duration": 1.254,
+   "duration": 1.254458,
    "faction": "emoKids",
    "event": "selfKill",
    "text": "Even my grenade hates me.",
@@ -6694,7 +6694,7 @@
   },
   "emoKids.campingSnitch.c.0": {
    "file": "emoKids_campingSnitch_c_0.ogg",
-   "duration": 2.457,
+   "duration": 2.456667,
    "faction": "emoKids",
    "event": "campingSnitch",
    "text": "Not camping. Just... sitting. Forever.",
@@ -6705,7 +6705,7 @@
   },
   "emoKids.streakDestroyed.c.0": {
    "file": "emoKids_streakDestroyed_c_0.ogg",
-   "duration": 1.464,
+   "duration": 1.464458,
    "faction": "emoKids",
    "event": "streakDestroyed",
    "text": "Good. Nothing lasts.",
@@ -6716,7 +6716,7 @@
   },
   "emoKids.spawn.c.0": {
    "file": "emoKids_spawn_c_0.ogg",
-   "duration": 1.062,
+   "duration": 1.062042,
    "faction": "emoKids",
    "event": "spawn",
    "text": "Back. Unfortunately.",
@@ -6727,7 +6727,7 @@
   },
   "emoKids.spawn.c.1": {
    "file": "emoKids_spawn_c_1.ogg",
-   "duration": 1.574,
+   "duration": 1.574167,
    "faction": "emoKids",
    "event": "spawn",
    "text": "Death rejected me. AGAIN.",
@@ -6738,7 +6738,7 @@
   },
   "emoKids.spawn.s.0": {
    "file": "emoKids_spawn_s_0.ogg",
-   "duration": 1.577,
+   "duration": 1.576625,
    "faction": "emoKids",
    "event": "spawn",
    "text": "Nobody understands my respawn.",
@@ -6749,7 +6749,7 @@
   },
   "emoKids.spawn.s.1": {
    "file": "emoKids_spawn_s_1.ogg",
-   "duration": 1.675,
+   "duration": 1.675083,
    "faction": "emoKids",
    "event": "spawn",
    "text": "I died inside YEARS ago.",
@@ -6771,7 +6771,7 @@
   },
   "emoKids.victory.c.1": {
    "file": "emoKids_victory_c_1.ogg",
-   "duration": 1.882,
+   "duration": 1.881625,
    "faction": "emoKids",
    "event": "victory",
    "text": "Joy is temporary. This is fine.",
@@ -6782,7 +6782,7 @@
   },
   "emoKids.victory.s.0": {
    "file": "emoKids_victory_s_0.ogg",
-   "duration": 1.395,
+   "duration": 1.395125,
    "faction": "emoKids",
    "event": "victory",
    "text": "Even winning feels EMPTY.",
@@ -6793,7 +6793,7 @@
   },
   "emoKids.victory.s.1": {
    "file": "emoKids_victory_s_1.ogg",
-   "duration": 1.318,
+   "duration": 1.318458,
    "faction": "emoKids",
    "event": "victory",
    "text": "Your happiness DISGUSTS me.",
@@ -6804,7 +6804,7 @@
   },
   "emoKids.defeat.c.0": {
    "file": "emoKids_defeat_c_0.ogg",
-   "duration": 0.695,
+   "duration": 0.6945,
    "faction": "emoKids",
    "event": "defeat",
    "text": "Losing suits me.",
@@ -6815,7 +6815,7 @@
   },
   "emoKids.defeat.c.1": {
    "file": "emoKids_defeat_c_1.ogg",
-   "duration": 1.473,
+   "duration": 1.473417,
    "faction": "emoKids",
    "event": "defeat",
    "text": "As expected. Obviously.",
@@ -6826,7 +6826,7 @@
   },
   "emoKids.defeat.s.0": {
    "file": "emoKids_defeat_s_0.ogg",
-   "duration": 1.437,
+   "duration": 1.436708,
    "faction": "emoKids",
    "event": "defeat",
    "text": "I wanted to lose. MAYBE.",
@@ -6837,7 +6837,7 @@
   },
   "emoKids.defeat.s.1": {
    "file": "emoKids_defeat_s_1.ogg",
-   "duration": 1.205,
+   "duration": 1.205458,
    "faction": "emoKids",
    "event": "defeat",
    "text": "Happiness was never an OPTION.",
@@ -6848,7 +6848,7 @@
   },
   "emoKids.killcam.c.0": {
    "file": "emoKids_killcam_c_0.ogg",
-   "duration": 1.589,
+   "duration": 1.5895,
    "faction": "emoKids",
    "event": "killcam",
    "text": "Bleed for me. Metaphorically.",
@@ -6859,7 +6859,7 @@
   },
   "emoKids.killcam.c.1": {
    "file": "emoKids_killcam_c_1.ogg",
-   "duration": 1.198,
+   "duration": 1.197958,
    "faction": "emoKids",
    "event": "killcam",
    "text": "Your pain. My ART.",
@@ -6870,7 +6870,7 @@
   },
   "emoKids.killcam.s.0": {
    "file": "emoKids_killcam_s_0.ogg",
-   "duration": 1.313,
+   "duration": 1.312792,
    "faction": "emoKids",
    "event": "killcam",
    "text": "Die. Like my DREAMS.",
@@ -6881,7 +6881,7 @@
   },
   "emoKids.killcam.s.1": {
    "file": "emoKids_killcam_s_1.ogg",
-   "duration": 0.93,
+   "duration": 0.929708,
    "faction": "emoKids",
    "event": "killcam",
    "text": "Welcome to the VOID.",
@@ -6892,7 +6892,7 @@
   },
   "emoKids.campingWarn.c.0": {
    "file": "emoKids_campingWarn_c_0.ogg",
-   "duration": 1.452,
+   "duration": 1.451875,
    "faction": "emoKids",
    "event": "campingWarn",
    "text": "I'm not camping. I'm BROODING.",
@@ -6903,7 +6903,7 @@
   },
   "emoKids.campingWarn.c.1": {
    "file": "emoKids_campingWarn_c_1.ogg",
-   "duration": 0.77,
+   "duration": 0.769542,
    "faction": "emoKids",
    "event": "campingWarn",
    "text": "Leave me in the CORNER.",
@@ -6925,7 +6925,7 @@
   },
   "emoKids.campingWarn.s.1": {
    "file": "emoKids_campingWarn_s_1.ogg",
-   "duration": 1.587,
+   "duration": 1.586542,
    "faction": "emoKids",
    "event": "campingWarn",
    "text": "Report me. Add to the PAIN.",
@@ -6936,7 +6936,7 @@
   },
   "trumpers.kill.c.0": {
    "file": "trumpers_kill_c_0.ogg",
-   "duration": 0.36,
+   "duration": 0.360042,
    "faction": "trumpers",
    "event": "kill",
    "text": "You're FIRED!",
@@ -6947,7 +6947,7 @@
   },
   "trumpers.kill.c.1": {
    "file": "trumpers_kill_c_1.ogg",
-   "duration": 1.089,
+   "duration": 1.089042,
    "faction": "trumpers",
    "event": "kill",
    "text": "Winning so much, I'm tired!",
@@ -6958,7 +6958,7 @@
   },
   "trumpers.kill.c.2": {
    "file": "trumpers_kill_c_2.ogg",
-   "duration": 1.668,
+   "duration": 1.667667,
    "faction": "trumpers",
    "event": "kill",
    "text": "Total and complete disaster!",
@@ -6969,7 +6969,7 @@
   },
   "trumpers.kill.s.0": {
    "file": "trumpers_kill_s_0.ogg",
-   "duration": 0.718,
+   "duration": 0.718167,
    "faction": "trumpers",
    "event": "kill",
    "text": "Rigged! But I still won!",
@@ -6980,7 +6980,7 @@
   },
   "trumpers.kill.s.1": {
    "file": "trumpers_kill_s_1.ogg",
-   "duration": 1.415,
+   "duration": 1.41525,
    "faction": "trumpers",
    "event": "kill",
    "text": "Enjoy the landslide, snowflake!",
@@ -6991,7 +6991,7 @@
   },
   "trumpers.headshot.c.0": {
    "file": "trumpers_headshot_c_0.ogg",
-   "duration": 2.298,
+   "duration": 2.298417,
    "faction": "trumpers",
    "event": "headshot",
    "text": "HEADSHOT! Tremendous accuracy, huge!",
@@ -7002,7 +7002,7 @@
   },
   "trumpers.revenge.c.0": {
    "file": "trumpers_revenge_c_0.ogg",
-   "duration": 1.445,
+   "duration": 1.444583,
    "faction": "trumpers",
    "event": "revenge",
    "text": "Vindication! We won again!",
@@ -7013,7 +7013,7 @@
   },
   "trumpers.shutdown.c.0": {
    "file": "trumpers_shutdown_c_0.ogg",
-   "duration": 1.402,
+   "duration": 1.401583,
    "faction": "trumpers",
    "event": "shutdown",
    "text": "Fake streak! Totally discredited!",
@@ -7024,7 +7024,7 @@
   },
   "trumpers.melee.c.0": {
    "file": "trumpers_melee_c_0.ogg",
-   "duration": 1.241,
+   "duration": 1.240667,
    "faction": "trumpers",
    "event": "melee",
    "text": "Tough handshake! The strongest!",
@@ -7035,7 +7035,7 @@
   },
   "trumpers.humiliated.c.0": {
    "file": "trumpers_humiliated_c_0.ogg",
-   "duration": 0.832,
+   "duration": 0.83225,
    "faction": "trumpers",
    "event": "humiliated",
    "text": "Deep state interference!",
@@ -7046,7 +7046,7 @@
   },
   "trumpers.double.c.0": {
    "file": "trumpers_double_c_0.ogg",
-   "duration": 1.128,
+   "duration": 1.127958,
    "faction": "trumpers",
    "event": "double",
    "text": "DOUBLE! Two terms of dominance!",
@@ -7057,7 +7057,7 @@
   },
   "trumpers.triple.c.0": {
    "file": "trumpers_triple_c_0.ogg",
-   "duration": 1.607,
+   "duration": 1.607083,
    "faction": "trumpers",
    "event": "triple",
    "text": "TRIPLE! Millions and millions watching!",
@@ -7068,7 +7068,7 @@
   },
   "trumpers.rampage.c.0": {
    "file": "trumpers_rampage_c_0.ogg",
-   "duration": 2.029,
+   "duration": 2.02875,
    "faction": "trumpers",
    "event": "rampage",
    "text": "RAMPAGE! Nobody has seen anything like it!",
@@ -7079,7 +7079,7 @@
   },
   "trumpers.reload.c.0": {
    "file": "trumpers_reload_c_0.ogg",
-   "duration": 1.589,
+   "duration": 1.588833,
    "faction": "trumpers",
    "event": "reload",
    "text": "Reloading! Tremendous magazine size!",
@@ -7090,7 +7090,7 @@
   },
   "trumpers.spotted.c.0": {
    "file": "trumpers_spotted_c_0.ogg",
-   "duration": 1.166,
+   "duration": 1.166167,
    "faction": "trumpers",
    "event": "spotted",
    "text": "Hostile caravan spotted ahead!",
@@ -7101,7 +7101,7 @@
   },
   "trumpers.lowHealth.c.0": {
    "file": "trumpers_lowHealth_c_0.ogg",
-   "duration": 1.418,
+   "duration": 1.417833,
    "faction": "trumpers",
    "event": "lowHealth",
    "text": "Just a scratch! Witch hunt!",
@@ -7112,7 +7112,7 @@
   },
   "trumpers.objective.c.0": {
    "file": "trumpers_objective_c_0.ogg",
-   "duration": 1.747,
+   "duration": 1.746542,
    "faction": "trumpers",
    "event": "objective",
    "text": "Claimed! Putting up forty-seven flags!",
@@ -7123,7 +7123,7 @@
   },
   "trumpers.enemyStreak.c.0": {
    "file": "trumpers_enemyStreak_c_0.ogg",
-   "duration": 1.88,
+   "duration": 1.879792,
    "faction": "trumpers",
    "event": "enemyStreak",
    "text": "They're cheating! Recount the kills!",
@@ -7134,7 +7134,7 @@
   },
   "trumpers.lastAlive.c.0": {
    "file": "trumpers_lastAlive_c_0.ogg",
-   "duration": 1.641,
+   "duration": 1.641417,
    "faction": "trumpers",
    "event": "lastAlive",
    "text": "Last patriot standing! Huge rally!",
@@ -7145,7 +7145,7 @@
   },
   "trumpers.roundStart.c.0": {
    "file": "trumpers_roundStart_c_0.ogg",
-   "duration": 0.745,
+   "duration": 0.745167,
    "faction": "trumpers",
    "event": "roundStart",
    "text": "Make this cul-de-sac GREAT!",
@@ -7156,7 +7156,7 @@
   },
   "trumpers.ownStreak.c.0": {
    "file": "trumpers_ownStreak_c_0.ogg",
-   "duration": 2.198,
+   "duration": 2.197792,
    "faction": "trumpers",
    "event": "ownStreak",
    "text": "PATRIOT AIR FORCE INBOUND!",
@@ -7167,7 +7167,7 @@
   },
   "trumpers.firstBlood.c.0": {
    "file": "trumpers_firstBlood_c_0.ogg",
-   "duration": 1.998,
+   "duration": 1.998458,
    "faction": "trumpers",
    "event": "firstBlood",
    "text": "FIRST BLOOD! Biggest opening day ever!",
@@ -7178,7 +7178,7 @@
   },
   "trumpers.selfKill.c.0": {
    "file": "trumpers_selfKill_c_0.ogg",
-   "duration": 1.175,
+   "duration": 1.175292,
    "faction": "trumpers",
    "event": "selfKill",
    "text": "Fake news! That never happened!",
@@ -7189,7 +7189,7 @@
   },
   "trumpers.campingSnitch.c.0": {
    "file": "trumpers_campingSnitch_c_0.ogg",
-   "duration": 1.846,
+   "duration": 1.845833,
    "faction": "trumpers",
    "event": "campingSnitch",
    "text": "Not camping! Guarding the perimeter, folks!",
@@ -7200,7 +7200,7 @@
   },
   "trumpers.campingSnitch.s.0": {
    "file": "trumpers_campingSnitch_s_0.ogg",
-   "duration": 1.385,
+   "duration": 1.38475,
    "faction": "trumpers",
    "event": "campingSnitch",
    "text": "Defending the mailbox from socialism!",
@@ -7211,7 +7211,7 @@
   },
   "trumpers.streakDestroyed.c.0": {
    "file": "trumpers_streakDestroyed_c_0.ogg",
-   "duration": 1.232,
+   "duration": 1.232333,
    "faction": "trumpers",
    "event": "streakDestroyed",
    "text": "Who shot down the patriot chopper?!",
@@ -7222,7 +7222,7 @@
   },
   "trumpers.spawn.c.0": {
    "file": "trumpers_spawn_c_0.ogg",
-   "duration": 0.899,
+   "duration": 0.899042,
    "faction": "trumpers",
    "event": "spawn",
    "text": "The comeback is ON, folks!",
@@ -7233,7 +7233,7 @@
   },
   "trumpers.spawn.c.1": {
    "file": "trumpers_spawn_c_1.ogg",
-   "duration": 0.647,
+   "duration": 0.64675,
    "faction": "trumpers",
    "event": "spawn",
    "text": "Back and stronger than ever!",
@@ -7244,7 +7244,7 @@
   },
   "trumpers.spawn.s.0": {
    "file": "trumpers_spawn_s_0.ogg",
-   "duration": 1.285,
+   "duration": 1.284667,
    "faction": "trumpers",
    "event": "spawn",
    "text": "Unstoppable! Tremendous energy!",
@@ -7255,7 +7255,7 @@
   },
   "trumpers.spawn.s.1": {
    "file": "trumpers_spawn_s_1.ogg",
-   "duration": 0.664,
+   "duration": 0.663875,
    "faction": "trumpers",
    "event": "spawn",
    "text": "Can't keep a patriot down!",
@@ -7266,7 +7266,7 @@
   },
   "trumpers.victory.c.0": {
    "file": "trumpers_victory_c_0.ogg",
-   "duration": 1.388,
+   "duration": 1.387958,
    "faction": "trumpers",
    "event": "victory",
    "text": "VICTORY! We won by ALOT!",
@@ -7277,7 +7277,7 @@
   },
   "trumpers.victory.c.1": {
    "file": "trumpers_victory_c_1.ogg",
-   "duration": 2.122,
+   "duration": 2.121875,
    "faction": "trumpers",
    "event": "victory",
    "text": "Landslide! Complete and total triumph!",
@@ -7288,7 +7288,7 @@
   },
   "trumpers.victory.s.0": {
    "file": "trumpers_victory_s_0.ogg",
-   "duration": 1.737,
+   "duration": 1.736583,
    "faction": "trumpers",
    "event": "victory",
    "text": "So much winning! Unbelievable!",
@@ -7299,7 +7299,7 @@
   },
   "trumpers.victory.s.1": {
    "file": "trumpers_victory_s_1.ogg",
-   "duration": 0.822,
+   "duration": 0.821625,
    "faction": "trumpers",
    "event": "victory",
    "text": "Make this cul-de-sac proud!",
@@ -7310,7 +7310,7 @@
   },
   "trumpers.defeat.c.0": {
    "file": "trumpers_defeat_c_0.ogg",
-   "duration": 1.521,
+   "duration": 1.520708,
    "faction": "trumpers",
    "event": "defeat",
    "text": "Rigged! Demand a full audit!",
@@ -7321,7 +7321,7 @@
   },
   "trumpers.defeat.c.1": {
    "file": "trumpers_defeat_c_1.ogg",
-   "duration": 0.831,
+   "duration": 0.830792,
    "faction": "trumpers",
    "event": "defeat",
    "text": "Fake scoreboard! We won!",
@@ -7332,7 +7332,7 @@
   },
   "trumpers.defeat.s.0": {
    "file": "trumpers_defeat_s_0.ogg",
-   "duration": 1.722,
+   "duration": 1.721625,
    "faction": "trumpers",
    "event": "defeat",
    "text": "Stolen match! Pure fraud!",
@@ -7343,7 +7343,7 @@
   },
   "trumpers.defeat.s.1": {
    "file": "trumpers_defeat_s_1.ogg",
-   "duration": 0.851,
+   "duration": 0.850667,
    "faction": "trumpers",
    "event": "defeat",
    "text": "I'm appealing to the supreme court!",
@@ -7354,7 +7354,7 @@
   },
   "trumpers.killcam.c.0": {
    "file": "trumpers_killcam_c_0.ogg",
-   "duration": 1.949,
+   "duration": 1.948583,
    "faction": "trumpers",
    "event": "killcam",
    "text": "You're FIRED! Roll tape!",
@@ -7365,7 +7365,7 @@
   },
   "trumpers.killcam.c.1": {
    "file": "trumpers_killcam_c_1.ogg",
-   "duration": 1.332,
+   "duration": 1.332333,
    "faction": "trumpers",
    "event": "killcam",
    "text": "Tremendous shot, everybodys saying it!",
@@ -7376,7 +7376,7 @@
   },
   "trumpers.killcam.s.0": {
    "file": "trumpers_killcam_s_0.ogg",
-   "duration": 1.209,
+   "duration": 1.208708,
    "faction": "trumpers",
    "event": "killcam",
    "text": "Total disaster for your team!",
@@ -7387,7 +7387,7 @@
   },
   "trumpers.killcam.s.1": {
    "file": "trumpers_killcam_s_1.ogg",
-   "duration": 1.513,
+   "duration": 1.512875,
    "faction": "trumpers",
    "event": "killcam",
    "text": "Nobody shoots like me, nobody!",
@@ -7398,7 +7398,7 @@
   },
   "trumpers.campingWarn.c.0": {
    "file": "trumpers_campingWarn_c_0.ogg",
-   "duration": 0.865,
+   "duration": 0.865083,
    "faction": "trumpers",
    "event": "campingWarn",
    "text": "Securing the perimeter, folks!",
@@ -7409,7 +7409,7 @@
   },
   "trumpers.campingWarn.c.1": {
    "file": "trumpers_campingWarn_c_1.ogg",
-   "duration": 0.661,
+   "duration": 0.661375,
    "faction": "trumpers",
    "event": "campingWarn",
    "text": "Patrolling the lawn!",
@@ -7420,7 +7420,7 @@
   },
   "trumpers.campingWarn.s.0": {
    "file": "trumpers_campingWarn_s_0.ogg",
-   "duration": 1.11,
+   "duration": 1.109667,
    "faction": "trumpers",
    "event": "campingWarn",
    "text": "Guarding against border violations!",
@@ -7431,7 +7431,7 @@
   },
   "trumpers.campingWarn.s.1": {
    "file": "trumpers_campingWarn_s_1.ogg",
-   "duration": 1.746,
+   "duration": 1.745958,
    "faction": "trumpers",
    "event": "campingWarn",
    "text": "Not camping, holding the line!",
@@ -7442,7 +7442,7 @@
   },
   "rivalry.karens-theaterKids.c.0": {
    "file": "rivalry_karens-theaterKids_c_0.ogg",
-   "duration": 0.937,
+   "duration": 0.937375,
    "faction": "karens",
    "event": "rivalry",
    "text": "The show is CANCELED.",
@@ -7453,7 +7453,7 @@
   },
   "rivalry.theaterKids-karens.c.0": {
    "file": "rivalry_theaterKids-karens_c_0.ogg",
-   "duration": 1.463,
+   "duration": 1.463042,
    "faction": "theaterKids",
    "event": "rivalry",
    "text": "Curtain! No encore!",
@@ -7464,7 +7464,7 @@
   },
   "rivalry.emoKids-fratHouse.c.0": {
    "file": "rivalry_emoKids-fratHouse_c_0.ogg",
-   "duration": 0.856,
+   "duration": 0.856125,
    "faction": "emoKids",
    "event": "rivalry",
    "text": "Your joy was rented.",
@@ -7475,7 +7475,7 @@
   },
   "rivalry.karens-brainRot.c.0": {
    "file": "rivalry_karens-brainRot_c_0.ogg",
-   "duration": 1.064,
+   "duration": 1.063792,
    "faction": "karens",
    "event": "rivalry",
    "text": "I'm confiscating that tablet!",
@@ -7486,7 +7486,7 @@
   },
   "rivalry.gymRats-vcBros.c.0": {
    "file": "rivalry_gymRats-vcBros_c_0.ogg",
-   "duration": 2.174,
+   "duration": 2.17425,
    "faction": "gymRats",
    "event": "rivalry",
    "text": "Your standing desk can't save you!",
@@ -7497,7 +7497,7 @@
   },
   "rivalry.oldMoney-rednecks.c.0": {
    "file": "rivalry_oldMoney-rednecks_c_0.ogg",
-   "duration": 1.548,
+   "duration": 1.548375,
    "faction": "oldMoney",
    "event": "rivalry",
    "text": "The groundskeepers will remove you.",
@@ -7508,7 +7508,7 @@
   },
   "rivalry.rednecks-oldMoney.c.0": {
    "file": "rivalry_rednecks-oldMoney_c_0.ogg",
-   "duration": 1.262,
+   "duration": 1.261667,
    "faction": "rednecks",
    "event": "rivalry",
    "text": "Y'all pay HOW much for golf?!",
@@ -7519,7 +7519,7 @@
   },
   "rivalry.hoaDads-karens.c.0": {
    "file": "rivalry_hoaDads-karens_c_0.ogg",
-   "duration": 1.665,
+   "duration": 1.665125,
    "faction": "hoaDads",
    "event": "rivalry",
    "text": "I AM the HOA.",
@@ -7530,7 +7530,7 @@
   },
   "rivalry.hoaDads-karens.s.0": {
    "file": "rivalry_hoaDads-karens_s_0.ogg",
-   "duration": 1.714,
+   "duration": 1.713833,
    "faction": "hoaDads",
    "event": "rivalry",
    "text": "Your mulch is out of code, Deborah!",
@@ -7541,7 +7541,7 @@
   },
   "rivalry.karens-hoaDads.c.0": {
    "file": "rivalry_karens-hoaDads_c_0.ogg",
-   "duration": 0.731,
+   "duration": 0.731042,
    "faction": "karens",
    "event": "rivalry",
    "text": "I'll have YOUR job!",
@@ -7552,7 +7552,7 @@
   },
   "rivalry.karens-hoaDads.s.0": {
    "file": "rivalry_karens-hoaDads_s_0.ogg",
-   "duration": 1.147,
+   "duration": 1.147125,
    "faction": "karens",
    "event": "rivalry",
    "text": "Enjoy your recall election!",
@@ -7563,7 +7563,7 @@
   },
   "rivalry.valleyGirls-cloutStreamers.c.0": {
    "file": "rivalry_valleyGirls-cloutStreamers_c_0.ogg",
-   "duration": 2.039,
+   "duration": 2.039125,
    "faction": "valleyGirls",
    "event": "rivalry",
    "text": "Your stream? Zero viewers.",
@@ -7574,7 +7574,7 @@
   },
   "rivalry.karens-theGays.c.0": {
    "file": "rivalry_karens-theGays_c_0.ogg",
-   "duration": 1.876,
+   "duration": 1.876333,
    "faction": "karens",
    "event": "rivalry",
    "text": "Your pride flag violates bylaws!",
@@ -7585,7 +7585,7 @@
   },
   "rivalry.trumpers-theGays.c.0": {
    "file": "rivalry_trumpers-theGays_c_0.ogg",
-   "duration": 1.114,
+   "duration": 1.113792,
    "faction": "trumpers",
    "event": "rivalry",
    "text": "Too fabulous for this block!",
@@ -7604,9 +7604,1252 @@
    "pitch": 0.8,
    "rate": 1.25,
    "peak_db": -10.2
+  },
+  "wokeLibs.spawn.c.0": {
+   "file": "wokeLibs_spawn_c_0.ogg",
+   "duration": 1.153042,
+   "faction": "wokeLibs",
+   "event": "spawn",
+   "text": "This spawn sits on stolen land.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.2
+  },
+  "wokeLibs.spawn.c.1": {
+   "file": "wokeLibs_spawn_c_1.ogg",
+   "duration": 1.953667,
+   "faction": "wokeLibs",
+   "event": "spawn",
+   "text": "Pronouns in bio, tote in hand, let's go.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.3
+  },
+  "wokeLibs.spawn.c.2": {
+   "file": "wokeLibs_spawn_c_2.ogg",
+   "duration": 1.196083,
+   "faction": "wokeLibs",
+   "event": "spawn",
+   "text": "Trigger warning: I'm about to win.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7
+  },
+  "wokeLibs.spawn.s.0": {
+   "file": "wokeLibs_spawn_s_0.ogg",
+   "duration": 0.489,
+   "faction": "wokeLibs",
+   "event": "spawn",
+   "text": "I did the reading already.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11
+  },
+  "wokeLibs.spawn.s.1": {
+   "file": "wokeLibs_spawn_s_1.ogg",
+   "duration": 1.166,
+   "faction": "wokeLibs",
+   "event": "spawn",
+   "text": "Your vibes are already problematic.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -4.2
+  },
+  "wokeLibs.kill.c.0": {
+   "file": "wokeLibs_kill_c_0.ogg",
+   "duration": 0.808125,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "Consider this a teachable moment.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.4
+  },
+  "wokeLibs.kill.c.1": {
+   "file": "wokeLibs_kill_c_1.ogg",
+   "duration": 0.465292,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "You've been called IN.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -2.3
+  },
+  "wokeLibs.kill.c.2": {
+   "file": "wokeLibs_kill_c_2.ogg",
+   "duration": 0.483542,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "That was for the group chat.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.9
+  },
+  "wokeLibs.kill.c.3": {
+   "file": "wokeLibs_kill_c_3.ogg",
+   "duration": 0.882792,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "Decolonized your killstreak.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.4
+  },
+  "wokeLibs.kill.s.0": {
+   "file": "wokeLibs_kill_s_0.ogg",
+   "duration": 0.6075,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "Canceled. Next.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.4
+  },
+  "wokeLibs.kill.s.1": {
+   "file": "wokeLibs_kill_s_1.ogg",
+   "duration": 0.770875,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "Ratio'd, in real life.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -12.3
+  },
+  "wokeLibs.kill.s.2": {
+   "file": "wokeLibs_kill_s_2.ogg",
+   "duration": 1.129417,
+   "faction": "wokeLibs",
+   "event": "kill",
+   "text": "Your apology video better be good.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.1
+  },
+  "wokeLibs.headshot.c.0": {
+   "file": "wokeLibs_headshot_c_0.ogg",
+   "duration": 0.910875,
+   "faction": "wokeLibs",
+   "event": "headshot",
+   "text": "Headshot, with consent of the land.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -13.3
+  },
+  "wokeLibs.headshot.c.1": {
+   "file": "wokeLibs_headshot_c_1.ogg",
+   "duration": 0.734875,
+   "faction": "wokeLibs",
+   "event": "headshot",
+   "text": "Aimed with my third eye.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.9
+  },
+  "wokeLibs.headshot.c.2": {
+   "file": "wokeLibs_headshot_c_2.ogg",
+   "duration": 0.454375,
+   "faction": "wokeLibs",
+   "event": "headshot",
+   "text": "That's going in the zine.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.5
+  },
+  "wokeLibs.headshot.s.0": {
+   "file": "wokeLibs_headshot_s_0.ogg",
+   "duration": 1.144833,
+   "faction": "wokeLibs",
+   "event": "headshot",
+   "text": "Cranial decolonization.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.8
+  },
+  "wokeLibs.headshot.s.1": {
+   "file": "wokeLibs_headshot_s_1.ogg",
+   "duration": 1.209458,
+   "faction": "wokeLibs",
+   "event": "headshot",
+   "text": "Your skull? Problematic.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.5
+  },
+  "wokeLibs.revenge.c.0": {
+   "file": "wokeLibs_revenge_c_0.ogg",
+   "duration": 0.755625,
+   "faction": "wokeLibs",
+   "event": "revenge",
+   "text": "That's called accountability.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.5
+  },
+  "wokeLibs.revenge.c.1": {
+   "file": "wokeLibs_revenge_c_1.ogg",
+   "duration": 1.4235,
+   "faction": "wokeLibs",
+   "event": "revenge",
+   "text": "I forgive you, but I don't forget.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.9
+  },
+  "wokeLibs.revenge.s.0": {
+   "file": "wokeLibs_revenge_s_0.ogg",
+   "duration": 1.942792,
+   "faction": "wokeLibs",
+   "event": "revenge",
+   "text": "Revenge is a dish best served ethically sourced.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.6
+  },
+  "wokeLibs.shutdown.c.0": {
+   "file": "wokeLibs_shutdown_c_0.ogg",
+   "duration": 1.020458,
+   "faction": "wokeLibs",
+   "event": "shutdown",
+   "text": "Your streak has been deplatformed.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.6
+  },
+  "wokeLibs.shutdown.c.1": {
+   "file": "wokeLibs_shutdown_c_1.ogg",
+   "duration": 0.973958,
+   "faction": "wokeLibs",
+   "event": "shutdown",
+   "text": "Stopped. Reported. Blocked.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.6
+  },
+  "wokeLibs.shutdown.s.0": {
+   "file": "wokeLibs_shutdown_s_0.ogg",
+   "duration": 1.57825,
+   "faction": "wokeLibs",
+   "event": "shutdown",
+   "text": "I ended your streak like a bad podcast.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.9
+  },
+  "wokeLibs.melee.c.0": {
+   "file": "wokeLibs_melee_c_0.ogg",
+   "duration": 0.730042,
+   "faction": "wokeLibs",
+   "event": "melee",
+   "text": "Tote bag to the face!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9
+  },
+  "wokeLibs.melee.c.1": {
+   "file": "wokeLibs_melee_c_1.ogg",
+   "duration": 0.954917,
+   "faction": "wokeLibs",
+   "event": "melee",
+   "text": "Eat canvas, colonizer!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -4.4
+  },
+  "wokeLibs.melee.s.0": {
+   "file": "wokeLibs_melee_s_0.ogg",
+   "duration": 2.077625,
+   "faction": "wokeLibs",
+   "event": "melee",
+   "text": "Beaten with a reusable bag. Zero waste.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.4
+  },
+  "wokeLibs.humiliated.c.0": {
+   "file": "wokeLibs_humiliated_c_0.ogg",
+   "duration": 0.523542,
+   "faction": "wokeLibs",
+   "event": "humiliated",
+   "text": "This goes in the zine.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.9
+  },
+  "wokeLibs.humiliated.c.1": {
+   "file": "wokeLibs_humiliated_c_1.ogg",
+   "duration": 0.526958,
+   "faction": "wokeLibs",
+   "event": "humiliated",
+   "text": "I'm telling the group chat.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.3
+  },
+  "wokeLibs.humiliated.s.0": {
+   "file": "wokeLibs_humiliated_s_0.ogg",
+   "duration": 1.78775,
+   "faction": "wokeLibs",
+   "event": "humiliated",
+   "text": "Humiliated? Good. Sit with that.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.9
+  },
+  "wokeLibs.double.c.0": {
+   "file": "wokeLibs_double_c_0.ogg",
+   "duration": 0.959333,
+   "faction": "wokeLibs",
+   "event": "double",
+   "text": "Two kills, zero carbon.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.4
+  },
+  "wokeLibs.double.c.1": {
+   "file": "wokeLibs_double_c_1.ogg",
+   "duration": 0.9,
+   "faction": "wokeLibs",
+   "event": "double",
+   "text": "Double. Both consensual.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.4
+  },
+  "wokeLibs.double.c.2": {
+   "file": "wokeLibs_double_c_2.ogg",
+   "duration": 0.567458,
+   "faction": "wokeLibs",
+   "event": "double",
+   "text": "Twice the allyship.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10
+  },
+  "wokeLibs.double.s.0": {
+   "file": "wokeLibs_double_s_0.ogg",
+   "duration": 1.1735,
+   "faction": "wokeLibs",
+   "event": "double",
+   "text": "Double kill, ethically sourced.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -12.1
+  },
+  "wokeLibs.double.s.1": {
+   "file": "wokeLibs_double_s_1.ogg",
+   "duration": 1.024417,
+   "faction": "wokeLibs",
+   "event": "double",
+   "text": "Two for one, like my trauma.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.7
+  },
+  "wokeLibs.triple.c.0": {
+   "file": "wokeLibs_triple_c_0.ogg",
+   "duration": 1.288625,
+   "faction": "wokeLibs",
+   "event": "triple",
+   "text": "Triple! The land provides.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.9
+  },
+  "wokeLibs.triple.c.1": {
+   "file": "wokeLibs_triple_c_1.ogg",
+   "duration": 1.063292,
+   "faction": "wokeLibs",
+   "event": "triple",
+   "text": "Three kills, one teachable moment.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.9
+  },
+  "wokeLibs.triple.s.0": {
+   "file": "wokeLibs_triple_s_0.ogg",
+   "duration": 0.672625,
+   "faction": "wokeLibs",
+   "event": "triple",
+   "text": "Hat trick of accountability.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.7
+  },
+  "wokeLibs.rampage.c.0": {
+   "file": "wokeLibs_rampage_c_0.ogg",
+   "duration": 1.285042,
+   "faction": "wokeLibs",
+   "event": "rampage",
+   "text": "This is what doing the work looks like!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.8
+  },
+  "wokeLibs.rampage.c.1": {
+   "file": "wokeLibs_rampage_c_1.ogg",
+   "duration": 0.964625,
+   "faction": "wokeLibs",
+   "event": "rampage",
+   "text": "On a rampage for justice!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.4
+  },
+  "wokeLibs.rampage.s.0": {
+   "file": "wokeLibs_rampage_s_0.ogg",
+   "duration": 1.340417,
+   "faction": "wokeLibs",
+   "event": "rampage",
+   "text": "Unstoppable, unlike your growth.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.8
+  },
+  "wokeLibs.reload.c.0": {
+   "file": "wokeLibs_reload_c_0.ogg",
+   "duration": 1.273917,
+   "faction": "wokeLibs",
+   "event": "reload",
+   "text": "Reloading. Practicing self-care.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.5
+  },
+  "wokeLibs.reload.c.1": {
+   "file": "wokeLibs_reload_c_1.ogg",
+   "duration": 0.421042,
+   "faction": "wokeLibs",
+   "event": "reload",
+   "text": "Pausing to hydrate.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -1
+  },
+  "wokeLibs.reload.s.0": {
+   "file": "wokeLibs_reload_s_0.ogg",
+   "duration": 1.042167,
+   "faction": "wokeLibs",
+   "event": "reload",
+   "text": "Reloading my emotional support mag.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -4.9
+  },
+  "wokeLibs.spotted.c.0": {
+   "file": "wokeLibs_spotted_c_0.ogg",
+   "duration": 1.119125,
+   "faction": "wokeLibs",
+   "event": "spotted",
+   "text": "I see you. I see ALL of you.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -12.5
+  },
+  "wokeLibs.spotted.c.1": {
+   "file": "wokeLibs_spotted_c_1.ogg",
+   "duration": 0.601417,
+   "faction": "wokeLibs",
+   "event": "spotted",
+   "text": "Spotted a problematic.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.5
+  },
+  "wokeLibs.spotted.s.0": {
+   "file": "wokeLibs_spotted_s_0.ogg",
+   "duration": 1.458583,
+   "faction": "wokeLibs",
+   "event": "spotted",
+   "text": "Enemy located. Starting a thread about it.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.3
+  },
+  "wokeLibs.lowHealth.c.0": {
+   "file": "wokeLibs_lowHealth_c_0.ogg",
+   "duration": 0.904625,
+   "faction": "wokeLibs",
+   "event": "lowHealth",
+   "text": "I'm literally shaking right now.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.5
+  },
+  "wokeLibs.lowHealth.c.1": {
+   "file": "wokeLibs_lowHealth_c_1.ogg",
+   "duration": 0.785458,
+   "faction": "wokeLibs",
+   "event": "lowHealth",
+   "text": "My aura is damaged.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.6
+  },
+  "wokeLibs.lowHealth.s.0": {
+   "file": "wokeLibs_lowHealth_s_0.ogg",
+   "duration": 1.14675,
+   "faction": "wokeLibs",
+   "event": "lowHealth",
+   "text": "Low health, high anxiety.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.1
+  },
+  "wokeLibs.objective.c.0": {
+   "file": "wokeLibs_objective_c_0.ogg",
+   "duration": 0.952708,
+   "faction": "wokeLibs",
+   "event": "objective",
+   "text": "Securing the objective for the community.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.4
+  },
+  "wokeLibs.objective.c.1": {
+   "file": "wokeLibs_objective_c_1.ogg",
+   "duration": 0.941417,
+   "faction": "wokeLibs",
+   "event": "objective",
+   "text": "This point belongs to everyone.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.9
+  },
+  "wokeLibs.objective.s.0": {
+   "file": "wokeLibs_objective_s_0.ogg",
+   "duration": 1.385042,
+   "faction": "wokeLibs",
+   "event": "objective",
+   "text": "Taking the point. It's called mutual aid.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.6
+  },
+  "wokeLibs.enemyStreak.c.0": {
+   "file": "wokeLibs_enemyStreak_c_0.ogg",
+   "duration": 1.786333,
+   "faction": "wokeLibs",
+   "event": "enemyStreak",
+   "text": "Someone check his privilege. And his streak.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.8
+  },
+  "wokeLibs.enemyStreak.c.1": {
+   "file": "wokeLibs_enemyStreak_c_1.ogg",
+   "duration": 1.285167,
+   "faction": "wokeLibs",
+   "event": "enemyStreak",
+   "text": "That streak ends now, ally.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.2
+  },
+  "wokeLibs.enemyStreak.s.0": {
+   "file": "wokeLibs_enemyStreak_s_0.ogg",
+   "duration": 1.08975,
+   "faction": "wokeLibs",
+   "event": "enemyStreak",
+   "text": "End that streak like a bad take.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -13.1
+  },
+  "wokeLibs.lastAlive.c.0": {
+   "file": "wokeLibs_lastAlive_c_0.ogg",
+   "duration": 1.657542,
+   "faction": "wokeLibs",
+   "event": "lastAlive",
+   "text": "Last one standing. The burden of the ally.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.4
+  },
+  "wokeLibs.lastAlive.c.1": {
+   "file": "wokeLibs_lastAlive_c_1.ogg",
+   "duration": 0.892,
+   "faction": "wokeLibs",
+   "event": "lastAlive",
+   "text": "Just me and my principles.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.3
+  },
+  "wokeLibs.lastAlive.s.0": {
+   "file": "wokeLibs_lastAlive_s_0.ogg",
+   "duration": 1.809,
+   "faction": "wokeLibs",
+   "event": "lastAlive",
+   "text": "Last alive. Carrying, like always.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.4
+  },
+  "wokeLibs.roundStart.c.0": {
+   "file": "wokeLibs_roundStart_c_0.ogg",
+   "duration": 2.114625,
+   "faction": "wokeLibs",
+   "event": "roundStart",
+   "text": "Remember: impact over intent. Let's go.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.2
+  },
+  "wokeLibs.roundStart.c.1": {
+   "file": "wokeLibs_roundStart_c_1.ogg",
+   "duration": 1.067792,
+   "faction": "wokeLibs",
+   "event": "roundStart",
+   "text": "New round, same accountability.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.8
+  },
+  "wokeLibs.roundStart.s.0": {
+   "file": "wokeLibs_roundStart_s_0.ogg",
+   "duration": 1.24075,
+   "faction": "wokeLibs",
+   "event": "roundStart",
+   "text": "Round start. Be better this time.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.8
+  },
+  "wokeLibs.ownStreak.c.0": {
+   "file": "wokeLibs_ownStreak_c_0.ogg",
+   "duration": 1.274333,
+   "faction": "wokeLibs",
+   "event": "ownStreak",
+   "text": "On a streak! The work is working!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.9
+  },
+  "wokeLibs.ownStreak.c.1": {
+   "file": "wokeLibs_ownStreak_c_1.ogg",
+   "duration": 1.824375,
+   "faction": "wokeLibs",
+   "event": "ownStreak",
+   "text": "Five kills. The arc of history bends.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9
+  },
+  "wokeLibs.ownStreak.s.0": {
+   "file": "wokeLibs_ownStreak_s_0.ogg",
+   "duration": 1.45175,
+   "faction": "wokeLibs",
+   "event": "ownStreak",
+   "text": "Streaking. Someone write a thinkpiece.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.1
+  },
+  "wokeLibs.firstBlood.c.0": {
+   "file": "wokeLibs_firstBlood_c_0.ogg",
+   "duration": 1.27575,
+   "faction": "wokeLibs",
+   "event": "firstBlood",
+   "text": "First blood, drawn consensually.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.9
+  },
+  "wokeLibs.firstBlood.c.1": {
+   "file": "wokeLibs_firstBlood_c_1.ogg",
+   "duration": 1.119625,
+   "faction": "wokeLibs",
+   "event": "firstBlood",
+   "text": "The first kill is the deepest.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.2
+  },
+  "wokeLibs.firstBlood.s.0": {
+   "file": "wokeLibs_firstBlood_s_0.ogg",
+   "duration": 1.172875,
+   "faction": "wokeLibs",
+   "event": "firstBlood",
+   "text": "First blood! Trigger warning issued.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -3.9
+  },
+  "wokeLibs.selfKill.c.0": {
+   "file": "wokeLibs_selfKill_c_0.ogg",
+   "duration": 1.643958,
+   "faction": "wokeLibs",
+   "event": "selfKill",
+   "text": "That was... a learning opportunity.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.2
+  },
+  "wokeLibs.selfKill.c.1": {
+   "file": "wokeLibs_selfKill_c_1.ogg",
+   "duration": 1.346625,
+   "faction": "wokeLibs",
+   "event": "selfKill",
+   "text": "I did that to myself. Growth.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.6
+  },
+  "wokeLibs.selfKill.s.0": {
+   "file": "wokeLibs_selfKill_s_0.ogg",
+   "duration": 1.549583,
+   "faction": "wokeLibs",
+   "event": "selfKill",
+   "text": "Self-inflicted. Holding myself accountable.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.7
+  },
+  "wokeLibs.campingSnitch.c.0": {
+   "file": "wokeLibs_campingSnitch_c_0.ogg",
+   "duration": 1.089542,
+   "faction": "wokeLibs",
+   "event": "campingSnitch",
+   "text": "Camping is a form of gentrification.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.6
+  },
+  "wokeLibs.campingSnitch.c.1": {
+   "file": "wokeLibs_campingSnitch_c_1.ogg",
+   "duration": 0.89475,
+   "faction": "wokeLibs",
+   "event": "campingSnitch",
+   "text": "Someone's occupying that corner.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.9
+  },
+  "wokeLibs.campingSnitch.s.0": {
+   "file": "wokeLibs_campingSnitch_s_0.ogg",
+   "duration": 1.441125,
+   "faction": "wokeLibs",
+   "event": "campingSnitch",
+   "text": "Camper spotted. This is a callout post.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -3.5
+  },
+  "wokeLibs.streakDestroyed.c.0": {
+   "file": "wokeLibs_streakDestroyed_c_0.ogg",
+   "duration": 0.92225,
+   "faction": "wokeLibs",
+   "event": "streakDestroyed",
+   "text": "Your streak has been held accountable.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -11.3
+  },
+  "wokeLibs.streakDestroyed.c.1": {
+   "file": "wokeLibs_streakDestroyed_c_1.ogg",
+   "duration": 0.492792,
+   "faction": "wokeLibs",
+   "event": "streakDestroyed",
+   "text": "Deplatformed.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -13.5
+  },
+  "wokeLibs.streakDestroyed.s.0": {
+   "file": "wokeLibs_streakDestroyed_s_0.ogg",
+   "duration": 1.149583,
+   "faction": "wokeLibs",
+   "event": "streakDestroyed",
+   "text": "Streak destroyed. Log off.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.9
+  },
+  "wokeLibs.victory.c.0": {
+   "file": "wokeLibs_victory_c_0.ogg",
+   "duration": 1.731667,
+   "faction": "wokeLibs",
+   "event": "victory",
+   "text": "We did it, together, as a community!",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.5
+  },
+  "wokeLibs.victory.c.1": {
+   "file": "wokeLibs_victory_c_1.ogg",
+   "duration": 1.255875,
+   "faction": "wokeLibs",
+   "event": "victory",
+   "text": "Victory! Now let's unpack that.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.2
+  },
+  "wokeLibs.victory.s.0": {
+   "file": "wokeLibs_victory_s_0.ogg",
+   "duration": 1.251583,
+   "faction": "wokeLibs",
+   "event": "victory",
+   "text": "Won. The discourse continues.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.6
+  },
+  "wokeLibs.defeat.c.0": {
+   "file": "wokeLibs_defeat_c_0.ogg",
+   "duration": 0.978833,
+   "faction": "wokeLibs",
+   "event": "defeat",
+   "text": "We lost, but we learned.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.6
+  },
+  "wokeLibs.defeat.c.1": {
+   "file": "wokeLibs_defeat_c_1.ogg",
+   "duration": 0.711917,
+   "faction": "wokeLibs",
+   "event": "defeat",
+   "text": "Defeat is just feedback.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -14.2
+  },
+  "wokeLibs.defeat.s.0": {
+   "file": "wokeLibs_defeat_s_0.ogg",
+   "duration": 1.908,
+   "faction": "wokeLibs",
+   "event": "defeat",
+   "text": "Lost. I'm not mad, I'm disappointed.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -12.9
+  },
+  "wokeLibs.killcam.c.0": {
+   "file": "wokeLibs_killcam_c_0.ogg",
+   "duration": 1.055667,
+   "faction": "wokeLibs",
+   "event": "killcam",
+   "text": "Trigger warning: this killcam.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9
+  },
+  "wokeLibs.killcam.c.1": {
+   "file": "wokeLibs_killcam_c_1.ogg",
+   "duration": 0.281458,
+   "faction": "wokeLibs",
+   "event": "killcam",
+   "text": "Watch and learn.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.7
+  },
+  "wokeLibs.killcam.s.0": {
+   "file": "wokeLibs_killcam_s_0.ogg",
+   "duration": 1.325917,
+   "faction": "wokeLibs",
+   "event": "killcam",
+   "text": "Enjoy the killcam. It's educational.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.5
+  },
+  "wokeLibs.campingWarn.c.0": {
+   "file": "wokeLibs_campingWarn_c_0.ogg",
+   "duration": 2.1125,
+   "faction": "wokeLibs",
+   "event": "campingWarn",
+   "text": "Am I... camping? Let me reflect.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.9
+  },
+  "wokeLibs.campingWarn.c.1": {
+   "file": "wokeLibs_campingWarn_c_1.ogg",
+   "duration": 0.882125,
+   "faction": "wokeLibs",
+   "event": "campingWarn",
+   "text": "Occupying this spot too long?",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -7.2
+  },
+  "wokeLibs.campingWarn.s.0": {
+   "file": "wokeLibs_campingWarn_s_0.ogg",
+   "duration": 1.317875,
+   "faction": "wokeLibs",
+   "event": "campingWarn",
+   "text": "Am I the camper? Uncomfortable.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.1
+  },
+  "rivalry.trumpers-vcBros.c.1": {
+   "file": "rivalry_trumpers-vcBros_c_1.ogg",
+   "duration": 0.78425,
+   "faction": "trumpers",
+   "event": "rivalry",
+   "text": "Your stock options? SAD!",
+   "voice": "avocado_v2:vdc_13210",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -6
+  },
+  "rivalry.wokeLibs-trumpers.c.0": {
+   "file": "rivalry_wokeLibs-trumpers_c_0.ogg",
+   "duration": 0.580333,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your red hat is showing.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -2.7
+  },
+  "rivalry.wokeLibs-trumpers.c.1": {
+   "file": "rivalry_wokeLibs-trumpers_c_1.ogg",
+   "duration": 0.898375,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Make accountability great again.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.6
+  },
+  "rivalry.wokeLibs-trumpers.s.0": {
+   "file": "rivalry_wokeLibs-trumpers_s_0.ogg",
+   "duration": 1.022583,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your wall just got fact-checked.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10.8
+  },
+  "rivalry.trumpers-wokeLibs.c.0": {
+   "file": "rivalry_trumpers-wokeLibs_c_0.ogg",
+   "duration": 0.703042,
+   "faction": "trumpers",
+   "event": "rivalry",
+   "text": "Cry harder, latte.",
+   "voice": "avocado_v2:vdc_13210",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -7.6
+  },
+  "rivalry.trumpers-wokeLibs.c.1": {
+   "file": "rivalry_trumpers-wokeLibs_c_1.ogg",
+   "duration": 1.216583,
+   "faction": "trumpers",
+   "event": "rivalry",
+   "text": "Your safe space is a warzone now.",
+   "voice": "avocado_v2:vdc_13210",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -10.6
+  },
+  "rivalry.wokeLibs-tradwives.c.0": {
+   "file": "rivalry_wokeLibs-tradwives_c_0.ogg",
+   "duration": 1.105875,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your sourdough starter can't save you.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -6.7
+  },
+  "rivalry.wokeLibs-tradwives.c.1": {
+   "file": "rivalry_wokeLibs-tradwives_c_1.ogg",
+   "duration": 2.515792,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Homestead? More like home-instead-of-touching-grass.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.3
+  },
+  "rivalry.wokeLibs-tradwives.s.0": {
+   "file": "rivalry_wokeLibs-tradwives_s_0.ogg",
+   "duration": 1.099458,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your homestead is a crime scene.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10
+  },
+  "rivalry.wokeLibs-hoaDads.c.0": {
+   "file": "rivalry_wokeLibs-hoaDads_c_0.ogg",
+   "duration": 1.258,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your Minion memes are a hate crime.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.6
+  },
+  "rivalry.wokeLibs-hoaDads.c.1": {
+   "file": "rivalry_wokeLibs-hoaDads_c_1.ogg",
+   "duration": 1.436417,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Amen? More like a-menace.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -12.3
+  },
+  "rivalry.wokeLibs-hoaDads.s.0": {
+   "file": "rivalry_wokeLibs-hoaDads_s_0.ogg",
+   "duration": 0.857917,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your Facebook group has been reported.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -9.7
+  },
+  "rivalry.hoaDads-wokeLibs.c.0": {
+   "file": "rivalry_hoaDads-wokeLibs_c_0.ogg",
+   "duration": 1.359125,
+   "faction": "hoaDads",
+   "event": "rivalry",
+   "text": "BACK IN MY DAY we just played!",
+   "voice": "avocado_v2:vdc_22255",
+   "pitch": 0.85,
+   "rate": 1.25,
+   "peak_db": -7.7
+  },
+  "rivalry.hoaDads-wokeLibs.c.1": {
+   "file": "rivalry_hoaDads-wokeLibs_c_1.ogg",
+   "duration": 1.797042,
+   "faction": "hoaDads",
+   "event": "rivalry",
+   "text": "Amen if you agree: you're out.",
+   "voice": "avocado_v2:vdc_22255",
+   "pitch": 0.85,
+   "rate": 1.25,
+   "peak_db": -10.1
+  },
+  "rivalry.hoaDads-wokeLibs.s.0": {
+   "file": "rivalry_hoaDads-wokeLibs_s_0.ogg",
+   "duration": 1.519625,
+   "faction": "hoaDads",
+   "event": "rivalry",
+   "text": "Kids these days. Sheesh.",
+   "voice": "avocado_v2:vdc_22255",
+   "pitch": 0.85,
+   "rate": 1.25,
+   "peak_db": -13
+  },
+  "rivalry.wokeLibs-rednecks.c.0": {
+   "file": "rivalry_wokeLibs-rednecks_c_0.ogg",
+   "duration": 0.626042,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Your truck is compensating.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -5.8
+  },
+  "rivalry.wokeLibs-rednecks.c.1": {
+   "file": "rivalry_wokeLibs-rednecks_c_1.ogg",
+   "duration": 1.184,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "That flag? Problematic.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -10
+  },
+  "rivalry.wokeLibs-rednecks.s.0": {
+   "file": "rivalry_wokeLibs-rednecks_s_0.ogg",
+   "duration": 1.363625,
+   "faction": "wokeLibs",
+   "event": "rivalry",
+   "text": "Roll coal? Roll credits.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.1,
+   "rate": 1.25,
+   "peak_db": -8.8
+  },
+  "rivalry.rednecks-wokeLibs.c.0": {
+   "file": "rivalry_rednecks-wokeLibs_c_0.ogg",
+   "duration": 1.893625,
+   "faction": "rednecks",
+   "event": "rivalry",
+   "text": "You lost? Thoughts and prayers.",
+   "voice": "avocado_v2:bud",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -7.8
+  },
+  "rivalry.rednecks-wokeLibs.c.1": {
+   "file": "rivalry_rednecks-wokeLibs_c_1.ogg",
+   "duration": 1.521667,
+   "faction": "rednecks",
+   "event": "rivalry",
+   "text": "My truck identifies as a tank.",
+   "voice": "avocado_v2:bud",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -9.6
+  },
+  "rivalry.rednecks-wokeLibs.s.0": {
+   "file": "rivalry_rednecks-wokeLibs_s_0.ogg",
+   "duration": 0.690417,
+   "faction": "rednecks",
+   "event": "rivalry",
+   "text": "Cry about it, Prius.",
+   "voice": "avocado_v2:bud",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -9.1
+  },
+  "rivalry.tradwives-wokeLibs.c.0": {
+   "file": "rivalry_tradwives-wokeLibs_c_0.ogg",
+   "duration": 0.632,
+   "faction": "tradwives",
+   "event": "rivalry",
+   "text": "Bless your heart, sweetie.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.2,
+   "rate": 1.25,
+   "peak_db": -14.6
+  },
+  "rivalry.tradwives-wokeLibs.c.1": {
+   "file": "rivalry_tradwives-wokeLibs_c_1.ogg",
+   "duration": 1.284,
+   "faction": "tradwives",
+   "event": "rivalry",
+   "text": "My raw milk outlives your takes.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.2,
+   "rate": 1.25,
+   "peak_db": -9.6
+  },
+  "rivalry.tradwives-wokeLibs.s.0": {
+   "file": "rivalry_tradwives-wokeLibs_s_0.ogg",
+   "duration": 1.352,
+   "faction": "tradwives",
+   "event": "rivalry",
+   "text": "Go touch grass. Organically.",
+   "voice": "avocado_v2:MAI_03",
+   "pitch": 1.2,
+   "rate": 1.25,
+   "peak_db": -13
+  },
+  "rivalry.trumpers-wokeLibs.s.0": {
+   "file": "rivalry_trumpers-wokeLibs_s_0.ogg",
+   "duration": 0.664583,
+   "faction": "trumpers",
+   "event": "rivalry",
+   "text": "Your wall just got fact-checked.",
+   "voice": "avocado_v2:vdc_13210",
+   "pitch": 0.8,
+   "rate": 1.25,
+   "peak_db": -14.5
   }
  },
- "count": 691,
- "commit": "c31bc05",
+ "count": 804,
+ "commit": "c29c63c",
  "note": "T11 complete: 691 ogg + manifest uploaded to origin/main via 11 web-UI batches (2026-10-15)"
 }

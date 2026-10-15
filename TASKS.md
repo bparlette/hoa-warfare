@@ -81,7 +81,7 @@ Suggested order: **wokeLibs → HOA Dads Boomer lines → mlmHuns** first (Woke 
 - S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
 
 **Muse (content + audit)**
-- M0: **T19 steps 1, 2 and 4**, one faction at a time in the suggested order (this is now Muse's top priority).
+- M0: **T19 steps 1, 2 and 4**, one faction at a time in the suggested order (this is now Muse's top priority). `T19-wokeLibs claimed by Muse (2026-10-15)`
 - M1: Rivalry lines. Missing Phase 0 pairs first (`node tools/script_tools.mjs rivalry`), then the rest. Currently 18+6 of 182 directional pairs.
 - M2: Fix the 28 thin pools in `node tools/script_tools.mjs audit` (2+ lines for kill/headshot/double in every faction).
 - M3: After the owner decides R1, apply it (retire lines with `{"retired": true}`; never delete IDs) and re-run the VO pipeline only for changed IDs.

@@ -38,6 +38,10 @@ const CAST = {
   emoKids:        { voice: 'avocado_v2:vd_sinister_chalice',       pitch: 0.90, rate: 1.25, gender: 'm' },
   theGays:        { voice: 'avocado_v2:qvd_00262',                 pitch: 1.15, rate: 1.25, gender: 'm' },
   trumpers:       { voice: 'avocado_v2:vdc_13210',                 pitch: 0.80, rate: 1.25, gender: 'm' },
+  wokeLibs:       { voice: 'avocado_v2:MAI_03',                    pitch: 1.10, rate: 1.25, gender: 'f' },
+  // tradwives placeholder voice: only its 3 rivalry-vs-wokeLibs lines are synthesized
+  // in the wokeLibs turn. Re-voice with a distinct voice when tradwives ships (T19).
+  tradwives:      { voice: 'avocado_v2:MAI_03',                    pitch: 1.20, rate: 1.25, gender: 'f' },
 };
 
 const TTS = '/opt/hatch/bin/tts';
