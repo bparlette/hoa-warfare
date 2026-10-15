@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320">
+  <defs>
+    <linearGradient id="neonPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2a85"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+    <linearGradient id="turfGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="flameOrange" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+    <filter id="esportsShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="4" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+
+  <!-- Background Plate -->
+  <rect x="10" y="10" width="780" height="300" rx="18" fill="#090d16" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Left: Tactical Flaming Lawn Flamingo Emblem -->
+  <g transform="translate(65, 30)" filter="url(#esportsShadow)">
+    <!-- Hexagonal Emblem Base -->
+    <polygon points="120,10 220,65 220,195 120,250 20,195 20,65" fill="#111827" stroke="url(#neonPink)" stroke-width="6"/>
+    <polygon points="120,24 206,72 206,188 120,236 34,188 34,72" fill="none" stroke="url(#turfGreen)" stroke-width="2"/>
+
+    <!-- Flamingo Body & Long S-Curve Neck -->
+    <!-- Fire aura behind flamingo -->
+    <path d="M 120 40 Q 155 70 140 110 Q 170 120 180 150 Q 160 170 140 180 Q 90 200 80 160 Q 70 120 100 90 Z" fill="url(#flameOrange)" opacity="0.8"/>
+    
+    <!-- Flamingo Head & Beak -->
+    <path d="M 105 60 Q 120 50 135 60 Q 145 75 130 90 Q 115 80 105 60 Z" fill="url(#neonPink)"/>
+    <!-- Black curved beak -->
+    <path d="M 135 65 Q 160 70 155 90 Q 142 85 130 75 Z" fill="#000"/>
+    <!-- Eye -->
+    <circle cx="124" cy="68" r="3" fill="#fff"/>
+    <circle cx="125" cy="68" r="1.5" fill="#000"/>
+
+    <!-- S-Curve Neck -->
+    <path d="M 115 85 Q 90 110 110 135 Q 125 150 140 150 L 140 165 Q 110 165 95 140 Q 75 105 105 80 Z" fill="url(#neonPink)"/>
+
+    <!-- Wing Plumes -->
+    <path d="M 125 145 Q 185 140 185 170 Q 145 185 110 180 Z" fill="url(#neonPink)" stroke="#000" stroke-width="2"/>
+    <path d="M 135 155 Q 175 152 170 172 Q 140 182 120 178 Z" fill="#f43f5e"/>
+
+    <!-- Metal Stake Legs -->
+    <line x1="120" y1="180" x2="120" y2="225" stroke="#94a3b8" stroke-width="4"/>
+    <line x1="135" y1="180" x2="148" y2="205" stroke="#94a3b8" stroke-width="4"/>
+    <line x1="148" y1="205" x2="135" y2="225" stroke="#94a3b8" stroke-width="4"/>
+  </g>
+
+  <!-- Typography Right Section -->
+  <g transform="translate(320, 65)">
+    <!-- Small Tagline Badge -->
+    <g transform="translate(0, 5)">
+      <rect x="0" y="0" width="160" height="24" rx="4" fill="url(#turfGreen)"/>
+      <text x="80" y="16" font-family="'SF Mono', monospace" font-size="11" font-weight="900" fill="#000" text-anchor="middle" letter-spacing="2">PRISTINE TURF</text>
+    </g>
+
+    <!-- Main Title: CALL OF KAREN -->
+    <text x="3" y="85" font-family="Impact, 'Arial Black', sans-serif" font-size="62" font-weight="900" fill="#000" letter-spacing="2">CALL OF KAREN</text>
+    <text x="0" y="82" font-family="Impact, 'Arial Black', sans-serif" font-size="62" font-weight="900" fill="#ffffff" letter-spacing="2">CALL OF <tspan fill="url(#neonPink)">KAREN</tspan></text>
+
+    <!-- Subtitle: HOA WARFARE -->
+    <text x="3" y="145" font-family="Impact, 'Arial Black', sans-serif" font-size="44" font-weight="900" fill="#000" letter-spacing="5">HOA WARFARE</text>
+    <text x="0" y="142" font-family="Impact, 'Arial Black', sans-serif" font-size="44" font-weight="900" fill="url(#flameOrange)" letter-spacing="5">HOA WARFARE</text>
+
+    <!-- Metadata Bottom Bar -->
+    <g transform="translate(0, 180)">
+      <line x1="0" y1="0" x2="430" y2="0" stroke="#334155" stroke-width="2"/>
+      <text x="0" y="24" font-family="'SF Mono', monospace" font-size="13" font-weight="700" fill="#22c55e" letter-spacing="3">FLAMINGO DIVISION // RANKED COMPETITIVE</text>
+    </g>
+  </g>
+</svg>

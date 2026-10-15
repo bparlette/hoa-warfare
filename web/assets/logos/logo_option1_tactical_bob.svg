@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320">
+  <defs>
+    <linearGradient id="gradMil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b2838"/>
+      <stop offset="100%" stop-color="#0a0f18"/>
+    </linearGradient>
+    <linearGradient id="gradGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff176"/>
+      <stop offset="50%" stop-color="#ffec27"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="gradRed" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff004d"/>
+      <stop offset="100%" stop-color="#be1250"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="3" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Background Shield Backplate -->
+  <rect x="10" y="10" width="780" height="300" rx="16" fill="url(#gradMil)" stroke="#374151" stroke-width="3" filter="url(#shadow)"/>
+  
+  <!-- Tactical Warning Stencil Bars -->
+  <g opacity="0.15">
+    <line x1="20" y1="20" x2="20" y2="300" stroke="#fff" stroke-width="2" stroke-dasharray="8 6"/>
+    <line x1="780" y1="20" x2="780" y2="300" stroke="#fff" stroke-width="2" stroke-dasharray="8 6"/>
+    <circle cx="160" cy="160" r="110" fill="none" stroke="#ffec27" stroke-width="2" stroke-dasharray="14 10"/>
+    <line x1="160" y1="30" x2="160" y2="290" stroke="#ffec27" stroke-width="1"/>
+    <line x1="30" y1="160" x2="290" y2="160" stroke="#ffec27" stroke-width="1"/>
+  </g>
+
+  <!-- Tactical Karen Bob Silhouette -->
+  <g transform="translate(70, 60)" filter="url(#shadow)">
+    <!-- Hair outline / asymmetrical bob -->
+    <path d="M 90 20 C 50 15, 20 45, 15 85 C 10 115, 20 145, 5 175 C 25 185, 45 180, 60 160 C 65 180, 85 190, 110 185 C 105 160, 115 130, 115 110 C 140 135, 175 145, 195 125 C 205 95, 190 60, 165 40 C 145 25, 120 20, 90 20 Z" fill="url(#gradGold)" stroke="#000" stroke-width="4"/>
+    <!-- Oversized Sunglasses / Night Vision Visor -->
+    <path d="M 40 100 Q 80 85 120 95 Q 160 85 180 105 Q 170 135 135 130 Q 110 128 85 130 Q 50 135 40 100 Z" fill="#111" stroke="#ff004d" stroke-width="3"/>
+    <!-- Crosshair pip inside glasses -->
+    <circle cx="85" cy="112" r="8" fill="none" stroke="#ff004d" stroke-width="2"/>
+    <circle cx="85" cy="112" r="2" fill="#ff004d"/>
+    <circle cx="145" cy="112" r="8" fill="none" stroke="#ff004d" stroke-width="2"/>
+    <circle cx="145" cy="112" r="2" fill="#ff004d"/>
+  </g>
+
+  <!-- Title: CALL OF KAREN -->
+  <g transform="translate(290, 130)">
+    <!-- Shadow layers -->
+    <text x="4" y="4" font-family="Impact, 'Arial Black', sans-serif" font-size="68" font-weight="900" fill="#000" letter-spacing="3">CALL OF KAREN</text>
+    <text x="0" y="0" font-family="Impact, 'Arial Black', sans-serif" font-size="68" font-weight="900" fill="#ffffff" stroke="#000" stroke-width="4" letter-spacing="3">CALL OF KAREN</text>
+  </g>
+
+  <!-- Subtitle Ribbon: HOA WARFARE -->
+  <g transform="translate(290, 170)" filter="url(#shadow)">
+    <!-- Red ribbon banner -->
+    <polygon points="0,5 470,5 455,55 0,55" fill="url(#gradRed)" stroke="#000" stroke-width="3"/>
+    <!-- Yellow warning stripe tab -->
+    <polygon points="445,5 470,5 455,55 430,55" fill="#ffec27"/>
+    <!-- Text -->
+    <text x="25" y="42" font-family="Impact, 'Arial Black', sans-serif" font-size="38" font-weight="900" fill="#ffffff" letter-spacing="6" stroke="#000" stroke-width="1.5">HOA WARFARE</text>
+  </g>
+
+  <!-- Sub-caption tagline -->
+  <text x="300" y="270" font-family="'SF Mono', 'Courier New', monospace" font-size="14" font-weight="700" fill="#9ca3af" letter-spacing="2">CITATION PATROL // SPECIAL COMPLIANCE UNIT</text>
+</svg>

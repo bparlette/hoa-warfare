@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320">
+  <defs>
+    <linearGradient id="hazardYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <filter id="hazardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="5" dy="6" stdDeviation="4" flood-color="#000" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect x="10" y="10" width="780" height="300" rx="16" fill="#18181b" stroke="#27272a" stroke-width="3"/>
+
+  <!-- Left Warning Diamond Sign -->
+  <g transform="translate(60, 35)" filter="url(#hazardShadow)">
+    <!-- Yellow Caution Diamond -->
+    <polygon points="120,5 240,125 120,245 0,125" fill="url(#hazardYellow)" stroke="#000" stroke-width="8"/>
+    <!-- Inner Black Diamond Line -->
+    <polygon points="120,20 225,125 120,230 15,125" fill="none" stroke="#000" stroke-width="4"/>
+
+    <!-- Angry Karen Warning Graphic inside diamond -->
+    <!-- Tennis Visor -->
+    <path d="M 50 90 Q 120 70 190 90 L 175 110 Q 120 95 65 110 Z" fill="#ef4444" stroke="#000" stroke-width="3"/>
+    <!-- Sunglasses -->
+    <path d="M 68 118 Q 95 112 118 118 L 118 140 Q 95 152 68 140 Z" fill="#000"/>
+    <path d="M 122 118 Q 145 112 172 118 L 172 140 Q 145 152 122 140 Z" fill="#000"/>
+    <!-- Bridge of glasses -->
+    <rect x="114" y="120" width="12" height="4" fill="#000"/>
+    <!-- Glare slash -->
+    <line x1="78" y1="124" x2="90" y2="136" stroke="#fff" stroke-width="2"/>
+    <line x1="132" y1="124" x2="144" y2="136" stroke="#fff" stroke-width="2"/>
+    
+    <!-- Yelling mouth / megaphone -->
+    <polygon points="100,165 140,165 130,185 110,185" fill="#000"/>
+    <!-- Soundwaves / shouting -->
+    <path d="M 148 165 Q 158 175 148 185" fill="none" stroke="#000" stroke-width="3"/>
+    <path d="M 158 158 Q 172 175 158 192" fill="none" stroke="#000" stroke-width="3"/>
+  </g>
+
+  <!-- Typography Right Section -->
+  <g transform="translate(320, 60)">
+    <!-- Warning Strip Top -->
+    <g transform="translate(0, 10)">
+      <rect x="0" y="0" width="440" height="12" fill="#000"/>
+      <polygon points="0,0 20,0 10,12 0,12" fill="#facc15"/>
+      <polygon points="30,0 50,0 40,12 20,12" fill="#facc15"/>
+      <polygon points="60,0 80,0 70,12 50,12" fill="#facc15"/>
+      <polygon points="90,0 110,0 100,12 80,12" fill="#facc15"/>
+      <polygon points="120,0 140,0 130,12 110,12" fill="#facc15"/>
+      <polygon points="150,0 170,0 160,12 140,12" fill="#facc15"/>
+      <polygon points="180,0 200,0 190,12 170,12" fill="#facc15"/>
+      <polygon points="210,0 230,0 220,12 200,12" fill="#facc15"/>
+      <polygon points="240,0 260,0 250,12 230,12" fill="#facc15"/>
+      <polygon points="270,0 290,0 280,12 260,12" fill="#facc15"/>
+      <polygon points="300,0 320,0 310,12 290,12" fill="#facc15"/>
+      <polygon points="330,0 350,0 340,12 320,12" fill="#facc15"/>
+      <polygon points="360,0 380,0 370,12 350,12" fill="#facc15"/>
+      <polygon points="390,0 410,0 400,12 380,12" fill="#facc15"/>
+      <polygon points="420,0 440,0 430,12 410,12" fill="#facc15"/>
+    </g>
+
+    <!-- Main Title: CALL OF KAREN -->
+    <text x="4" y="92" font-family="Impact, 'Arial Black', sans-serif" font-size="64" font-weight="900" fill="#000" letter-spacing="2">CALL OF KAREN</text>
+    <text x="0" y="88" font-family="Impact, 'Arial Black', sans-serif" font-size="64" font-weight="900" fill="#facc15" stroke="#000" stroke-width="4" letter-spacing="2">CALL OF KAREN</text>
+
+    <!-- Subtitle: HOA WARFARE -->
+    <text x="4" y="152" font-family="Impact, 'Arial Black', sans-serif" font-size="44" font-weight="900" fill="#ef4444" stroke="#000" stroke-width="2" letter-spacing="5">HOA WARFARE</text>
+    
+    <text x="4" y="200" font-family="'SF Mono', 'Courier New', monospace" font-size="14" font-weight="800" fill="#fafafa" letter-spacing="2">CAUTION: UNREGISTERED TRASH CANS IN SIGHT</text>
+    <text x="4" y="222" font-family="'SF Mono', 'Courier New', monospace" font-size="12" fill="#a1a1aa" letter-spacing="2">MAXIMUM FINES WILL BE ADMINISTERED INSTANTLY</text>
+  </g>
+</svg>

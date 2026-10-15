@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320">
+  <defs>
+    <linearGradient id="crestNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="crestGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#a16207"/>
+    </linearGradient>
+    <filter id="badgeShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="4" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.85"/>
+    </filter>
+  </defs>
+
+  <!-- Background plate -->
+  <rect x="10" y="10" width="780" height="300" rx="14" fill="#0b1120" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Left Shield Badge -->
+  <g transform="translate(60, 30)" filter="url(#badgeShadow)">
+    <!-- Outer Shield -->
+    <path d="M 110 10 L 210 50 L 210 160 C 210 220, 110 260, 110 260 C 110 260, 10 220, 10 160 L 10 50 Z" fill="url(#crestNavy)" stroke="url(#crestGold)" stroke-width="6"/>
+    <!-- Inner Shield border -->
+    <path d="M 110 24 L 196 58 L 196 156 C 196 206, 110 242, 110 242 C 110 242, 24 206, 24 156 L 24 58 Z" fill="none" stroke="url(#crestGold)" stroke-width="2" opacity="0.6"/>
+    
+    <!-- McMansion Gable Rooflines -->
+    <polygon points="110,65 160,105 150,105 110,75 70,105 60,105" fill="url(#crestGold)"/>
+    <polygon points="110,88 140,112 132,112 110,95 88,112 80,112" fill="url(#crestGold)"/>
+    
+    <!-- Crossed Grass Ruler & Clipboard -->
+    <g transform="rotate(45, 110, 155)">
+      <!-- Measuring Tape / Ruler -->
+      <rect x="103" y="105" width="14" height="100" fill="#facc15" stroke="#000" stroke-width="1.5"/>
+      <line x1="103" y1="120" x2="110" y2="120" stroke="#000" stroke-width="1.5"/>
+      <line x1="103" y1="135" x2="114" y2="135" stroke="#000" stroke-width="1.5"/>
+      <line x1="103" y1="150" x2="110" y2="150" stroke="#000" stroke-width="1.5"/>
+      <line x1="103" y1="165" x2="114" y2="165" stroke="#000" stroke-width="1.5"/>
+      <line x1="103" y1="180" x2="110" y2="180" stroke="#000" stroke-width="1.5"/>
+    </g>
+    <g transform="rotate(-45, 110, 155)">
+      <!-- Gavel / Citation Pen -->
+      <rect x="105" y="105" width="10" height="100" rx="3" fill="#e2e8f0" stroke="#000" stroke-width="1.5"/>
+      <circle cx="110" cy="115" r="8" fill="url(#crestGold)" stroke="#000" stroke-width="1"/>
+    </g>
+
+    <!-- Star Cluster -->
+    <circle cx="110" cy="48" r="5" fill="url(#crestGold)"/>
+    <circle cx="85" cy="55" r="4" fill="url(#crestGold)"/>
+    <circle cx="135" cy="55" r="4" fill="url(#crestGold)"/>
+  </g>
+
+  <!-- Typography Right Section -->
+  <g transform="translate(300, 70)">
+    <!-- Small Top Crest Text -->
+    <text x="5" y="25" font-family="'Georgia', serif" font-size="14" font-weight="700" fill="url(#crestGold)" letter-spacing="4">THE ESTATES AT SHADY PINES // HOA</text>
+    
+    <!-- Main Title -->
+    <text x="4" y="92" font-family="Impact, 'Arial Black', sans-serif" font-size="64" font-weight="900" fill="#000" letter-spacing="2">CALL OF KAREN</text>
+    <text x="0" y="88" font-family="Impact, 'Arial Black', sans-serif" font-size="64" font-weight="900" fill="url(#crestGold)" stroke="#000" stroke-width="3" letter-spacing="2">CALL OF KAREN</text>
+
+    <!-- Subtitle with laurel branches style -->
+    <text x="4" y="145" font-family="Impact, 'Arial Black', sans-serif" font-size="42" font-weight="900" fill="#ffffff" letter-spacing="5">HOA WARFARE</text>
+  </g>
+
+  <!-- VIOLATION STAMP SLANTED ACROSS -->
+  <g transform="translate(450, 180) rotate(-7)" filter="url(#badgeShadow)">
+    <rect x="-6" y="-6" width="260" height="46" rx="4" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="12 4"/>
+    <rect x="-3" y="-3" width="254" height="40" fill="#991b1b" opacity="0.92"/>
+    <text x="12" y="27" font-family="Impact, 'Arial Black', sans-serif" font-size="28" font-weight="900" fill="#ffffff" letter-spacing="5">VIOLATION CITED</text>
+  </g>
+
+  <text x="305" y="275" font-family="'SF Mono', monospace" font-size="12" fill="#64748b" letter-spacing="3">GRASS HEIGHT ENFORCEMENT DIVISION // EST. 1984</text>
+</svg>
