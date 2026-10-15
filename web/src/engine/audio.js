@@ -101,6 +101,12 @@ export class Voice {
     return true;
   }
 
+  /** True while a line (or the announcer) is still speaking. */
+  isBusy() {
+    const now = performance.now() / 1000;
+    return !!(this.current && now < this.current.until);
+  }
+
   stop() {
     if (this.current?.audio) this.current.audio.pause();
     if (this.synth?.speaking || this.synth?.pending) this.synth.cancel();
