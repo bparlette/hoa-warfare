@@ -20,7 +20,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - **Done when**: Unity test runner runs headless in CI/CLI and passes all core tests matching Node test suite.
 
 ### T11: Full Audio & VO Manifest Pipeline (`web/vo/`) [L - Long Running / Tedious]
-- **Owner**: Muse — claimed by Muse (2026-10-15)
+- **Owner**: Muse — DONE (2026-10-15)
 - **Contract**:
   - The content library now contains 691 voice lines across all 14 factions in `data/hoa_content.json`.
   - Export voice recording sheet: `node tools/script_tools.mjs csv > dist/vo_session_sheet.csv`.
@@ -28,6 +28,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
   - Create `web/vo/manifest.json` indexing every line ID, file path, audio duration, and volume trims.
   - When present, `web/src/engine/audio.js` automatically prefers real audio files over Web Speech TTS.
 - **Done when**: Running the game with `web/vo/manifest.json` populated plays audio files for barks without fallback to generic browser TTS.
+- **Delivered 2026-10-15**: 691/691 `.ogg` files in `web/vo/` (valid vorbis, one per recording-sheet row incl. `.alt`/rivalry IDs), rich `web/vo/manifest.json` (file/duration/text/faction/voice/pitch/rate/peak_db per line), deterministic resumable pipeline in `tools/vo_synth.mjs` (14-voice cast, rubberband pitch per faction metadata, 2 synth-text normalizations for backend-hostile tokens recorded as `synth_text`), `audio.js` accepts rich + legacy flat-array manifests and uses real durations for bark timing, `web/tests/audio.test.mjs` (8 tests). 39/39 tests pass, lint 0 problems.
 
 ### T12: Map 2: "The HOA Clubhouse & Pool" [M/L]
 - **Owner**: Ideal for Muse

@@ -14,11 +14,38 @@ const PREFERRED = {
 };
 const FEMALE = /samantha|victoria|karen|moira|tessa|fiona|kathy|princess|allison|ava|susan|zira|female|serena|kate/i;
 
+/** Resolve the VO file URL for a line ID. Dots become underscores. */
+export function voFileFor(lineId) {
+  return `vo/${lineId.replace(/\./g, '_')}.ogg`;
+}
+
+/**
+ * Normalize a vo/manifest.json payload into {ids:Set, durations:Map}.
+ * Accepts the legacy flat array of line IDs and the rich T11 schema
+ * {version, lines:{<id>:{file,duration,...}}}.
+ */
+export function parseManifest(payload) {
+  const ids = new Set();
+  const durations = new Map();
+  if (Array.isArray(payload)) {
+    for (const id of payload) ids.add(id);
+  } else if (payload && typeof payload === 'object') {
+    const lines = payload.lines || payload;
+    for (const [id, entry] of Object.entries(lines)) {
+      if (typeof id !== 'string') continue;
+      ids.add(id);
+      if (entry && typeof entry.duration === 'number') durations.set(id, entry.duration);
+    }
+  }
+  return { ids, durations };
+}
+
 export class Voice {
   constructor({ factions }) {
     this.factions = factions;
     this.enabled = true;
     this.manifest = new Set();
+    this.durations = new Map();
     this.synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
     this.voices = [];
     this.current = null; // {priority, until, audio?}
@@ -27,7 +54,11 @@ export class Voice {
       load();
       this.synth.addEventListener?.('voiceschanged', load);
     }
-    fetch('vo/manifest.json').then(r => (r.ok ? r.json() : [])).then(ids => { this.manifest = new Set(ids); }).catch(() => {});
+    fetch('vo/manifest.json').then(r => (r.ok ? r.json() : [])).then(payload => {
+      const { ids, durations } = parseManifest(payload);
+      this.manifest = ids;
+      this.durations = durations;
+    }).catch(() => {});
   }
 
   pickVoice(factionId) {
@@ -51,10 +82,11 @@ export class Voice {
     const text = o.text.replace(/\*[^*]*\*/g, ' ').trim();
     const est = Math.max(0.8, text.split(/\s+/).length / 3) + 0.3;
     if (o.lineId && this.manifest.has(o.lineId)) {
-      const audio = new Audio(`vo/${o.lineId.replace(/\./g, '_')}.ogg`);
+      const audio = new Audio(voFileFor(o.lineId));
       audio.volume = o.volume ?? 1;
       audio.play().catch(() => {});
-      this.current = { priority: o.priority, until: now + est, audio };
+      const dur = this.durations.get(o.lineId) ?? est;
+      this.current = { priority: o.priority, until: now + dur + 0.15, audio };
       return true;
     }
     if (!this.synth) return false;
