@@ -22,7 +22,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### T11: Full Audio & VO Manifest Pipeline (`web/vo/`) [L - Long Running / Tedious]
 - **Owner**: Ideal for Muse
 - **Contract**:
-  - The content library contains 348 voice lines across all 12 factions in `data/hoa_content.json`.
+  - The content library now contains 691 voice lines across all 14 factions in `data/hoa_content.json`.
   - Export voice recording sheet: `node tools/script_tools.mjs csv > dist/vo_session_sheet.csv`.
   - Generate or assemble TTS/synthesized audio files (`.ogg` or `.wav`) for all line IDs (formatted as `<line_id with . -> _>.ogg`) using faction-specific pitch, speed, and character vocal profiles in `web/vo/`.
   - Create `web/vo/manifest.json` indexing every line ID, file path, audio duration, and volume trims.
@@ -42,7 +42,30 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - **Done when**: `web/tests/sim.test.mjs` passes bot match tests on the Clubhouse map without any bot clipping or disconnecting.
 
 ### T13: Content Expansion for Phase 1 Factions (`data/hoa_content.json`) [M - Tedious] - done (faa6c5b / Muse)
-- Expanded barks for all 12 factions with spawn, victory, defeat, killcam, and campingWarn events.
+- Expanded barks for all 12 factions with spawn, victory, defeat, killcam, and campingWarn events (240 lines).
+- Note: Antigravity has wired the engine runtime to fire all 5 events (`spawn` upon respawn, `campingWarn` at 17s dwell, dedicated `killcam` taunt during killcam playback, and `victory`/`defeat` on match end).
+
+### T15: Unity Prefabs & Character Ragdoll Rigging (`unity/Assets/Prefabs/`) [L - Tedious]
+- **Owner**: Ideal for Muse
+- **Contract**:
+  - Convert all 14 faction box models and headwear (`CharacterView` in `web/src/engine/character.js`) into Unity prefabs.
+  - Set up BoxCollider / CapsuleCollider components matching `BODY` proportions (1.8m height, 0.42m radius, 1.62m eye/head sphere).
+  - Add Unity Rigidbody ragdoll components on limbs (`torso`, `head`, `hipL`, `hipR`, `shoulderL`, `shoulderR`) that activate upon death with explosive/directional impulse.
+- **Done when**: Unity test scene spawns any of the 14 factions and triggers a physical ragdoll collapse on death.
+
+### T16: Map 3: "The Gated Community Gatehouse & Roundabout" (`web/src/engine/maps/gatehouse.js`) [M/L]
+- **Owner**: Ideal for Muse
+- **Contract**:
+  - Author second expansion map: Security gatehouse, motorized arm barriers, roundabout, guard booth, resident RFID express lane, visitor lane with intercom post, perimeter brick/picket privacy walls.
+  - Add spawn points, jump pads (trampolines disguised as decorative shrubbery or security barriers), and nav nodes.
+- **Done when**: Map renders in web viewer and passes waypoint connectivity tests in `sim.test.mjs`.
+
+### T17: Procedural Cel-Shaded Shader & Material Pipeline in Unity URP (`unity/Assets/Shaders/`) [M/L - Tedious]
+- **Owner**: Ideal for Muse
+- **Contract**:
+  - Port procedural texture generators from `web/src/engine/textures.js` (pixel-art siding, brick, pickets, asphalt, concrete curb, leaves) into Unity URP Shader Graph or HLSL shaders.
+  - Implement faction accent tinting and retro 16-bit dither / quantization pass.
+- **Done when**: Materials in Unity match web visual fidelity.
 
 ---
 

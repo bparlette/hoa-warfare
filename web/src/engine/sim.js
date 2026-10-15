@@ -392,8 +392,9 @@ export class Sim {
       if (inp.grenade) this.throwGrenade(a);
       if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; inp.switchSlot = null; }
       const c = a.camp.update(now, dt, a.pos, { alive: a.alive, exempt: this.mode.campingExempt(a) });
+      if (c.state === 'warning' && a.campState?.state !== 'warning') this.emit({ type: 'campingWarn', id: a.id });
+      if (c.state === 'snitch' && a.campState?.state !== 'snitch') { a.revealedUntil = now + 6; this.emit({ type: 'campingSnitch', id: a.id }); }
       a.campState = c;
-      if (c.state === 'snitch') { a.revealedUntil = now + 6; this.emit({ type: 'campingSnitch', id: a.id }); }
     }
     this.stepGrenades(dt);
     this.mode.update(dt);

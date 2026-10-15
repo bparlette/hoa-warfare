@@ -54,9 +54,15 @@ export class BarkSystem {
           for (const a of sim.actors) push(this.bark(a, this.director(a).request('roundStart', now)));
           this.announcer.push(A.roundStart);
           break;
+        case 'spawn':
+          if (now > 1.5) push(this.bark(actor, this.director(actor).request('spawn', now)));
+          break;
         case 'reload': push(this.bark(actor, this.director(actor).request('reload', now))); break;
         case 'spotted': push(this.bark(actor, this.director(actor).request('spotted', now))); break;
         case 'lowHealth': push(this.bark(actor, this.director(actor).request('lowHealth', now))); break;
+        case 'campingWarn':
+          push(this.bark(actor, this.director(actor).request('campingWarn', now, { skipChance: true })));
+          break;
         case 'campingSnitch':
           push(this.bark(actor, this.director(actor).request('campingSnitch', now, { skipChance: true }), { snitch: true }));
           break;
@@ -69,6 +75,12 @@ export class BarkSystem {
           const local = sim.byId.get(localId);
           if (ev.winner === null) this.announcer.push('Draw. Everyone loses.');
           else this.announcer.push(local && ev.winner !== local.team ? A.defeat : A.victory);
+          if (ev.winner !== null) {
+            for (const a of sim.actors) {
+              const evId = a.team === ev.winner ? 'victory' : 'defeat';
+              push(this.bark(a, this.director(a).request(evId, now, { skipChance: false })));
+            }
+          }
           break;
         }
       }
@@ -103,9 +115,11 @@ export class BarkSystem {
 
     if (victim.id === localId) {
       // Killcam rule: the victim ALWAYS hears the killer, even if the live bark lost its chance roll.
-      const line = kb ? { id: kb.lineId, text: kb.text, eventId: kb.eventId } : (() => {
-        const k = kd.killcamLine(res.killerEvents, { victimFaction: victim.faction });
-        return k ? { id: k.line.id, text: k.line.text, eventId: k.eventId } : null;
+      // Dedicated killcam taunt lines take priority.
+      const line = (() => {
+        const k = kd.killcamLine(['killcam', ...res.killerEvents], { victimFaction: victim.faction });
+        if (k) return { id: k.line.id, text: k.line.text, eventId: k.eventId };
+        return kb ? { id: kb.lineId, text: kb.text, eventId: kb.eventId } : null;
       })();
       out.killcam = { killerId: killer.id, victimId: victim.id, line, headshot: ev.headshot, melee: ev.melee };
     }
