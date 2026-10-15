@@ -21,22 +21,23 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Faction -> voice casting. Voices verified against the Shortwave catalog
-// (2026-10-15); pitch/rate come from data/hoa_content.json faction metadata.
+// (2026-10-15). Pitch comes from data/hoa_content.json faction metadata;
+// rate is floored at 1.25 for a fast pace across all factions (Cherie 2026-10-15).
 const CAST = {
   fratHouse:      { voice: 'avocado_v2:qvd_00059',                pitch: 1.00, rate: 1.25, gender: 'm' },
   brainRot:       { voice: 'avocado_v2:qvd_00173',                pitch: 1.70, rate: 1.35, gender: 'm' },
-  valleyGirls:    { voice: 'avocado_v2:rumi',                     pitch: 1.50, rate: 1.20, gender: 'f' },
-  oldMoney:       { voice: 'avocado_v2:magnus',                   pitch: 0.60, rate: 0.95, gender: 'm' },
-  rednecks:       { voice: 'avocado_v2:bud',                      pitch: 0.80, rate: 1.10, gender: 'm' },
-  karens:         { voice: 'avocado_v2:Karen',                    pitch: 1.25, rate: 1.15, gender: 'f' },
-  gymRats:        { voice: 'avocado_v2:hubert',                    pitch: 0.75, rate: 1.20, gender: 'm' },
-  theaterKids:    { voice: 'avocado_v2:vd2_r82_rep5k_0497_v068_28k_g5k', pitch: 1.30, rate: 1.10, gender: 'f' },
+  valleyGirls:    { voice: 'avocado_v2:rumi',                     pitch: 1.50, rate: 1.25, gender: 'f' },
+  oldMoney:       { voice: 'avocado_v2:magnus',                   pitch: 0.60, rate: 1.25, gender: 'm' },
+  rednecks:       { voice: 'avocado_v2:bud',                      pitch: 0.80, rate: 1.25, gender: 'm' },
+  karens:         { voice: 'avocado_v2:Karen',                    pitch: 1.25, rate: 1.25, gender: 'f' },
+  gymRats:        { voice: 'avocado_v2:hubert',                    pitch: 0.75, rate: 1.25, gender: 'm' },
+  theaterKids:    { voice: 'avocado_v2:vd2_r82_rep5k_0497_v068_28k_g5k', pitch: 1.30, rate: 1.25, gender: 'f' },
   cloutStreamers: { voice: 'avocado_v2:vdc_3944',                 pitch: 1.10, rate: 1.30, gender: 'm' },
   vcBros:         { voice: 'avocado_v2:qvd_01114',                 pitch: 0.95, rate: 1.30, gender: 'm' },
-  hoaDads:        { voice: 'avocado_v2:vdc_22255',                 pitch: 0.85, rate: 1.05, gender: 'm' },
-  emoKids:        { voice: 'avocado_v2:vd_sinister_chalice',       pitch: 0.90, rate: 1.15, gender: 'm' },
+  hoaDads:        { voice: 'avocado_v2:vdc_22255',                 pitch: 0.85, rate: 1.25, gender: 'm' },
+  emoKids:        { voice: 'avocado_v2:vd_sinister_chalice',       pitch: 0.90, rate: 1.25, gender: 'm' },
   theGays:        { voice: 'avocado_v2:qvd_00262',                 pitch: 1.15, rate: 1.25, gender: 'm' },
-  trumpers:       { voice: 'avocado_v2:vdc_13210',                 pitch: 0.80, rate: 1.15, gender: 'm' },
+  trumpers:       { voice: 'avocado_v2:vdc_13210',                 pitch: 0.80, rate: 1.25, gender: 'm' },
 };
 
 const TTS = '/opt/hatch/bin/tts';
