@@ -90,15 +90,97 @@ export class Radar {
           ctx.beginPath();
           ctx.arc(obj.pos.x, obj.pos.z, 0.9, 0, Math.PI * 2);
           ctx.fill();
-        } else if (obj.kind === 'zone') {
+        } else if (obj.kind === 'zone' || obj.kind === 'lawnZone') {
           const pulse = 1 + 0.12 * Math.sin(now * 6);
-          ctx.strokeStyle = obj.owner === me.team ? '#29adff' : obj.owner === (1 - me.team) ? '#ff004d' : '#ffec27';
+          const owner = obj.owner ?? obj.ownerTeam;
+          ctx.strokeStyle = owner === me?.team ? '#29adff' : owner === (1 - (me?.team ?? 0)) ? '#ff004d' : '#ffec27';
           ctx.lineWidth = 1.2;
           ctx.beginPath();
-          ctx.arc(obj.pos.x, obj.pos.z, obj.radius * pulse, 0, Math.PI * 2);
+          ctx.arc(obj.pos.x, obj.pos.z, (obj.radius || 5.2) * pulse, 0, Math.PI * 2);
           ctx.stroke();
           ctx.fillStyle = ctx.strokeStyle + '33';
           ctx.fill();
+        } else if (obj.kind === 'patrolZone') {
+          const myTeam = me ? me.team : 0;
+          const col = obj.contested
+            ? '#ffec27'
+            : obj.ownerTeam === null
+            ? (obj.cappingTeam !== null ? (obj.cappingTeam === myTeam ? '#29adff' : '#ff004d') : '#c2c3c7')
+            : obj.ownerTeam === myTeam
+            ? '#29adff'
+            : '#ff004d';
+          const pulse = obj.contested ? 1 + 0.15 * Math.sin(now * 8) : 1;
+          ctx.strokeStyle = col;
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.arc(obj.pos.x, obj.pos.z, (obj.radius || 5.2) * pulse, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = col + '22';
+          ctx.fill();
+
+          // Zone letter badge in center
+          ctx.save();
+          ctx.translate(obj.pos.x, obj.pos.z);
+          ctx.rotate(-yaw);
+          ctx.scale(1 / sc, 1 / sc);
+
+          ctx.fillStyle = '#111d35ee';
+          ctx.beginPath();
+          ctx.arc(0, 0, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = col;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = col;
+          ctx.font = 'bold 9px "Courier New", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(obj.letter || 'A', 0, 0);
+
+          ctx.restore();
+        } else if (obj.kind === 'casserole') {
+          const myTeam = me ? me.team : 0;
+          const isAlly = obj.team === myTeam;
+          const col = isAlly ? '#29adff' : '#ff004d';
+
+          ctx.save();
+          ctx.translate(obj.pos.x, obj.pos.z);
+          ctx.rotate(-yaw);
+          ctx.scale(1 / sc, 1 / sc);
+
+          if (obj.state === 'dropped') {
+            const pulse = 1 + 0.3 * Math.sin(now * 8);
+            ctx.strokeStyle = '#ffec27';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(0, 0, 9 * pulse, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
+          // Casserole dish body
+          ctx.fillStyle = col;
+          ctx.fillRect(-5, -3, 10, 6);
+          ctx.strokeStyle = '#fff1e8';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(-5, -3, 10, 6);
+          // Handles
+          ctx.fillStyle = '#fff1e8';
+          ctx.fillRect(-7, -2, 2, 4);
+          ctx.fillRect(5, -2, 2, 4);
+          // Golden baked crust
+          ctx.fillStyle = '#ffa300';
+          ctx.fillRect(-3, -1.5, 6, 3);
+
+          ctx.restore();
+        } else if (obj.kind === 'casseroleBase') {
+          const myTeam = me ? me.team : 0;
+          const isAlly = obj.team === myTeam;
+          ctx.strokeStyle = isAlly ? '#29adff55' : '#ff004d55';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(obj.pos.x, obj.pos.z, obj.radius || 2.4, 0, Math.PI * 2);
+          ctx.stroke();
         }
       }
     }

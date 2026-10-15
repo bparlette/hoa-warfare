@@ -80,6 +80,16 @@ export class BarkSystem {
         case 'receiptDenied':
           push(this.bark(actor, this.director(actor).request('objective', now)));
           break;
+        case 'streakDestroyed': {
+          const killer = ev.killerId ? sim.byId.get(ev.killerId) : null;
+          const speaker = (killer && killer.alive)
+            ? killer
+            : (sim.actors?.find(a => a.alive && a.team === ev.killerTeam) || killer);
+          if (speaker) {
+            push(this.bark(speaker, this.director(speaker).request('streakDestroyed', now)));
+          }
+          break;
+        }
         case 'matchEnd': {
           const local = sim.byId.get(localId);
           if (ev.winner === null) this.announcer.push('Draw. Everyone loses.');

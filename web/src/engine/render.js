@@ -2,7 +2,7 @@
 // camera, and the hybrid-retro post pass (low-res render target -> 32-colour palette + Bayer dither,
 // point-filtered upscale). Toggle `retro` off to preview the clean look the Roblox build gets.
 import * as THREE from '../../vendor/three.module.min.js';
-import { T, shade } from './textures.js';
+import { T, shade, pixelTex } from './textures.js';
 import { CharacterView } from './character.js';
 import { BODY, forwardOf } from './sim.js';
 
@@ -79,6 +79,7 @@ export class Renderer {
     this.postCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     this.characters = new Map();
+    this.helicopterMeshes = new Map();
     this.ragdolls = [];
     this.fx = [];
     this.casings = [];
@@ -397,6 +398,7 @@ export class Renderer {
       c.update(s, dt, { firing: s.firing, revealed: a ? a.revealedUntil > now : false, meleeAgo: a ? now - a.meleeAt : 9 });
       if (s.id === hideId) c.root.visible = false;
     }
+    if (snap.helicopters) this.updateHelicopters(snap.helicopters, dt);
   }
 
   spawnRagdoll(id, ev) {
@@ -459,6 +461,41 @@ export class Renderer {
     this.splat(p, '#ff77a8', 2.2);
   }
 
+  debris(p, count = 16) {
+    for (let i = 0; i < count; i++) {
+      const sx = 0.2 + Math.random() * 0.25;
+      const sy = 0.2 + Math.random() * 0.25;
+      const sz = 0.2 + Math.random() * 0.25;
+      const geo = new THREE.BoxGeometry(sx, sy, sz);
+      const color = ['#5f574f', '#291814', '#ffa300', '#ff004d', '#c2c3c7'][Math.floor(Math.random() * 5)];
+      const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color }));
+      m.position.set(p.x + (Math.random() - 0.5) * 1.5, p.y + (Math.random() - 0.5) * 1.5, p.z + (Math.random() - 0.5) * 1.5);
+      const vel = {
+        x: (Math.random() - 0.5) * 14,
+        y: 4 + Math.random() * 8,
+        z: (Math.random() - 0.5) * 14,
+      };
+      this.scene.add(m);
+      this.fx.push({
+        obj: m, life: 1.5, max: 1.5,
+        update: (dt) => {
+          vel.y -= 20 * dt;
+          m.position.x += vel.x * dt;
+          m.position.y += vel.y * dt;
+          m.position.z += vel.z * dt;
+          m.rotation.x += dt * 6;
+          m.rotation.y += dt * 8;
+          if (m.position.y < 0.1) {
+            m.position.y = 0.1;
+            vel.x *= 0.4;
+            vel.z *= 0.4;
+            vel.y = 0;
+          }
+        }
+      });
+    }
+  }
+
   /** Draw mode objects (receipts, flags, zones...) by kind. Add a builder to OBJECT_VIEWS for new kinds. */
   updateObjects(objects, localTeam) {
     this.objectMeshes ??= new Map();
@@ -495,6 +532,62 @@ export class Renderer {
       m.visible = !!g;
       if (g) { m.position.set(g.pos.x, g.pos.y, g.pos.z); m.rotation.x += 0.3; m.rotation.y += 0.2; }
     });
+  }
+
+  updateHelicopters(helicoptersOrDt, maybeDt = 0.016) {
+    let helicopters, dt;
+    if (typeof helicoptersOrDt === 'number') {
+      dt = helicoptersOrDt;
+      helicopters = this.lastHelicopters || [];
+    } else {
+      helicopters = helicoptersOrDt || [];
+      dt = typeof maybeDt === 'number' ? maybeDt : 0.016;
+      this.lastHelicopters = helicopters;
+    }
+
+    this.helicopterMeshes ??= new Map();
+    const liveIds = new Set();
+
+    for (const h of helicopters) {
+      if (!h.alive) continue;
+      liveIds.add(h.id);
+      let m = this.helicopterMeshes.get(h.id);
+      if (!m) {
+        m = buildHelicopterMesh(h);
+        this.scene.add(m);
+        this.helicopterMeshes.set(h.id, m);
+      }
+      const posX = h.pos?.x ?? h.x ?? 0;
+      const posY = h.pos?.y ?? h.y ?? 16;
+      const posZ = h.pos?.z ?? h.z ?? 0;
+      m.position.set(posX, posY, posZ);
+
+      const angle = typeof h.angle === 'number' ? h.angle : Math.atan2(posZ, posX);
+      const heading = angle + Math.PI / 2;
+      m.rotation.y = -heading;
+      m.rotation.z = 0.1;
+      m.rotation.x = 0.05;
+
+      if (m.userData.mainRotor) m.userData.mainRotor.rotation.y += dt * 30;
+      if (m.userData.tailRotor) m.userData.tailRotor.rotation.x += dt * 40;
+    }
+
+    if (typeof helicoptersOrDt === 'number') {
+      for (const [id, m] of this.helicopterMeshes) {
+        if (m.userData.mainRotor) m.userData.mainRotor.rotation.y += dt * 30;
+        if (m.userData.tailRotor) m.userData.tailRotor.rotation.x += dt * 40;
+      }
+      return;
+    }
+
+    for (const [id, m] of this.helicopterMeshes) {
+      if (!liveIds.has(id)) {
+        this.explosion(m.position);
+        this.debris(m.position, 18);
+        this.scene.remove(m);
+        this.helicopterMeshes.delete(id);
+      }
+    }
   }
 
   spawnCasing() {
@@ -574,6 +667,7 @@ export class Renderer {
   updateFx(dt) {
     this.fx = this.fx.filter(f => {
       f.life -= dt;
+      if (typeof f.update === 'function') f.update(dt);
       if (f.life <= 0) {
         this.scene.remove(f.obj);
         if (f.splat) this.splatCount--;
@@ -767,6 +861,179 @@ export const OBJECT_VIEWS = {
     };
     return g;
   },
+  patrolZone(o, localTeam) {
+    const g = new THREE.Group();
+    const r = o.radius || 5.2;
+    const ringMat = new THREE.MeshBasicMaterial({ color: '#c2c3c7', side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(r - 0.25, r + 0.15, 32), ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.06;
+
+    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 3.2, 6), new THREE.MeshLambertMaterial({ color: '#5f574f' }));
+    flagPole.position.y = 1.6;
+
+    const bannerGroup = new THREE.Group();
+    bannerGroup.position.set(0.45, 2.6, 0);
+
+    const bannerMat = new THREE.MeshLambertMaterial({ color: '#c2c3c7' });
+    const bannerCloth = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.03), bannerMat);
+    bannerGroup.add(bannerCloth);
+
+    if (typeof document !== 'undefined') {
+      const cv = document.createElement('canvas');
+      cv.width = 64;
+      cv.height = 64;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 44px monospace, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(o.letter || 'A', 32, 34);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      const letterMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide });
+      const letterFront = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), letterMat);
+      letterFront.position.z = 0.02;
+      const letterBack = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), letterMat);
+      letterBack.position.z = -0.02;
+      letterBack.rotation.y = Math.PI;
+      bannerGroup.add(letterFront, letterBack);
+    }
+
+    g.add(ring, flagPole, bannerGroup);
+
+    g.userData.update = (m, obj, t) => {
+      const col = obj.contested
+        ? '#ffec27'
+        : obj.ownerTeam === null
+        ? (obj.cappingTeam !== null ? (obj.cappingTeam === localTeam ? '#29adff' : '#ff004d') : '#c2c3c7')
+        : obj.ownerTeam === localTeam
+        ? '#29adff'
+        : '#ff004d';
+      ringMat.color.set(col);
+      bannerMat.color.set(col);
+      ringMat.opacity = 0.55 + 0.35 * Math.sin(t * (obj.contested ? 10 : 4));
+      bannerGroup.rotation.y = Math.sin(t * 2) * 0.2;
+    };
+    return g;
+  },
+  casserole(o, localTeam) {
+    const g = new THREE.Group();
+
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: o.team === localTeam ? '#29adff' : '#ff004d',
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.75,
+    });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.8, 24), ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.05;
+    g.add(ring);
+
+    const dishGroup = new THREE.Group();
+
+    // Baking dish
+    const ceramicMat = new THREE.MeshLambertMaterial({ color: '#f4f1ea' });
+    const dish = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.22, 0.44), ceramicMat);
+    dish.position.y = 0.11;
+
+    // Golden crust
+    const crustMat = new THREE.MeshLambertMaterial({ color: '#e8a538' });
+    const crust = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.06, 0.36), crustMat);
+    crust.position.y = 0.21;
+
+    // Handles
+    const handleMat = new THREE.MeshLambertMaterial({ color: '#dcd8cc' });
+    const handleL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.2), handleMat);
+    handleL.position.set(-0.35, 0.16, 0);
+    const handleR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.2), handleMat);
+    handleR.position.set(0.35, 0.16, 0);
+
+    // Steam bobbing
+    const steamMat = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.55 });
+    const steam1 = new THREE.Mesh(SHARED.ico(), steamMat);
+    steam1.scale.set(0.18, 0.22, 0.18);
+    const steam2 = new THREE.Mesh(SHARED.ico(), steamMat);
+    steam2.scale.set(0.14, 0.18, 0.14);
+    const steam3 = new THREE.Mesh(SHARED.ico(), steamMat);
+    steam3.scale.set(0.16, 0.2, 0.16);
+
+    dishGroup.add(dish, crust, handleL, handleR, steam1, steam2, steam3);
+    g.add(dishGroup);
+
+    g.userData.update = (m, obj, t) => {
+      const isCarried = obj.state === 'carried';
+      ring.visible = !isCarried;
+      if (!isCarried) {
+        ringMat.opacity = 0.5 + 0.35 * Math.sin(t * (obj.state === 'dropped' ? 8 : 3));
+        dishGroup.position.y = 0.15 + Math.sin(t * 3) * 0.04;
+        dishGroup.rotation.y = t * 1.5;
+      } else {
+        dishGroup.position.y = 0;
+        dishGroup.rotation.y = 0;
+      }
+
+      const s1Phase = (t * 0.9) % 1;
+      steam1.position.set(Math.sin(t * 3) * 0.06, 0.28 + s1Phase * 0.45, Math.cos(t * 2) * 0.05);
+      const s2Phase = (t * 0.9 + 0.33) % 1;
+      steam2.position.set(Math.cos(t * 2.5) * 0.08, 0.28 + s2Phase * 0.45, Math.sin(t * 3.5) * 0.06);
+      const s3Phase = (t * 0.9 + 0.66) % 1;
+      steam3.position.set(Math.sin(t * 4) * 0.05, 0.28 + s3Phase * 0.45, Math.cos(t * 3) * 0.07);
+    };
+
+    return g;
+  },
+  casseroleBase(o, localTeam) {
+    const g = new THREE.Group();
+    const r = o.radius || 2.4;
+    const isAlly = o.team === localTeam;
+    const teamCol = isAlly ? '#29adff' : '#ff004d';
+
+    let clothMat;
+    if (typeof document !== 'undefined') {
+      clothMat = new THREE.MeshLambertMaterial({
+        map: pixelTex('cloth' + o.team, 16, 16, (px, w, h) => {
+          const dark = isAlly ? '#125359' : '#7e2553';
+          const light = '#fff1e8';
+          const mid = isAlly ? '#29adff' : '#ff004d';
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              const cx = Math.floor(x / 4) % 2;
+              const cy = Math.floor(y / 4) % 2;
+              if (cx === 0 && cy === 0) px(x, y, light);
+              else if (cx === 1 && cy === 1) px(x, y, dark);
+              else px(x, y, mid);
+            }
+          }
+        }, [4, 4]),
+        side: THREE.DoubleSide,
+      });
+    } else {
+      clothMat = new THREE.MeshLambertMaterial({ color: teamCol, side: THREE.DoubleSide });
+    }
+
+    const cloth = new THREE.Mesh(new THREE.CircleGeometry(r * 0.9, 24), clothMat);
+    cloth.rotation.x = -Math.PI / 2;
+    cloth.position.y = 0.03;
+
+    const trivet = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.7, 0.08, 16), new THREE.MeshLambertMaterial({ color: '#8a5a2e' }));
+    trivet.position.y = 0.04;
+
+    const ringMat = new THREE.MeshBasicMaterial({ color: teamCol, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(r - 0.15, r + 0.1, 32), ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.035;
+
+    g.add(cloth, trivet, ring);
+
+    g.userData.update = (m, obj, t) => {
+      ringMat.opacity = 0.45 + 0.25 * Math.sin(t * 3);
+    };
+
+    return g;
+  },
 };
 
 // ---------------------------------------------------------------- performance helpers
@@ -848,4 +1115,117 @@ export function mergeStatic(scene, objects) {
     after++;
   }
   return { before, after };
+}
+
+/**
+ * Builds Dad's Helicopter:
+ * Suburban HOA Patrol RC / surveillance helicopter with cabin body,
+ * spinning main rotor blades, tail boom, tail rotor, landing skids,
+ * and searchlight shining down on the cul-de-sac.
+ */
+export function buildHelicopterMesh(h) {
+  const g = new THREE.Group();
+
+  const bodyMat = new THREE.MeshLambertMaterial({ color: '#fff1e8' });
+  const trimMat = new THREE.MeshLambertMaterial({ color: '#ff004d' });
+  const glassMat = new THREE.MeshLambertMaterial({ color: '#1d2b53' });
+  const darkMat = new THREE.MeshLambertMaterial({ color: '#5f574f' });
+  const bladeMat = new THREE.MeshLambertMaterial({ color: '#111d35' });
+  const accentMat = new THREE.MeshLambertMaterial({ color: '#ffa300' });
+
+  // Main cabin body
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.0, 2.2), bodyMat);
+  cabin.castShadow = true;
+  g.add(cabin);
+
+  // Side HOA patrol stripe
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.2, 2.22), trimMat);
+  g.add(stripe);
+
+  // Windshield / cockpit visor
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.65, 0.8), glassMat);
+  windshield.position.set(0, 0.15, -0.9);
+  g.add(windshield);
+
+  // Engine cowling
+  const cowl = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.5, 1.2), darkMat);
+  cowl.position.set(0, 0.65, 0.1);
+  g.add(cowl);
+
+  // Tail boom
+  const boom = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 2.8), bodyMat);
+  boom.position.set(0, 0.2, 2.3);
+  boom.castShadow = true;
+  g.add(boom);
+
+  // Tail vertical stabilizer
+  const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.9, 0.5), trimMat);
+  tailFin.position.set(0, 0.5, 3.5);
+  g.add(tailFin);
+
+  // Tail horizontal stabilizer
+  const tailWing = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.06, 0.3), darkMat);
+  tailWing.position.set(0, 0.2, 3.3);
+  g.add(tailWing);
+
+  // Landing skids
+  const skidL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 2.6), darkMat);
+  skidL.position.set(-0.7, -0.7, -0.1);
+  const skidR = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 2.6), darkMat);
+  skidR.position.set(0.7, -0.7, -0.1);
+  g.add(skidL, skidR);
+
+  // Skid struts
+  for (const sx of [-0.7, 0.7]) {
+    for (const sz of [-0.8, 0.6]) {
+      const strut = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.35, 0.08), darkMat);
+      strut.position.set(sx, -0.5, sz);
+      g.add(strut);
+    }
+  }
+
+  // Main rotor mast & spinning blades
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.5, 6), glassMat);
+  mast.position.set(0, 1.0, 0.1);
+  g.add(mast);
+
+  const mainRotor = new THREE.Group();
+  mainRotor.position.set(0, 1.25, 0.1);
+  const hubCap = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 8), accentMat);
+  const bladeX = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.04, 0.25), bladeMat);
+  const bladeZ = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.04, 4.4), bladeMat);
+  mainRotor.add(hubCap, bladeX, bladeZ);
+  g.add(mainRotor);
+  g.userData.mainRotor = mainRotor;
+
+  // Tail rotor
+  const tailRotor = new THREE.Group();
+  tailRotor.position.set(0.15, 0.6, 3.55);
+  const tailBlade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.9, 0.12), accentMat);
+  tailRotor.add(tailBlade);
+  g.add(tailRotor);
+  g.userData.tailRotor = tailRotor;
+
+  // Searchlight shining down on cul-de-sac
+  const lightHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.32, 0.35, 8), darkMat);
+  lightHousing.position.set(0, -0.55, -0.85);
+  lightHousing.rotation.x = 0.2;
+  const lens = new THREE.Mesh(new THREE.CircleGeometry(0.3, 8), new THREE.MeshBasicMaterial({ color: '#ffec27' }));
+  lens.position.set(0, -0.73, -0.87);
+  lens.rotation.x = Math.PI / 2 + 0.2;
+
+  const beamGeo = new THREE.ConeGeometry(4.0, 18, 12, 1, true);
+  const beamMat = new THREE.MeshBasicMaterial({ color: '#fff1e8', transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: false });
+  const beam = new THREE.Mesh(beamGeo, beamMat);
+  beam.position.set(0, -9.7, -0.87);
+  beam.rotation.x = Math.PI + 0.2;
+  g.add(lightHousing, lens, beam);
+  g.userData.searchlight = beam;
+
+  // Amber warning beacon on roof
+  const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.18, 6), new THREE.MeshBasicMaterial({ color: '#ffa300' }));
+  beacon.position.set(0, 0.95, -0.2);
+  g.add(beacon);
+
+  return g;
 }

@@ -74,6 +74,8 @@ export class Sim {
     this.over = false;
     this.winner = null;
     this.started = false;
+    this.nextObjectId = 0;
+    this.helicopters = [];
     this.mode = createMode(mode, this);
   }
 
@@ -280,17 +282,24 @@ export class Sim {
   // ---------------------------------------------------------------- combat
 
   raycast(o, dir, maxT, ignoreId = null) {
-    let best = { t: maxT, kind: 'none', actor: null, head: false };
+    let best = { t: maxT, kind: 'none', actor: null, helicopter: null, head: false };
     const tg = rayGround(o, dir, best.t);
-    if (tg < best.t) best = { t: tg, kind: 'world', actor: null, head: false };
+    if (tg < best.t) best = { t: tg, kind: 'world', actor: null, helicopter: null, head: false };
     for (const b of this.map.boxes) {
       const t = rayBox(o, dir, b, best.t);
-      if (t < best.t) best = { t, kind: 'world', actor: null, head: false, box: b };
+      if (t < best.t) best = { t, kind: 'world', actor: null, helicopter: null, head: false, box: b };
     }
     for (const a of this.actors) {
       if (!a.alive || a.id === ignoreId) continue;
       const hit = rayActor(o, dir, a.pos, best.t);
-      if (hit) best = { t: hit.t, kind: 'actor', actor: a, head: hit.head };
+      if (hit) best = { t: hit.t, kind: 'actor', actor: a, helicopter: null, head: hit.head };
+    }
+    for (const h of this.helicopters) {
+      if (!h.alive) continue;
+      const t = raySphere(o, dir, h.pos, 2.5, best.t);
+      if (t !== null && t < best.t) {
+        best = { t, kind: 'helicopter', actor: null, helicopter: h, head: false };
+      }
     }
     best.point = { x: o.x + dir.x * best.t, y: o.y + dir.y * best.t, z: o.z + dir.z * best.t };
     return best;
@@ -322,14 +331,37 @@ export class Sim {
       const yaw = a.yaw + gauss(this.rng) * spread, pitch = a.pitch + gauss(this.rng) * spread;
       const dir = forwardOf(yaw, pitch);
       const hit = this.raycast(o, dir, w.range, a.id);
-      this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? null, head: hit.head, kind: hit.kind });
+      this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? hit.helicopter?.id ?? null, head: hit.head, kind: hit.kind });
       if (hit.actor && hit.actor.team !== a.team) {
         let dmg = hit.head ? w.damage.head : w.damage.body;
         if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
         this.damage(hit.actor, dmg, a, { headshot: hit.head, dir, weaponId: w.id });
+      } else if (hit.helicopter && hit.helicopter.team !== a.team) {
+        let dmg = w.damage.body;
+        if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
+        this.damageHelicopter(hit.helicopter, dmg, a, { dir, weaponId: w.id });
       }
     }
     if (a.ammo === 0) this.startReload(a);
+  }
+
+  shootRay(o, dir, maxRange = 100, attacker = null, damage = 25) {
+    const hit = this.raycast(o, dir, maxRange, attacker?.id);
+    if (hit.helicopter) {
+      if (!attacker || hit.helicopter.team !== attacker.team) {
+        this.damageHelicopter(hit.helicopter, damage, attacker, { dir });
+        return { hit: true, kind: 'helicopter', target: hit.helicopter, point: hit.point, t: hit.t };
+      }
+      return { hit: false, friendly: true, kind: 'helicopter', target: hit.helicopter, point: hit.point, t: hit.t };
+    }
+    if (hit.actor) {
+      if (!attacker || hit.actor.team !== attacker.team) {
+        this.damage(hit.actor, damage, attacker, { headshot: hit.head, dir });
+        return { hit: true, kind: 'actor', target: hit.actor, point: hit.point, t: hit.t };
+      }
+      return { hit: false, friendly: true, kind: 'actor', target: hit.actor, point: hit.point, t: hit.t };
+    }
+    return { hit: false, kind: hit.kind, point: hit.point, t: hit.t };
   }
 
   startReload(a) {
@@ -431,13 +463,119 @@ export class Sim {
     target.respawnAt = this.time + this.mode.respawnDelay(target);
     target.streak = 0;
     const killer = attacker && attacker.id !== target.id ? attacker : null;
-    if (killer) { killer.kills++; killer.streak++; }
+    if (killer) {
+      killer.kills++;
+      killer.streak++;
+      if (killer.streak === 5) {
+        this.spawnHelicopter(killer);
+      }
+    }
     const ev = {
       type: 'kill', killerId: killer?.id ?? null, victimId: target.id, headshot, melee, explosive, weaponId,
       dir: dir || { x: 0, y: 0, z: 0 }, victimPos: { ...target.pos }, killerPos: killer ? { ...killer.pos } : null,
     };
     this.emit(ev);
     this.mode.onKill(ev, killer, target);
+  }
+
+  spawnHelicopter(ownerActor) {
+    const h = {
+      id: 'helo_' + (++this.nextObjectId),
+      team: ownerActor.team,
+      ownerId: ownerActor.id,
+      hp: 160,
+      maxHp: 160,
+      alive: true,
+      pos: { x: 0, y: 16, z: 0 },
+      angle: 0,
+      radius: 24,
+      speed: 0.4,
+      lastFire: 0,
+      fireInterval: 0.8,
+      expiresAt: this.time + 35,
+    };
+    this.helicopters.push(h);
+    this.emit({ type: 'heloSpawn', id: h.id, ownerId: h.ownerId, team: h.team, pos: { ...h.pos } });
+    return h;
+  }
+
+  damageHelicopter(h, amount, attacker = null, { dir = null, weaponId = null } = {}) {
+    if (!h.alive) return;
+    h.hp -= amount;
+    this.emit({ type: 'heloHurt', id: h.id, hp: Math.max(0, h.hp), maxHp: h.maxHp, attackerId: attacker?.id ?? null, amount });
+    if (h.hp <= 0) {
+      h.hp = 0;
+      h.alive = false;
+      const killerId = attacker?.id ?? null;
+      const killerTeam = attacker ? attacker.team : (h.team === 0 ? 1 : 0);
+      this.emit({
+        type: 'streakDestroyed',
+        streakType: 'helicopter',
+        killerId,
+        killerTeam,
+        ownerId: h.ownerId,
+        pos: { ...h.pos },
+      });
+      if (attacker) {
+        attacker.streakDestroyedCount = (attacker.streakDestroyedCount || 0) + 1;
+        this.addScore(attacker.team, 1);
+      }
+    }
+  }
+
+  updateHelicopters(dt) {
+    const now = this.time;
+    for (const h of this.helicopters) {
+      if (!h.alive) continue;
+      if (now >= h.expiresAt) {
+        h.alive = false;
+        this.emit({ type: 'heloExpired', id: h.id, ownerId: h.ownerId });
+        continue;
+      }
+
+      h.angle += h.speed * dt;
+      h.pos.x = Math.cos(h.angle) * h.radius;
+      h.pos.z = Math.sin(h.angle) * h.radius;
+      h.pos.y = 16 + Math.sin(h.angle * 2) * 1.5;
+
+      if (now - h.lastFire >= h.fireInterval) {
+        let target = null;
+        let bestDist = Infinity;
+        for (const e of this.actors) {
+          if (!e.alive || e.team === h.team || now < e.spawnProtectUntil) continue;
+          const eCenter = { x: e.pos.x, y: e.pos.y + 1.2, z: e.pos.z };
+          const dist = Math.hypot(eCenter.x - h.pos.x, eCenter.y - h.pos.y, eCenter.z - h.pos.z);
+          if (dist > 65) continue;
+          if (this.lineClear(h.pos, eCenter)) {
+            if (dist < bestDist) {
+              bestDist = dist;
+              target = e;
+            }
+          }
+        }
+
+        if (target) {
+          h.lastFire = now;
+          const targetPoint = { x: target.pos.x, y: target.pos.y + 1.0, z: target.pos.z };
+          this.emit({
+            type: 'heloShot',
+            id: h.id,
+            ownerId: h.ownerId,
+            from: { ...h.pos },
+            to: targetPoint,
+            targetId: target.id,
+          });
+          const owner = this.byId.get(h.ownerId);
+          const dx = targetPoint.x - h.pos.x, dy = targetPoint.y - h.pos.y, dz = targetPoint.z - h.pos.z;
+          const len = Math.hypot(dx, dy, dz) || 1;
+          this.damage(target, 10, owner || { id: h.ownerId, team: h.team }, {
+            dir: { x: dx / len, y: dy / len, z: dz / len },
+            weaponId: 'helicopter',
+          });
+        }
+      }
+    }
+    this.helicopters = this.helicopters.filter(h => h.alive);
   }
 
   /** Modes award points through here so the score limit is checked in one place. */
@@ -487,17 +625,32 @@ export class Sim {
       a.campState = c;
     }
     this.stepGrenades(dt);
+    this.updateHelicopters(dt);
     this.mode.update(dt);
     if (now >= this.timeLimit) this.end(this.score[0] === this.score[1] ? null : this.score[0] > this.score[1] ? 0 : 1);
   }
 
   snapshot() {
-    return this.actors.map(a => ({
+    const snap = this.actors.map(a => ({
       id: a.id, x: a.pos.x, y: a.pos.y, z: a.pos.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive,
       speed: Math.hypot(a.vel.x, a.vel.z), firing: this.time < a.firingUntil, onGround: a.onGround,
       hitAgo: a.hitAgo ?? Infinity,
       hitDir: a.hitDir ? { x: a.hitDir.x, y: a.hitDir.y, z: a.hitDir.z } : { x: 0, y: 0, z: 0 },
     }));
+    snap.helicopters = this.helicopters.map(h => ({
+      id: h.id,
+      team: h.team,
+      ownerId: h.ownerId,
+      hp: h.hp,
+      maxHp: h.maxHp,
+      alive: h.alive,
+      pos: { ...h.pos },
+      x: h.pos.x,
+      y: h.pos.y,
+      z: h.pos.z,
+      angle: h.angle,
+    }));
+    return snap;
   }
 
   // ---------------------------------------------------------------- bots
@@ -691,4 +844,18 @@ export function rayActor(o, d, p, maxT) {
     }
   }
   return best;
+}
+
+/** Ray vs sphere (used for helicopter bounding sphere). Returns t or null. */
+export function raySphere(o, d, center, radius, maxT = Infinity) {
+  const ox = o.x - center.x, oy = o.y - center.y, oz = o.z - center.z;
+  const b = ox * d.x + oy * d.y + oz * d.z;
+  const c = ox * ox + oy * oy + oz * oz - radius * radius;
+  const disc = b * b - c;
+  if (disc < 0) return null;
+  const sqrtDisc = Math.sqrt(disc);
+  let t = -b - sqrtDisc;
+  if (t < 0) t = -b + sqrtDisc;
+  if (t > 0 && t < maxT) return t;
+  return null;
 }

@@ -64,12 +64,12 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - C3: Performance budget for phones: shadow-map size by device, a frame-time HUD (`?perf=1`), and a 60 fps target on a mid-range phone.
 
 **Antigravity (presentation + modes)**
-- A0: **T19 step 5**: faction picker for every shipping faction (touch + controller friendly) and bot rotation beyond Phase 0.
-- A1: Split `game.js` (review note 1). No behaviour changes; tests and screenshots identical.
-- A2: **HOA Patrol** (Domination: pool, clubhouse, gazebo) and **Steal the Casserole** (CTF) on the `Mode` API in `modes.js`, each with a headless test like `receipt check` in `sim.test.mjs`.
-- A3: Killstreak 5 **Dad's Helicopter**: sim-side entity (hp, path, targets), shoot-down → `streakDestroyed` bark, plus the renderer view. Streak rewards hook into `MatchTracker.streakEarned`.
-- A4: Touch-friendly menus. Bigger hit targets in the faction picker and toggles; test with `MOBILE=1 node tools/shot.mjs`.
-- A5 (small, new): in round-based modes the top clock should show the mode's round time, not the 25-min match limit. `EvictTheBlock` exposes `roundEndsAt` / `planted.at` + `FUSE_SEC`; add a `Mode.clock()` hook and use it in `hud.js`.
+- A0: **T19 step 5**: faction picker for every shipping faction (touch + controller friendly) and bot rotation beyond Phase 0 — **done** (Antigravity): paginated faction picker (8 cards/page, ◀ Prev / Next ▶) showing all 14 shipping factions (filtering draft); bot rotation in `game.js` draws from all shipping factions; LB/RB controller and touch paging support.
+- A1: Split `game.js` (review note 1) — **done** (Antigravity): extracted visual styles into `styles.js` and HUD overlays, meters, banners, bubbles, and boards into `hud.js`; zero behavioral regression; clean modular code.
+- A2: **HOA Patrol** (Domination: pool, clubhouse, gazebo) and **Steal the Casserole** (CTF) on the `Mode` API in `modes.js` — **done** (Antigravity): implemented `HoaPatrol` and `StealTheCasserole` in `modes.js`; 3D views for `patrolZone`, `casserole`, and `casseroleBase` in `render.js`; radar minimap integration in `radar.js`; 12 unit tests in `web/tests/modes.test.mjs`.
+- A3: Killstreak 5 **Dad's Helicopter** — **done** (Antigravity): sim-side entity (hp 160, orbit path, ground target acquisition & tracer fire), bullet hit detection with raySphere, shoot-down emits `streakDestroyed` and awards score bonus, `barks.js` triggers `streakDestroyed` voice line ("Helicopter down!"), full 3D surveillance RC helicopter model in `render.js` with spinning main & tail rotors, searchlight, explosion & debris on destruction, unit tests in `web/tests/helicopter.test.mjs`.
+- A4: Touch-friendly menus — **done** (Antigravity): enlarged hit targets (≥44-48px min-height) for faction cards, toggle checkboxes, buttons, and select dropdowns; verified with desktop and `MOBILE=1 node tools/shot.mjs`.
+- A5: Round-based clock hook — **done** (Antigravity): added `Mode.clock()` hook across modes and `EvictTheBlock`, wired into `hud.js` to display round/fuse clock over match time limit.
 
 **Opus (systems, bots, balance)**
 - O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
