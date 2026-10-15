@@ -22,12 +22,35 @@ const [content, weaponsData] = await Promise.all(['../data/hoa_content.json', '.
 const factions = content.factions;
 const phase0 = Object.keys(factions).filter(id => factions[id].phase0);
 
+export const STYLES = {
+  modern: { id: 'modern', name: 'MODERN TACTICAL MODE', cls: 'style-modern', retro: false },
+  '007': { id: '007', name: 'GOLDENEYE 007 MODE', cls: 'style-007', retro: true },
+  cctv: { id: 'cctv', name: 'RING CAM CCTV SURVEILLANCE', cls: 'style-cctv', retro: false },
+  vhs: { id: 'vhs', name: '1993 VHS EVIDENCE TAPE', cls: 'style-vhs', retro: true },
+  noir: { id: 'noir', name: 'SUBPOENA NOIR MODE', cls: 'style-noir', retro: false },
+  gameboy: { id: 'gameboy', name: 'GAME BOY 1989 DMG-01', cls: 'style-gameboy', retro: true },
+};
+const STYLE_KEYS = Object.keys(STYLES);
+
+function getInitialStyle() {
+  const p = params.get('style');
+  if (p && STYLES[p]) return p;
+  if (params.get('007') === '1') return '007';
+  if (params.get('cctv') === '1') return 'cctv';
+  if (params.get('vhs') === '1') return 'vhs';
+  if (params.get('noir') === '1') return 'noir';
+  if (params.get('gameboy') === '1') return 'gameboy';
+  return 'modern';
+}
+
 const state = {
   faction: params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens',
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
   legalSafe: params.get('legal') !== '0',
   retro: params.get('retro') !== '0',
-  style007: params.get('style') === '007' || params.get('007') === '1',
+  style: getInitialStyle(),
+  get style007() { return this.style === '007'; },
+  set style007(v) { this.style = v ? '007' : 'modern'; },
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
@@ -68,14 +91,27 @@ function init007Meters() {
   }
 }
 
-function apply007Style(on) {
-  state.style007 = on;
-  document.body.classList.toggle('style-007', on);
-  init007Meters();
-  if (on) renderer.setRetro(true);
-  if ($('opt007')) $('opt007').checked = on;
+function applyStyle(styleKey) {
+  if (!STYLES[styleKey]) styleKey = 'modern';
+  state.style = styleKey;
+  for (const s of Object.values(STYLES)) {
+    document.body.classList.remove(s.cls);
+  }
+  const cur = STYLES[styleKey];
+  document.body.classList.add(cur.cls);
+  if (styleKey === '007') init007Meters();
+  renderer.setRetro(cur.retro || state.retro);
+  if ($('optStyle')) $('optStyle').value = styleKey;
+  if ($('opt007')) $('opt007').checked = (styleKey === '007');
 }
-apply007Style(state.style007);
+
+function cycleStyle() {
+  const nextIdx = (STYLE_KEYS.indexOf(state.style) + 1) % STYLE_KEYS.length;
+  const nextKey = STYLE_KEYS[nextIdx];
+  applyStyle(nextKey);
+  if (game) game.showBanner(STYLES[nextKey].name);
+}
+applyStyle(state.style);
 
 // ------------------------------------------------------------------ menu
 
@@ -93,15 +129,17 @@ function buildMenu() {
   $('optSteam').checked = state.script === 'steam';
   $('optLegal').checked = state.legalSafe;
   $('optRetro').checked = state.retro;
-  if ($('opt007')) $('opt007').checked = state.style007;
+  if ($('optStyle')) $('optStyle').value = state.style;
+  if ($('opt007')) $('opt007').checked = state.style === '007';
   $('optVoice').checked = state.voice;
   $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
 $('optMode').onchange = e => { state.mode = e.target.value; };
+if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value); };
 $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
 $('optRetro').onchange = e => { state.retro = e.target.checked; renderer.setRetro(state.retro); };
-if ($('opt007')) $('opt007').onchange = e => { apply007Style(e.target.checked); };
+if ($('opt007')) $('opt007').onchange = e => { applyStyle(e.target.checked ? '007' : 'modern'); };
 $('optVoice').onchange = e => { state.voice = e.target.checked; };
 $('deploy').onclick = () => startGame();
 $('toMenu').onclick = () => toMenu();
@@ -583,8 +621,7 @@ document.addEventListener('keydown', e => {
   if (e.code === 'Tab') e.preventDefault();
   input.keys.add(e.code);
   if (e.code === 'KeyO' || e.code === 'Digit0') {
-    apply007Style(!state.style007);
-    if (game) game.showBanner(state.style007 ? 'GOLDENEYE 007 MODE' : 'MODERN TACTICAL MODE');
+    cycleStyle();
   }
   if (!game) return;
   const me = game.me;

@@ -29,6 +29,8 @@
       <div class="ge-meter" id="geHpMeter"></div>
     </div>
   </div>
+  <div id="cctvOverlay"><div class="cctv-scanlines"></div><div class="cctv-hud"><span class="cctv-rec"></span>REC [●] 23:41:09 CAM 04 - CUL-DE-SAC S<br><small style="color:#22c55e;">IR NIGHT-VISION ACTIVE</small></div></div>
+  <div id="vhsOverlay"><div class="vhs-scanlines"></div><div class="vhs-hud">PLAY ► SP<br>0:14:22<br><small>AUTO-TRACKING</small></div></div>
   <div id="weapon"><div class="wname" id="wname"></div><div id="ammo">30 / 30</div><div id="nades">The Lawsuit x2</div></div>
   <div id="modes"></div>
   <div id="bubbles"></div>
@@ -47,16 +49,25 @@
     <div id="factions"></div>
     <h2>Mode</h2>
     <select id="optMode"></select>
+    <h2>Visual Style</h2>
+    <select id="optStyle">
+      <option value="modern">⚡ Modern Tactical (Default Clean 60fps)</option>
+      <option value="007">🍸 GoldenEye 007 (N64 Segmented HUD)</option>
+      <option value="cctv">📹 Ring Cam CCTV (Night Vision Surveillance)</option>
+      <option value="vhs">📼 VHS 1993 (HOA Evidence Camcorder)</option>
+      <option value="noir">🕵️ Subpoena Noir (Sin City High-Contrast)</option>
+      <option value="gameboy">🕹️ Game Boy 1989 (DMG-01 4-Shade LCD)</option>
+    </select>
     <h2>Build</h2>
     <div class="toggles">
       <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
       <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
       <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
-      <label><input type="checkbox" id="opt007"> GoldenEye 007 Mode (O / 0 to toggle)</label>
+      <label style="display:none;"><input type="checkbox" id="opt007"></label>
       <label><input type="checkbox" id="optVoice" checked> Placeholder voices (TTS)</label>
     </div>
     <button id="deploy">DEPLOY TO THE CUL-DE-SAC</button>
-    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores<br>O/0 GoldenEye 007 toggle · 1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
+    <p class="keys">WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores<br>O/0 Cycle Visual Styles · 1 Clean/Steam · 2 legal-safe · P 16-bit filter · M mute · Esc pause</p>
   </div>
 </div>
 
