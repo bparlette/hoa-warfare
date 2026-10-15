@@ -510,7 +510,7 @@ body.touch-mode #crosshair { font-size: 22px; }
 .t-jump { right: calc(134px + env(safe-area-inset-right)); bottom: 38px; width: 62px; height: 62px; font-size: 24px; font-weight: bold; }
 .t-reload { right: calc(134px + env(safe-area-inset-right)); bottom: 114px; width: 54px; height: 54px; font-size: 18px; }
 .t-swap { right: calc(34px + env(safe-area-inset-right)); bottom: 28px; width: 62px; height: 62px; font-size: 22px; }
-.t-pause { right: calc(14px + env(safe-area-inset-right)); top: 12px; width: 42px; height: 42px; font-size: 14px; border-radius: 8px; }
+.t-pause { right: calc(14px + env(safe-area-inset-right)); top: 12px; width: 48px; height: 48px; min-width: 48px; min-height: 48px; font-size: 16px; border-radius: 8px; }
 
 .t-look-hint {
   position: fixed;
