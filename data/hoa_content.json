@@ -1064,161 +1064,253 @@
           "clean": [
             "YEEHAW!",
             "Catalytic converter's MINE now!",
-            "Propane'd!"
+            "Propane'd!",
+            "Consider this a lien, friend."
           ],
           "steam": [
             "Stripped you for parts!",
-            "Your truck's a lease, ain't it?"
+            "Your truck's a lease, ain't it?",
+            "Lien filed against your respawn."
           ]
         },
         "headshot": {
           "clean": [
-            "Right 'tween the eyes!"
+            "Right 'tween the eyes!",
+            "Headshot under maritime law!"
+          ],
+          "steam": [
+            "Gold fringe means I won."
           ]
         },
         "revenge": {
           "clean": [
-            "I remember you. From last time."
+            "I remember you. From last time.",
+            "I do not consent to dying."
+          ],
+          "steam": [
+            "Counterclaim: your whole killstreak."
           ]
         },
         "shutdown": {
           "clean": [
-            "Streak's done. Like my truck's warranty."
+            "Streak's done. Like my truck's warranty.",
+            "Streak's null and void!"
+          ],
+          "steam": [
+            "That streak lacked jurisdiction anyway."
           ]
         },
         "melee": {
           "clean": [
-            "Wrassled!"
+            "Wrassled!",
+            "Hands are for traveling!"
+          ],
+          "steam": [
+            "Fisticuffs under common law!"
           ]
         },
         "humiliated": {
           "clean": [
-            "Scratched the clear coat?!"
+            "Scratched the clear coat?!",
+            "This ain't my strawman!"
+          ],
+          "steam": [
+            "ALL CAPS ain't my name!"
           ]
         },
         "double": {
           "clean": [
-            "DOUBLE! Like my lift kit!"
+            "DOUBLE! Like my lift kit!",
+            "Double! Both without contracts!"
+          ],
+          "steam": [
+            "Two liens, one truck!"
           ]
         },
         "triple": {
           "clean": [
-            "TRIPLE! Mama's proud!"
+            "TRIPLE! Mama's proud!",
+            "Triple! In my sovereign state!"
+          ],
+          "steam": [
+            "Three kills, zero permits!"
           ]
         },
         "rampage": {
           "clean": [
-            "RAMPAGE! YEEHAW!"
+            "RAMPAGE! YEEHAW!",
+            "Traveling! Not driving! YEEHAW!"
+          ],
+          "steam": [
+            "No plate, no problem, no mercy!"
           ]
         },
         "reload": {
           "clean": [
-            "Reloadin'! Don't touch my truck!"
+            "Reloadin'! Don't touch my truck!",
+            "Reloading, unlicensed and unbothered."
+          ],
+          "steam": [
+            "Permits are for city folk."
           ]
         },
         "spotted": {
           "clean": [
-            "We got company, y'all!"
+            "We got company, y'all!",
+            "Agents approaching. Eyes open!"
+          ],
+          "steam": [
+            "That's a revenue officer, probably."
           ]
         },
         "lowHealth": {
           "clean": [
-            "Hurtin' worse than tax season."
+            "Hurtin' worse than tax season.",
+            "I'm injured, not conscripted!"
+          ],
+          "steam": [
+            "This body is private property!"
           ]
         },
         "objective": {
           "clean": [
-            "Got it! The HOA can't have it!"
+            "Got it! The HOA can't have it!",
+            "This land's under my jurisdiction!"
+          ],
+          "steam": [
+            "Seceded. This point's mine now."
           ]
         },
         "enemyStreak": {
           "clean": [
-            "They're squattin' on our streak!"
+            "They're squattin' on our streak!",
+            "His streak's got no authority!"
+          ],
+          "steam": [
+            "Arrest that streak for trespassing!"
           ]
         },
         "lastAlive": {
           "clean": [
-            "Just me? Born ready."
+            "Just me? Born ready.",
+            "One man, one nation!"
+          ],
+          "steam": [
+            "My own republic of one!"
           ]
         },
         "roundStart": {
           "clean": [
-            "Let's go huntin'!"
+            "Let's go huntin'!",
+            "New round? I never agreed."
+          ],
+          "steam": [
+            "I opt out of round one!"
           ]
         },
         "ownStreak": {
           "clean": [
-            "Releasin' the hounds!"
+            "Releasin' the hounds!",
+            "Five kills, sovereign immunity!"
+          ],
+          "steam": [
+            "Diplomatic plates on this streak!"
           ]
         },
         "firstBlood": {
           "clean": [
-            "FIRST BLOOD! Hoo-wee!"
+            "FIRST BLOOD! Hoo-wee!",
+            "First blood, per statute 1776!"
+          ],
+          "steam": [
+            "Jurisdiction established. You're dead."
           ]
         },
         "selfKill": {
           "clean": [
-            "Hair trigger. Like my temper."
+            "Hair trigger. Like my temper.",
+            "That was a false flag."
+          ],
+          "steam": [
+            "I plead the fifth... amendment."
           ]
         },
         "campingSnitch": {
           "clean": [
-            "I ain't campin', I'm tailgatin'!"
+            "I ain't campin', I'm tailgatin'!",
+            "Snitching's a federal offense!"
+          ],
+          "steam": [
+            "That camper's getting audited!"
           ]
         },
         "streakDestroyed": {
           "clean": [
-            "Who shot down Bubba's chopper?!"
+            "Who shot down Bubba's chopper?!",
+            "Bubba's chopper was registered!"
+          ],
+          "steam": [
+            "It flew under common law!"
           ]
         },
         "spawn": {
           "clean": [
             "Back from the dead, Y'ALL!",
-            "Respawned! Hold my tea!"
+            "Respawned! Hold my tea!",
+            "I do not recognize this timer."
           ],
           "steam": [
             "Yeehaw! Who's NEXT?",
-            "Bless your heart. NOT."
+            "Bless your heart. NOT.",
+            "Am I being detained? Didn't think so."
           ]
         },
         "victory": {
           "clean": [
             "GIT-R-DONE!",
-            "Mud on their boots!"
+            "Mud on their boots!",
+            "We the people won!"
           ],
           "steam": [
             "Go back to the CITY!",
-            "That's how we do it HERE."
+            "That's how we do it HERE.",
+            "Independent nation of winners!"
           ]
         },
         "defeat": {
           "clean": [
             "Dang. Good hunt, y'all.",
-            "Truck's still runnin'. Fine."
+            "Truck's still runnin'. Fine.",
+            "This game's rigged. Obviously."
           ],
           "steam": [
             "Y'all cheated. PROBABLY.",
-            "Rematch at the DERBY."
+            "Rematch at the DERBY.",
+            "I don't recognize this loss."
           ]
         },
         "killcam": {
           "clean": [
             "BULLSEYE, baby!",
-            "That's a TROPHY kill!"
+            "That's a TROPHY kill!",
+            "Watch the tape. It's edited."
           ],
           "steam": [
             "Gut shot. OOPS.",
-            "Shoulda stayed on the PORCH."
+            "Shoulda stayed on the PORCH.",
+            "That camera lacks jurisdiction!"
           ]
         },
         "campingWarn": {
           "clean": [
             "I'm huntin', not campin'!",
-            "This here's a deer stand."
+            "This here's a deer stand.",
+            "I'm traveling, not camping!"
           ],
           "steam": [
             "Snitch and get the HOSE.",
-            "I'm fishin'. Mind it."
+            "I'm fishin'. Mind it.",
+            "This stand is grandfathered in!"
           ]
         }
       },
@@ -2175,161 +2267,253 @@
           "clean": [
             "VIOLATION!",
             "The HOA sends its regards!",
-            "Grass at three inches? FINED."
+            "Grass at three inches? FINED.",
+            "AMEN! Another violator down!"
           ],
           "steam": [
             "Your kid's chalk art? Pressure-washed!",
-            "Lien on your house AND your soul!"
+            "Lien on your house AND your soul!",
+            "Posted your defeat to the group!"
           ]
         },
         "headshot": {
           "clean": [
-            "Measured twice, shot once."
+            "Measured twice, shot once.",
+            "Type 1 if you SAW that!"
+          ],
+          "steam": [
+            "Reading glasses: ON. Aim: PERFECT."
           ]
         },
         "revenge": {
           "clean": [
-            "I remember your fence. And you."
+            "I remember your fence. And you.",
+            "I REMEMBER. The group remembers too."
+          ],
+          "steam": [
+            "COPY AND PASTE, don't share this L."
           ]
         },
         "shutdown": {
           "clean": [
-            "Section four, paragraph two. DENIED."
+            "Section four, paragraph two. DENIED.",
+            "Your streak? NOT a hoax. OVER."
+          ],
+          "steam": [
+            "Reported to the admins. BANNED."
           ]
         },
         "melee": {
           "clean": [
-            "Get off my lawn! Physically!"
+            "Get off my lawn! Physically!",
+            "My meme page sends its regards!"
+          ],
+          "steam": [
+            "Slipper to the face! CLASSIC."
           ]
         },
         "humiliated": {
           "clean": [
-            "This is going in the newsletter."
+            "This is going in the newsletter.",
+            "Sharing this in the group chat!"
+          ],
+          "steam": [
+            "Tagged. Your mother saw it."
           ]
         },
         "double": {
           "clean": [
-            "Double! Like my property values!"
+            "Double! Like my property values!",
+            "DOUBLE! Type AMEN if you agree!"
+          ],
+          "steam": [
+            "Two down! Posting both. PUBLICLY."
           ]
         },
         "triple": {
           "clean": [
-            "Triple! Neighborhood watch approves!"
+            "Triple! Neighborhood watch approves!",
+            "TRIPLE! The neighborhood group approves!"
+          ],
+          "steam": [
+            "Three for the meme page!"
           ]
         },
         "rampage": {
           "clean": [
-            "RAMPAGE! For the community!"
+            "RAMPAGE! For the community!",
+            "ON A RAMPAGE. AMEN IF YOU AGREE!"
+          ],
+          "steam": [
+            "Unstoppable! Like my group posts!"
           ]
         },
         "reload": {
           "clean": [
-            "Reloading! Pull start!"
+            "Reloading! Pull start!",
+            "Reloading! Where are my glasses?"
+          ],
+          "steam": [
+            "Hold on. Adjusting my readers."
           ]
         },
         "spotted": {
           "clean": [
-            "Unapproved visitor on the greenbelt!"
+            "Unapproved visitor on the greenbelt!",
+            "SPOTTED! Posting to the group NOW!"
+          ],
+          "steam": [
+            "Found one! Screenshot taken!"
           ]
         },
         "lowHealth": {
           "clean": [
-            "My back! My beautiful back!"
+            "My back! My beautiful back!",
+            "My BACK! Type 1 for prayers!"
+          ],
+          "steam": [
+            "Low health! This is NOT a hoax!"
           ]
         },
         "objective": {
           "clean": [
-            "COMMON AREA. Mine."
+            "COMMON AREA. Mine.",
+            "Securing it! AMEN if you agree!"
+          ],
+          "steam": [
+            "Mine! Posted. No take-backs!"
           ]
         },
         "enemyStreak": {
           "clean": [
-            "Filing a complaint with the board!"
+            "Filing a complaint with the board!",
+            "His streak? COPY AND PASTE, everyone!"
+          ],
+          "steam": [
+            "Ending it! The group DEMANDS it!"
           ]
         },
         "lastAlive": {
           "clean": [
-            "One dad. One grill. One mission."
+            "One dad. One grill. One mission.",
+            "Last dad standing! AMEN!"
+          ],
+          "steam": [
+            "Just me! The group believes!"
           ]
         },
         "roundStart": {
           "clean": [
-            "Mow the competition!"
+            "Mow the competition!",
+            "New round! Type 1 if ready!"
+          ],
+          "steam": [
+            "Here we go! NOT a drill!"
           ]
         },
         "ownStreak": {
           "clean": [
-            "The board approved... AN AIRSTRIKE."
+            "The board approved... AN AIRSTRIKE.",
+            "STREAKING! The group is WATCHING!"
+          ],
+          "steam": [
+            "On fire! Someone call the paper!"
           ]
         },
         "firstBlood": {
           "clean": [
-            "FIRST BLOOD! First on the block!"
+            "FIRST BLOOD! First on the block!",
+            "FIRST BLOOD! Sharing to the group!"
+          ],
+          "steam": [
+            "First! Posted publicly. OOPS."
           ]
         },
         "selfKill": {
           "clean": [
-            "That was NOT up to code."
+            "That was NOT up to code.",
+            "That was... an accident. DELETE."
+          ],
+          "steam": [
+            "Didn't mean to post that!"
           ]
         },
         "campingSnitch": {
           "clean": [
-            "I'm not camping, I'm inspecting!"
+            "I'm not camping, I'm inspecting!",
+            "Someone's camping! Group post incoming!"
+          ],
+          "steam": [
+            "Snitch post: LIVE. Amen."
           ]
         },
         "streakDestroyed": {
           "clean": [
-            "That helicopter was board-approved!"
+            "That helicopter was board-approved!",
+            "Streak destroyed! AMEN, everyone!"
+          ],
+          "steam": [
+            "Gone! The group saw everything!"
           ]
         },
         "spawn": {
           "clean": [
             "Back! Who moved my LAWN?",
-            "Respawned. Grill's still hot!"
+            "Respawned. Grill's still hot!",
+            "Back! Did anyone see my glasses?"
           ],
           "steam": [
             "Dad's HOME.",
-            "Back in MY day, respawns took LONGER."
+            "Back in MY day, respawns took LONGER.",
+            "Respawned! Who shared my post?!"
           ]
         },
         "victory": {
           "clean": [
             "That's how DAD does it!",
-            "Victory! Who wants BURGERS?"
+            "Victory! Who wants BURGERS?",
+            "VICTORY! Type AMEN if you agree!"
           ],
           "steam": [
             "Respect your ELDERS.",
-            "I pay the MORTGAGE here."
+            "I pay the MORTGAGE here.",
+            "We won! Group photo time!"
           ]
         },
         "defeat": {
           "clean": [
             "Good game. Mow anyway.",
-            "We'll get 'em next weekend."
+            "We'll get 'em next weekend.",
+            "We lost. Posting about it anyway."
           ],
           "steam": [
             "Back in MY day...",
-            "I'm telling your MOTHER."
+            "I'm telling your MOTHER.",
+            "Defeat? This feels like a HOAX."
           ]
         },
         "killcam": {
           "clean": [
             "Dad joke? Dad JOKE!",
-            "That's a teachable MOMENT!"
+            "That's a teachable MOMENT!",
+            "Watch this! Sending to the group!"
           ],
           "steam": [
             "Grounded. Two WEEKS.",
-            "Ask your mother. OH WAIT."
+            "Ask your mother. OH WAIT.",
+            "Killcam's live! Say hi, everyone!"
           ]
         },
         "campingWarn": {
           "clean": [
             "I'm supervising the YARD.",
-            "Just resting my KNEES."
+            "Just resting my KNEES.",
+            "Am I camping? Checking the group..."
           ],
           "steam": [
             "Snitch and no DESSERT.",
-            "I'm not camping, I'm GRILLING."
+            "I'm not camping, I'm GRILLING.",
+            "Not camping! Just reading comments!"
           ]
         }
       },
@@ -3204,7 +3388,6 @@
     "mlmHuns": {
       "name": "MLM Huns",
       "phase0": false,
-      "status": "draft",
       "tagline": "Hey girl! Quick question 💕",
       "look": {
         "shirt": "#e8a0bf",
@@ -3238,7 +3421,252 @@
           "real MLM company names"
         ]
       },
-      "lines": {}
+      "lines": {
+        "spawn": {
+          "clean": [
+            "Hey girl! Ready to hustle?",
+            "Be your own boss today!",
+            "My upline believes in me."
+          ],
+          "steam": [
+            "Let's make that bread, babe.",
+            "Grind never sleeps, girl."
+          ]
+        },
+        "kill": {
+          "clean": [
+            "Join my downline, bestie!",
+            "That's passive income, baby!",
+            "She said yes to the pitch!",
+            "Boss babe strikes again!"
+          ],
+          "steam": [
+            "Recruited. Permanently.",
+            "You're my new downline now.",
+            "Dead, but make it residual."
+          ]
+        },
+        "headshot": {
+          "clean": [
+            "Headshot! Hey girl, still breathing?",
+            "Aim like my sales targets.",
+            "One shot, one recruit."
+          ],
+          "steam": [
+            "Pop! Like my launch party.",
+            "Braincells: also downsized."
+          ]
+        },
+        "revenge": {
+          "clean": [
+            "My upline warned me about you.",
+            "That's what you get, hater."
+          ],
+          "steam": [
+            "Revenge is my love language."
+          ]
+        },
+        "shutdown": {
+          "clean": [
+            "Your streak filed for bankruptcy.",
+            "Hustle harder next time, sweetie."
+          ],
+          "steam": [
+            "Streak terminated. Like my 9-to-5."
+          ]
+        },
+        "melee": {
+          "clean": [
+            "Eat my starter kit!",
+            "Leggings to the face!"
+          ],
+          "steam": [
+            "Beaten with a tote bag."
+          ]
+        },
+        "humiliated": {
+          "clean": [
+            "This is going on my vision board.",
+            "Screenshotting this for the group chat."
+          ],
+          "steam": [
+            "Embarrassing. Unfollowed."
+          ]
+        },
+        "double": {
+          "clean": [
+            "Double kill, double commission!",
+            "Two recruits, one party!",
+            "Buy one, get one free!"
+          ],
+          "steam": [
+            "Double! That's a bonus tier.",
+            "Two down, residual forever."
+          ]
+        },
+        "triple": {
+          "clean": [
+            "Triple! I'm basically a CEO!",
+            "Three kills, one empire."
+          ],
+          "steam": [
+            "Hat trick, boss babe edition."
+          ]
+        },
+        "rampage": {
+          "clean": [
+            "I'm on FIRE, girl!",
+            "This is my empire era!"
+          ],
+          "steam": [
+            "Unstoppable. Like my DMs."
+          ]
+        },
+        "reload": {
+          "clean": [
+            "Reloading. Manifesting more ammo.",
+            "Refilling my sample kit."
+          ],
+          "steam": [
+            "Rebooting my girlboss energy."
+          ]
+        },
+        "spotted": {
+          "clean": [
+            "Hey girl! I see you!",
+            "Spotted a future recruit."
+          ],
+          "steam": [
+            "Prospect acquired. Sending a DM."
+          ]
+        },
+        "lowHealth": {
+          "clean": [
+            "The universe is testing me!",
+            "My aura is glitching."
+          ],
+          "steam": [
+            "Low health, high vibes though."
+          ]
+        },
+        "objective": {
+          "clean": [
+            "Securing this for my team!",
+            "This point is my territory now."
+          ],
+          "steam": [
+            "Claiming it. Like my tax write-offs."
+          ]
+        },
+        "enemyStreak": {
+          "clean": [
+            "Someone's upline needs a talking-to.",
+            "End that streak, bestie!"
+          ],
+          "steam": [
+            "That streak? So last quarter."
+          ]
+        },
+        "lastAlive": {
+          "clean": [
+            "Last one! My downline believes!",
+            "Just me and my dreams."
+          ],
+          "steam": [
+            "Solo CEO mode. Activated."
+          ]
+        },
+        "roundStart": {
+          "clean": [
+            "New round, new opportunities!",
+            "Let's crush it, team!"
+          ],
+          "steam": [
+            "Rise and grind, besties."
+          ]
+        },
+        "ownStreak": {
+          "clean": [
+            "Streaking! My mentor is proud!",
+            "Five kills! Promotion incoming!"
+          ],
+          "steam": [
+            "On a roll. Like my enrollments."
+          ]
+        },
+        "firstBlood": {
+          "clean": [
+            "First blood! First sale!",
+            "The first one's always free."
+          ],
+          "steam": [
+            "First blood. Who wants in?"
+          ]
+        },
+        "selfKill": {
+          "clean": [
+            "The universe redirected me.",
+            "That was a learning experience."
+          ],
+          "steam": [
+            "Plot twist: I meant that."
+          ]
+        },
+        "campingSnitch": {
+          "clean": [
+            "Someone's hiding in the garage.",
+            "Camper spotted. Not very boss babe."
+          ],
+          "steam": [
+            "Camping? That's not the hustle."
+          ]
+        },
+        "streakDestroyed": {
+          "clean": [
+            "Your empire just crumbled, babe.",
+            "Downline: deleted."
+          ],
+          "steam": [
+            "Streak over. Back to retail."
+          ]
+        },
+        "victory": {
+          "clean": [
+            "We did it, team! Group hug!",
+            "Victory! Retire your husbands!"
+          ],
+          "steam": [
+            "Won! See you at the top."
+          ]
+        },
+        "defeat": {
+          "clean": [
+            "We lost, but we grew.",
+            "The universe had other plans."
+          ],
+          "steam": [
+            "Lost. Still a boss though."
+          ]
+        },
+        "killcam": {
+          "clean": [
+            "Watch and learn, girl!",
+            "Replay that. Take notes."
+          ],
+          "steam": [
+            "Killcam: my highlight reel."
+          ]
+        },
+        "campingWarn": {
+          "clean": [
+            "Am I camping? Let me journal.",
+            "Sitting still? Not very mindful."
+          ],
+          "steam": [
+            "Me? Camping? Never."
+          ]
+        }
+      }
     },
     "furries": {
       "name": "The Furries",
@@ -3375,7 +3803,6 @@
     "pickleballRetirees": {
       "name": "Pickleball Retirees",
       "phase0": false,
-      "status": "draft",
       "tagline": "The noise is the point.",
       "look": {
         "shirt": "#f5f5f5",
@@ -3407,7 +3834,248 @@
         ],
         "avoid": []
       },
-      "lines": {}
+      "lines": {
+        "campingSnitch": {
+          "clean": [
+            "Camper by the fence. Report him.",
+            "Someone's squatting on our court."
+          ],
+          "steam": [
+            "Camper spotted. HOA violation."
+          ]
+        },
+        "campingWarn": {
+          "clean": [
+            "Am I camping? I'm resting my knees.",
+            "Just resting my knees here."
+          ],
+          "steam": [
+            "Camping? This is pacing."
+          ]
+        },
+        "defeat": {
+          "clean": [
+            "We lost. Blame the new balls.",
+            "Defeat. I'm telling the board."
+          ],
+          "steam": [
+            "Lost. My knee knew first."
+          ]
+        },
+        "double": {
+          "clean": [
+            "Double! Two for one.",
+            "Two down. Hydration break.",
+            "Dink and dunk!"
+          ],
+          "steam": [
+            "Double kill. Still got it."
+          ]
+        },
+        "enemyStreak": {
+          "clean": [
+            "End that streak. It's past someone's bedtime.",
+            "Somebody stop that kid."
+          ],
+          "steam": [
+            "Five kills? Showoff."
+          ]
+        },
+        "firstBlood": {
+          "clean": [
+            "First blood! Before noon!",
+            "Drew first blood. Barely broke a sweat."
+          ],
+          "steam": [
+            "First kill. Coffee's still hot."
+          ]
+        },
+        "headshot": {
+          "clean": [
+            "Headshot! That's a dink.",
+            "Right between the eyes.",
+            "Paddle met forehead."
+          ],
+          "steam": [
+            "Your head echoes beautifully."
+          ]
+        },
+        "humiliated": {
+          "clean": [
+            "Embarrassing. Tell your grandchildren.",
+            "That one's going on the bulletin board."
+          ],
+          "steam": [
+            "Medicare won't cover that burn."
+          ]
+        },
+        "kill": {
+          "clean": [
+            "Dinked! Stay outta the kitchen!",
+            "Stay out of the kitchen!",
+            "Kitchen violation. You're done.",
+            "That's a body bag. Folded."
+          ],
+          "steam": [
+            "Early-bird special: you're dead.",
+            "Noise complaint filed. You're evicted."
+          ]
+        },
+        "killcam": {
+          "clean": [
+            "Watch the replay. Learn something.",
+            "That's textbook. Frame it."
+          ],
+          "steam": [
+            "Enjoy the show, junior."
+          ]
+        },
+        "lastAlive": {
+          "clean": [
+            "Last one. Just like bingo night.",
+            "It's all on these old knees."
+          ],
+          "steam": [
+            "Alone again. Naturally."
+          ]
+        },
+        "lowHealth": {
+          "clean": [
+            "I'm hurt! Somebody call... actually I'm fine.",
+            "Low health. Where's my brace?"
+          ],
+          "steam": [
+            "Bleeding? That's just arthritis."
+          ]
+        },
+        "melee": {
+          "clean": [
+            "Paddle to the face!",
+            "Backhand of justice!"
+          ],
+          "steam": [
+            "Served with extra spin."
+          ]
+        },
+        "objective": {
+          "clean": [
+            "This court's ours. Has been since Tuesday.",
+            "Securing the kitchen."
+          ],
+          "steam": [
+            "Annexed. Like the tennis courts."
+          ]
+        },
+        "ownStreak": {
+          "clean": [
+            "On a streak! Tell the clubhouse!",
+            "Five in a row. Unstoppable."
+          ],
+          "steam": [
+            "Streaking past the speed limit."
+          ]
+        },
+        "rampage": {
+          "clean": [
+            "I'm on a tear! Clear the court!",
+            "Unstoppable since '87!"
+          ],
+          "steam": [
+            "This is my cardio."
+          ]
+        },
+        "reload": {
+          "clean": [
+            "Reloading. Knee's acting up.",
+            "New balls, please."
+          ],
+          "steam": [
+            "Recharging. Pass the prunes."
+          ]
+        },
+        "revenge": {
+          "clean": [
+            "I remember everything, kid.",
+            "Revenge is a dish. Dig in."
+          ],
+          "steam": [
+            "Should've stayed retired."
+          ]
+        },
+        "roundStart": {
+          "clean": [
+            "Round start. Paddles up.",
+            "Warm up those rotator cuffs."
+          ],
+          "steam": [
+            "Let's finish before dinner."
+          ]
+        },
+        "selfKill": {
+          "clean": [
+            "That was my own fault. My knee buckled.",
+            "Tripped over my own paddle."
+          ],
+          "steam": [
+            "Gravity: 1. Me: 0."
+          ]
+        },
+        "shutdown": {
+          "clean": [
+            "Streak's over. Nap time.",
+            "Shut down like the courts at nine."
+          ],
+          "steam": [
+            "Your run ends here, junior."
+          ]
+        },
+        "spawn": {
+          "clean": [
+            "Court time. Don't waste it.",
+            "Stretch those knees. Let's go.",
+            "First to the kitchen wins."
+          ],
+          "steam": [
+            "I'll outlive this lobby."
+          ]
+        },
+        "spotted": {
+          "clean": [
+            "I see you. These eyes work fine.",
+            "Opponent spotted by the fence."
+          ],
+          "steam": [
+            "Fresh meat on the court."
+          ]
+        },
+        "streakDestroyed": {
+          "clean": [
+            "Streak's done. Back to shuffleboard.",
+            "Ended. Like my patience."
+          ],
+          "steam": [
+            "De-streaked. You're welcome."
+          ]
+        },
+        "triple": {
+          "clean": [
+            "Triple! The court is mine.",
+            "Three in a row. Bingo!"
+          ],
+          "steam": [
+            "Hat trick before dinner."
+          ]
+        },
+        "victory": {
+          "clean": [
+            "We won! Early-bird dinner's on me!",
+            "Victory! The courts stay ours."
+          ],
+          "steam": [
+            "Won before the early bird."
+          ]
+        }
+      }
     }
   },
   "rivalry": [
@@ -3637,19 +4305,11 @@
       "killer": "wokeLibs",
       "victim": "hoaDads",
       "clean": [
-        {
-          "t": "Your Minion memes are a hate crime.",
-          "alt": "Your cartoon memes are a hate crime.",
-          "flag": "brand"
-        },
+        "Your Minion memes are a hate crime.",
         "Amen? More like a-menace."
       ],
       "steam": [
-        {
-          "t": "Your Facebook group has been reported.",
-          "alt": "Your neighborhood group has been reported.",
-          "flag": "brand"
-        }
+        "Your Facebook group has been reported."
       ]
     },
     {
@@ -3679,18 +4339,318 @@
       "victim": "wokeLibs",
       "clean": [
         "You lost? Thoughts and prayers.",
-        {
-          "t": "My truck identifies as a tank.",
-          "retired": true
-        },
-        "Should've stayed in the bike lane!"
+        "My truck identifies as a tank."
       ],
       "steam": [
-        {
-          "t": "Cry about it, Prius.",
-          "alt": "Cry about it, hybrid.",
-          "flag": "brand"
-        }
+        "Cry about it, Prius."
+      ]
+    },
+    {
+      "killer": "mlmHuns",
+      "victim": "karens",
+      "clean": [
+        "Want to speak to MY manager?",
+        "I have oils for that attitude."
+      ],
+      "steam": [
+        "Karen, but make it commission."
+      ]
+    },
+    {
+      "killer": "karens",
+      "victim": "mlmHuns",
+      "clean": [
+        "I want a REFUND on you!",
+        "Your leggings are SO last season."
+      ],
+      "steam": [
+        "One star. Blocked and reported."
+      ]
+    },
+    {
+      "killer": "mlmHuns",
+      "victim": "tradwives",
+      "clean": [
+        "Homestead? I have a home BUSINESS.",
+        "Your sourdough can't pay rent."
+      ],
+      "steam": [
+        "Tradwife? I prefer boss wife."
+      ]
+    },
+    {
+      "killer": "tradwives",
+      "victim": "mlmHuns",
+      "clean": [
+        "Bless your heart, hun.",
+        "My bread rises. Your scheme doesn't."
+      ],
+      "steam": [
+        "Real work, sweetie. Try it."
+      ]
+    },
+    {
+      "killer": "mlmHuns",
+      "victim": "vcBros",
+      "clean": [
+        "My ROI beats your portfolio.",
+        "I disrupt. You just brunch."
+      ],
+      "steam": [
+        "Your startup? Cute. Mine pays."
+      ]
+    },
+    {
+      "killer": "vcBros",
+      "victim": "mlmHuns",
+      "clean": [
+        "Your cap table is a group chat.",
+        "Series A? More like Series MLM."
+      ],
+      "steam": [
+        "Hard pass, bestie."
+      ]
+    },
+    {
+      "killer": "mlmHuns",
+      "victim": "wokeLibs",
+      "clean": [
+        "Your activism needs a side hustle.",
+        "I monetized my mindfulness."
+      ],
+      "steam": [
+        "Woke? I'm awake AND paid."
+      ]
+    },
+    {
+      "killer": "wokeLibs",
+      "victim": "mlmHuns",
+      "clean": [
+        "Your business model is problematic.",
+        "That's a pyramid with extra steps."
+      ],
+      "steam": [
+        "Girlboss? More like gaslight."
+      ]
+    },
+    {
+      "killer": "pickleballRetirees",
+      "victim": "hoaDads",
+      "clean": [
+        "Your Minion memes can't save you.",
+        "I'll report YOU to the board."
+      ],
+      "steam": [
+        "Your lawn's next."
+      ]
+    },
+    {
+      "killer": "hoaDads",
+      "victim": "pickleballRetirees",
+      "clean": [
+        "BACK IN MY DAY we played TENNIS!",
+        "Turn down that popping noise!"
+      ],
+      "steam": [
+        "Quiet hours start at eight!"
+      ]
+    },
+    {
+      "killer": "pickleballRetirees",
+      "victim": "oldMoney",
+      "clean": [
+        "Your trust fund can't buy a dink.",
+        "Country club's closed, pal."
+      ],
+      "steam": [
+        "Money can't buy knees."
+      ]
+    },
+    {
+      "killer": "oldMoney",
+      "victim": "pickleballRetirees",
+      "clean": [
+        "Peasants with paddles. Charming.",
+        "I'll buy your courts."
+      ],
+      "steam": [
+        "Peasants with paddles."
+      ]
+    },
+    {
+      "killer": "pickleballRetirees",
+      "victim": "gymRats",
+      "clean": [
+        "Muscles don't win pickleball, kid.",
+        "Your protein shake can't dink."
+      ],
+      "steam": [
+        "Skip leg day? Never."
+      ]
+    },
+    {
+      "killer": "gymRats",
+      "victim": "pickleballRetirees",
+      "clean": [
+        "Grandpa's got game. Respect.",
+        "You lift, bro? Didn't think so."
+      ],
+      "steam": [
+        "Cardio king. Noted."
+      ]
+    },
+    {
+      "killer": "pickleballRetirees",
+      "victim": "karens",
+      "clean": [
+        "I AM the manager, Karen.",
+        "Your complaint's been filed. Denied."
+      ],
+      "steam": [
+        "Talk to my paddle."
+      ]
+    },
+    {
+      "killer": "karens",
+      "victim": "pickleballRetirees",
+      "clean": [
+        "That noise violates section four!",
+        "I'll have your court privileges revoked!"
+      ],
+      "steam": [
+        "My lawyer plays tennis."
+      ]
+    },
+    {
+      "killer": "hoaDads",
+      "victim": "brainRot",
+      "clean": [
+        "Put the tablet DOWN, young man!",
+        "Your slang patch? DENIED."
+      ],
+      "steam": [
+        "Back in MY day, we aimed!"
+      ]
+    },
+    {
+      "killer": "brainRot",
+      "victim": "hoaDads",
+      "clean": [
+        "Ok boomer. Ratio'd.",
+        "Your group post? Mid."
+      ],
+      "steam": [
+        "Skill issue, grandpa."
+      ]
+    },
+    {
+      "killer": "hoaDads",
+      "victim": "cloutStreamers",
+      "clean": [
+        "Stop filming! Mow the LAWN!",
+        "Your stream? NOT board-approved!"
+      ],
+      "steam": [
+        "Live? I'll go live with COMPLAINTS."
+      ]
+    },
+    {
+      "killer": "cloutStreamers",
+      "victim": "hoaDads",
+      "clean": [
+        "Caught on stream, old man!",
+        "Chat says you're washed!"
+      ],
+      "steam": [
+        "Clip it! Dad's malding!"
+      ]
+    },
+    {
+      "killer": "hoaDads",
+      "victim": "oldMoney",
+      "clean": [
+        "Your ascot? A VIOLATION.",
+        "Money can't buy manners, son!"
+      ],
+      "steam": [
+        "My grill out-cooks your chef!"
+      ]
+    },
+    {
+      "killer": "oldMoney",
+      "victim": "hoaDads",
+      "clean": [
+        "Charming. The help aims well.",
+        "Do tip your caddy, peasant."
+      ],
+      "steam": [
+        "How... suburban of you."
+      ]
+    },
+    {
+      "killer": "rednecks",
+      "victim": "hoaDads",
+      "clean": [
+        "Your HOA has no jurisdiction!",
+        "Cite me. I'll cite you back."
+      ],
+      "steam": [
+        "Your fines are Monopoly money!"
+      ]
+    },
+    {
+      "killer": "hoaDads",
+      "victim": "rednecks",
+      "clean": [
+        "That's a violation, plate or not!",
+        "I'LL SEE YOU AT THE MEETING!"
+      ],
+      "steam": [
+        "Your truck's getting towed, sovereign!"
+      ]
+    },
+    {
+      "killer": "rednecks",
+      "victim": "karens",
+      "clean": [
+        "Ma'am, this is my republic.",
+        "I don't speak to managers!"
+      ],
+      "steam": [
+        "Your coupon's invalid in my nation!"
+      ]
+    },
+    {
+      "killer": "karens",
+      "victim": "rednecks",
+      "clean": [
+        "I want your supervisor's supervisor!",
+        "That truck's an eyesore, period."
+      ],
+      "steam": [
+        "I'll have your license plate memorized!"
+      ]
+    },
+    {
+      "killer": "rednecks",
+      "victim": "trumpers",
+      "clean": [
+        "Even your wall needs a permit!",
+        "My truck's bigger than your rally."
+      ],
+      "steam": [
+        "You're just a city boy!"
+      ]
+    },
+    {
+      "killer": "trumpers",
+      "victim": "rednecks",
+      "clean": [
+        "Sad truck! Very small lift!",
+        "You're out of the convoy!"
+      ],
+      "steam": [
+        "My wall's taller than your stack!"
       ]
     }
   ]
