@@ -175,6 +175,11 @@ export class CharacterView {
 
     for (const p of PROPS[faction] || []) buildParts(this.arms[p.hand === 'L' ? 0 : 1], [p], look);
 
+    // Shadows only from the big silhouette parts (torso, legs, head). Hands, shoes, hats, props and
+    // gun pieces add a shadow draw each but are invisible in a 1-2k shadow map. ~16 -> 4 casters.
+    const casters = new Set([this.torso, headMesh, ...this.legs.map(h => h.children[0])]);
+    this.body.traverse(o => { if (o.isMesh) o.castShadow = casters.has(o); });
+
     // Team marker for friendlies; enemies get a red one only when snitched
     this.marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshBasicMaterial({ color: isLocalTeam ? '#29adff' : '#ff004d', depthTest: !isLocalTeam ? false : true }));
     this.marker.position.y = 2.15;

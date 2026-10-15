@@ -13,6 +13,7 @@ import { buildCulDeSac } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
 import { Controls, aimAssist } from './controls.js';
+import { PerfOverlay } from './perf.js';
 
 const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
 
@@ -198,6 +199,7 @@ class Game {
     renderer.ragdolls = [];
     for (const f of renderer.fx) renderer.scene.remove(f.obj);
     renderer.fx = [];
+    renderer.splatCount = 0;
     if (renderer.casings) {
       for (const c of renderer.casings) {
         renderer.scene.remove(c.mesh);
@@ -690,11 +692,14 @@ function startGame() {
 
 // ------------------------------------------------------------------ loop
 
+const perf = params.get('perf') === '1' ? new PerfOverlay(renderer) : null;
 let last = performance.now();
 function frame(t) {
   const dt = Math.min(0.1, (t - last) / 1000);
   last = t;
   input.pollPad();
+  renderer.adapt(dt);
+  perf?.update(dt);
   if (gunbarrel && gunbarrel.active) gunbarrel.update(dt);
   if (game) game.update(dt);
   else if (params.get('lineup') === '1') return;

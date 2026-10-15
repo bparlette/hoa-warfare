@@ -44,7 +44,11 @@ export class Renderer {
     this.canvas = canvas;
     this.map = map;
     this.factions = factions;
-    this.gl = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+    // preserveDrawingBuffer is slow on mobile GPUs; only the Shorts recorder (?short=1) needs it
+    const capture = /[?&](short|capture)=1/.test(location.search);
+    this.gl = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
+    this.quality = detectQuality();
+    this.gl.info.autoReset = false; // count draws for the whole frame (scene + post pass); reset in render()
     this.gl.outputColorSpace = THREE.LinearSRGBColorSpace;
     this.gl.shadowMap.enabled = true;
     this.gl.shadowMap.type = THREE.BasicShadowMap;
@@ -78,6 +82,7 @@ export class Renderer {
     this.ragdolls = [];
     this.fx = [];
     this.casings = [];
+    this.splatCount = 0;
     this.camRecoil = 0;
     this.buildLights();
     this.buildWorld();
@@ -87,7 +92,7 @@ export class Renderer {
 
   resize() {
     const w = this.canvas.clientWidth || window.innerWidth, h = this.canvas.clientHeight || window.innerHeight;
-    this.gl.setPixelRatio(this.retro ? 1 : Math.min(window.devicePixelRatio, 2));
+    this.gl.setPixelRatio(this.retro ? 1 : Math.min(window.devicePixelRatio, this.quality.maxRatio) * this.quality.scale);
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
@@ -98,12 +103,26 @@ export class Renderer {
 
   setRetro(on) { this.retro = on; this.resize(); }
 
+  /**
+   * Adaptive resolution (call once per frame with the real frame time). Only the full-res styles
+   * scale; the 16-bit path already renders ~216 px tall. Drops 15% after 1.5 s over budget,
+   * recovers 10% after 4 s comfortably under it.
+   */
+  adapt(dt) {
+    const q = this.quality;
+    q.ema = q.ema * 0.95 + dt * 1000 * 0.05;
+    if (this.retro) return;
+    if (q.ema > q.budgetMs * 1.3) { q.over += dt; q.under = 0; } else if (q.ema < q.budgetMs * 0.8) { q.under += dt; q.over = 0; } else { q.over = q.under = 0; }
+    if (q.over > 1.5 && q.scale > q.minScale) { q.scale = Math.max(q.minScale, q.scale - 0.15); q.over = 0; this.resize(); }
+    else if (q.under > 4 && q.scale < 1) { q.scale = Math.min(1, q.scale + 0.1); q.under = 0; this.resize(); }
+  }
+
   buildLights() {
     this.scene.add(new THREE.HemisphereLight('#dff4ff', '#6a8d4a', 1.8));
     const sun = new THREE.DirectionalLight('#fff3d6', 2.1);
     sun.position.set(30, 50, 20);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.mapSize.set(this.quality.shadow, this.quality.shadow);
     const sc = sun.shadow.camera;
     sc.left = -55; sc.right = 55; sc.top = 55; sc.bottom = -55; sc.near = 1; sc.far = 140;
     sun.shadow.bias = -0.0015;
@@ -112,6 +131,7 @@ export class Renderer {
 
   buildWorld() {
     const S = this.scene, map = this.map;
+    const before = new Set(S.children);
     const add = (m, { cast = true, receive = true } = {}) => { m.castShadow = cast; m.receiveShadow = receive; S.add(m); return m; };
     const lam = (o) => new THREE.MeshLambertMaterial(o);
     const { minX, maxX, minZ, maxZ } = map.bounds;
@@ -149,6 +169,7 @@ export class Renderer {
       c.position.set(x, 4.6, z);
       add(c);
     }
+    this.worldDraws = mergeStatic(S, S.children.filter(o => !before.has(o)));
   }
 
   buildBox(b, lam, add) {
@@ -388,36 +409,52 @@ export class Renderer {
 
   // ---------------------------------------------------------------- FX
 
+  // FX allocate nothing per shot: tracers come from a pool, meshes share geometry (fx.shared = true
+  // means updateFx disposes only the material). Splats are capped so long matches don't pile up.
   tracer(from, to, color = '#ffec27') {
-    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(from.x, from.y - 0.12, from.z), new THREE.Vector3(to.x, to.y, to.z)]);
-    const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color, transparent: true }));
+    this.tracerPool ??= [];
+    let l = this.tracerPool.pop();
+    if (!l) {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(6), 3));
+      l = new THREE.Line(g, new THREE.LineBasicMaterial({ transparent: true }));
+      l.frustumCulled = false;
+    }
+    const a = l.geometry.attributes.position;
+    a.setXYZ(0, from.x, from.y - 0.12, from.z); a.setXYZ(1, to.x, to.y, to.z); a.needsUpdate = true;
+    l.material.color.set(color); l.material.opacity = 1;
     this.scene.add(l);
-    this.fx.push({ obj: l, life: 0.07, max: 0.07 });
+    this.fx.push({ obj: l, life: 0.07, max: 0.07, pool: this.tracerPool });
   }
 
   splat(p, color, size = 0.25) {
-    const m = new THREE.Mesh(new THREE.CircleGeometry(size, 6), new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    const m = new THREE.Mesh(SHARED.disc(), new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    m.scale.setScalar(size);
     m.rotation.x = -Math.PI / 2;
     m.rotation.z = Math.random() * 6;
     m.position.set(p.x, Math.max(0.04, p.y < 0.2 ? 0.04 : p.y), p.z);
     this.scene.add(m);
-    this.fx.push({ obj: m, life: 8, max: 8, fade: 2 });
+    this.fx.push({ obj: m, life: 8, max: 8, fade: 2, shared: true, splat: true });
+    if (++this.splatCount > this.quality.maxSplats) {
+      const old = this.fx.find(f => f.splat && f.life > 0);
+      if (old) old.life = Math.min(old.life, 0.3);
+    }
   }
 
   impact(p, color) {
-    const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), new THREE.MeshBasicMaterial({ color }));
+    const m = new THREE.Mesh(SHARED.octa(), new THREE.MeshBasicMaterial({ color }));
     m.position.set(p.x, p.y, p.z);
     this.scene.add(m);
-    this.fx.push({ obj: m, life: 0.25, max: 0.25, grow: 2 });
+    this.fx.push({ obj: m, life: 0.25, max: 0.25, grow: 2, shared: true });
     if (p.y < 0.1) this.splat(p, color, 0.18);
   }
 
   explosion(p) {
     for (const [c, s, life] of [['#ffec27', 1, 0.35], ['#ff6c24', 2.6, 0.5], ['#fff1e8', 4.5, 0.25]]) {
-      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.5, 0), new THREE.MeshBasicMaterial({ color: c, transparent: true }));
+      const m = new THREE.Mesh(SHARED.ico(), new THREE.MeshBasicMaterial({ color: c, transparent: true }));
       m.position.set(p.x, p.y + 0.3, p.z);
       this.scene.add(m);
-      this.fx.push({ obj: m, life, max: life, grow: s * 5 });
+      this.fx.push({ obj: m, life, max: life, grow: s * 5, shared: true });
     }
     this.splat(p, '#ff77a8', 2.2);
   }
@@ -462,7 +499,7 @@ export class Renderer {
 
   spawnCasing() {
     this.casings ??= [];
-    const geo = new THREE.BoxGeometry(0.015, 0.035, 0.015);
+    const geo = SHARED.casing();
     const mat = new THREE.MeshLambertMaterial({ color: '#c49a45', transparent: true, opacity: 1 });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = false;
@@ -505,7 +542,6 @@ export class Renderer {
       c.life -= dt;
       if (c.life <= 0) {
         this.scene.remove(c.mesh);
-        c.mesh.geometry.dispose();
         c.mesh.material.dispose();
         return false;
       }
@@ -538,7 +574,13 @@ export class Renderer {
   updateFx(dt) {
     this.fx = this.fx.filter(f => {
       f.life -= dt;
-      if (f.life <= 0) { this.scene.remove(f.obj); f.obj.geometry.dispose(); f.obj.material.dispose(); return false; }
+      if (f.life <= 0) {
+        this.scene.remove(f.obj);
+        if (f.splat) this.splatCount--;
+        if (f.pool) f.pool.push(f.obj);
+        else { if (!f.shared) f.obj.geometry.dispose(); f.obj.material.dispose(); }
+        return false;
+      }
       const k = f.life / f.max;
       if (f.grow) f.obj.scale.setScalar(1 + (1 - k) * f.grow);
       if (f.fade) f.obj.material.opacity = Math.min(1, f.life / f.fade);
@@ -626,6 +668,7 @@ export class Renderer {
   }
 
   render() {
+    this.gl.info.reset();
     if (this.retro) {
       this.gl.setRenderTarget(this.rt);
       this.gl.render(this.scene, this.camera);
@@ -689,3 +732,84 @@ export const OBJECT_VIEWS = {
     return g;
   },
 };
+
+// ---------------------------------------------------------------- performance helpers
+
+/** Geometry shared by every FX instance (never disposed). */
+const SHARED = (() => {
+  const cache = {};
+  const once = (k, make) => () => (cache[k] ??= make());
+  return {
+    disc: once('disc', () => new THREE.CircleGeometry(1, 6)),
+    octa: once('octa', () => new THREE.OctahedronGeometry(0.12, 0)),
+    ico: once('ico', () => new THREE.IcosahedronGeometry(0.5, 0)),
+    casing: once('casing', () => new THREE.BoxGeometry(0.015, 0.035, 0.015)),
+  };
+})();
+
+/** Device tier. Phones/tablets get smaller shadows, a lower pixel-ratio cap and fewer splats. */
+export function detectQuality() {
+  const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  const mobile = coarse || /Mobi|Android|iPhone|iPad/i.test(ua);
+  const forced = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('quality') : null;
+  const low = forced ? forced === 'low' : mobile;
+  return {
+    tier: low ? 'low' : 'high', shadow: low ? 1024 : 2048, maxRatio: low ? 1.25 : 2,
+    maxSplats: low ? 60 : 160, scale: 1, minScale: 0.6, budgetMs: 1000 / 60, ema: 16.7, over: 0, under: 0,
+  };
+}
+
+/**
+ * Merge static meshes that share a look (texture, colour, flat shading, shadow flags) into one mesh
+ * per group. The world is ~300 separate boxes; drawn one by one that is 600+ draw calls a frame
+ * once the shadow pass is counted, which is what kills phones. Only call this on objects that
+ * never move afterwards. Returns {before, after} mesh counts.
+ */
+export function mergeStatic(scene, objects) {
+  const groups = new Map();
+  let before = 0;
+  for (const root of objects) {
+    root.updateMatrixWorld(true);
+    root.traverse(o => {
+      if (!o.isMesh || Array.isArray(o.material) || !o.geometry.attributes.normal || !o.geometry.attributes.uv) return;
+      const m = o.material;
+      if (m.transparent || !m.isMeshLambertMaterial) return;
+      const key = [m.map?.uuid || '-', m.color.getHexString(), m.emissive?.getHexString(), m.flatShading, o.castShadow, o.receiveShadow].join('|');
+      if (!groups.has(key)) groups.set(key, { material: m, meshes: [], cast: o.castShadow, receive: o.receiveShadow });
+      groups.get(key).meshes.push(o);
+      before++;
+    });
+  }
+  let after = 0;
+  for (const g of groups.values()) {
+    if (g.meshes.length < 2) { after++; continue; }
+    const parts = g.meshes.map(o => {
+      const geo = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()).applyMatrix4(o.matrixWorld);
+      return geo;
+    });
+    const total = parts.reduce((n, p) => n + p.attributes.position.count, 0);
+    const pos = new Float32Array(total * 3), nor = new Float32Array(total * 3), uv = new Float32Array(total * 2);
+    let off = 0;
+    for (const p of parts) {
+      const n = p.attributes.position.count;
+      pos.set(p.attributes.position.array, off * 3);
+      nor.set(p.attributes.normal.array, off * 3);
+      uv.set(p.attributes.uv.array, off * 2);
+      off += n;
+      p.dispose();
+    }
+    const merged = new THREE.BufferGeometry();
+    merged.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    merged.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    merged.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    merged.computeBoundingSphere();
+    const mesh = new THREE.Mesh(merged, g.material);
+    mesh.castShadow = g.cast; mesh.receiveShadow = g.receive;
+    mesh.matrixAutoUpdate = false;
+    for (const o of g.meshes) { o.removeFromParent(); o.geometry.dispose(); }
+    scene.add(mesh);
+    after++;
+  }
+  return { before, after };
+}

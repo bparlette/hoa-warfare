@@ -13,6 +13,9 @@ const port = 9330 + Math.floor(Math.random() * 500);
 const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${port}`, '--window-size=1280,720', '--use-angle=metal',
   '--autoplay-policy=no-user-gesture-required', '--mute-audio', `--user-data-dir=${mkdtempSync(join(tmpdir(), 'hoa-'))}`, 'about:blank'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// Watchdog: never hang the caller (CI, agents) if Chrome or the page wedges.
+const watchdog = setTimeout(() => { console.error('shot.mjs: timed out, killing Chrome'); chrome.kill('SIGKILL'); process.exit(2); }, (Number(secs) + 45) * 1000);
+watchdog.unref?.();
 
 let ws;
 for (let i = 0; i < 50; i++) {
@@ -34,7 +37,7 @@ ws.addEventListener('message', m => {
   if (msg.method === 'Runtime.exceptionThrown') logs.push('[exception] ' + (msg.params.exceptionDetails.exception?.description || msg.params.exceptionDetails.text));
   if (msg.method === 'Log.entryAdded') logs.push(`[${msg.params.entry.level}] ${msg.params.entry.text} ${msg.params.entry.url || ''}`);
 });
-const send = (method, params = {}) => new Promise(r => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
+const send = (method, params = {}) => new Promise(r => { const i = ++id; if (process.env.SHOT_DEBUG) console.error('->', method); pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 
 await send('Runtime.enable');
 await send('Log.enable');
@@ -45,7 +48,7 @@ if (process.env.MOBILE) {
   await send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true, screenOrientation: { type: 'landscapePrimary', angle: 90 } });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
 }
-await send('Page.navigate', { url: `http://127.0.0.1:8642/web/?${query}` });
+await send('Page.navigate', { url: `${process.env.SHOT_BASE || 'http://127.0.0.1:8642'}/web/?${query}` });
 await sleep(Number(secs) * 1000);
 if (process.env.TOUCH) {
   for (const step of JSON.parse(process.env.TOUCH)) {
