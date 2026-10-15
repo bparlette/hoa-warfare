@@ -419,13 +419,65 @@ class Game {
 
 const input = {
   keys: new Set(), locked: false, fire: false, sens: 0.0022, yaw: 0, pitch: 0,
+  gpPrev: new Map(),
   apply(a) {
     const k = this.keys;
-    a.input.forward = (k.has('KeyW') ? 1 : 0) - (k.has('KeyS') ? 1 : 0);
-    a.input.right = (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0);
-    a.input.jump = k.has('Space');
-    a.input.sprint = k.has('ShiftLeft') || k.has('ShiftRight');
-    a.input.fire = this.fire && a.alive;
+    let fwd = (k.has('KeyW') ? 1 : 0) - (k.has('KeyS') ? 1 : 0);
+    let right = (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0);
+    let jump = k.has('Space');
+    let sprint = k.has('ShiftLeft') || k.has('ShiftRight');
+    let fire = this.fire;
+
+    // Gamepad (Xbox / standard controller) support
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gp = pads.find(p => p && p.connected);
+    if (gp) {
+      const dead = 0.15;
+      const lx = Math.abs(gp.axes[0] || 0) > dead ? gp.axes[0] : 0;
+      const ly = Math.abs(gp.axes[1] || 0) > dead ? gp.axes[1] : 0;
+      const rx = Math.abs(gp.axes[2] || 0) > dead ? gp.axes[2] : 0;
+      const ry = Math.abs(gp.axes[3] || 0) > dead ? gp.axes[3] : 0;
+
+      // D-pad support (buttons 12-15)
+      const dUp = gp.buttons[12]?.pressed ? 1 : 0;
+      const dDown = gp.buttons[13]?.pressed ? 1 : 0;
+      const dLeft = gp.buttons[14]?.pressed ? 1 : 0;
+      const dRight = gp.buttons[15]?.pressed ? 1 : 0;
+
+      fwd += -ly + (dUp - dDown);
+      right += lx + (dRight - dLeft);
+
+      // Aiming look sticks
+      if (rx || ry) {
+        this.yaw -= rx * 0.05;
+        this.pitch = Math.max(-1.45, Math.min(1.45, this.pitch - ry * 0.038));
+      }
+
+      // Face & shoulder buttons
+      const btn = (i) => !!gp.buttons[i]?.pressed;
+      const edge = (i) => {
+        const was = !!this.gpPrev.get(i);
+        const now = btn(i);
+        this.gpPrev.set(i, now);
+        return now && !was;
+      };
+
+      if (btn(0)) jump = true; // A = Jump
+      if (btn(6) || btn(10)) sprint = true; // LT or L3 = Sprint
+      if (btn(7)) fire = true; // RT = Fire
+
+      if (edge(2)) a.input.reload = true; // X = Reload
+      if (edge(1) || edge(5)) a.input.melee = true; // B or RB = Melee Trophy
+      if (edge(4)) a.input.grenade = true; // LB = Throw Lawsuit
+      if (edge(3)) { state.retro = !state.retro; renderer.setRetro(state.retro); } // Y = Toggle 16-bit retro
+      if (btn(9)) this.keys.add('Tab'); else if (!k.has('TabKey')) this.keys.delete('Tab'); // Start/View = Scoreboard
+    }
+
+    a.input.forward = Math.max(-1, Math.min(1, fwd));
+    a.input.right = Math.max(-1, Math.min(1, right));
+    a.input.jump = jump;
+    a.input.sprint = sprint;
+    a.input.fire = fire && a.alive;
     if (!a.alive) { this.yaw = a.team === 0 ? 0 : Math.PI; this.pitch = 0; }
     a.input.yaw = this.yaw;
     a.input.pitch = this.pitch;

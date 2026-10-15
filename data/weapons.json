@@ -6,7 +6,7 @@
     "Angles are radians. Spread is the gaussian sigma of the aim error per ray. Distances are metres, times seconds.",
     "Hitboxes: body cylinder r=0.42 h=1.42, head sphere r=0.25 at 1.62 (sim.js BODY). Headshot = damage.head.",
     "TTK sanity: body hits to kill = ceil(100 / damage.body). Keep ARs at 4-5, SMGs 5-6 at their faster interval.",
-    "The 8 launch weapons from the GDD: allowance (AR), sideHustle (SMG), divorceSettlement (shotgun), trustFund (sniper), subdivision (LMG), permit (pistol), lawsuit (launcher; here as thrown briefcase), participationTrophy (melee). Missing ones are TODO for the systems AI."
+    "The 8 launch weapons from the GDD: allowance (AR), sideHustle (SMG), divorceSettlement (shotgun), trustFund (sniper), subdivision (LMG), permit (pistol), lawsuit (launcher; thrown briefcase), participationTrophy (melee)."
   ],
   "weapons": {
     "allowance": {
@@ -17,6 +17,51 @@
       "spread": { "base": 0.01, "moveMult": 1.8, "airMult": 3 },
       "recoil": { "viewKick": 0.12 },
       "feedIcon": "🔫", "tracer": "faction", "viewmodel": "blaster"
+    },
+    "sideHustle": {
+      "name": "The Side Hustle", "class": "smg", "slot": "primary", "fire": "hitscan", "auto": true,
+      "mag": 36, "reloadSec": 1.35, "intervalSec": 0.075, "pellets": 1,
+      "damage": { "body": 18, "head": 38 },
+      "range": 55, "falloff": { "startM": 18, "mult": 0.6 },
+      "spread": { "base": 0.022, "moveMult": 1.4, "airMult": 2.2 },
+      "recoil": { "viewKick": 0.08 },
+      "feedIcon": "⚡", "tracer": "faction", "viewmodel": "smg"
+    },
+    "divorceSettlement": {
+      "name": "The Divorce Settlement", "class": "shotgun", "slot": "primary", "fire": "hitscan", "auto": false,
+      "mag": 6, "reloadSec": 2.2, "intervalSec": 0.72, "pellets": 8,
+      "damage": { "body": 14, "head": 22 },
+      "range": 35, "falloff": { "startM": 10, "mult": 0.4 },
+      "spread": { "base": 0.055, "moveMult": 1.25, "airMult": 1.8 },
+      "recoil": { "viewKick": 0.28 },
+      "feedIcon": "💥", "tracer": "faction", "viewmodel": "shotgun"
+    },
+    "trustFund": {
+      "name": "The Trust Fund", "class": "sniper", "slot": "primary", "fire": "hitscan", "auto": false,
+      "mag": 5, "reloadSec": 2.5, "intervalSec": 1.15, "pellets": 1,
+      "damage": { "body": 85, "head": 195 },
+      "range": 160, "falloff": { "startM": 90, "mult": 0.95 },
+      "spread": { "base": 0.001, "moveMult": 3.8, "airMult": 6.0 },
+      "recoil": { "viewKick": 0.35 },
+      "feedIcon": "🎯", "tracer": "faction", "viewmodel": "sniper"
+    },
+    "subdivision": {
+      "name": "The Subdivision", "class": "lmg", "slot": "primary", "fire": "hitscan", "auto": true,
+      "mag": 75, "reloadSec": 3.4, "intervalSec": 0.125, "pellets": 1,
+      "damage": { "body": 28, "head": 58 },
+      "range": 110, "falloff": { "startM": 45, "mult": 0.85 },
+      "spread": { "base": 0.018, "moveMult": 2.2, "airMult": 4.0 },
+      "recoil": { "viewKick": 0.16 },
+      "feedIcon": "🏘️", "tracer": "faction", "viewmodel": "lmg"
+    },
+    "permit": {
+      "name": "The Building Permit", "class": "pistol", "slot": "primary", "fire": "hitscan", "auto": false,
+      "mag": 15, "reloadSec": 1.1, "intervalSec": 0.18, "pellets": 1,
+      "damage": { "body": 32, "head": 68 },
+      "range": 60, "falloff": { "startM": 25, "mult": 0.7 },
+      "spread": { "base": 0.008, "moveMult": 1.4, "airMult": 2.0 },
+      "recoil": { "viewKick": 0.10 },
+      "feedIcon": "📄", "tracer": "faction", "viewmodel": "pistol"
     },
     "lawsuit": {
       "name": "The Lawsuit", "class": "explosive", "slot": "equipment", "fire": "projectile", "count": 2,
@@ -30,6 +75,11 @@
     }
   },
   "loadouts": {
-    "default": { "primary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" }
+    "default": { "primary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "smg": { "primary": "sideHustle", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "shotgun": { "primary": "divorceSettlement", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "sniper": { "primary": "trustFund", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "lmg": { "primary": "subdivision", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "pistol": { "primary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" }
   }
 }
