@@ -153,6 +153,14 @@ export function faceTex(faction, skin) {
       case 'vcBros': eyes(); px(3, 6, eye, 3, 1); break;
       case 'valleyGirls': eyes(); px(3, 6, '#ff77a8', 2, 1); px(1, 2, eye); px(6, 2, eye); break;
       case 'rednecks': eyes(); px(1, 5, '#8a5a2e', 6, 3); px(3, 6, eye, 2, 1); break;
+      case 'theGays': eyes(); px(1, 2, '#2d1e18', 2, 1); px(5, 2, '#2d1e18', 2, 1); px(3, 6, '#e05688', 2, 1); break;
+      case 'trumpers': eyes(); px(2, 2, '#e0aa38', 4, 1); px(3, 6, eye, 2, 1); break;
+      case 'wokeLibs': eyes(); px(3, 5, '#c25a3a', 2, 1); px(3, 6, eye, 2, 1); px(2, 4, '#e89090'); px(5, 4, '#e89090'); break;
+      case 'mlmHuns': eyes(); px(2, 2, '#2b1b17'); px(5, 2, '#2b1b17'); px(2, 6, '#e91e63', 4, 1); px(1, 4, '#f48fb1'); px(6, 4, '#f48fb1'); break;
+      case 'furries': eyes(); px(3, 4, '#ff70a6', 2, 1); px(1, 5, '#222', 2, 1); px(5, 5, '#222', 2, 1); px(3, 6, '#222', 2, 1); break;
+      case 'animeWeebs': eyes(); px(1, 4, '#ff4f9a', 2, 1); px(5, 4, '#ff4f9a', 2, 1); px(3, 5, '#ffffff', 2, 1); px(3, 6, eye, 2, 1); break;
+      case 'tradwives': eyes(); px(1, 4, '#e57373', 2, 1); px(5, 4, '#e57373', 2, 1); px(2, 6, '#d32f2f', 4, 1); break;
+      case 'pickleballRetirees': eyes(); px(3, 3, '#ffffff', 2, 2); px(2, 6, '#8d6e63', 4, 1); break;
       default: eyes(); px(3, 6, eye, 2, 1);
     }
   });

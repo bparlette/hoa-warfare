@@ -16,8 +16,9 @@ import { Controls, aimAssist } from './controls.js';
 import { PerfOverlay } from './perf.js';
 import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
+import { NetClient } from './net.js';
 
-export { STYLES };
+export { STYLES, NetClient };
 
 const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
 
@@ -180,6 +181,20 @@ class Game {
     this.realTime = 0;
     this.radar = $('radar') ? new Radar($('radar')) : null;
     this.meFiredThisStep = false;
+    this.online = params.get('online') === '1' || !!params.get('room');
+    if (this.online && typeof location !== 'undefined') {
+      const room = params.get('room') || 'culdesac1';
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const netUrl = `${proto}//${location.host}/ws?room=${encodeURIComponent(room)}`;
+      this.net = new NetClient();
+      this.net.connect(netUrl, {
+        name: 'You',
+        faction: state.faction,
+      }).catch(err => {
+        console.warn('Multiplayer connection failed; running local simulation', err);
+      });
+    }
+
     this.sim.start();
     this.handle(this.sim.drainEvents());
   }
@@ -187,6 +202,10 @@ class Game {
   showBanner(text, small = '') { this.hud.showBanner(text, small); }
 
   dispose() {
+    if (this.net) {
+      this.net.disconnect();
+      this.net = null;
+    }
     this.hud.reset();
     for (const c of renderer.characters.values()) renderer.scene.remove(c.root);
     renderer.characters.clear();

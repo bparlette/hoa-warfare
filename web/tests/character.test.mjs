@@ -105,3 +105,88 @@ test('character: headshot hat pop detaches headwear with upward/outward impulse 
   c.update({ alive: true, x: 0, y: 0, z: 0, yaw: 0, pitch: 0, speed: 0, onGround: true }, 0.016);
   assert.equal(c.headwear.parent, c.head, 'headwear re-attached on respawn');
 });
+
+const { HEADWEAR, PROPS, buildParts } = await import('../src/engine/character.js');
+const THREE = await import('../vendor/three.module.min.js');
+const { readFileSync } = await import('node:fs');
+const hoaContent = JSON.parse(readFileSync(new URL('../../data/hoa_content.json', import.meta.url), 'utf8'));
+
+test('character: every faction in hoa_content.json resolves to a custom, non-default HEADWEAR entry', () => {
+  const factionEntries = Object.entries(hoaContent.factions);
+  assert.equal(factionEntries.length, 20, 'all 20 shipping and draft factions present');
+  for (const [id, f] of factionEntries) {
+    const hatName = f.look?.hat;
+    assert.ok(hatName, `faction ${id} has a look.hat defined`);
+    assert.ok(HEADWEAR[hatName], `HEADWEAR[${hatName}] exists for faction ${id}`);
+    assert.notEqual(HEADWEAR[hatName], HEADWEAR.default, `HEADWEAR[${hatName}] must not fall back to HEADWEAR.default for faction ${id}`);
+    assert.ok(Array.isArray(HEADWEAR[hatName]) && HEADWEAR[hatName].length > 0, `HEADWEAR[${hatName}] has part specs`);
+  }
+});
+
+test('character: each new headwear mesh builds valid Three.js meshes with non-empty geometries and materials', () => {
+  const newHats = [
+    'stringer', 'vest', 'beanieTote', 'messyBun',
+    'fursuitHead', 'catEarsHeadset', 'headscarfBraid', 'visorSweatband'
+  ];
+  for (const hatName of newHats) {
+    assert.ok(HEADWEAR[hatName], `HEADWEAR.${hatName} exists`);
+    const group = new THREE.Group();
+    buildParts(group, HEADWEAR[hatName], { accent: '#ff0055', shirt: '#222222', pants: '#444444' });
+    assert.ok(group.children.length > 0, `${hatName} produced meshes in group`);
+    for (const child of group.children) {
+      assert.ok(child.isMesh, `${hatName} child is a Three.js Mesh`);
+      assert.ok(child.geometry, `${hatName} child has geometry`);
+      assert.ok(child.geometry.attributes.position, `${hatName} child geometry has position attribute`);
+      assert.ok(child.geometry.attributes.position.count > 0, `${hatName} child geometry is non-empty`);
+      assert.ok(child.material, `${hatName} child has material`);
+    }
+  }
+});
+
+test('character: all signature props instantiate and attach correctly', () => {
+  const signatureFactions = [
+    'brainRot', 'cloutStreamers', 'wokeLibs', 'mlmHuns',
+    'pickleballRetirees', 'tradwives', 'animeWeebs', 'furries',
+    'gymRats', 'vcBros', 'hoaDads', 'rednecks'
+  ];
+
+  for (const factionId of signatureFactions) {
+    assert.ok(PROPS[factionId], `PROPS[${factionId}] exists`);
+    assert.ok(PROPS[factionId].length > 0, `PROPS[${factionId}] has parts`);
+
+    // Verify raw part specs build valid meshes
+    const dummyGroup = new THREE.Group();
+    buildParts(dummyGroup, PROPS[factionId], { accent: '#29adff', shirt: '#ffffff', pants: '#222222' });
+    assert.equal(dummyGroup.children.length, PROPS[factionId].length, `${factionId} all props built into meshes`);
+    for (const m of dummyGroup.children) {
+      assert.ok(m.isMesh, `${factionId} prop is Mesh`);
+      assert.ok(m.geometry.attributes.position.count > 0, `${factionId} prop geometry non-empty`);
+      assert.ok(m.material, `${factionId} prop material exists`);
+    }
+
+    // Verify instantiation on CharacterView and correct attachment points
+    const factionData = hoaContent.factions[factionId];
+    const c = new CharacterView({
+      faction: factionId,
+      look: factionData.look,
+      seed: `prop-test-${factionId}`,
+      team: 0,
+      isLocalTeam: true,
+    });
+
+    if (factionId === 'furries') {
+      // Fluffy tail attached behind waist on body
+      const tailPart = c.body.children.find(ch => ch.position.z > 0.2 && ch.position.y >= 0.8);
+      assert.ok(tailPart, 'furries tail attached to body behind waist');
+    } else if (factionId === 'hoaDads') {
+      // Boomer reading glasses attached to headwear
+      assert.ok(c.headwear.children.length > HEADWEAR.whiteCap.length, 'hoaDads glasses attached to headwear');
+    } else if (factionId === 'rednecks') {
+      // Golden fringe attached to headwear
+      assert.ok(c.headwear.children.length > HEADWEAR.trucker.length, 'rednecks golden fringe attached to headwear');
+    } else {
+      // Handheld / slung props attached to arms (left arm is arms[0])
+      assert.ok(c.arms[0].children.length > 2, `${factionId} signature prop attached to left arm`);
+    }
+  }
+});

@@ -79,6 +79,10 @@ export class Sim {
     this.mode = createMode(mode, this);
   }
 
+  addBot({ id, name, team, faction, loadout = 'default' } = {}) {
+    return this.addActor({ id, name, team, faction, isBot: true, loadout });
+  }
+
   addActor({ id, name, team, faction, isBot = true, loadout = 'default' }) {
     const weapons = resolveLoadout(this.weapons, loadout);
     const a = {

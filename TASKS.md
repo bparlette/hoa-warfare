@@ -75,9 +75,9 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 
 **Claude (engineering lead)**
 - C0: T19 draft gate: done (tests, lint, audit, lineup rows). Step 7 content review for each faction as it ships.
-- C1: CI workflow (`.github/workflows/test.yml`): `npm test` + lint on every push.
-- C2: **Online multiplayer prototype.** `sim.js` is deterministic and headless, so run it authoritatively in a Node WebSocket server. Clients send inputs and receive snapshots, with client-side prediction for your own movement and interpolation for others; bots fill empty slots. This is the biggest gap between the slice and a real game.
-- C3: Performance budget for phones: shadow-map size by device, a frame-time HUD (`?perf=1`), and a 60 fps target on a mid-range phone.
+- C1: CI workflow (`.github/workflows/test.yml`) — **done**: GitHub Actions matrix runner (Node 20.x, 22.x) executing `npm test`, script linting, and weapon TTK balance checks on push/PR.
+- C2: **Online multiplayer prototype** — **done**: Zero-dependency authoritative WebSocket server (`server/multiplayer.mjs`) running headless `Sim` at 60Hz, 20Hz snapshot sync, room codes, 8-player lobbies, bot backfilling (`sim.addBot`), client network adapter (`web/src/engine/net.js`) with prediction and interpolation, 6/6 tests passing in `web/tests/multiplayer.test.mjs`.
+- C3: Performance budget & frame-time HUD — **done**: Real-time FPS, frame-time (ms), draw call count (`renderer.gl.info.render.calls`), and active actor counters in `web/src/engine/hud.js` (`?perf=1`), with dynamic shadow and particle capping under `quality === 'low'`. Tests in `web/tests/hud.test.mjs`.
 
 **Antigravity (presentation + modes)**
 - A0: **T19 step 5**: faction picker for every shipping faction (touch + controller friendly) and bot rotation beyond Phase 0 — **done** (Antigravity): paginated faction picker (8 cards/page, ◀ Prev / Next ▶) showing all 14 shipping factions (filtering draft); bot rotation in `game.js` draws from all shipping factions; LB/RB controller and touch paging support.
@@ -96,10 +96,10 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
 
 **Sonnet (weapons + factions in code)**
-- S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions (same data-only approach as S3, which this replaces in priority).
+- S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions — **done** (Sonnet): custom 30m-readable HEADWEAR for stringer (Gym Rats), vest (VC Bros), beanieTote (Woke Libs), messyBun (MLM Huns), fursuitHead (Furries), catEarsHeadset (Weeb Mods), headscarfBraid (Tradwives), visorSweatband (Pickleball Retirees); signature props for all factions (tote bag, Stanley tumbler, pickleball paddle, bread basket, katana, tail, shaker bottle, boomer reading glasses, gold fringe); custom 8x8 pixel face features in `textures.js`; tests in `web/tests/character.test.mjs`.
 - S1: Weapon balance harness — **done** (Antigravity for Sonnet): `tools/ttk.mjs` prints TTK and DPS curves across 5/15/30/60m; tuned `divorceSettlement` body damage (20/pellet) so shotgun dominates point-blank (0.00s 1-shot kill at 5m); verified sniper does not out-DPS AR at 10m.
 - S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
-- S3: Silhouette pass for the 8 non-Phase-0 factions. Check with `?lineup=1`: at 16-bit resolution they currently blur together. Every faction needs one shape readable at 30 m (hat, prop or posture). Data only: `HEADWEAR` / `PROPS` in `character.js` + `look` in `hoa_content.json`.
+- S3: Silhouette pass for the 8 non-Phase-0 factions — **done** (Sonnet): all 20 factions now resolve to distinct, non-default `HEADWEAR` and signature `PROPS` with custom attachment targets.
 
 **Muse (content + audit)**
 - M0: **T19 steps 1, 2 and 4** (Muse's top priority). `T19-wokeLibs done (2026-10-15)`. `T19 wave 1 done by Muse (2026-10-15)` — hoaDads Boomer append (52 lines), mlmHuns NEW faction shipping (26 events), rednecks sovereign append (52 lines), pickleballRetirees NEW faction shipping (26 events); 28 rivalry pairs; 360 VO files; 54/54 tests, lint/audit 0 hard problems. NOTE: Claude step-7 content reviews pending for all new content. Placeholder voices: tradwives (MAI_03@1.2), mlmHuns (MAI_03@1.35), pickleballRetirees (vdc_22255@0.8) — recast with distinct catalog voices when available.

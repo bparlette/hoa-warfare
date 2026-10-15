@@ -3,16 +3,219 @@
 const KILLCAM_SEC = 3.2;
 const KILLCAM_HOLD = 1.6;
 
+function createFallbackElement(tag = 'div') {
+  return {
+    tagName: tag.toUpperCase(),
+    style: {},
+    classList: {
+      _classes: new Set(),
+      add(...cs) { cs.forEach(c => this._classes.add(c)); },
+      remove(...cs) { cs.forEach(c => this._classes.delete(c)); },
+      contains(c) { return this._classes.has(c); },
+      toggle(c, val) { if (val) this.add(c); else this.remove(c); },
+    },
+    children: [],
+    appendChild(child) { child.parentNode = this; this.children.push(child); return child; },
+    prepend(child) { child.parentNode = this; this.children.unshift(child); return child; },
+    remove() {
+      if (this.parentNode?.children) {
+        const idx = this.parentNode.children.indexOf(this);
+        if (idx >= 0) this.parentNode.children.splice(idx, 1);
+      }
+    },
+    get lastChild() { return this.children[this.children.length - 1] || null; },
+    get firstChild() { return this.children[0] || null; },
+    innerHTML: '',
+    textContent: '',
+  };
+}
+
 export class Hud {
-  constructor({ $, factions, weaponsData }) {
-    this.$ = $ || (id => document.getElementById(id));
-    this.factions = factions;
-    this.weaponsData = weaponsData;
+  constructor({ $, factions, weaponsData, perfOverlay, perfPosition = 'upper-right', quality } = {}) {
+    this.$ = $ || (id => (typeof document !== 'undefined' ? document.getElementById(id) : null));
+    this.factions = factions || {};
+    this.weaponsData = weaponsData || { weapons: {} };
     this.bubbles = [];
     this.bannerT = null;
     this.killcam = null;
     this._hitmarkAnim = null;
     this.lastLoiterBeep = 0;
+
+    const params = (typeof location !== 'undefined' && location?.search) ? new URLSearchParams(location.search) : null;
+    this.perfOverlay = perfOverlay ?? (params ? params.get('perf') === '1' : false);
+    this.perfPosition = perfPosition;
+    this.quality = quality || (params ? params.get('quality') : null);
+
+    this.perfMetrics = {
+      fps: 0,
+      frameTimeMs: 0,
+      drawCalls: 0,
+      activeActors: 0,
+      totalActors: 0,
+      qualityTier: 'high',
+      isLowQuality: false,
+      suggestions: [],
+    };
+    this._perfFrames = [];
+    this._lastPerfTime = 0;
+    this._lastRealTime = null;
+    this._perfEl = null;
+  }
+
+  isLowQuality(state, renderer) {
+    if (this.quality === 'low') return true;
+    if (state?.quality === 'low') return true;
+    if (renderer?.quality?.tier === 'low' || renderer?.quality === 'low') return true;
+    if (typeof location !== 'undefined' && location?.search) {
+      const q = new URLSearchParams(location.search).get('quality');
+      if (q === 'low') return true;
+    }
+    return false;
+  }
+
+  applyQualityOptimizations(state, renderer) {
+    const isLow = this.isLowQuality(state, renderer);
+    if (isLow && renderer) {
+      if (renderer.quality && typeof renderer.quality === 'object') {
+        if (renderer.quality.shadow > 1024) {
+          renderer.quality.shadow = 1024;
+        }
+        if (renderer.quality.maxSplats > 60) {
+          renderer.quality.maxSplats = 60;
+        }
+      }
+      if (renderer.sun?.shadow?.mapSize) {
+        const targetShadow = renderer.quality?.shadow || 1024;
+        if (renderer.sun.shadow.mapSize.x > targetShadow) {
+          renderer.sun.shadow.mapSize.set(targetShadow, targetShadow);
+        }
+      }
+    }
+    return isLow;
+  }
+
+  _applySuburbanHudStyle(el) {
+    if (!el || !el.style) return;
+    const isRight = this.perfPosition === 'upper-right' || this.perfPosition === 'right';
+    el.id = 'perfOverlay';
+    el.className = 'hoa-perf-overlay suburban-hud';
+    el.style.position = 'absolute';
+    el.style.top = '12px';
+    if (isRight) {
+      el.style.right = '12px';
+      el.style.left = '';
+    } else {
+      el.style.left = '12px';
+      el.style.right = '';
+    }
+    el.style.zIndex = '100';
+    el.style.fontFamily = 'ui-monospace, "SF Mono", "Courier New", monospace';
+    el.style.fontSize = '11px';
+    el.style.lineHeight = '1.35';
+    el.style.background = 'rgba(17, 29, 53, 0.88)';
+    el.style.color = '#00e436';
+    el.style.border = '2px solid rgba(255, 241, 232, 0.8)';
+    el.style.borderRadius = '4px';
+    el.style.padding = '6px 10px';
+    el.style.pointerEvents = 'none';
+    el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.6)';
+    el.style.whiteSpace = 'pre';
+  }
+
+  getPerfOverlayElement() {
+    let el = this.$('perfOverlay') || this.$('perfHud') || this._perfEl;
+    if (!el) {
+      if (typeof document !== 'undefined' && document.createElement) {
+        el = document.createElement('div');
+        const parent = this.$('hud') || (typeof document.body !== 'undefined' ? document.body : null);
+        if (parent?.appendChild) parent.appendChild(el);
+      } else {
+        el = createFallbackElement('div');
+      }
+    }
+    this._perfEl = el;
+    if (el && !el._suburbanStyled) {
+      this._applySuburbanHudStyle(el);
+      el._suburbanStyled = true;
+    }
+    return el;
+  }
+
+  setPerfPosition(pos) {
+    this.perfPosition = pos;
+    const el = this.getPerfOverlayElement();
+    if (el && el.style) {
+      const isRight = pos === 'upper-right' || pos === 'right';
+      el.style.right = isRight ? '12px' : '';
+      el.style.left = isRight ? '' : '12px';
+    }
+  }
+
+  updatePerfOverlay({ sim, renderer, state, realTime }) {
+    const isLow = this.applyQualityOptimizations(state, renderer);
+    const el = this.getPerfOverlayElement();
+    if (!el) return;
+    if (el.style) el.style.display = '';
+
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    let dtMs = 16.6;
+    if (this._lastRealTime != null && realTime != null && realTime > this._lastRealTime) {
+      dtMs = Math.max(0.1, Math.min(200, (realTime - this._lastRealTime) * 1000));
+    } else if (this._lastPerfTime > 0) {
+      dtMs = Math.max(0.1, Math.min(200, now - this._lastPerfTime));
+    }
+    this._lastPerfTime = now;
+    if (realTime != null) this._lastRealTime = realTime;
+
+    this._perfFrames.push(dtMs);
+    if (this._perfFrames.length > 60) this._perfFrames.shift();
+
+    const avgMs = this._perfFrames.reduce((a, b) => a + b, 0) / this._perfFrames.length;
+    const fps = avgMs > 0 ? 1000 / avgMs : 60;
+    const drawCalls = renderer?.gl?.info?.render?.calls ?? renderer?.drawCalls ?? renderer?.info?.calls ?? 0;
+    const activeActors = sim?.actors ? sim.actors.filter(a => a.alive).length : 0;
+    const totalActors = sim?.actors ? sim.actors.length : 0;
+
+    const suggestions = [];
+    if (isLow) {
+      suggestions.push('Low quality active: shadows capped to 1024, overlays limited');
+    }
+    if (fps < 30) {
+      suggestions.push('FPS < 30: switch to 16-bit retro or lower resolution');
+    }
+    if (drawCalls > 120) {
+      suggestions.push('Draw calls > 120: optimize static meshes');
+    }
+
+    this.perfMetrics = {
+      fps,
+      frameTimeMs: avgMs,
+      drawCalls,
+      activeActors,
+      totalActors,
+      qualityTier: isLow ? 'low' : 'high',
+      isLowQuality: isLow,
+      suggestions,
+    };
+
+    if (el.style) {
+      el.style.color = fps >= 50 ? '#00e436' : fps >= 30 ? '#ffec27' : '#ff004d';
+    }
+
+    const suggestionText = suggestions.length ? `\nSUGGEST: ${suggestions[0]}` : '';
+    const text =
+      `HOA PERF MONITOR\n` +
+      `FPS: ${fps.toFixed(0)}  (${avgMs.toFixed(1)} ms)\n` +
+      `DRAWS: ${drawCalls} calls\n` +
+      `ACTORS: ${activeActors} active / ${totalActors}\n` +
+      `QUALITY: ${isLow ? 'LOW' : 'HIGH'}` +
+      suggestionText;
+
+    el.textContent = text;
+  }
+
+  getPerfStats() {
+    return { ...this.perfMetrics };
   }
 
   showBanner(text, small = '') {
@@ -77,6 +280,7 @@ export class Hud {
     const $ = this.$;
     const feed = $('feed');
     if (!feed) return;
+    const isLow = this.quality === 'low';
     const cls = a => (a === me ? 'me' : a.team === me.team ? 'ally' : 'enemy');
     const v = sim.byId.get(k.victimId), kr = k.killerId ? sim.byId.get(k.killerId) : null;
     const tags = [
@@ -88,36 +292,49 @@ export class Hud {
       k.shutdown && 'SHUTDOWN',
       k.rapid >= 4 ? 'RAMPAGE' : k.rapid === 3 ? 'TRIPLE' : k.rapid === 2 ? 'DOUBLE' : null,
     ].filter(Boolean);
-    const el = document.createElement('div');
+    const el = typeof document !== 'undefined' && document.createElement
+      ? document.createElement('div')
+      : createFallbackElement('div');
     el.className = 'k';
     const icon = this.weaponsData.weapons[k.weaponId]?.feedIcon || '🔫';
     el.innerHTML = kr
       ? `<span class="${cls(kr)}">${kr.name}</span> ${icon} <span class="${cls(v)}">${v.name}</span>${tags.length ? `<span class="tagx">${tags.join(' · ')}</span>` : ''}`
       : `<span class="${cls(v)}">${v.name}</span> played themselves`;
     feed.prepend(el);
-    while (feed.children.length > 6) feed.lastChild.remove();
-    setTimeout(() => el.remove(), 6000);
+    while (feed.children.length > (isLow ? 3 : 6)) feed.lastChild.remove();
+    setTimeout(() => el.remove(), isLow ? 3500 : 6000);
   }
 
   addSub(b, channel) {
     const $ = this.$;
     const subs = $('subs');
     if (!subs) return;
-    const el = document.createElement('div');
+    const isLow = this.quality === 'low';
+    const el = typeof document !== 'undefined' && document.createElement
+      ? document.createElement('div')
+      : createFallbackElement('div');
     el.className = 's';
     const f = this.factions[b.faction]?.name || '';
     const col = this.factions[b.faction]?.look.accent || '#fff';
     el.innerHTML = `<b style="color:${col}">${b.name}</b> (${f}): ${b.text}<i>${b.lineId}${channel && channel !== 'world' ? ' · ' + channel : ''}</i>`;
     subs.appendChild(el);
-    while (subs.children.length > 4) subs.firstChild.remove();
-    setTimeout(() => el.remove(), 4500);
+    while (subs.children.length > (isLow ? 2 : 4)) subs.firstChild.remove();
+    setTimeout(() => el.remove(), isLow ? 3000 : 4500);
   }
 
   addBubble(speaker, b, me, realTime) {
     const $ = this.$;
+    const isLow = this.quality === 'low';
+    const maxBubbles = isLow ? 2 : 6;
+    while (this.bubbles.length >= maxBubbles) {
+      const old = this.bubbles.shift();
+      old?.el?.remove?.();
+    }
     const old = this.bubbles.find(x => x.id === speaker.id);
-    if (old) { old.el.remove(); this.bubbles.splice(this.bubbles.indexOf(old), 1); }
-    const el = document.createElement('div');
+    if (old) { old.el?.remove?.(); this.bubbles.splice(this.bubbles.indexOf(old), 1); }
+    const el = typeof document !== 'undefined' && document.createElement
+      ? document.createElement('div')
+      : createFallbackElement('div');
     el.className = `bubble ${speaker.team === me.team ? 'ally' : 'enemy'}${b.priority >= 6 ? ' hot' : ''}`;
     el.innerHTML = `<b>${speaker.name}</b>${b.text}`;
     $('bubbles').appendChild(el);
@@ -246,7 +463,7 @@ export class Hud {
     $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${activeW.mag}`;
     $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''} · [Q/1/2] Swap`;
     const mh = sim.mode.hud(me);
-    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${library.legalSafe ? 'ON' : 'OFF'} · ${renderer.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice.enabled ? '' : ' · muted'}`;
+    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${library.legalSafe ? 'ON' : 'OFF'} · ${renderer?.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice?.enabled ? '' : ' · muted'}`;
     $('crosshair').style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
 
     if (state.style007) {
@@ -260,42 +477,72 @@ export class Hud {
     $('loiter').classList.toggle('hidden', !warn);
     if (warn) {
       $('loiterT').textContent = Math.ceil(cs.secondsLeft);
-      if (realTime - this.lastLoiterBeep > 1) { this.lastLoiterBeep = realTime; sfx.warn(); }
+      if (realTime - this.lastLoiterBeep > 1) { this.lastLoiterBeep = realTime; sfx?.warn?.(); }
     }
     if (!me.alive && !this.killcam) this.showRespawn(me, sim);
     if (radar) radar.render(sim, me, state.spectate);
 
+    const isLow = this.applyQualityOptimizations(state, renderer);
+    const maxDist = isLow ? 25 : 45;
+
     // speech bubbles follow their speaker (or stay where a dead speaker fell)
     this.bubbles = this.bubbles.filter(bb => {
-      if (realTime > bb.until) { bb.el.remove(); return false; }
+      if (realTime > bb.until) { bb.el?.remove?.(); return false; }
       const a = sim.byId.get(bb.id);
       const p = a.alive ? a.pos : bb.pos;
-      const far = Math.hypot(p.x - renderer.camera.position.x, p.z - renderer.camera.position.z) > 45;
-      const s = (bb.id === me.id && !me.isBot) || this.killcam || far ? null : renderer.toScreen(p, 2.35);
-      bb.el.style.display = s ? '' : 'none';
+      const far = renderer?.camera?.position ? Math.hypot(p.x - renderer.camera.position.x, p.z - renderer.camera.position.z) > maxDist : false;
+      const s = (bb.id === me.id && !me.isBot) || this.killcam || far ? null : renderer?.toScreen?.(p, 2.35);
+      if (bb.el && bb.el.style) bb.el.style.display = s ? '' : 'none';
       bb.screen = s;
       return true;
     });
-    // stack overlapping bubbles upward (nearest speaker keeps its spot)
-    const placed = [];
-    for (const bb of this.bubbles.filter(b => b.screen).sort((a, b) => b.screen.y - a.screen.y)) {
-      let { x, y } = bb.screen;
-      const h = bb.el.offsetHeight + 4, w = bb.el.offsetWidth;
-      for (let moved = true; moved;) {
-        moved = false;
-        for (const p of placed) if (Math.abs(p.x - x) < (p.w + w) / 2 && Math.abs(p.y - y) < Math.max(p.h, h)) { y = p.y - p.h; moved = true; }
+
+    if (isLow) {
+      // In low quality mode, avoid expensive layout reflows from offsetHeight/offsetWidth in a loop
+      for (const bb of this.bubbles) {
+        if (bb.screen && bb.el && bb.el.style) {
+          bb.el.style.left = `${bb.screen.x}px`;
+          bb.el.style.top = `${bb.screen.y}px`;
+        }
       }
-      placed.push({ x, y, w, h });
-      bb.el.style.left = `${x}px`; bb.el.style.top = `${y}px`;
+    } else {
+      // stack overlapping bubbles upward (nearest speaker keeps its spot)
+      const placed = [];
+      for (const bb of this.bubbles.filter(b => b.screen).sort((a, b) => b.screen.y - a.screen.y)) {
+        let { x, y } = bb.screen;
+        const h = (bb.el?.offsetHeight || 0) + 4, w = bb.el?.offsetWidth || 0;
+        for (let moved = true; moved;) {
+          moved = false;
+          for (const p of placed) if (Math.abs(p.x - x) < (p.w + w) / 2 && Math.abs(p.y - y) < Math.max(p.h, h)) { y = p.y - p.h; moved = true; }
+        }
+        placed.push({ x, y, w, h });
+        if (bb.el && bb.el.style) {
+          bb.el.style.left = `${x}px`;
+          bb.el.style.top = `${y}px`;
+        }
+      }
     }
+
+    // High-performance FPS & Profiling overlay
+    const perfActive = Boolean(this.perfOverlay || (typeof location !== 'undefined' && location?.search && new URLSearchParams(location.search).get('perf') === '1'));
+    const perfEl = this.$('perfOverlay') || this.$('perfHud') || this._perfEl;
+    if (perfActive) {
+      this.updatePerfOverlay({ sim, renderer, state, realTime });
+    } else if (perfEl && perfEl.style) {
+      perfEl.style.display = 'none';
+    }
+
     $('board').classList.toggle('hidden', !input.scoreboard);
     if (input.scoreboard) this.renderBoard($('board'), sim, me);
   }
 
   reset() {
-    for (const b of this.bubbles) b.el.remove();
+    for (const b of this.bubbles) b.el?.remove?.();
     this.bubbles = [];
     this.killcam = null;
     clearTimeout(this.bannerT);
+    this._perfFrames = [];
+    this._lastPerfTime = 0;
+    this._lastRealTime = null;
   }
 }
