@@ -15,15 +15,21 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - [x] **Visual Polish**: Modern Tactical 60fps clean high-resolution rendering set as default (`style=modern`, `retro=false`).
 - [x] **Audio Unlock**: Instant AudioContext unlocking on initial click/interaction.
 - [x] **Weapon Tuning**: TTK harness verification (`tools/ttk.mjs`) ensuring satisfying point-blank shotgun dominance, SMG rapid close-range, and AR mid-range control.
+- [x] **Mobile Controls Accessibility & Clean Layout**: Increased Pause button touch target to 48px (>44px standards). Removed reload button from touch HUD to eliminate thumb clutter; implemented 1.0s auto-reload on inactivity in `sim.js`. 117 tests passing.
+- [ ] **Mobile Pause Resume & Leaderboard**: Add dedicated "▶ RESUME GAME" button to pause overlay, and wire `data-t="board"` to top score/clock bar so mobile players can check live match standings with 0 extra screen buttons.
+- [ ] **Audio Accessibility & Ambience**: In-game audio mute toggle in settings & pause menu, plus subtle suburban synth menu BGM and podium victory jingle.
 - [ ] **Upload & Publish**: Upload `dist/hoa-warfare-web-demo.zip` to itch.io (HTML5 browser game) and CrazyGames Developer portal.
 
 ### 👑 Steam $4.99 Full Game Priorities (Roadmap to Launch)
 1. **P0: Online Multiplayer Prototype (Claude - C2)**: **done** — Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
 2. **P0: Native Desktop Wrapper & Steamworks Integration**: **done** — Electron/Node wrapper script (`desktop/main.mjs`, `desktop/preload.cjs`), 1280x720 min up to 1920x1080/borderless fullscreen, zero-CORS loopback HTTP server, 10 launch Steam Achievements bridge (`desktop/steamworks.js`), packaging tool (`tools/build_desktop.mjs`), and comprehensive documentation (`docs/steam/steamworks.md`).
-3. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
-4. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: **done** — Distinct 30m readability accessories and headwear for all 20 factions, signature props, and dedicated first-person viewmodel weapon meshes with dynamic muzzle light alignment and smooth transitions.
-5. **P1: Commercial VO Licensing (Muse - M0/M3)**: Confirm commercial rights for voice models or record human voice actor passes.
-6. **P2: Steam Direct "Coming Soon" Page**: Pay $100 Steam Direct fee, publish store page with trailer/screenshots to establish prior art, title SEO, and accumulate 7k–10k wishlists before flipping buy button.
+3. **P0: Online Multiplayer Menu Integration (Tomorrow)**: Wire up `server/multiplayer.mjs` to a clean "PLAY ONLINE" lobby menu for 8-player room creation, join codes, and matchmaking.
+4. **P0: Steam Store Assets & Capsules (Tomorrow)**: Export official pixel title logo and Tactical Bob badge into required Steam Direct dimensions (Header 460x215, Small 231x87, Main 616x353, Community Icon 32x32).
+5. **P0: Native Desktop Distribution Pipeline (Tomorrow)**: Automated `npm run desktop:dist` to package Electron + Steamworks standalone binaries for Windows/Mac/Linux.
+6. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
+7. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: **done** — Distinct 30m readability accessories and headwear for all 20 factions, signature props, and dedicated first-person viewmodel weapon meshes with dynamic muzzle light alignment and smooth transitions.
+8. **P1: Commercial VO Licensing (Muse - M0/M3)**: Confirm commercial rights for voice models or record human voice actor passes.
+9. **P2: Steam Direct "Coming Soon" Page**: Pay $100 Steam Direct fee, publish store page with trailer/screenshots to establish prior art, title SEO, and accumulate 7k–10k wishlists before flipping buy button.
 
 ### ⛔ Blocked on the owner (do not extend until decided)
 - **R1: `theGays` and `trumpers` factions — owner decision (2026-10-15): KEEP both.** Viral and potentially offensive is the goal; hate-coded language is not. "Globalist down!" is retired (replaced with "Your stock options? SAD!"). **Rule for all writers:** jokes target the group's habits, taste and stereotypes; no dog-whistles, slurs, violence against the group, or lines that only land if you hate them. Real-person catchphrases still need legal review before Steam. Muse: regenerate VO only for the new line.
@@ -87,6 +93,9 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - A3: Killstreak 5 **Dad's Helicopter** — **done** (Antigravity): sim-side entity (hp 160, orbit path, ground target acquisition & tracer fire), bullet hit detection with raySphere, shoot-down emits `streakDestroyed` and awards score bonus, `barks.js` triggers `streakDestroyed` voice line ("Helicopter down!"), full 3D surveillance RC helicopter model in `render.js` with spinning main & tail rotors, searchlight, explosion & debris on destruction, unit tests in `web/tests/helicopter.test.mjs`.
 - A4: Touch-friendly menus — **done** (Antigravity): enlarged hit targets (≥44-48px min-height) for faction cards, toggle checkboxes, buttons, and select dropdowns; verified with desktop and `MOBILE=1 node tools/shot.mjs`.
 - A5: Round-based clock hook — **done** (Antigravity): added `Mode.clock()` hook across modes and `EvictTheBlock`, wired into `hud.js` to display round/fuse clock over match time limit.
+- A6: Mobile Touch Ergonomics & Auto-Reload — **done** (Antigravity): Increased `.t-pause` to 48px; streamlined touch HUD by removing manual reload button; implemented 1.0s idle auto-reload in `sim.js`; 117 tests passing.
+- A7: Pause Menu Resume Button & Score Bar Leaderboard — **open** (Antigravity): Add prominent "RESUME" button to pause overlay; attach `data-t="board"` to `#score` so mobile players can check live match scoreboard with 0 extra screen buttons; add sound mute toggle in settings.
+- A8: Online Multiplayer Menu Integration — **open** (Antigravity / Claude): Add "PLAY ONLINE" lobby view to `index.html` and connect to authoritative WebSocket room server (`server/multiplayer.mjs`).
 
 **Opus (systems, bots, balance)**
 - O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
