@@ -488,6 +488,143 @@
     line-height: 1.3;
   }
 
+  /* Faction Voice Lines player */
+  .voice-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 760px) {
+    .voice-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1180px) {
+    .voice-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .voice-loading {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    padding: 24px;
+    text-align: center;
+  }
+  .voice-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .voice-card-head {
+    padding: 14px 16px;
+    display: grid;
+    gap: 6px;
+  }
+  .voice-card-name {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .voice-card-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .voice-card-tag {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .voice-card-actions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 14px;
+  }
+  .voice-btn {
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: var(--font-heading);
+    letter-spacing: 0.4px;
+    transition: border-color 0.15s, background 0.15s;
+    touch-action: manipulation;
+  }
+  .voice-btn:hover { border-color: var(--accent-cyan); }
+  .voice-btn.playing {
+    border-color: var(--accent-red);
+    background: rgba(239, 68, 68, 0.15);
+  }
+  .voice-btn.toggle {
+    flex: 1;
+  }
+  .voice-lines {
+    border-top: 1px solid var(--border-color);
+    max-height: 420px;
+    overflow-y: auto;
+    display: none;
+  }
+  .voice-card.open .voice-lines { display: block; }
+  .voice-event-label {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-cyan);
+    padding: 8px 16px 4px;
+  }
+  .voice-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 9px 16px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.35;
+    touch-action: manipulation;
+  }
+  .voice-line:hover { background: rgba(255,255,255,0.03); }
+  .voice-line.playing { background: rgba(239, 68, 68, 0.12); }
+  .voice-line .play-ico {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--accent-gold);
+  }
+  .voice-line.playing .play-ico {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+  }
+  .voice-line .line-dur {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
   /* Tactics & Anti-Cheese Rules */
   .rules-grid {
     display: grid;
@@ -1563,72 +1700,14 @@
   </section>
 
   <!-- Interactive Neighborhood Gossip Dial (Soundboard) -->
-  <section class="section" id="soundboard">
+  <section class="section" id="voice-lines">
     <div class="section-header">
-      <div class="section-tag">Audio Wiretap</div>
-      <h2 class="section-title">Neighborhood Gossip Dial</h2>
-      <p class="section-desc">Click any faction to test live dialogue lines synthesized directly in your browser:</p>
+      <div class="section-tag">Full Voice Cast &middot; Real In-Game Audio</div>
+      <h2 class="section-title">Faction Voice Lines</h2>
+      <p class="section-desc">Every faction, every line, in their actual game voice. Tap a faction to browse its lines, play any single line, or run the whole set back to back.</p>
     </div>
-    <div class="dial-grid">
-      <button class="dial-btn" data-text="I demand to speak to your manager right now! That lawn height is an unauthorized code violation!" data-faction="karens">
-        <div class="dial-name">The Karens <span>🔊</span></div>
-        <div class="dial-quote">"I demand to speak to your manager right now!"</div>
-      </button>
-
-      <button class="dial-btn" data-text="Skibidi subpoena, bro! You got zero rizz on this cul-de-sac." data-faction="frat">
-        <div class="dial-name">Frat House / Brain Rot <span>🔊</span></div>
-        <div class="dial-quote">"Skibidi subpoena, bro! You got zero rizz."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Architectural Digest or death, honey! That siding color is an absolute tragedy." data-faction="theGays">
-        <div class="dial-name">The Gays <span>🔊</span></div>
-        <div class="dial-quote">"Architectural Digest or death, honey!"</div>
-      </button>
-
-      <button class="dial-btn" data-text="More yard flags than square footage! That violation is totally fake news, folks!" data-faction="trumpers">
-        <div class="dial-name">The Trumpers <span>🔊</span></div>
-        <div class="dial-quote">"More yard flags than square footage!"</div>
-      </button>
-
-      <button class="dial-btn" data-text="You kids wouldn't last five minutes in 1974 without your central air conditioning." data-faction="boomers">
-        <div class="dial-name">The Boomers <span>🔊</span></div>
-        <div class="dial-quote">"You kids wouldn't last five minutes in 1974."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Section 4, Paragraph B is completely non-negotiable. Fine incoming!" data-faction="hoaBoard">
-        <div class="dial-name">The HOA Board <span>🔊</span></div>
-        <div class="dial-quote">"Section 4, Paragraph B is non-negotiable."</div>
-      </button>
-
-      <button class="dial-btn" data-text="He's friendly, he's friendly, I promise he doesn't bite, he just barks!" data-faction="dogWalkers">
-        <div class="dial-name">Dog Walkers <span>🔊</span></div>
-        <div class="dial-quote">"He's friendly, I promise he doesn't bite!"</div>
-      </button>
-
-      <button class="dial-btn" data-text="We are disrupting suburban landscaping with a decentralized autonomous mower." data-faction="vcBros">
-        <div class="dial-name">Crypto / VC Bros <span>🔊</span></div>
-        <div class="dial-quote">"Disrupting landscaping with a DAO mower."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Bake sale proceeds directly fund our emergency legal injunction against you." data-faction="ptaMoms">
-        <div class="dial-name">PTA Moms <span>🔊</span></div>
-        <div class="dial-quote">"Bake sale proceeds fund our legal injunction."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Your suburban lawn is just a bourgeois cemetery for dying conformist dreams." data-faction="gothTeens">
-        <div class="dial-name">Goth Teens <span>🔊</span></div>
-        <div class="dial-quote">"Your suburban lawn is a bourgeois cemetery."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Namaste off my freshly treated, chemically balanced bermudagrass." data-faction="wellness">
-        <div class="dial-name">Wellness & Yoga <span>🔊</span></div>
-        <div class="dial-quote">"Namaste off my freshly treated grass."</div>
-      </button>
-
-      <button class="dial-btn" data-text="Citizen, respect the flashing yellow light on the security golf cart!" data-faction="mallCops">
-        <div class="dial-name">Mall Cops & Security <span>🔊</span></div>
-        <div class="dial-quote">"Respect the flashing yellow light, citizen!"</div>
-      </button>
+    <div class="voice-grid" id="voiceGrid">
+      <div class="voice-loading">Loading voice lines&hellip;</div>
     </div>
   </section>
 
@@ -1741,26 +1820,169 @@
 </footer>
 
 <script>
-  // Browser Speech Synthesis for Neighborhood Gossip Dial
-  const buttons = document.querySelectorAll('.dial-btn');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const text = btn.getAttribute('data-text');
-      buttons.forEach(b => b.classList.remove('active'));
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 1.05;
-        u.pitch = 1.0;
-        btn.classList.add('active');
-        u.onend = () => btn.classList.remove('active');
-        u.onerror = () => btn.classList.remove('active');
-        window.speechSynthesis.speak(u);
-      } else {
-        alert(text);
-      }
-    });
-  });
+  // Faction Voice Lines player — real in-game VO from web/vo/
+  (function () {
+    const grid = document.getElementById('voiceGrid');
+    if (!grid) return;
+
+    const FACTION_META = {
+      fratHouse:          { name: 'Frat House',          tag: 'Zero fear, zero GPA.' },
+      brainRot:           { name: 'Brain Rot',           tag: 'iPad kids. Monthly slang patch.' },
+      valleyGirls:        { name: 'Valley Girls',        tag: 'Weaponized therapy-speak.' },
+      oldMoney:           { name: 'Old Money',           tag: 'Monocles, ascots, infinite wealth.' },
+      rednecks:           { name: 'Rednecks',            tag: 'Catalytic converters and HOA beef.' },
+      karens:             { name: 'Karens',              tag: 'The manager is on line two.' },
+      gymRats:            { name: 'Gym Rats',            tag: 'Chest day is every day.' },
+      theaterKids:        { name: 'Theater Kids',        tag: 'Reality-TV reunion villain.' },
+      cloutStreamers:     { name: 'Clout Streamers',     tag: 'Always live. Never asked.' },
+      vcBros:             { name: 'VC / Finance Bros',   tag: 'Fleece vest, rug-pulls.' },
+      hoaDads:            { name: 'HOA Dads',            tag: 'Measures grass with a ruler.' },
+      emoKids:            { name: 'Emo Kids',            tag: 'LOUD deadpan.' },
+      theGays:            { name: 'The Gays',            tag: 'Architectural Digest or death.' },
+      trumpers:           { name: 'The Trumpers',        tag: 'More yard flags than square footage.' },
+      wokeLibs:           { name: 'The Woke Libs',       tag: 'Problematic. All of it.' },
+      mlmHuns:            { name: 'MLM Huns',            tag: 'Hey girl! Quick question.' },
+      tradwives:          { name: 'The Tradwives',       tag: 'Raw milk, sourdough, did my own research.' },
+      pickleballRetirees: { name: 'Pickleball Retirees', tag: 'The noise is the point.' },
+    };
+    const EVENT_ORDER = ['spawn','roundStart','kill','headshot','doubleKill','tripleKill','killcam',
+      'death','streak5','victory','defeat','reload','spotted','lowHealth','objective','campingWarn',
+      'campingSnitch','selfKill','enemyStreak','taunt'];
+    const eventRank = (e) => {
+      if (e.startsWith('rivalry.')) return 100;
+      const i = EVENT_ORDER.indexOf(e);
+      return i === -1 ? 50 : i;
+    };
+
+    const audio = new Audio();
+    audio.preload = 'none';
+    let currentBtn = null;
+    let playAllQueue = [];
+    let playAllActive = false;
+
+    function stopPlayback() {
+      playAllActive = false;
+      playAllQueue = [];
+      audio.pause();
+      audio.removeAttribute('src');
+      if (currentBtn) { currentBtn.classList.remove('playing'); currentBtn = null; }
+      document.querySelectorAll('.voice-btn.playing').forEach(b => b.classList.remove('playing'));
+    }
+
+    function playFile(file, btn, onEnded) {
+      if (currentBtn === btn && !audio.paused) { stopPlayback(); return; }
+      stopPlayback();
+      currentBtn = btn;
+      btn.classList.add('playing');
+      audio.src = 'web/vo/' + file;
+      audio.play().catch(() => { if (currentBtn === btn) { btn.classList.remove('playing'); currentBtn = null; } });
+      audio.onended = () => {
+        if (currentBtn === btn) { btn.classList.remove('playing'); currentBtn = null; }
+        if (onEnded) onEnded();
+      };
+    }
+
+    function playAllForFaction(card, lines) {
+      const btn = card.querySelector('.voice-btn.play-all');
+      if (playAllActive) { stopPlayback(); return; }
+      stopPlayback();
+      playAllActive = true;
+      btn.classList.add('playing');
+      playAllQueue = lines.slice();
+      const step = () => {
+        if (!playAllActive || playAllQueue.length === 0) { stopPlayback(); return; }
+        const line = playAllQueue.shift();
+        const row = card.querySelector(`[data-file="${line.file}"]`);
+        if (row) row.classList.add('playing');
+        currentBtn = { classList: { add(){}, remove(c){ if (row) row.classList.remove(c); } } };
+        audio.src = 'web/vo/' + line.file;
+        audio.play().catch(step);
+        audio.onended = () => { if (row) row.classList.remove('playing'); setTimeout(step, 250); };
+      };
+      step();
+    }
+
+    fetch('web/vo/manifest.json')
+      .then(r => { if (!r.ok) throw new Error('manifest ' + r.status); return r.json(); })
+      .then(manifest => {
+        const byFaction = {};
+        for (const [id, line] of Object.entries(manifest.lines || {})) {
+          (byFaction[line.faction] = byFaction[line.faction] || []).push({ id, ...line });
+        }
+        const factions = Object.keys(byFaction)
+          .filter(f => FACTION_META[f])
+          .sort((a, b) => FACTION_META[a].name.localeCompare(FACTION_META[b].name));
+
+        grid.innerHTML = '';
+        let total = 0;
+        for (const fid of factions) {
+          const meta = FACTION_META[fid];
+          const lines = byFaction[fid].sort((a, b) =>
+            eventRank(a.event) - eventRank(b.event) || a.id.localeCompare(b.id));
+          total += lines.length;
+          const sample = lines[0];
+          const voiceLabel = (sample.voice || '').replace('avocado_v2:', '');
+
+          const card = document.createElement('div');
+          card.className = 'voice-card';
+          card.innerHTML = `
+            <div class="voice-card-head">
+              <div class="voice-card-name"><span>${meta.name}</span><span class="voice-card-count">${lines.length} lines</span></div>
+              <div class="voice-card-tag">${meta.tag}</div>
+            </div>
+            <div class="voice-card-actions">
+              <button class="voice-btn play-all">&#9654; Play all ${lines.length}</button>
+              <button class="voice-btn toggle">Lines &#9662;</button>
+            </div>
+            <div class="voice-lines"></div>`;
+          const listEl = card.querySelector('.voice-lines');
+
+          // Build line rows lazily on first expand to keep initial DOM light.
+          let built = false;
+          const buildLines = () => {
+            if (built) return; built = true;
+            let lastEvent = null;
+            for (const line of lines) {
+              if (line.event !== lastEvent) {
+                lastEvent = line.event;
+                const label = document.createElement('div');
+                label.className = 'voice-event-label';
+                label.textContent = line.event.startsWith('rivalry.')
+                  ? 'rivalry: ' + line.event.split('.')[1]
+                  : line.event;
+                listEl.appendChild(label);
+              }
+              const row = document.createElement('button');
+              row.className = 'voice-line';
+              row.setAttribute('data-file', line.file);
+              const dur = line.duration ? line.duration.toFixed(1) + 's' : '';
+              row.innerHTML = `<span class="play-ico">&#9654;</span><span></span><span class="line-dur">${dur}</span>`;
+              row.querySelector('span:nth-child(2)').textContent = line.text;
+              row.addEventListener('click', () => playFile(line.file, row));
+              listEl.appendChild(row);
+            }
+          };
+
+          card.querySelector('.toggle').addEventListener('click', (e) => {
+            buildLines();
+            card.classList.toggle('open');
+            e.currentTarget.innerHTML = card.classList.contains('open') ? 'Lines &#9652;' : 'Lines &#9662;';
+          });
+          card.querySelector('.play-all').addEventListener('click', () => {
+            buildLines();
+            card.classList.add('open');
+            playAllForFaction(card, lines);
+          });
+          grid.appendChild(card);
+        }
+        // Update section tag with the real count.
+        const tag = document.querySelector('#voice-lines .section-tag');
+        if (tag) tag.textContent = `Full Voice Cast \u00b7 ${total.toLocaleString()} Lines \u00b7 Real In-Game Audio`;
+      })
+      .catch(() => {
+        grid.innerHTML = '<div class="voice-loading">Voice lines are still uploading &mdash; check back soon.</div>';
+      });
+  })();
 
   // Interactive Style Compare Slider Logic
   const compareRange = document.getElementById('compareRange');
