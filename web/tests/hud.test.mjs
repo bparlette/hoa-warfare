@@ -330,3 +330,55 @@ test('hud: reset clears frame timings and bubbles', () => {
   assert.equal(hud._perfFrames.length, 0, 'Frame timings should be reset');
   assert.equal(hud.bubbles.length, 0, 'Bubbles should be reset');
 });
+
+test('hud: flashDamage rotates dmgIndicator toward relative hit angle', () => {
+  const { $ } = createMockDom();
+  const hud = new Hud({ $, factions: content.factions, weaponsData });
+  const ind = $('dmgIndicator');
+  const vig = $('vignette');
+
+  hud.flashDamage(1.57);
+  assert.ok(ind.style.transform.includes('rotate(1.57rad)'), 'dmgIndicator should rotate to match incoming angle');
+  assert.equal(vig.style.opacity, 0, 'Vignette begins fading out after flash');
+});
+
+test('hud: showEnd renders btnShareScore and handles copying score', async () => {
+  const { $ } = createMockDom();
+  const hud = new Hud({ $, factions: content.factions, weaponsData });
+  let copiedText = '';
+
+  const originalClipboard = globalThis.navigator?.clipboard;
+  Object.defineProperty(globalThis.navigator, 'clipboard', {
+    value: { writeText: async text => { copiedText = text; } },
+    configurable: true,
+  });
+
+  try {
+    hud.showEnd({
+      sim: { actors: [{ id: 'you', name: 'You', team: 0, faction: 'karens', kills: 14, deaths: 2, alive: true }], score: [30, 20], winner: 0 },
+      me: { id: 'you', name: 'You', team: 0, faction: 'karens', kills: 14, deaths: 2, alive: true },
+      library: { getLines: () => [{ text: 'Get off my lawn!' }] },
+      rng: () => 0,
+      onAgain: () => {},
+      onMenu: () => {},
+      voice: { say: () => {} },
+      isDemo: true,
+    });
+
+    const panelHtml = $('endPanel').innerHTML;
+    assert.ok(panelHtml.includes('btnShareScore'), 'Must render #btnShareScore button');
+    assert.ok(panelHtml.includes('📋 SHARE SCORE'), 'Must have Share Score label');
+
+    const btnShare = $('btnShareScore');
+    assert.ok(btnShare, 'Button must exist');
+    await btnShare.onclick();
+
+    assert.ok(copiedText.includes('14 citations'), 'Share text must include kill count');
+    assert.ok(copiedText.includes('Call of Karen: HOA Warfare'), 'Share text must include game title');
+    assert.ok(copiedText.includes('https://bparlette.github.io/hoa-warfare/web/?demo=1'), 'Share text must include demo link');
+    assert.equal(btnShare.textContent, '✓ COPIED!', 'Button label updates to confirmed status');
+  } finally {
+    Object.defineProperty(globalThis.navigator, 'clipboard', { value: originalClipboard, configurable: true });
+  }
+});
+

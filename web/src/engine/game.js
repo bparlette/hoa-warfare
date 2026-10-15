@@ -4,8 +4,14 @@
 import { ContentLibrary } from '../core/content.js';
 import { AudioLimiter } from '../core/audioLimiter.js';
 import { mulberry32 } from '../core/rng.js';
-import { Sim } from './sim.js';
+import { Sim, yawTo } from './sim.js';
 import { MODES } from './modes.js';
+
+export function haptic(pattern) {
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try { navigator.vibrate(pattern); } catch {}
+  }
+}
 import { BarkSystem } from './barks.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
@@ -379,6 +385,7 @@ class Game {
             else if (wdef?.class === 'lmg') sfx.lmg();
             else if (wdef?.class === 'pistol') sfx.pistol();
             else sfx.shot(1);
+            haptic(15);
           };
           if (a === me) {
             playShot();
@@ -387,17 +394,32 @@ class Game {
           if (a === me && e.hitId && sim.byId.get(e.hitId).team !== me.team) {
             this.hud.hitmark(e.head ? '★' : '✕', !!e.head);
             sfx.hitmarker();
+            haptic(e.head ? [25, 15, 35] : 25);
             if (e.head) sfx.headshot();
           }
           break;
         }
         case 'hurt':
-          if (e.id === me.id) { this.hud.flashVignette(); sfx.hurt(); }
+          if (e.id === me.id) {
+            const attacker = e.attackerId ? sim.byId.get(e.attackerId) : null;
+            if (attacker && attacker !== me) {
+              const relAngle = yawTo(attacker.pos.x - me.pos.x, attacker.pos.z - me.pos.z) - me.yaw;
+              this.hud.flashDamage(relAngle);
+            } else {
+              this.hud.flashVignette();
+            }
+            haptic(45);
+            sfx.hurt();
+          }
           break;
         case 'kill': {
           if (live) renderer.spawnRagdoll(e.victimId, e);
           else renderer.splat(e.victimPos, '#ff004d', 1.1);
-          if (e.killerId === me.id) { sfx.kill(); this.showBanner(e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : '+1 EVICTION'); }
+          if (e.killerId === me.id) {
+            sfx.kill();
+            haptic([40, 20, 60]);
+            this.showBanner(e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : '+1 EVICTION');
+          }
           break;
         }
         case 'explosion': if (live) renderer.explosion(e.pos); sfx.boom(); break;

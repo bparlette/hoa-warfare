@@ -274,6 +274,18 @@ export class Hud {
     v.style.opacity = 0;
   }
 
+  flashDamage(relAngle = 0) {
+    this.flashVignette();
+    const ind = this.$('dmgIndicator');
+    if (!ind || !ind.style) return;
+    ind.style.transition = 'none';
+    ind.style.transform = `translate(-50%, -50%) rotate(${relAngle}rad)`;
+    ind.style.opacity = '1';
+    void ind.offsetWidth;
+    ind.style.transition = 'opacity 0.45s cubic-bezier(0.1, 0.9, 0.2, 1)';
+    ind.style.opacity = '0';
+  }
+
   addFeed(k, sim, me) {
     const $ = this.$;
     const feed = $('feed');
@@ -445,12 +457,38 @@ export class Hud {
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px">
         <button id="again" style="margin-top:0">RUN IT BACK</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
+        <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
         ${!isDemoMode ? '<a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
     $('end').classList.remove('hidden');
     $('again').onclick = () => onAgain();
     $('endMenu').onclick = () => onMenu();
+    const btnShare = $('btnShareScore');
+    if (btnShare) {
+      btnShare.onclick = async () => {
+        const factionName = this.factions[me?.faction]?.name || 'a Karen';
+        const kills = me?.kills || 0;
+        const text = `I just scored ${kills} citations defending the cul-de-sac as ${factionName} in Call of Karen: HOA Warfare! 🏡💥 Can you beat my score? Play free: https://bparlette.github.io/hoa-warfare/web/?demo=1`;
+        if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            btnShare.textContent = '✓ COPIED!';
+            setTimeout(() => { if (btnShare) btnShare.textContent = '📋 SHARE SCORE'; }, 2200);
+            return;
+          } catch {}
+        }
+        if (typeof navigator !== 'undefined' && navigator.share) {
+          try {
+            await navigator.share({ title: 'Call of Karen: HOA Warfare', text, url: 'https://bparlette.github.io/hoa-warfare/web/?demo=1' });
+            return;
+          } catch {}
+        }
+        if (typeof window !== 'undefined' && window.prompt) {
+          window.prompt('Copy your score to share:', text);
+        }
+      };
+    }
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
   }
 

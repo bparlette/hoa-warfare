@@ -7,8 +7,21 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111d35">
 <title>Call of Karen: HOA Warfare (web slice)</title>
+<meta name="description" content="Suburban FPS where HOA Dads, Karens, VC Bros, and Woke Libs battle over the cul-de-sac. Play free in your browser on mobile or PC!">
+
+<!-- Social & Open Graph Previews -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Call of Karen: HOA Warfare — Free Web Demo">
+<meta property="og:description" content="Suburban FPS where HOA Dads, Karens, VC Bros, and Woke Libs battle over the cul-de-sac. Play free in your browser on mobile or PC!">
+<meta property="og:image" content="https://bparlette.github.io/hoa-warfare/web/assets/cover_key_art.jpg">
+<meta property="og:url" content="https://bparlette.github.io/hoa-warfare/web/?demo=1">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Call of Karen: HOA Warfare — Free Web Demo">
+<meta name="twitter:description" content="Suburban FPS where HOA Dads, Karens, VC Bros, and Woke Libs battle over the cul-de-sac. Play free in your browser on mobile or PC!">
+<meta name="twitter:image" content="https://bparlette.github.io/hoa-warfare/web/assets/cover_key_art.jpg">
+
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏡</text></svg>">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <canvas id="view"></canvas>
@@ -39,6 +52,7 @@
   <div id="modes"></div>
   <div id="bubbles"></div>
   <div id="vignette"></div>
+  <div id="dmgIndicator"></div>
   <div id="killcam" class="hidden"><div class="tag">KILLCAM</div><div id="kcWho"></div><div id="kcLine"></div></div>
   <div id="board" class="hidden"></div>
 </div>
@@ -140,6 +154,6 @@
 </div>
 <div id="rotate">Turn your phone sideways to defend the block.</div>
 
-<script type="module" src="src/engine/game.js?v=2"></script>
+<script type="module" src="src/engine/game.js?v=3"></script>
 </body>
 </html>
