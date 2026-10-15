@@ -66,6 +66,9 @@ h1 small { display: block; font-size: 26px; color: #fff1e8; text-shadow: 3px 3px
 #factions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .fc { border: 3px solid #5f574f; padding: 12px; cursor: pointer; background: #111d35; min-height: 72px; touch-action: manipulation; transition: border-color .15s, box-shadow .15s; }
 .fc:hover { border-color: #c2c3c7; } .fc.sel { border-color: #ffec27; box-shadow: 4px 4px 0 #ffec27; }
+.fc.locked { opacity: 0.8; border-color: #7e2553; background: #161224; }
+.fc.locked:hover { border-color: #ffec27; opacity: 1; box-shadow: 0 0 10px rgba(255, 236, 39, 0.3); }
+.demo-lock { display: inline-block; background: #ffec27; color: #111; font-weight: bold; font-size: 10px; letter-spacing: 0.8px; padding: 2px 6px; border-radius: 2px; margin-top: 6px; box-shadow: 1px 1px 0 #000; }
 .fc .sw { display: flex; gap: 4px; margin-bottom: 6px; } .fc .sw i { width: 20px; height: 20px; border: 2px solid #000; display: block; border-radius: 2px; }
 .fc b { display: block; font-size: 15px; } .fc span { font-size: 12px; color: #c2c3c7; display: block; margin-top: 2px; }
 .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 14px; }
@@ -379,7 +382,7 @@ html, body { touch-action: none; -webkit-user-select: none; user-select: none; -
 .panel, .panel * { touch-action: pan-y; }
 #touch { position: fixed; inset: 0; z-index: 3; display: none; }
 body.touch-mode #touch { display: block; }
-body:has(#menu:not(.hidden)) #touch, body:has(#end:not(.hidden)) #touch, body:has(#pause:not(.hidden)) #touch { display: none; }
+body:has(#menu:not(.hidden)) #touch, body:has(#end:not(.hidden)) #touch, body:has(#pause:not(.hidden)) #touch, body:has(#demoModal:not(.hidden)) #touch { display: none; }
 body.touch-mode #crosshair { font-size: 22px; }
 .t-stick { position: fixed; display: none; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 3px solid #fff1e899; border-radius: 50%; background: #1d2b5344; pointer-events: none; }
 .t-stick.sprint { border-color: #ffec27; }
@@ -410,3 +413,98 @@ body.touch-mode #subs { bottom: 54px; left: 50%; transform: translateX(-50%); wi
   h1 { font-size: 34px; } h1 small { font-size: 18px; } .panel { padding: 12px 16px; } #factions { grid-template-columns: repeat(4, 1fr); gap: 6px; } .fc span { display: none; }
   #banner { font-size: 22px; } #kcLine { font-size: 24px; }
 }
+
+/* ---------------------------------------------------------------- demo modal & steam upsell */
+#demoModal {
+  background: rgba(17, 29, 53, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+}
+.demo-panel {
+  max-width: 520px;
+  text-align: center;
+  border: 4px solid #ffec27;
+  box-shadow: 0 0 35px rgba(255, 236, 39, 0.35), 8px 8px 0 #000;
+  padding: 24px 28px;
+}
+#demoModalTitle {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 28px;
+  color: #ffec27;
+  letter-spacing: 1.5px;
+  margin: 0 0 8px;
+  text-shadow: 2px 2px 0 #000;
+}
+.demo-modal-sub {
+  font-size: 13px;
+  color: #ffa300;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.demo-modal-body {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff1e8;
+  margin: 16px 0 22px;
+}
+.demo-modal-body strong, .demo-modal-body b {
+  color: #ffec27;
+}
+.demo-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+#closeDemoModal {
+  margin-top: 0;
+  background: #111d35;
+  border-color: #5f574f;
+  color: #c2c3c7;
+}
+#closeDemoModal:hover {
+  background: #ff004d;
+  border-color: #fff1e8;
+  color: #fff;
+}
+.demo-end-card {
+  background: linear-gradient(135deg, rgba(29, 43, 83, 0.95), rgba(42, 71, 94, 0.95));
+  border: 3px solid #ffec27;
+  box-shadow: 0 0 25px rgba(255, 236, 39, 0.3), 6px 6px 0 #000;
+  padding: 18px 24px;
+  margin: 14px 0;
+  text-align: center;
+  border-radius: 4px;
+}
+.demo-end-card h3, .demo-end-title {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 24px;
+  color: #ffec27;
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+  text-shadow: 2px 2px 0 #000;
+}
+.demo-end-card p, .demo-end-sub {
+  font-size: 15px;
+  color: #fff1e8;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+.btn-wishlist-glow {
+  animation: wishlist-glow 1.8s ease-in-out infinite alternate;
+}
+@keyframes wishlist-glow {
+  0% {
+    box-shadow: 0 0 8px rgba(102, 192, 244, 0.6), 4px 4px 0 #000;
+    border-color: #66c0f4;
+  }
+  100% {
+    box-shadow: 0 0 24px rgba(255, 236, 39, 0.9), 4px 4px 0 #000;
+    border-color: #ffec27;
+    color: #ffec27;
+  }
+}
+

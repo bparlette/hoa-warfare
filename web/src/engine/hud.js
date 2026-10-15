@@ -422,15 +422,23 @@ export class Hud {
       `<tr class="t${a.team}${a === me ? ' me' : ''}"><td>${a.name}</td><td>${this.factions[a.faction].name}</td><td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</table>`;
   }
 
-  showEnd({ sim, me, library, rng, onAgain, onMenu, voice }) {
+  showEnd({ sim, me, library, rng, onAgain, onMenu, voice, isDemo }) {
     const $ = this.$;
-    document.exitPointerLock?.();
+    if (typeof document !== 'undefined') document.exitPointerLock?.();
     const sorted = [...sim.actors].sort((a, b) => b.kills - a.kills || a.deaths - b.deaths);
     const mvp = sorted[0], worst = sorted[sorted.length - 1];
     const mvpLines = library.getLines(mvp.faction, 'rampage');
     const mvpLine = mvpLines.length ? mvpLines[Math.floor(rng() * mvpLines.length)].text : '';
     const won = sim.winner === me.team, draw = sim.winner === null;
+    const isDemoMode = isDemo ?? (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+    const demoCard = isDemoMode ? `
+      <div class="demo-end-card">
+        <h3>THANKS FOR PLAYING THE CALL OF KAREN WEB DEMO!</h3>
+        <p>Wishlist on Steam to unlock all 20 factions, more maps, and online multiplayer!</p>
+        <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
+      </div>` : '';
     $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[0]} - ${sim.score[1]}</small></h1>
+      ${demoCard}
       <div class="podium">
         <div class="mvp"><b>MVP: ${mvp.name}</b><br>${this.factions[mvp.faction].name} · ${mvp.kills}-${mvp.deaths}<q>${mvpLine}</q></div>
         <div><b>Bottom fragger: ${worst.name}</b><br>${this.factions[worst.faction].name}<q>${worst.name} went ${worst.kills}-and-${worst.deaths}. Participation trophy's in the mail.</q></div>
@@ -439,7 +447,7 @@ export class Hud {
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px">
         <button id="again" style="margin-top:0">RUN IT BACK</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
-        <a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>
+        ${!isDemoMode ? '<a href="https://store.steampowered.com/app/hoa-warfare" target="_blank" rel="noopener" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
     $('end').classList.remove('hidden');

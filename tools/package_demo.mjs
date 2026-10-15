@@ -3,7 +3,7 @@
 // Bundles the standalone web slice into dist/demo/ and creates dist/hoa-warfare-web-demo.zip.
 // Usage: node tools/package_demo.mjs
 
-import { cpSync, mkdirSync, rmSync, existsSync, statSync } from 'node:fs';
+import { cpSync, mkdirSync, rmSync, existsSync, statSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -22,6 +22,13 @@ mkdirSync(DEMO, { recursive: true });
 // 2. Copy web files (index.html, style.css, src/, vo/, assets/)
 console.log('  → Copying web client files...');
 cpSync(join(ROOT, 'web'), DEMO, { recursive: true });
+
+// 2b. Inject demo gating flag into dist/demo/index.html
+console.log('  → Injecting demo gating flag into dist/demo/index.html...');
+const demoIndexHtml = join(DEMO, 'index.html');
+let html = readFileSync(demoIndexHtml, 'utf8');
+html = html.replace('<head>', '<head>\n<script>window.__HOA_DEMO__ = true;</script>');
+writeFileSync(demoIndexHtml, html, 'utf8');
 
 // 3. Ensure data/ (hoa_content.json and weapons.json) is copied to demo root
 console.log('  → Copying data/ content & weapons definitions...');

@@ -18,16 +18,25 @@ import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
 import { NetClient } from './net.js';
 
-export { STYLES, NetClient };
+export const DEMO_FACTIONS = ['karens', 'hoaDads', 'vcBros', 'wokeLibs', 'rednecks', 'fratHouse'];
 
 const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
 
-const $ = id => document.getElementById(id);
-const params = new URLSearchParams(location.search);
+const $ = id => typeof document !== 'undefined' ? document.getElementById(id) : null;
+const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
+export const isDemo = params.get('demo') === '1' || (typeof window !== 'undefined' && window.__HOA_DEMO__ === true);
 const FIXED = 1 / 60;
 const KILLCAM_SEC = 3.2;
 
 async function loadJson(path) {
+  if (typeof window === 'undefined') {
+    try {
+      const { readFileSync } = await import('node:fs');
+      const { fileURLToPath } = await import('node:url');
+      const url = new URL('../../' + path, import.meta.url);
+      return JSON.parse(readFileSync(fileURLToPath(url), 'utf8'));
+    } catch {}
+  }
   try {
     const res = await fetch(path);
     if (res.ok) return await res.json();
@@ -44,8 +53,9 @@ const [content, weaponsData] = await Promise.all([
 const factions = content.factions;
 const shippingFactions = Object.keys(factions).filter(id => !factions[id].status || factions[id].status !== 'draft');
 
+const initialFaction = params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens';
 const state = {
-  faction: params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens',
+  faction: isDemo && !DEMO_FACTIONS.includes(initialFaction) ? 'karens' : initialFaction,
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
   legalSafe: params.get('legal') !== '0',
   retro: params.get('retro') === '1',
@@ -57,14 +67,15 @@ const state = {
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
 };
 
-const renderer = new Renderer($('view'), { map: buildCulDeSac(), factions });
-renderer.setRetro(state.retro);
+const viewCanvas = typeof document !== 'undefined' ? $('view') : null;
+const renderer = viewCanvas ? new Renderer(viewCanvas, { map: buildCulDeSac(), factions }) : null;
+if (renderer) renderer.setRetro(state.retro);
 const voice = new Voice({ factions });
 const sfx = new Sfx();
 let game = null;
 
-const gunbarrel = $('gunbarrel') ? new GunbarrelIntro($('gunbarrel'), sfx) : null;
-if (gunbarrel) {
+const gunbarrel = typeof document !== 'undefined' && $('gunbarrel') ? new GunbarrelIntro($('gunbarrel'), sfx) : null;
+if (gunbarrel && typeof window !== 'undefined') {
   $('gunbarrel').addEventListener('click', () => gunbarrel.stop());
   window.addEventListener('keydown', e => {
     if (gunbarrel.active && (e.code === 'Space' || e.code === 'Escape' || e.code === 'Enter')) {
@@ -73,20 +84,52 @@ if (gunbarrel) {
   });
 }
 
-applyStyle(state.style, state, renderer, $);
+if (renderer && typeof document !== 'undefined' && $('optStyle')) {
+  applyStyle(state.style, state, renderer, $);
+}
+
+// ------------------------------------------------------------------ demo modal
+
+export function showDemoModal(factionName, factionTagline = '') {
+  const modal = $('demoModal');
+  if (!modal) return;
+  const title = $('demoModalTitle');
+  if (title) title.textContent = '🔒 LOCKED IN FREE WEB DEMO';
+  const sub = $('demoModalSub');
+  if (sub) {
+    sub.textContent = factionTagline ? `"${factionTagline}"` : '';
+    sub.style.display = factionTagline ? 'block' : 'none';
+  }
+  const body = $('demoModalBody');
+  if (body) {
+    body.innerHTML = `Unlock <strong>${factionName}</strong> and all 20 fully voiced factions, custom weapons, killstreaks, and online multiplayer in the full $4.99 release on Steam!`;
+  }
+  modal.classList.remove('hidden');
+}
+
+export function hideDemoModal() {
+  const modal = $('demoModal');
+  if (modal) modal.classList.add('hidden');
+}
 
 // ------------------------------------------------------------------ menu
 
 let menuPage = 0;
 const FACTIONS_PER_PAGE = 8;
 
-function buildMenu() {
+export function buildMenu() {
   const box = $('factions');
   const pag = $('factionPagination');
   if (!box) return;
 
-  const totalPages = Math.ceil(shippingFactions.length / FACTIONS_PER_PAGE);
-  const curIdx = shippingFactions.indexOf(state.faction);
+  const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+  const allFactionIds = Object.keys(factions);
+  const displayFactions = demoActive
+    ? [...DEMO_FACTIONS, ...allFactionIds.filter(id => !DEMO_FACTIONS.includes(id))]
+    : shippingFactions;
+
+  const totalPages = Math.ceil(displayFactions.length / FACTIONS_PER_PAGE);
+  const curIdx = displayFactions.indexOf(state.faction);
   if (curIdx >= 0) {
     menuPage = Math.floor(curIdx / FACTIONS_PER_PAGE);
   }
@@ -95,21 +138,29 @@ function buildMenu() {
   function renderPage() {
     box.innerHTML = '';
     const startIdx = menuPage * FACTIONS_PER_PAGE;
-    const pageFactions = shippingFactions.slice(startIdx, startIdx + FACTIONS_PER_PAGE);
+    const pageFactions = displayFactions.slice(startIdx, startIdx + FACTIONS_PER_PAGE);
     for (const id of pageFactions) {
       const f = factions[id];
       const el = document.createElement('div');
-      el.className = 'fc' + (id === state.faction ? ' sel' : '');
-      el.innerHTML = `<div class="sw"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.pants}"></i><i style="background:${f.look.accent}"></i></div><b>${f.name}</b><span>${f.tagline}</span>`;
-      el.onclick = () => { state.faction = id; buildMenu(); };
+      const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
+
+      if (isLocked) {
+        el.className = 'fc locked';
+        el.innerHTML = `<div class="sw"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.pants}"></i><i style="background:${f.look.accent}"></i></div><b>${f.name}</b><span>${f.tagline}</span><span class="demo-lock">🔒 STEAM ONLY</span>`;
+        el.onclick = () => showDemoModal(f.name, f.tagline);
+      } else {
+        el.className = 'fc' + (id === state.faction ? ' sel' : '');
+        el.innerHTML = `<div class="sw"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.pants}"></i><i style="background:${f.look.accent}"></i></div><b>${f.name}</b><span>${f.tagline}</span>`;
+        el.onclick = () => { state.faction = id; buildMenu(); };
+      }
       box.appendChild(el);
     }
     if (pag) {
       const start = startIdx + 1;
-      const end = Math.min(shippingFactions.length, (menuPage + 1) * FACTIONS_PER_PAGE);
+      const end = Math.min(displayFactions.length, (menuPage + 1) * FACTIONS_PER_PAGE);
       pag.innerHTML = `
         <button type="button" class="page-btn" id="fcPrev" ${menuPage === 0 ? 'disabled' : ''} aria-label="Previous factions">◀ Prev</button>
-        <span>${start}–${end} of ${shippingFactions.length}</span>
+        <span>${start}–${end} of ${displayFactions.length}</span>
         <button type="button" class="page-btn" id="fcNext" ${menuPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next factions">Next ▶</button>
       `;
       const prevBtn = $('fcPrev');
@@ -121,23 +172,29 @@ function buildMenu() {
 
   renderPage();
 
-  $('optSteam').checked = state.script === 'steam';
-  $('optLegal').checked = state.legalSafe;
-  $('optRetro').checked = state.retro;
+  if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
+  if ($('optLegal')) $('optLegal').checked = state.legalSafe;
+  if ($('optRetro')) $('optRetro').checked = state.retro;
   if ($('optStyle')) $('optStyle').value = state.style;
   if ($('opt007')) $('opt007').checked = state.style === '007';
-  $('optVoice').checked = state.voice;
-  $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
+  if ($('optVoice')) $('optVoice').checked = state.voice;
+  if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
-$('optMode').onchange = e => { state.mode = e.target.value; };
+if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; };
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
-$('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
-$('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
-$('optRetro').onchange = e => { state.retro = e.target.checked; renderer.setRetro(state.retro); };
+if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
+if ($('optLegal')) $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
+if ($('optRetro')) $('optRetro').onchange = e => { state.retro = e.target.checked; renderer?.setRetro(state.retro); };
 if ($('opt007')) $('opt007').onchange = e => { applyStyle(e.target.checked ? '007' : 'modern', state, renderer, $); };
-$('optVoice').onchange = e => { state.voice = e.target.checked; };
-$('deploy').onclick = () => startGame();
-$('toMenu').onclick = () => toMenu();
+if ($('optVoice')) $('optVoice').onchange = e => { state.voice = e.target.checked; };
+if ($('deploy')) $('deploy').onclick = () => startGame();
+if ($('toMenu')) $('toMenu').onclick = () => toMenu();
+if ($('closeDemoModal')) $('closeDemoModal').onclick = () => hideDemoModal();
+if ($('demoModal')) {
+  $('demoModal').addEventListener('click', e => {
+    if (e.target === $('demoModal')) hideDemoModal();
+  });
+}
 
 function toMenu() {
   if (game) game.dispose();
@@ -162,7 +219,11 @@ class Game {
     voice.enabled = state.voice;
 
     const names = [...content.playerNames].sort(() => this.rng() - 0.5);
-    const pickFaction = () => shippingFactions[Math.floor(this.rng() * shippingFactions.length)];
+    const pickFaction = () => {
+      const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+      const pool = demoActive ? DEMO_FACTIONS : shippingFactions;
+      return pool[Math.floor(this.rng() * pool.length)];
+    };
     this.me = this.sim.addActor({ id: 'you', name: 'You', team: 0, faction: state.faction, isBot: state.spectate });
     for (let i = 0; i < 11; i++) {
       const team = i < 5 ? 0 : 1;
@@ -358,6 +419,7 @@ class Game {
           setTimeout(() => this.hud.showEnd({
             sim, me, library: this.library, rng: this.rng,
             onAgain: () => startGame(), onMenu: () => toMenu(), voice,
+            isDemo,
           }), 2500);
           break;
       }
@@ -642,68 +704,66 @@ class Game {
   }
 
   showEnd() {
-    document.exitPointerLock?.();
-    const sim = this.sim, me = this.me;
-    const sorted = [...sim.actors].sort((a, b) => b.kills - a.kills || a.deaths - b.deaths);
-    const mvp = sorted[0], worst = sorted[sorted.length - 1];
-    const mvpLines = this.library.getLines(mvp.faction, 'rampage');
-    const mvpLine = mvpLines.length ? mvpLines[Math.floor(this.rng() * mvpLines.length)].text : '';
-    const won = sim.winner === me.team, draw = sim.winner === null;
-    $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[0]} - ${sim.score[1]}</small></h1>
-      <div class="podium">
-        <div class="mvp"><b>MVP: ${mvp.name}</b><br>${factions[mvp.faction].name} · ${mvp.kills}-${mvp.deaths}<q>${mvpLine}</q></div>
-        <div><b>Bottom fragger: ${worst.name}</b><br>${factions[worst.faction].name}<q>${worst.name} went ${worst.kills}-and-${worst.deaths}. Participation trophy's in the mail.</q></div>
-      </div>
-      <div id="endBoard" style="margin-top:12px"></div>
-      <button id="again">RUN IT BACK</button> <button id="endMenu">MENU</button>`;
-    this.renderBoard($('endBoard'));
-    $('end').classList.remove('hidden');
-    $('again').onclick = () => startGame();
-    $('endMenu').onclick = () => toMenu();
-    voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
+    this.hud.showEnd({
+      sim: this.sim, me: this.me, library: this.library, rng: this.rng,
+      onAgain: () => startGame(), onMenu: () => toMenu(), voice,
+      isDemo,
+    });
   }
 }
 
 // ------------------------------------------------------------------ input
 
-const canvas = $('view');
-const input = new Controls({ canvas, touchRoot: $('touch') });
-const lock = () => input.lock();
-canvas.addEventListener('click', () => { if (game && !game.sim.over && !state.spectate) lock(); sfx.unlock(); });
-$('pause').addEventListener('click', e => { if (e.target.id !== 'toMenu') lock(); });
-document.addEventListener('keydown', e => {
-  if (e.code === 'KeyO' || e.code === 'Digit0') cycleStyle(state, renderer, $, name => { if (game) game.showBanner(name); });
-  if (!game) return;
-  if (e.code === 'KeyP') { state.retro = !state.retro; renderer.setRetro(state.retro); }
-  if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
-  if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
-  if (e.code === 'BracketRight') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
-});
+const canvas = typeof document !== 'undefined' ? $('view') : null;
+const input = canvas ? new Controls({ canvas, touchRoot: $('touch') }) : null;
+const lock = () => input?.lock();
+if (canvas) {
+  canvas.addEventListener('click', () => { if (game && !game.sim.over && !state.spectate) lock(); sfx.unlock(); });
+}
+if ($('pause')) {
+  $('pause').addEventListener('click', e => { if (e.target.id !== 'toMenu') lock(); });
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideDemoModal();
+    if (e.code === 'KeyO' || e.code === 'Digit0') cycleStyle(state, renderer, $, name => { if (game) game.showBanner(name); });
+    if (!game) return;
+    if (e.code === 'KeyP') { state.retro = !state.retro; renderer?.setRetro(state.retro); }
+    if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
+    if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
+    if (e.code === 'BracketRight') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
+  });
+}
 
 // Controller navigation outside gameplay: menu (A deploy, LB/RB or D-pad faction), pause (START resume,
 // VIEW quit), end screen (A run it back, B menu). In-game START pauses.
-input.onPadPress = pr => {
-  sfx.unlock();
-  const menuOpen = !$('menu').classList.contains('hidden');
-  const endOpen = !$('end').classList.contains('hidden');
-  if (menuOpen) {
-    const step = (pr.RB || pr.RIGHT ? 1 : 0) - (pr.LB || pr.LEFT ? 1 : 0);
-    if (step) {
-      const i = shippingFactions.indexOf(state.faction);
-      state.faction = shippingFactions[(i + step + shippingFactions.length) % shippingFactions.length];
-      buildMenu();
+if (input) {
+  input.onPadPress = pr => {
+    sfx.unlock();
+    const menuOpen = $('menu') && !$('menu').classList.contains('hidden');
+    const endOpen = $('end') && !$('end').classList.contains('hidden');
+    if (menuOpen) {
+      const step = (pr.RB || pr.RIGHT ? 1 : 0) - (pr.LB || pr.LEFT ? 1 : 0);
+      if (step) {
+        const pool = isDemo ? DEMO_FACTIONS : shippingFactions;
+        const i = pool.indexOf(state.faction);
+        state.faction = pool[(i + step + pool.length) % pool.length];
+        buildMenu();
+      }
+      if (pr.A || pr.START) startGame();
+    } else if (endOpen) {
+      if (pr.A) startGame();
+      if (pr.B) toMenu();
+    } else if (game) {
+      if (pr.START) input.userPaused = !input.userPaused;
+      else if (input.userPaused && pr.VIEW) toMenu();
+      else if (input.userPaused && pr.A) input.userPaused = false;
     }
-    if (pr.A || pr.START) startGame();
-  } else if (endOpen) {
-    if (pr.A) startGame();
-    if (pr.B) toMenu();
-  } else if (game) {
-    if (pr.START) input.userPaused = !input.userPaused;
-    else if (input.userPaused && pr.VIEW) toMenu();
-    else if (input.userPaused && pr.A) input.userPaused = false;
-  }
-};
-window.addEventListener('resize', () => renderer.resize());
+  };
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', () => renderer?.resize());
+}
 
 function setupShortRecorder() {
   const header = document.createElement('div');
@@ -797,8 +857,12 @@ function showLineup() {
   loop();
 }
 
-buildMenu();
-if (params.get('lineup') === '1') showLineup();
-else if (params.get('autostart') === '1' || state.spectate) startGame();
-requestAnimationFrame(frame);
-window.__hoa = { get game() { return game; }, renderer, state, input };
+if (typeof window !== 'undefined' && typeof document !== 'undefined' && $('view')) {
+  buildMenu();
+  if (params.get('lineup') === '1') showLineup();
+  else if (params.get('autostart') === '1' || state.spectate) startGame();
+  requestAnimationFrame(frame);
+  window.__hoa = { get game() { return game; }, renderer, state, input };
+}
+
+export { STYLES, NetClient, Game };

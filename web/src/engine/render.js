@@ -39,19 +39,41 @@ void main() {
 }`;
 const PASS_VERT = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
 
+export const MUZZLE_OFFSETS = {
+  blaster: { x: 0, y: 0.02, z: -0.39 },
+  ar: { x: 0, y: 0.02, z: -0.39 },
+  smg: { x: 0, y: 0.01, z: -0.27 },
+  shotgun: { x: 0, y: 0.025, z: -0.41 },
+  sniper: { x: 0, y: 0.02, z: -0.65 },
+  lmg: { x: 0, y: 0.02, z: -0.57 },
+  pistol: { x: 0, y: 0.042, z: -0.18 },
+};
+
 export class Renderer {
   constructor(canvas, { map, factions }) {
     this.canvas = canvas;
     this.map = map;
     this.factions = factions;
     // preserveDrawingBuffer is slow on mobile GPUs; only the Shorts recorder (?short=1) needs it
-    const capture = /[?&](short|capture)=1/.test(location.search);
-    this.gl = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
+    const capture = typeof location !== 'undefined' && /[?&](short|capture)=1/.test(location?.search || '');
     this.quality = detectQuality();
-    this.gl.info.autoReset = false; // count draws for the whole frame (scene + post pass); reset in render()
-    this.gl.outputColorSpace = THREE.LinearSRGBColorSpace;
-    this.gl.shadowMap.enabled = true;
-    this.gl.shadowMap.type = THREE.BasicShadowMap;
+    try {
+      this.gl = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
+      this.gl.info.autoReset = false; // count draws for the whole frame (scene + post pass); reset in render()
+      this.gl.outputColorSpace = THREE.LinearSRGBColorSpace;
+      this.gl.shadowMap.enabled = true;
+      this.gl.shadowMap.type = THREE.BasicShadowMap;
+    } catch {
+      this.gl = {
+        info: { autoReset: false, reset() {}, render: { calls: 0, triangles: 0 } },
+        shadowMap: { enabled: false, type: 0 },
+        setPixelRatio() {},
+        setSize() {},
+        setRenderTarget() {},
+        render() {},
+        clear() {},
+      };
+    }
     this.retro = true;
     this.lowHeight = 216;
 
@@ -92,14 +114,17 @@ export class Renderer {
   }
 
   resize() {
-    const w = this.canvas.clientWidth || window.innerWidth, h = this.canvas.clientHeight || window.innerHeight;
-    this.gl.setPixelRatio(this.retro ? 1 : Math.min(window.devicePixelRatio, this.quality.maxRatio) * this.quality.scale);
+    const w = this.canvas?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 800),
+          h = this.canvas?.clientHeight || (typeof window !== 'undefined' ? window.innerHeight : 600);
+    this.gl.setPixelRatio(this.retro ? 1 : Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, this.quality.maxRatio) * this.quality.scale);
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     const lh = this.lowHeight, lw = Math.round(lh * w / h);
     this.rt.setSize(lw, lh);
-    this.post.material.uniforms.lowRes.value.set(lw, lh);
+    if (this.post?.material?.uniforms?.lowRes) {
+      this.post.material.uniforms.lowRes.value.set(lw, lh);
+    }
   }
 
   setRetro(on) { this.retro = on; this.resize(); }
@@ -128,6 +153,7 @@ export class Renderer {
     sc.left = -55; sc.right = 55; sc.top = 55; sc.bottom = -55; sc.near = 1; sc.far = 140;
     sun.shadow.bias = -0.0015;
     this.scene.add(sun);
+    this.sun = sun;
   }
 
   buildWorld() {
@@ -265,82 +291,290 @@ export class Renderer {
     const vm = new THREE.Group();
     const lam = (c, e) => new THREE.MeshLambertMaterial({ color: c, emissive: e || '#000', emissiveIntensity: e ? 0.4 : 0 });
     this.vmMeshes = {};
+    this.muzzleOffsets = MUZZLE_OFFSETS;
 
     // 1. Blaster / AR (The Allowance)
+    // Blue/yellow corporate tactical receiver, oversized orange flash-hider tip, drum magazine.
     const blaster = new THREE.Group();
-    const bBody = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.11, 0.5), lam('#29adff'));
-    const bTop = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.3), lam('#ffec27'));
+    blaster.name = 'blaster';
+    const bBody = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.11, 0.44), lam('#29adff'));
+    bBody.position.set(0, 0, 0.04);
+    const bTop = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.045, 0.28), lam('#ffec27'));
     bTop.position.set(0, 0.08, 0.02);
-    const bTip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.06), lam('#ff6c24', '#ff6c24'));
-    bTip.position.z = -0.27;
-    const bGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.14, 0.07), lam('#1d2b53'));
-    bGrip.position.set(0, -0.1, 0.13); bGrip.rotation.x = 0.3;
-    const bDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.1, 8), lam('#ff77a8'));
-    bDrum.rotation.z = Math.PI / 2; bDrum.position.set(0, -0.02, -0.08);
-    blaster.add(bBody, bTop, bTip, bGrip, bDrum);
+    const bSight = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.04, 0.05), lam('#1d2b53'));
+    bSight.position.set(0, 0.11, 0.12);
+    const bStripe = new THREE.Mesh(new THREE.BoxGeometry(0.086, 0.025, 0.16), lam('#ffec27'));
+    bStripe.position.set(0, 0.01, 0.04);
+    const bShroud = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.075, 0.18), lam('#065ab5'));
+    bShroud.position.set(0, 0.02, -0.16);
+    const bBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.16, 8), lam('#5f574f'));
+    bBarrel.rotation.x = Math.PI / 2;
+    bBarrel.position.set(0, 0.02, -0.27);
+    const bTip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.08), lam('#ff6c24', '#ff6c24'));
+    bTip.position.set(0, 0.02, -0.35);
+    const bTipCollar = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.02, 8), lam('#ffa300', '#ffa300'));
+    bTipCollar.rotation.x = Math.PI / 2;
+    bTipCollar.position.set(0, 0.02, -0.39);
+    const bGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.065), lam('#1d2b53'));
+    bGrip.position.set(0, -0.1, 0.14);
+    bGrip.rotation.x = 0.28;
+    const bTriggerGuard = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.035, 0.05), lam('#5f574f'));
+    bTriggerGuard.position.set(0, -0.06, 0.08);
+    const bDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.072, 0.072, 0.11, 12), lam('#1d2b53'));
+    bDrum.rotation.z = Math.PI / 2;
+    bDrum.position.set(0, -0.05, -0.04);
+    const bDrumHub = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.116, 8), lam('#ff77a8', '#ff77a8'));
+    bDrumHub.rotation.z = Math.PI / 2;
+    bDrumHub.position.set(0, -0.05, -0.04);
+    const bDrumMagWell = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.05, 0.07), lam('#1d2b53'));
+    bDrumMagWell.position.set(0, -0.03, -0.04);
+    const bBuffer = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.16, 8), lam('#5f574f'));
+    bBuffer.rotation.x = Math.PI / 2;
+    bBuffer.position.set(0, 0.03, 0.27);
+    const bStock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.11, 0.12), lam('#065ab5'));
+    bStock.position.set(0, 0.01, 0.35);
+    blaster.add(bBody, bTop, bSight, bStripe, bShroud, bBarrel, bTip, bTipCollar, bGrip, bTriggerGuard, bDrum, bDrumHub, bDrumMagWell, bBuffer, bStock);
+    blaster.muzzlePos = { ...MUZZLE_OFFSETS.blaster };
+    blaster.userData = { muzzlePos: blaster.muzzlePos };
     this.vmMeshes.blaster = blaster;
 
     // 2. SMG (The Side Hustle)
+    // Dark green compact SMG body, angled extended stick mag, green compensator.
     const smg = new THREE.Group();
-    const sBody = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.34), lam('#008751'));
-    const sMag = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.18, 0.06), lam('#ab5236'));
-    sMag.position.set(0, -0.11, -0.04); sMag.rotation.x = 0.2;
-    const sGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.12, 0.06), lam('#1d2b53'));
-    sGrip.position.set(0, -0.09, 0.11); sGrip.rotation.x = 0.35;
-    const sComp = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.08, 8), lam('#00e436', '#00e436'));
-    sComp.rotation.x = Math.PI / 2; sComp.position.z = -0.2;
-    smg.add(sBody, sMag, sGrip, sComp);
+    smg.name = 'smg';
+    const sBody = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.09, 0.32), lam('#008751'));
+    sBody.position.set(0, 0.01, 0.02);
+    const sRail = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.025, 0.24), lam('#125359'));
+    sRail.position.set(0, 0.065, 0.01);
+    const sHandle = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.02, 0.04), lam('#c2c3c7'));
+    sHandle.position.set(0, 0.035, 0.04);
+    const sMag = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.21, 0.055), lam('#ab5236'));
+    sMag.position.set(0, -0.11, -0.03);
+    sMag.rotation.x = 0.22;
+    const sMagBumper = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.03, 0.065), lam('#ffa300'));
+    sMagBumper.position.set(0, -0.21, 0.01);
+    const sBar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.08, 8), lam('#5f574f'));
+    sBar.rotation.x = Math.PI / 2;
+    sBar.position.set(0, 0.01, -0.16);
+    const sComp = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.07, 8), lam('#00e436', '#00e436'));
+    sComp.rotation.x = Math.PI / 2;
+    sComp.position.set(0, 0.01, -0.22);
+    const sCompTip = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.03, 0.025, 8), lam('#a8e72e', '#a8e72e'));
+    sCompTip.rotation.x = Math.PI / 2;
+    sCompTip.position.set(0, 0.01, -0.26);
+    const sGrip = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.12, 0.06), lam('#1d2b53'));
+    sGrip.position.set(0, -0.08, 0.12);
+    sGrip.rotation.x = 0.32;
+    const sGuard = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.035, 0.05), lam('#5f574f'));
+    sGuard.position.set(0, -0.05, 0.07);
+    const sStockRods = new THREE.Mesh(new THREE.BoxGeometry(0.082, 0.015, 0.16), lam('#5f574f'));
+    sStockRods.position.set(0, 0.02, 0.20);
+    const sButt = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.08, 0.02), lam('#1d2b53'));
+    sButt.position.set(0, 0.0, 0.28);
+    smg.add(sBody, sRail, sHandle, sMag, sMagBumper, sBar, sComp, sCompTip, sGrip, sGuard, sStockRods, sButt);
+    smg.muzzlePos = { ...MUZZLE_OFFSETS.smg };
+    smg.userData = { muzzlePos: smg.muzzlePos };
     smg.visible = false;
     this.vmMeshes.smg = smg;
 
     // 3. Shotgun (The Divorce Settlement)
+    // Double-barrel heavy steel tubes, rich wood-grain pump and stock, chunky ejection receiver.
     const shotgun = new THREE.Group();
-    const shBarL = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.52, 8), lam('#5f574f'));
-    shBarL.rotation.x = Math.PI / 2; shBarL.position.set(-0.035, 0.03, -0.12);
-    const shBarR = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.52, 8), lam('#5f574f'));
-    shBarR.rotation.x = Math.PI / 2; shBarR.position.set(0.035, 0.03, -0.12);
-    const shPump = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.18), lam('#8a4820'));
-    shPump.position.set(0, -0.02, -0.12);
-    const shStock = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.26), lam('#8a4820'));
-    shStock.position.set(0, -0.06, 0.18); shStock.rotation.x = -0.15;
-    shotgun.add(shBarL, shBarR, shPump, shStock);
+    shotgun.name = 'shotgun';
+    const shBarL = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.54, 8), lam('#5f574f'));
+    shBarL.rotation.x = Math.PI / 2;
+    shBarL.position.set(-0.028, 0.025, -0.14);
+    const shBarR = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.54, 8), lam('#5f574f'));
+    shBarR.rotation.x = Math.PI / 2;
+    shBarR.position.set(0.028, 0.025, -0.14);
+    const shRib = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.015, 0.52), lam('#49333b'));
+    shRib.position.set(0, 0.045, -0.14);
+    const shBead = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.014, 6), lam('#ffec27', '#ffa300'));
+    shBead.position.set(0, 0.055, -0.38);
+    const shCrownL = new THREE.Mesh(new THREE.CylinderGeometry(0.029, 0.029, 0.02, 8), lam('#422136'));
+    shCrownL.rotation.x = Math.PI / 2;
+    shCrownL.position.set(-0.028, 0.025, -0.40);
+    const shCrownR = new THREE.Mesh(new THREE.CylinderGeometry(0.029, 0.029, 0.02, 8), lam('#422136'));
+    shCrownR.rotation.x = Math.PI / 2;
+    shCrownR.position.set(0.028, 0.025, -0.40);
+    const shReceiver = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.12, 0.22), lam('#422136'));
+    shReceiver.position.set(0, 0.01, 0.09);
+    const shLever = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.035, 0.05), lam('#c2c3c7'));
+    shLever.position.set(0, 0.08, 0.13);
+    const shPins = new THREE.Mesh(new THREE.BoxGeometry(0.106, 0.04, 0.06), lam('#c2c3c7'));
+    shPins.position.set(0, 0.02, 0.05);
+    const shPump = new THREE.Mesh(new THREE.BoxGeometry(0.105, 0.08, 0.20), lam('#742f29'));
+    shPump.position.set(0, -0.025, -0.12);
+    const shPumpRibs = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.03, 0.14), lam('#ab5236'));
+    shPumpRibs.position.set(0, -0.04, -0.12);
+    const shStock = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.15, 0.28), lam('#742f29'));
+    shStock.position.set(0, -0.06, 0.28);
+    shStock.rotation.x = -0.14;
+    const shGripWrist = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.09, 0.09), lam('#8a4820'));
+    shGripWrist.position.set(0, -0.03, 0.18);
+    const shButtpad = new THREE.Mesh(new THREE.BoxGeometry(0.078, 0.15, 0.035), lam('#1b1b1b'));
+    shButtpad.position.set(0, -0.08, 0.42);
+    shButtpad.rotation.x = -0.14;
+    const shTrigger = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.04, 0.07), lam('#5f574f'));
+    shTrigger.position.set(0, -0.06, 0.12);
+    shotgun.add(shBarL, shBarR, shRib, shBead, shCrownL, shCrownR, shReceiver, shLever, shPins, shPump, shPumpRibs, shStock, shGripWrist, shButtpad, shTrigger);
+    shotgun.muzzlePos = { ...MUZZLE_OFFSETS.shotgun };
+    shotgun.userData = { muzzlePos: shotgun.muzzlePos };
     shotgun.visible = false;
     this.vmMeshes.shotgun = shotgun;
 
     // 4. Sniper (The Trust Fund)
+    // Long precision barrel, high-mounted cylindrical sniper optic/scope with reticle tint, gold-inlaid bolt assembly.
     const sniper = new THREE.Group();
-    const snBar = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.022, 0.75, 8), lam('#1d2b53'));
-    snBar.rotation.x = Math.PI / 2; snBar.position.set(0, 0.02, -0.22);
-    const snScope = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.32, 10), lam('#29adff', '#1d2b53'));
-    snScope.rotation.x = Math.PI / 2; snScope.position.set(0, 0.1, 0.02);
-    const snBody = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.1, 0.38), lam('#e8c547'));
-    snBody.position.set(0, 0, 0.08);
-    const snGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.06), lam('#1d2b53'));
-    snGrip.position.set(0, -0.1, 0.14); snGrip.rotation.x = 0.3;
-    sniper.add(snBar, snScope, snBody, snGrip);
+    sniper.name = 'sniper';
+    const snBody = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.10, 0.42), lam('#fff1e8'));
+    snBody.position.set(0, -0.01, 0.06);
+    const snTrim = new THREE.Mesh(new THREE.BoxGeometry(0.078, 0.02, 0.38), lam('#ffa300'));
+    snTrim.position.set(0, 0.01, 0.06);
+    const snBar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.018, 0.72, 8), lam('#1d2b53'));
+    snBar.rotation.x = Math.PI / 2;
+    snBar.position.set(0, 0.02, -0.26);
+    const snBrake = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.038, 0.08), lam('#5f574f'));
+    snBrake.position.set(0, 0.02, -0.61);
+    const snCrown = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.02, 8), lam('#ffec27', '#ffec27'));
+    snCrown.rotation.x = Math.PI / 2;
+    snCrown.position.set(0, 0.02, -0.65);
+    const snMount = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, 0.22), lam('#5f574f'));
+    snMount.position.set(0, 0.05, 0.02);
+    const snRingF = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.025, 8), lam('#1d2b53'));
+    snRingF.rotation.x = Math.PI / 2;
+    snRingF.position.set(0, 0.09, -0.06);
+    const snRingR = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.025, 8), lam('#1d2b53'));
+    snRingR.rotation.x = Math.PI / 2;
+    snRingR.position.set(0, 0.09, 0.10);
+    const snScope = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.34, 10), lam('#1d2b53'));
+    snScope.rotation.x = Math.PI / 2;
+    snScope.position.set(0, 0.10, 0.02);
+    const snObjBell = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.034, 0.08, 10), lam('#1d2b53'));
+    snObjBell.rotation.x = Math.PI / 2;
+    snObjBell.position.set(0, 0.10, -0.16);
+    const snLens = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.012, 10), lam('#29adff', '#29adff'));
+    snLens.rotation.x = Math.PI / 2;
+    snLens.position.set(0, 0.10, -0.20);
+    const snEyeBell = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.042, 0.06, 10), lam('#1d2b53'));
+    snEyeBell.rotation.x = Math.PI / 2;
+    snEyeBell.position.set(0, 0.10, 0.18);
+    const snTurretTop = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.024, 8), lam('#ffa300'));
+    snTurretTop.position.set(0, 0.14, 0.02);
+    const snTurretSide = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.024, 8), lam('#ffa300'));
+    snTurretSide.rotation.z = Math.PI / 2;
+    snTurretSide.position.set(0.04, 0.10, 0.02);
+    const snBolt = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.16, 8), lam('#ffec27', '#ffec27'));
+    snBolt.rotation.x = Math.PI / 2;
+    snBolt.position.set(0.01, 0.04, 0.07);
+    const snBoltStem = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.016, 0.016), lam('#ffa300'));
+    snBoltStem.position.set(0.05, 0.045, 0.10);
+    snBoltStem.rotation.z = -0.3;
+    const snBoltKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.03, 8), lam('#ffec27', '#ffa300'));
+    snBoltKnob.position.set(0.08, 0.035, 0.10);
+    const snGrip = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.14, 0.065), lam('#1d2b53'));
+    snGrip.position.set(0, -0.11, 0.16);
+    snGrip.rotation.x = 0.28;
+    const snComb = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.05, 0.15), lam('#ffa300'));
+    snComb.position.set(0, 0.06, 0.24);
+    const snButtpad = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.13, 0.04), lam('#5f574f'));
+    snButtpad.position.set(0, -0.03, 0.35);
+    sniper.add(snBody, snTrim, snBar, snBrake, snCrown, snMount, snRingF, snRingR, snScope, snObjBell, snLens, snEyeBell, snTurretTop, snTurretSide, snBolt, snBoltStem, snBoltKnob, snGrip, snComb, snButtpad);
+    sniper.muzzlePos = { ...MUZZLE_OFFSETS.sniper };
+    sniper.userData = { muzzlePos: sniper.muzzlePos };
     sniper.visible = false;
     this.vmMeshes.sniper = sniper;
 
     // 5. LMG (The Subdivision)
+    // Heavy olive green receiver, side-mounted box ammo drum with belt feed, perforated heat-shield barrel.
     const lmg = new THREE.Group();
-    const lBody = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.55), lam('#4a7e5a'));
-    const lDrum = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.18, 0.16), lam('#2f6b3a'));
-    lDrum.position.set(0, -0.14, 0.02);
-    const lBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 8), lam('#373737'));
-    lBar.rotation.x = Math.PI / 2; lBar.position.set(0, 0.02, -0.32);
-    const lGrip = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.15, 0.07), lam('#1d2b53'));
-    lGrip.position.set(0, -0.09, 0.2); lGrip.rotation.x = 0.25;
-    lmg.add(lBody, lDrum, lBar, lGrip);
+    lmg.name = 'lmg';
+    const lBody = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.15, 0.52), lam('#4a7e5a'));
+    lBody.position.set(0, 0.01, 0.04);
+    const lCover = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.04, 0.32), lam('#2f6b3a'));
+    lCover.position.set(0, 0.09, 0.02);
+    const lHandle = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.07, 0.14), lam('#1d2b53'));
+    lHandle.position.set(0, 0.14, -0.06);
+    const lDrum = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.18), lam('#2f6b3a'));
+    lDrum.position.set(-0.13, -0.06, 0.01);
+    const lDrumBracket = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.12), lam('#1d2b53'));
+    lDrumBracket.position.set(-0.07, -0.04, 0.01);
+    const lBelt = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.035, 0.08), lam('#ffec27', '#ffa300'));
+    lBelt.position.set(-0.075, 0.03, 0.03);
+    lBelt.rotation.z = 0.25;
+    const lBar = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.46, 8), lam('#373737'));
+    lBar.rotation.x = Math.PI / 2;
+    lBar.position.set(0, 0.02, -0.32);
+    const lShroud = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.28, 8), lam('#5f574f'));
+    lShroud.rotation.x = Math.PI / 2;
+    lShroud.position.set(0, 0.02, -0.26);
+    const lRing1 = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.02, 8), lam('#1d2b53'));
+    lRing1.rotation.x = Math.PI / 2;
+    lRing1.position.set(0, 0.02, -0.16);
+    const lRing2 = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.02, 8), lam('#1d2b53'));
+    lRing2.rotation.x = Math.PI / 2;
+    lRing2.position.set(0, 0.02, -0.26);
+    const lRing3 = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.02, 8), lam('#1d2b53'));
+    lRing3.rotation.x = Math.PI / 2;
+    lRing3.position.set(0, 0.02, -0.36);
+    const lHider = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.09, 8), lam('#1b1b1b'));
+    lHider.rotation.x = Math.PI / 2;
+    lHider.position.set(0, 0.02, -0.53);
+    const lBipod = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.03, 0.20), lam('#1d2b53'));
+    lBipod.position.set(0, -0.04, -0.32);
+    const lGrip = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.15, 0.07), lam('#1d2b53'));
+    lGrip.position.set(0, -0.11, 0.18);
+    lGrip.rotation.x = 0.25;
+    const lGuard = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.07), lam('#5f574f'));
+    lGuard.position.set(0, -0.07, 0.11);
+    const lStock = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.20), lam('#4a7e5a'));
+    lStock.position.set(0, -0.02, 0.35);
+    const lPad = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.16, 0.03), lam('#1b1b1b'));
+    lPad.position.set(0, -0.02, 0.45);
+    lmg.add(lBody, lCover, lHandle, lDrum, lDrumBracket, lBelt, lBar, lShroud, lRing1, lRing2, lRing3, lHider, lBipod, lGrip, lGuard, lStock, lPad);
+    lmg.muzzlePos = { ...MUZZLE_OFFSETS.lmg };
+    lmg.userData = { muzzlePos: lmg.muzzlePos };
     lmg.visible = false;
     this.vmMeshes.lmg = lmg;
 
     // 6. Pistol (The Building Permit)
+    // Compact tactical silver slide, ergonomic grip with texture.
     const pistol = new THREE.Group();
-    const pSlide = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, 0.24), lam('#c2c3c7'));
-    pSlide.position.set(0, 0.04, -0.04);
-    const pGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.13, 0.07), lam('#292831'));
-    pGrip.position.set(0, -0.06, 0.05); pGrip.rotation.x = 0.32;
-    pistol.add(pSlide, pGrip);
+    pistol.name = 'pistol';
+    const pSlide = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.072, 0.28), lam('#c2c3c7'));
+    pSlide.position.set(0, 0.045, -0.03);
+    const pPort = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.015, 0.08), lam('#1d2b53'));
+    pPort.position.set(0.01, 0.08, 0.02);
+    const pSerrations = new THREE.Mesh(new THREE.BoxGeometry(0.068, 0.05, 0.06), lam('#83769c'));
+    pSerrations.position.set(0, 0.045, 0.07);
+    const pSightFront = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.018, 0.015), lam('#ff004d', '#ff004d'));
+    pSightFront.position.set(0, 0.088, -0.15);
+    const pSightRear = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.016, 0.02), lam('#1d2b53'));
+    pSightRear.position.set(0, 0.088, 0.09);
+    const pBar = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.06, 8), lam('#5f574f'));
+    pBar.rotation.x = Math.PI / 2;
+    pBar.position.set(0, 0.042, -0.16);
+    const pFrame = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.065, 0.26), lam('#292831'));
+    pFrame.position.set(0, -0.01, -0.02);
+    const pGrip = new THREE.Mesh(new THREE.BoxGeometry(0.052, 0.14, 0.075), lam('#1d2b53'));
+    pGrip.position.set(0, -0.08, 0.06);
+    pGrip.rotation.x = 0.34;
+    const pPanelL = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.09, 0.055), lam('#49333b'));
+    pPanelL.position.set(-0.027, -0.08, 0.06);
+    pPanelL.rotation.x = 0.34;
+    const pPanelR = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.09, 0.055), lam('#49333b'));
+    pPanelR.position.set(0.027, -0.08, 0.06);
+    pPanelR.rotation.x = 0.34;
+    const pGuard = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.045, 0.07), lam('#292831'));
+    pGuard.position.set(0, -0.04, -0.02);
+    const pTrigger = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.03, 0.015), lam('#c2c3c7'));
+    pTrigger.position.set(0, -0.035, -0.01);
+    const pBasepad = new THREE.Mesh(new THREE.BoxGeometry(0.056, 0.02, 0.085), lam('#292831'));
+    pBasepad.position.set(0, -0.155, 0.10);
+    pBasepad.rotation.x = 0.34;
+    pistol.add(pSlide, pPort, pSerrations, pSightFront, pSightRear, pBar, pFrame, pGrip, pPanelL, pPanelR, pGuard, pTrigger, pBasepad);
+    pistol.muzzlePos = { ...MUZZLE_OFFSETS.pistol };
+    pistol.userData = { muzzlePos: pistol.muzzlePos };
     pistol.visible = false;
     this.vmMeshes.pistol = pistol;
 
@@ -356,26 +590,49 @@ export class Renderer {
     this.trophy.add(cup, stem, base);
     this.trophy.position.set(-0.28, -0.35, -0.45);
     this.trophy.visible = false;
-    this.camera.add(this.trophy);
+    if (this.camera) this.camera.add(this.trophy);
     this.flash = new THREE.Mesh(new THREE.OctahedronGeometry(0.06, 0), new THREE.MeshBasicMaterial({ color: '#ffec27' }));
-    this.flash.position.z = -0.33;
+    this.flash.position.set(MUZZLE_OFFSETS.blaster.x, MUZZLE_OFFSETS.blaster.y, MUZZLE_OFFSETS.blaster.z);
     this.flash.visible = false;
     vm.add(this.flash);
     vm.position.set(0.2, -0.19, -0.55);
     vm.scale.setScalar(0.5);
     this.vmBase = vm.position.clone();
     this.viewmodel = vm;
-    this.camera.add(vm);
+    if (this.camera) this.camera.add(vm);
     this.currentVmType = 'blaster';
+    this.switchTimer = 0;
     this.bob = 0;
     this.kick = 0;
+    this.setWeapon('blaster');
   }
 
   setWeapon(viewmodelName) {
-    const target = this.vmMeshes[viewmodelName] || this.vmMeshes.blaster;
+    const key = viewmodelName === 'ar' ? 'blaster' : viewmodelName;
+    const target = this.vmMeshes[key] || this.vmMeshes[viewmodelName] || this.vmMeshes.blaster;
+    const resolvedName = (key in this.vmMeshes) ? key : (this.vmMeshes[viewmodelName] ? viewmodelName : 'blaster');
+    this.currentVmType = resolvedName;
     for (const [k, m] of Object.entries(this.vmMeshes)) {
       m.visible = (m === target);
     }
+    const mPos = target?.muzzlePos || this.muzzleOffsets?.[resolvedName] || { x: 0, y: 0.02, z: -0.33 };
+    if (this.flash) {
+      this.flash.position.set(mPos.x, mPos.y, mPos.z);
+    }
+    if (this.muzzleLight && this.viewmodel) {
+      this.muzzleLight.position.set(
+        this.viewmodel.position.x + mPos.x * this.viewmodel.scale.x,
+        this.viewmodel.position.y + mPos.y * this.viewmodel.scale.y,
+        this.viewmodel.position.z + mPos.z * this.viewmodel.scale.z
+      );
+    }
+    this.switchTimer = 0.18;
+    return target;
+  }
+
+  getMuzzleOffset(weaponOrClass) {
+    const key = weaponOrClass === 'ar' ? 'blaster' : weaponOrClass;
+    return this.vmMeshes?.[key]?.muzzlePos || this.muzzleOffsets?.[weaponOrClass] || this.muzzleOffsets?.[key] || { x: 0, y: 0.02, z: -0.33 };
   }
 
   ensureCharacter(actor, localTeam) {
@@ -716,13 +973,28 @@ export class Renderer {
       this.currentVmType = vmType;
       this.setWeapon(vmType);
     }
+    if (this.switchTimer > 0) {
+      this.switchTimer = Math.max(0, this.switchTimer - dt);
+    }
     this.bob += dt * (moving ? 9 : 2);
     if (firing) {
-      if (this.muzzleLight) this.muzzleLight.intensity = 3.5;
+      const curMesh = this.vmMeshes[this.currentVmType];
+      const mPos = curMesh?.muzzlePos || this.muzzleOffsets?.[this.currentVmType] || { x: 0, y: 0.02, z: -0.33 };
+      if (this.flash) {
+        this.flash.position.set(mPos.x, mPos.y, mPos.z);
+        this.flash.visible = Math.random() < 0.7;
+      }
+      if (this.muzzleLight) {
+        this.muzzleLight.intensity = 3.5;
+        this.muzzleLight.position.set(
+          vm.position.x + mPos.x * vm.scale.x,
+          vm.position.y + mPos.y * vm.scale.y,
+          vm.position.z + mPos.z * vm.scale.z
+        );
+      }
       this.kick = 1;
-      this.flash.visible = Math.random() < 0.7;
     } else {
-      this.flash.visible = false;
+      if (this.flash) this.flash.visible = false;
     }
     if (this.muzzleLight) {
       this.muzzleLight.intensity = Math.max(0, this.muzzleLight.intensity - dt * 25);
@@ -730,8 +1002,17 @@ export class Renderer {
     this.kick = Math.max(0, this.kick - dt * 12);
     const vm = this.viewmodel;
     const amp = moving ? 0.018 : 0.004;
-    vm.position.set(this.vmBase.x + Math.cos(this.bob) * amp, this.vmBase.y + Math.abs(Math.sin(this.bob)) * amp - (reloading ? 0.18 : 0), this.vmBase.z + this.kick * 0.05);
-    vm.rotation.set(this.kick * 0.12 + (reloading ? -0.6 : 0), 0, reloading ? 0.5 : 0);
+    const switchDip = this.switchTimer > 0 ? Math.sin((this.switchTimer / 0.18) * Math.PI) * 0.08 : 0;
+    vm.position.set(
+      this.vmBase.x + Math.cos(this.bob) * amp,
+      this.vmBase.y + Math.abs(Math.sin(this.bob)) * amp - (reloading ? 0.18 : 0) - switchDip,
+      this.vmBase.z + this.kick * 0.05
+    );
+    vm.rotation.set(
+      this.kick * 0.12 + (reloading ? -0.6 : 0) - switchDip * 1.5,
+      0,
+      (reloading ? 0.5 : 0) + switchDip * 0.4
+    );
     const swinging = meleeAgo < 0.35;
     this.trophy.visible = swinging;
     if (swinging) {

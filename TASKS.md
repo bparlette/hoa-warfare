@@ -10,6 +10,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 ### 🌐 Itch.io & CrazyGames Browser Demo Priorities (TONIGHT)
 - [x] **Packaging Script**: Automated `npm run pack` (`tools/package_demo.mjs`) generating self-contained `dist/hoa-warfare-web-demo.zip` with local data/ and asset fallback paths.
+- [x] **Demo Faction Gating & Steam Upsell Modal**: Gated browser demo with 6 core factions unlocked (`karens`, `hoaDads`, `vcBros`, `wokeLibs`, `rednecks`, `fratHouse`) and 14 locked factions marked `🔒 STEAM ONLY`, interactive suburban upsell modal linking to Steam ($4.99), bot pool restricted to demo factions, and glowing wishlist CTA card on match-end podium.
 - [x] **Steam Wishlist Funnel**: High-converting, glowing **"★ WISHLIST ON STEAM ($4.99)"** CTA buttons on Main Menu, Pause screen, and End-of-Match podium.
 - [x] **Visual Polish**: Modern Tactical 60fps clean high-resolution rendering set as default (`style=modern`, `retro=false`).
 - [x] **Audio Unlock**: Instant AudioContext unlocking on initial click/interaction.
@@ -17,10 +18,10 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - [ ] **Upload & Publish**: Upload `dist/hoa-warfare-web-demo.zip` to itch.io (HTML5 browser game) and CrazyGames Developer portal.
 
 ### 👑 Steam $4.99 Full Game Priorities (Roadmap to Launch)
-1. **P0: Online Multiplayer Prototype (Claude - C2)**: Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
-2. **P0: Native Desktop Wrapper & Steamworks Integration**: Wrap via Tauri or Electron into `.exe` / `.app`, full-screen by default, Steam Overlay, 10 Steam Achievements, and Steam Deck Proton verification.
+1. **P0: Online Multiplayer Prototype (Claude - C2)**: **done** — Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
+2. **P0: Native Desktop Wrapper & Steamworks Integration**: **done** — Electron/Node wrapper script (`desktop/main.mjs`, `desktop/preload.cjs`), 1280x720 min up to 1920x1080/borderless fullscreen, zero-CORS loopback HTTP server, 10 launch Steam Achievements bridge (`desktop/steamworks.js`), packaging tool (`tools/build_desktop.mjs`), and comprehensive documentation (`docs/steam/steamworks.md`).
 3. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
-4. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: Distinct 30m readability accessories and headwear for all 17 shipping factions, plus dedicated viewmodel weapon meshes.
+4. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: **done** — Distinct 30m readability accessories and headwear for all 20 factions, signature props, and dedicated first-person viewmodel weapon meshes with dynamic muzzle light alignment and smooth transitions.
 5. **P1: Commercial VO Licensing (Muse - M0/M3)**: Confirm commercial rights for voice models or record human voice actor passes.
 6. **P2: Steam Direct "Coming Soon" Page**: Pay $100 Steam Direct fee, publish store page with trailer/screenshots to establish prior art, title SEO, and accumulate 7k–10k wishlists before flipping buy button.
 
@@ -98,7 +99,7 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 **Sonnet (weapons + factions in code)**
 - S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions — **done** (Sonnet): custom 30m-readable HEADWEAR for stringer (Gym Rats), vest (VC Bros), beanieTote (Woke Libs), messyBun (MLM Huns), fursuitHead (Furries), catEarsHeadset (Weeb Mods), headscarfBraid (Tradwives), visorSweatband (Pickleball Retirees); signature props for all factions (tote bag, Stanley tumbler, pickleball paddle, bread basket, katana, tail, shaker bottle, boomer reading glasses, gold fringe); custom 8x8 pixel face features in `textures.js`; tests in `web/tests/character.test.mjs`.
 - S1: Weapon balance harness — **done** (Antigravity for Sonnet): `tools/ttk.mjs` prints TTK and DPS curves across 5/15/30/60m; tuned `divorceSettlement` body damage (20/pellet) so shotgun dominates point-blank (0.00s 1-shot kill at 5m); verified sniper does not out-DPS AR at 10m.
-- S2: Per-class viewmodels (`viewmodel` field already in `weapons.json`: smg, shotgun, sniper, lmg, pistol) in `render.js` `buildViewmodel`, built the same way as the blaster.
+- S2: Per-class viewmodels — **done** (Sonnet): all 6 weapon viewmodels polished with distinct multi-part Three.js geometries, accurate suburban themes, exact muzzle coordinates (`muzzlePos`), dynamic point-light and muzzle flash alignment, and smooth switch dip/raise animation; 6 unit tests in `web/tests/viewmodel.test.mjs`.
 - S3: Silhouette pass for the 8 non-Phase-0 factions — **done** (Sonnet): all 20 factions now resolve to distinct, non-default `HEADWEAR` and signature `PROPS` with custom attachment targets.
 
 **Muse (content + audit)**
