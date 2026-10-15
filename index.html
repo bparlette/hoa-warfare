@@ -553,19 +553,436 @@
     border-radius: 4px;
   }
 
-  /* Footer */
-  footer {
-    text-align: center;
-    margin-top: 80px;
-    border-top: 1px solid var(--border-color);
-    padding-top: 36px;
-    color: var(--text-muted);
-    font-size: 14px;
+  /* Interactive Style Comparison Slider */
+  .compare-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
-  footer a {
+  .compare-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .style-tab-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .style-tab-btn:hover {
+    background: var(--bg-card-hover);
+    color: #fff;
+    border-color: var(--accent-gold);
+  }
+  .style-tab-btn.active {
+    background: var(--accent-red);
+    color: #fff;
+    border-color: var(--accent-red);
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+  }
+  .split-compare {
+    position: relative;
+    width: 100%;
+    height: clamp(340px, 50vw, 540px);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+    border: 2px solid var(--border-color);
+    user-select: none;
+  }
+  .compare-pane {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .compare-pane img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .compare-badge {
+    position: absolute;
+    top: 16px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    z-index: 10;
+  }
+  .compare-badge-left {
+    left: 16px;
+    background: rgba(6, 11, 26, 0.88);
+    border: 1px solid #ffec27;
+    color: #ffec27;
+  }
+  .compare-badge-right {
+    right: 16px;
+    background: rgba(6, 182, 212, 0.88);
+    border: 1px solid var(--accent-cyan);
+    color: #fff;
+  }
+  .compare-range {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+    z-index: 30;
+    margin: 0;
+  }
+  .compare-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #fff;
+    box-shadow: 0 0 12px rgba(0,0,0,0.9), 0 0 4px #000;
+    z-index: 20;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+  .compare-handle-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fff;
+    color: #0b1120;
+    font-weight: 900;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.7);
+    border: 3px solid #060b1a;
+  }
+  /* Mock HUD Overlays on comparison slider */
+  .hud-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .pane-007 {
+    filter: saturate(1.1) contrast(1.15);
+  }
+  .pane-ringcam {
+    filter: contrast(1.4) brightness(1.15) hue-rotate(85deg) saturate(1.6);
+  }
+  .pane-retro {
+    image-rendering: pixelated;
+    filter: contrast(1.25) saturate(1.2);
+  }
+  .cctv-scanlines {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+  }
+  .cctv-header {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #22c55e;
+    text-shadow: 0 0 6px #22c55e;
+  }
+  .cctv-rec {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Mock 007 HUD */
+  .mock-ge-meters {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 10px;
+  }
+  .mock-ge-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .mock-ge-col span {
+    font-family: Impact, sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .mock-ge-col.armor span { color: #29adff; }
+  .mock-ge-col.health span { color: #ff004d; }
+  .mock-ge-meter {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 3px;
+    background: rgba(0,0,0,0.7);
+    padding: 4px;
+    border: 2px solid #000;
+    border-radius: 4px;
+  }
+  .mock-ge-seg {
+    width: 16px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .mock-ge-col.armor .mock-ge-seg { background: #29adff; box-shadow: 0 0 4px #29adff; }
+  .mock-ge-col.health .mock-ge-seg { background: #ff004d; box-shadow: 0 0 4px #ff004d; }
+
+  .mock-ge-crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border: 2px dashed rgba(255, 236, 39, 0.75);
+    border-radius: 50%;
+  }
+  .mock-ge-crosshair::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: #ff004d;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .mock-ge-weapon {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(6, 11, 26, 0.88);
+    border: 2px solid #ffec27;
+    padding: 8px 14px;
+    font-family: Impact, sans-serif;
+    color: #ffec27;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  /* Mock Modern HUD */
+  .mock-modern-radar {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(6, 11, 26, 0.8);
+    border: 1px solid var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+  }
+  .mock-modern-hp {
+    position: absolute;
+    bottom: 24px;
+    left: 20px;
+    width: 140px;
+    height: 12px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .mock-modern-hpfill {
+    width: 85%;
+    height: 100%;
+    background: #00e436;
+  }
+  .mock-modern-crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    color: rgba(255,255,255,0.7);
+    font-size: 20px;
+  }
+  .mock-modern-weapon {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(11, 17, 32, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: var(--font-mono);
+    color: #fff;
+    font-size: 13px;
+  }
+
+  /* Assets Cards: Characters & World */
+  .asset-hero-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .asset-hero-img {
+    width: 100%;
+    height: auto;
+    max-height: 520px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .asset-hero-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .asset-hero-title {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .asset-hero-sub {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .char-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 18px;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .char-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-gold);
+    background: var(--bg-card-hover);
+  }
+  .char-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .char-swatches {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #000;
+  }
+  .char-swatch {
+    width: 12px;
+    height: 24px;
+  }
+  .char-name {
+    font-family: var(--font-heading);
+    font-size: 17px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .char-role {
+    font-family: var(--font-mono);
+    font-size: 11px;
     color: var(--accent-cyan);
-    text-decoration: none;
-    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .char-quote {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 10px;
+    line-height: 1.35;
+  }
+  .char-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* World POI Grid */
+  .world-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .world-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .world-card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .world-card-body {
+    padding: 18px 20px;
+  }
+  .world-card-title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .world-card-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.45;
   }
 </style>
 </head>
@@ -577,11 +994,13 @@
       CALL OF KAREN <span class="nav-logo-badge">HOA WARFARE</span>
     </a>
     <ul class="nav-links">
+      <li><a href="#compare">Style Compare</a></li>
+      <li><a href="#characters">Characters</a></li>
+      <li><a href="#world">World</a></li>
       <li><a href="#clips">Clips</a></li>
       <li><a href="#modes">Modes</a></li>
       <li><a href="#weapons">Arsenal</a></li>
-      <li><a href="#soundboard">Comms Dial</a></li>
-      <li><a href="#tactics">Rules</a></li>
+      <li><a href="#soundboard">Comms</a></li>
       <li><a href="#controls">Controls</a></li>
       <li><a href="web/" style="color: var(--accent-gold);">Play Web Slice &rarr;</a></li>
     </ul>
@@ -604,7 +1023,7 @@
     <div class="stat-pill">FACTIONS: <b>14 SUBURBAN TEAMS</b></div>
     <div class="stat-pill">VOICE BARKS: <b>691 AUTHENTIC LINES</b></div>
     <div class="stat-pill">ENGINE: <b>STANDALONE THREE.JS</b></div>
-    <div class="stat-pill">TEST SUITE: <b>31/31 GREEN</b></div>
+    <div class="stat-pill">TEST SUITE: <b>39/39 GREEN</b></div>
   </div>
 
   <div class="hero-actions">
@@ -617,6 +1036,317 @@
 </header>
 
 <main>
+  <!-- Interactive Visual Style Compare & Mode Toggle -->
+  <section class="section" id="compare">
+    <div class="section-header">
+      <div class="section-tag">Visual Engine · Multi-Aesthetic Simulation</div>
+      <h2 class="section-title">Visual Styles & Live Compare</h2>
+      <p class="section-desc">Drag the interactive slider or click aesthetic tabs to inspect the side-by-side rendering difference (or press <kbd>O</kbd> in-game):</p>
+    </div>
+
+    <div class="compare-box">
+      <div class="compare-tabs">
+        <button class="style-tab-btn active" data-style="007" data-left="007 GoldenEye Mode" data-right="Modern Tactical Mode">🍸 007 GoldenEye vs ⚡ Modern</button>
+        <button class="style-tab-btn" data-style="ringcam" data-left="📹 Ring Cam CCTV" data-right="⚡ Modern Tactical">📹 Ring Cam CCTV vs ⚡ Modern</button>
+        <button class="style-tab-btn" data-style="retro" data-left="🕹️ 16-Bit Retro Dither" data-right="⚡ Modern Tactical">🕹️ 16-Bit Retro vs ⚡ Modern</button>
+      </div>
+
+      <div class="split-compare" id="compareSlider">
+        <!-- Left Pane (007 / Ring Cam / Retro) -->
+        <div class="compare-pane pane-007" id="compareLeftPane">
+          <img src="web/assets/shot_spectate.png" alt="Alternate Visual Style" id="leftCompareImg">
+          <span class="compare-badge compare-badge-left" id="leftBadge">🍸 007 GOLDENEYE</span>
+          <div class="hud-overlay" id="leftHud">
+            <div class="mock-ge-meters">
+              <div class="mock-ge-col armor">
+                <div class="mock-ge-meter">
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div>
+                </div>
+                <span>SANITY</span>
+              </div>
+              <div class="mock-ge-col health">
+                <div class="mock-ge-meter">
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div>
+                  <div class="mock-ge-seg"></div>
+                </div>
+                <span>HP</span>
+              </div>
+            </div>
+            <div class="mock-ge-crosshair"></div>
+            <div class="mock-ge-weapon">THE ALLOWANCE<br><small style="font-size:12px;color:#fff;">30 / 30 · [PRIMARY]</small></div>
+          </div>
+        </div>
+
+        <!-- Right Pane (Modern Tactical) -->
+        <div class="compare-pane" id="compareRightPane" style="clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);">
+          <img src="web/assets/shot_clean.png" alt="Modern Tactical Style" id="rightCompareImg">
+          <span class="compare-badge compare-badge-right">⚡ MODERN TACTICAL</span>
+          <div class="hud-overlay">
+            <div class="mock-modern-radar"></div>
+            <div class="mock-modern-hp"><div class="mock-modern-hpfill"></div></div>
+            <div class="mock-modern-crosshair">+</div>
+            <div class="mock-modern-weapon">The Allowance<br><small style="color:var(--text-muted);">30 / 30 · [Q] Swap</small></div>
+          </div>
+        </div>
+
+        <!-- Draggable Handle & Range -->
+        <input type="range" min="0" max="100" value="50" class="compare-range" id="compareRange" aria-label="Style Comparison Slider">
+        <div class="compare-divider" id="compareDivider" style="left: 50%;">
+          <div class="compare-handle-btn">◀ ▶</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-top:18px; gap:12px;">
+        <div style="font-size:14px; color:var(--text-secondary);">
+          💡 <b>In-Match Hotkey:</b> Press <kbd>O</kbd> or <kbd>0</kbd> to toggle styles instantly with zero reloading. Press <kbd>P</kbd> for 16-bit dither.
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a href="web/?style=007" class="btn btn-secondary" style="border-color:#ffec27; color:#ffec27; font-size:14px; padding:10px 18px;">🍸 LAUNCH 007</a>
+          <a href="web/" class="btn btn-primary" style="font-size:14px; padding:10px 18px;">🎮 LAUNCH MODERN</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Character Assets & Suburban Roster -->
+  <section class="section" id="characters">
+    <div class="section-header">
+      <div class="section-tag">Suburban Operatives · Character Assets</div>
+      <h2 class="section-title">Character Assets & 14 Factions</h2>
+      <p class="section-desc">Key art roster and real-time Three.js 3D character models across 14 suburban archetypes:</p>
+    </div>
+
+    <!-- Hero Character Assets Showcase -->
+    <div class="asset-hero-card">
+      <img src="web/assets/faction_lineup.jpg" alt="Call of Karen: Full Character Faction Lineup Key Art" class="asset-hero-img">
+      <div class="asset-hero-body">
+        <div>
+          <div class="asset-hero-title">Official Faction Lineup Key Art</div>
+          <div class="asset-hero-sub">High-resolution character designs showing suburban uniforms, weapon grips, and signature accessories.</div>
+        </div>
+        <a href="web/assets/faction_lineup.jpg" target="_blank" class="btn btn-secondary" style="font-size:14px; padding:10px 18px;">🔍 VIEW FULL RES ART</a>
+      </div>
+    </div>
+
+    <div class="asset-hero-card">
+      <img src="web/assets/lineup.png" alt="In-Engine 3D Model Silhouettes" class="asset-hero-img" style="background:#0b1120;">
+      <div class="asset-hero-body">
+        <div>
+          <div class="asset-hero-title">Real-Time In-Engine 3D Silhouettes</div>
+          <div class="asset-hero-sub">Direct capture from the standalone Three.js WebGL engine with authentic color coding and animations.</div>
+        </div>
+        <a href="web/?lineup=1" class="btn btn-secondary" style="font-size:14px; padding:10px 18px;">👥 INSPECT 3D SILHOUETTES IN ENGINE &rarr;</a>
+      </div>
+    </div>
+
+    <!-- 14 Factions Breakdown Grid -->
+    <div class="character-grid">
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#c96fb0;"></div>
+            <div class="char-swatch" style="background:#2f3557;"></div>
+            <div class="char-swatch" style="background:#e8c547;"></div>
+          </div>
+          <div>
+            <div class="char-name">The Karens</div>
+            <div class="char-role">Assault · Asymmetrical Bob</div>
+          </div>
+        </div>
+        <div class="char-quote">"The manager is on line two. Your lawn height is an unauthorized code violation!"</div>
+        <div class="char-meta"><span>LOADOUT: The Allowance AR</span><span>VO LINES: 52</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#f2f2f2;"></div>
+            <div class="char-swatch" style="background:#6a7bd1;"></div>
+            <div class="char-swatch" style="background:#e2483d;"></div>
+          </div>
+          <div>
+            <div class="char-name">Frat House</div>
+            <div class="char-role">Skirmisher · Backwards Cap</div>
+          </div>
+        </div>
+        <div class="char-quote">"Zero fear, zero GPA. Skibidi subpoena bro, you got zero rizz on this cul-de-sac."</div>
+        <div class="char-meta"><span>LOADOUT: Side Hustle SMG</span><span>VO LINES: 50</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#9fc8e8;"></div>
+            <div class="char-swatch" style="background:#c2a878;"></div>
+            <div class="char-swatch" style="background:#ffffff;"></div>
+          </div>
+          <div>
+            <div class="char-name">HOA Dads</div>
+            <div class="char-role">Heavy Anchor · White Lawn Cap</div>
+          </div>
+        </div>
+        <div class="char-quote">"Measures grass with a ruler. New Balance 608s laced for maximum turf control."</div>
+        <div class="char-meta"><span>LOADOUT: Divorce Settlement</span><span>VO LINES: 48</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#cfe0f5;"></div>
+            <div class="char-swatch" style="background:#6b6f78;"></div>
+            <div class="char-swatch" style="background:#2b3f66;"></div>
+          </div>
+          <div>
+            <div class="char-name">VC / Finance Bros</div>
+            <div class="char-role">Tech Disruptor · Patagonia Vest</div>
+          </div>
+        </div>
+        <div class="char-quote">"Disrupting suburban landscaping with an autonomous DAO mower and seed round."</div>
+        <div class="char-meta"><span>LOADOUT: Subdivision Sniper</span><span>VO LINES: 51</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#2c2c54;"></div>
+            <div class="char-swatch" style="background:#e8e1d0;"></div>
+            <div class="char-swatch" style="background:#ff70a6;"></div>
+          </div>
+          <div>
+            <div class="char-name">The Gays</div>
+            <div class="char-role">Aesthetic Vanguard · Shades</div>
+          </div>
+        </div>
+        <div class="char-quote">"Architectural Digest or death, honey! That siding color is an absolute tragedy."</div>
+        <div class="char-meta"><span>LOADOUT: The Allowance AR</span><span>VO LINES: 50</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#1a2b4c;"></div>
+            <div class="char-swatch" style="background:#e8d9b5;"></div>
+            <div class="char-swatch" style="background:#d91424;"></div>
+          </div>
+          <div>
+            <div class="char-name">The Trumpers</div>
+            <div class="char-role">Area Denial · Red Hat</div>
+          </div>
+        </div>
+        <div class="char-quote">"More yard flags than square footage! That violation notice is totally fake news, folks!"</div>
+        <div class="char-meta"><span>LOADOUT: Divorce Settlement</span><span>VO LINES: 49</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#f4efe1;"></div>
+            <div class="char-swatch" style="background:#b9a37e;"></div>
+            <div class="char-swatch" style="background:#a8323a;"></div>
+          </div>
+          <div>
+            <div class="char-name">Old Money</div>
+            <div class="char-role">Overwatch · Monocle & Ascot</div>
+          </div>
+        </div>
+        <div class="char-quote">"Generational trust funds and infinite legal retainers. Step off our hedgerow."</div>
+        <div class="char-meta"><span>LOADOUT: Subdivision Sniper</span><span>VO LINES: 48</span></div>
+      </div>
+
+      <div class="char-card">
+        <div class="char-header">
+          <div class="char-swatches">
+            <div class="char-swatch" style="background:#b5322f;"></div>
+            <div class="char-swatch" style="background:#3d5a8a;"></div>
+            <div class="char-swatch" style="background:#e8e1d0;"></div>
+          </div>
+          <div>
+            <div class="char-name">Rednecks</div>
+            <div class="char-role">Breacher · Trucker Cap</div>
+          </div>
+        </div>
+        <div class="char-quote">"Catalytic converters and generational HOA beef. If it ain't loud, it ain't right."</div>
+        <div class="char-meta"><span>LOADOUT: Side Hustle SMG</span><span>VO LINES: 47</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- World & Environment Assets -->
+  <section class="section" id="world">
+    <div class="section-header">
+      <div class="section-tag">Suburban Battlefield · World Assets</div>
+      <h2 class="section-title">The Cul-de-Sac: Environment & Map</h2>
+      <p class="section-desc">Key art, aerial surveillance, and tactical geometry of the suburban warzone:</p>
+    </div>
+
+    <!-- World Hero Key Art Showcase -->
+    <div class="asset-hero-card">
+      <img src="web/assets/cover_key_art.jpg" alt="Cul-de-Sac Neighborhood Battle Key Art" class="asset-hero-img">
+      <div class="asset-hero-body">
+        <div>
+          <div class="asset-hero-title">Cul-de-Sac Neighborhood Key Art</div>
+          <div class="asset-hero-sub">Panoramic view of the suburban battlefield showing perimeter fences, manicured lawns, parked cars, and conflict zones.</div>
+        </div>
+        <a href="web/assets/cover_key_art.jpg" target="_blank" class="btn btn-secondary" style="font-size:14px; padding:10px 18px;">🔍 VIEW FULL RES MAP</a>
+      </div>
+    </div>
+
+    <!-- Two-Column World Render Showcase -->
+    <div class="grid-dual" style="margin-bottom: 24px;">
+      <div class="world-card">
+        <img src="web/assets/shot_clean.png" alt="Clean Daytime Architectural View" class="world-card-img" style="height:260px;">
+        <div class="world-card-body">
+          <div class="world-card-title">Clean 3D Architectural Geometry</div>
+          <div class="world-card-desc">Zero-dependency Three.js procedural suburban cul-de-sac. Features 6 houses, curbs, driveways, mailboxes, and boundary fences designed for 60fps browser rendering.</div>
+        </div>
+      </div>
+
+      <div class="world-card">
+        <img src="web/assets/shot_spectate.png" alt="Drone Surveillance View" class="world-card-img" style="height:260px;">
+        <div class="world-card-body">
+          <div class="world-card-title">Surveillance Drone Tactical Angle</div>
+          <div class="world-card-desc">Autonomous spectator camera showing 6v6 bots navigating the central asphalt circle, flank driveways, and objective zones in real-time.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Points of Interest Grid -->
+    <div class="world-grid">
+      <div class="world-card">
+        <div class="world-card-body">
+          <div class="world-card-title">🏠 Court 01 Asphalt Circle</div>
+          <div class="world-card-desc">The high-intensity central traffic circle. Parked vehicles provide soft breach cover. Serves as the primary King of the Lawn hill and Receipt Check drop zone.</div>
+        </div>
+      </div>
+
+      <div class="world-card">
+        <div class="world-card-body">
+          <div class="world-card-title">🦘 Trampoline High-Ground</div>
+          <div class="world-card-desc">Backyard trampoline physics pad allowing players to super-jump onto SUV roofs and porch shingles for vertical sniper overwatch with Subdivision.</div>
+        </div>
+      </div>
+
+      <div class="world-card">
+        <div class="world-card-body">
+          <div class="world-card-title">📬 Driveway Chokepoints</div>
+          <div class="world-card-desc">Narrow alleyways between two-car garages and cedar fences. Perfect killzones for bounce-shot Lawsuit Grenades and Divorce Settlement shotgun traps.</div>
+        </div>
+      </div>
+
+      <div class="world-card">
+        <div class="world-card-body">
+          <div class="world-card-title">🌿 The President's Lawn</div>
+          <div class="world-card-desc">Pristine Kentucky Bluegrass territory. Strict 17-second anti-camping radar snitch enforcement triggers sirens and exposes campers to all players.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Gameplay Loop GIFs Strip -->
   <section class="section" id="clips">
     <div class="section-header">
@@ -1015,6 +1745,61 @@
         window.speechSynthesis.speak(u);
       } else {
         alert(text);
+      }
+    });
+  });
+
+  // Interactive Style Compare Slider Logic
+  const compareRange = document.getElementById('compareRange');
+  const compareRightPane = document.getElementById('compareRightPane');
+  const compareDivider = document.getElementById('compareDivider');
+  const compareLeftPane = document.getElementById('compareLeftPane');
+  const leftBadge = document.getElementById('leftBadge');
+  const leftHud = document.getElementById('leftHud');
+
+  if (compareRange && compareRightPane && compareDivider) {
+    const updateSlider = (val) => {
+      compareRightPane.style.clipPath = `polygon(${val}% 0, 100% 0, 100% 100%, ${val}% 100%)`;
+      compareDivider.style.left = `${val}%`;
+    };
+    compareRange.addEventListener('input', (e) => updateSlider(e.target.value));
+  }
+
+  // Style Tabs Switcher
+  const styleBtns = document.querySelectorAll('.style-tab-btn');
+  styleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      styleBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const style = btn.getAttribute('data-style');
+      const leftText = btn.getAttribute('data-left');
+      if (leftBadge) leftBadge.textContent = leftText.toUpperCase();
+      
+      if (!compareLeftPane || !leftHud) return;
+      compareLeftPane.className = 'compare-pane';
+      if (style === '007') {
+        compareLeftPane.classList.add('pane-007');
+        leftHud.innerHTML = `
+          <div class="mock-ge-meters">
+            <div class="mock-ge-col armor"><div class="mock-ge-meter"><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div></div><span>SANITY</span></div>
+            <div class="mock-ge-col health"><div class="mock-ge-meter"><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div><div class="mock-ge-seg"></div></div><span>HP</span></div>
+          </div>
+          <div class="mock-ge-crosshair"></div>
+          <div class="mock-ge-weapon">THE ALLOWANCE<br><small style="font-size:12px;color:#fff;">30 / 30 · [PRIMARY]</small></div>
+        `;
+      } else if (style === 'ringcam') {
+        compareLeftPane.classList.add('pane-ringcam');
+        leftHud.innerHTML = `
+          <div class="cctv-scanlines"></div>
+          <div class="cctv-header"><span class="cctv-rec"></span>REC [●] 23:41:09 CAM 04 - CUL-DE-SAC S</div>
+          <div style="position:absolute; bottom:20px; left:20px; font-family:var(--font-mono); color:#22c55e; font-size:13px; text-shadow:0 0 6px #22c55e;">MOTION DETECTED: LOITERING SUSPECT</div>
+        `;
+      } else if (style === 'retro') {
+        compareLeftPane.classList.add('pane-retro');
+        leftHud.innerHTML = `
+          <div style="position:absolute; top:20px; left:20px; font-family:Impact,sans-serif; color:#ffec27; font-size:24px; text-shadow:2px 2px #000;">16-BIT RETRO</div>
+          <div style="position:absolute; bottom:20px; left:20px; font-family:var(--font-mono); color:#fff; font-size:12px; background:rgba(0,0,0,0.8); border:1px solid #444; padding:4px 8px;">DITHER: 4x4 BAYER MATRIX</div>
+        `;
       }
     });
   });

@@ -9,7 +9,7 @@ import { join } from 'node:path';
 
 const [query = 'spectate=1&seed=7', out = 'dist/shot.png', secs = '6', evalJs = ''] = process.argv.slice(2);
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const port = 9333;
+const port = 9330 + Math.floor(Math.random() * 500);
 const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${port}`, '--window-size=1280,720', '--use-angle=metal',
   '--autoplay-policy=no-user-gesture-required', '--mute-audio', `--user-data-dir=${mkdtempSync(join(tmpdir(), 'hoa-'))}`, 'about:blank'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -39,7 +39,7 @@ const send = (method, params = {}) => new Promise(r => { const i = ++id; pending
 await send('Runtime.enable');
 await send('Log.enable');
 await send('Page.enable');
-await send('Page.navigate', { url: `http://localhost:8642/web/?${query}` });
+await send('Page.navigate', { url: `http://127.0.0.1:8642/web/?${query}` });
 await sleep(Number(secs) * 1000);
 if (evalJs) {
   const r = await send('Runtime.evaluate', { expression: evalJs, awaitPromise: true, returnByValue: true });
