@@ -26,9 +26,10 @@ export class Mode {
   botGoal(actor) { return null; }
   /**
    * Role for the i-th of n bots on a team: 'objective' (plays the mode's botGoal) or 'hunter'
-   * (hunts players; in objective modes it flanks the ring around the objective).
+   * (hunts players; in objective modes it flanks the ring around the objective). Default: any mode
+   * that overrides botGoal gets a 50/50 split; override this to tune it.
    */
-  botRole(actor, i, n) { return 'hunter'; }
+  botRole(actor, i, n) { return this.botGoal !== Mode.prototype.botGoal && i < Math.ceil(n / 2) ? 'objective' : 'hunter'; }
   respawnDelay(actor) { return actor.isBot ? 3 : 4.5; }
   /** Short HUD line, or null. */
   hud(localActor) { return null; }
