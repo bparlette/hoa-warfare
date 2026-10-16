@@ -68,15 +68,15 @@ test('DEMO_FACTIONS: contains exactly the 6 required factions', () => {
 
 // ------------------------------------------------------------------ 2. Gating & Bot Pool tests
 
-test('Demo Gating: locked faction filtering partitions 20 factions into 6 demo + 14 locked', () => {
+test('Demo Gating: locked faction filtering partitions 16 factions into 6 demo + 10 locked', () => {
   const allFactionIds = Object.keys(content.factions);
-  assert.equal(allFactionIds.length, 20, 'Expected 20 total factions');
+  assert.equal(allFactionIds.length, 16, 'Expected 16 total factions');
 
   const unlocked = allFactionIds.filter(id => DEMO_FACTIONS.includes(id));
   const locked = allFactionIds.filter(id => !DEMO_FACTIONS.includes(id));
 
   assert.equal(unlocked.length, 6, 'Exactly 6 factions are unlocked in demo mode');
-  assert.equal(locked.length, 14, 'Exactly 14 factions are locked in demo mode');
+  assert.equal(locked.length, 10, 'Exactly 10 factions are locked in demo mode');
   for (const id of locked) {
     assert.ok(!DEMO_FACTIONS.includes(id), `Locked faction ${id} must not be in DEMO_FACTIONS`);
   }
@@ -149,7 +149,7 @@ test('Interactive Suburban Modal: showDemoModal and hideDemoModal update DOM app
     assert.equal(modal.classList.contains('hidden'), false, 'Modal should become visible');
     assert.equal(title.textContent, '🔒 LOCKED IN FREE WEB DEMO', 'Title should be locked banner');
     assert.ok(body.innerHTML.includes('The Furries'), 'Body should mention faction name');
-    assert.ok(body.innerHTML.includes('all 20 fully voiced factions'), 'Body should mention 20 factions');
+    assert.ok(body.innerHTML.includes('all 16 fully voiced factions'), 'Body should mention 16 factions');
     assert.ok(body.innerHTML.includes('$4.99 release on Steam'), 'Body should mention Steam pricing');
     assert.equal(sub.textContent, '"It\'s not a costume. It\'s a fursona."', 'Sub should show tagline');
 

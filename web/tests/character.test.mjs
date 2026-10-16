@@ -113,7 +113,7 @@ const hoaContent = JSON.parse(readFileSync(new URL('../../data/hoa_content.json'
 
 test('character: every faction in hoa_content.json resolves to a custom, non-default HEADWEAR entry', () => {
   const factionEntries = Object.entries(hoaContent.factions);
-  assert.equal(factionEntries.length, 20, 'all 20 shipping and draft factions present');
+  assert.equal(factionEntries.length, 16, 'all 16 shipping factions present');
   for (const [id, f] of factionEntries) {
     const hatName = f.look?.hat;
     assert.ok(hatName, `faction ${id} has a look.hat defined`);
@@ -145,7 +145,7 @@ test('character: each new headwear mesh builds valid Three.js meshes with non-em
 
 test('character: all signature props instantiate and attach correctly', () => {
   const signatureFactions = [
-    'brainRot', 'cloutStreamers', 'wokeLibs', 'mlmHuns',
+    'brainRot', 'cloutStreamers', 'wokeLibs',
     'pickleballRetirees', 'tradwives', 'animeWeebs', 'furries',
     'gymRats', 'wallstreetBets', 'hoaDads', 'rednecks'
   ];

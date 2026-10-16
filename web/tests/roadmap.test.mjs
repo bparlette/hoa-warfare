@@ -194,7 +194,7 @@ describe('Roadmap Features: Difficulty, Career Progression, Maps, Killstreaks & 
 
   it('verifies weekly featured rivalry matchmaking bias', async () => {
     const { FEATURED_RIVALRIES, getFeaturedRivalry, pickBotFaction } = await import('../src/engine/game.js');
-    assert.ok(FEATURED_RIVALRIES.length >= 7, 'Has at least 7 featured rivalry matchups');
+    assert.ok(FEATURED_RIVALRIES.length >= 6, 'Has at least 6 featured rivalry matchups');
 
     const week0Rivalry = getFeaturedRivalry(0);
     assert.deepEqual(week0Rivalry, ['karens', 'wallstreetBets']);

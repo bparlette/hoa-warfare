@@ -194,3 +194,21 @@ test('map: residential lawns contain sprinkler nodes', () => {
     assert.ok(s.radius > 0);
   }
 });
+
+test('audio: Voice.say pads the busy window against edge clipping', async () => {
+  stubFetch({ version: 1, lines: { 'x.y': { file: 'x_y.ogg', duration: 2.0 } } });
+  globalThis.Audio = class { constructor() {} play() { return Promise.resolve(); } pause() {} set volume(v) {} };
+  try {
+    const v = new Voice({ factions: {} });
+    await tick();
+    const t0 = performance.now() / 1000;
+    const started = v.say({ text: 'hello world', lineId: 'x.y', priority: 3 });
+    assert.ok(started);
+    // until = now + 0.15 startup pad + 2.0 duration + 0.25 tail pad
+    const expected = t0 + 0.15 + 2.0 + 0.25;
+    assert.ok(Math.abs(v.current.until - expected) < 0.1, `until=${v.current.until} expected~${expected}`);
+    assert.ok(v.isBusy());
+  } finally {
+    delete globalThis.Audio;
+  }
+});

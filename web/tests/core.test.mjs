@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ContentLibrary, estimateSeconds } from '../src/core/content.js';
 import { BarkDirector } from '../src/core/barkDirector.js';
+import { ChatterDirector } from '../src/core/chatter.js';
 import { AudioLimiter, AnnouncerQueue } from '../src/core/audioLimiter.js';
 import { CampingMonitor } from '../src/core/campingMonitor.js';
 import { MatchTracker } from '../src/core/matchTracker.js';
@@ -159,4 +160,53 @@ test('tracker: first blood, multikill, revenge, shutdown, streaks, melee', () =>
   assert.ok(r.isRevenge && r.isShutdown);
   assert.equal(r.victimEvent, 'humiliated');
   assert.equal(m.registerKill({ killerId: null, victimId: 'c', now: 30 }).victimEvent, 'selfKill');
+});
+
+test('chatter: fires after 5s of silence with idle voice', () => {
+  const ch = new ChatterDirector({ rng: mulberry32(1) });
+  const actors = [
+    { id: 'a1', team: 0, alive: true },
+    { id: 'b1', team: 1, alive: true },
+  ];
+  const r = ch.maybeChatter(10, { actors, isVoiceBusy: () => false });
+  assert.ok(r, 'should chatter when never spoken');
+  assert.ok(['spotted', 'spawn'].includes(r.eventId));
+  assert.ok(r.actor && r.actor.alive);
+});
+
+test('chatter: stays quiet within 5s of a voice line', () => {
+  const ch = new ChatterDirector({ rng: mulberry32(1) });
+  const actors = [{ id: 'a1', team: 0, alive: true }];
+  ch.notifyVoicePlayed(10);
+  assert.equal(ch.maybeChatter(14.9, { actors, isVoiceBusy: () => false }), null);
+  assert.ok(ch.maybeChatter(15.01, { actors, isVoiceBusy: () => false }));
+});
+
+test('chatter: never fires while voice is busy', () => {
+  const ch = new ChatterDirector({ rng: mulberry32(1) });
+  const actors = [{ id: 'a1', team: 0, alive: true }];
+  assert.equal(ch.maybeChatter(100, { actors, isVoiceBusy: () => true }), null);
+});
+
+test('chatter: alternates teams for back-and-forth', () => {
+  const ch = new ChatterDirector({ rng: mulberry32(42) });
+  const actors = [
+    { id: 'a1', team: 0, alive: true },
+    { id: 'a2', team: 0, alive: true },
+    { id: 'b1', team: 1, alive: true },
+    { id: 'b2', team: 1, alive: true },
+  ];
+  const teams = [];
+  for (let i = 0; i < 6; i++) {
+    const r = ch.maybeChatter(100 + i * 10, { actors, isVoiceBusy: () => false });
+    assert.ok(r);
+    teams.push(r.actor.team);
+  }
+  for (let i = 1; i < teams.length; i++) assert.notEqual(teams[i], teams[i - 1], 'teams must alternate');
+});
+
+test('chatter: silent with no living actors', () => {
+  const ch = new ChatterDirector({ rng: mulberry32(1) });
+  assert.equal(ch.maybeChatter(100, { actors: [], isVoiceBusy: () => false }), null);
+  assert.equal(ch.maybeChatter(100, { actors: [{ id: 'a1', team: 0, alive: false }], isVoiceBusy: () => false }), null);
 });
