@@ -338,6 +338,7 @@ export function buildMenu() {
               <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
             </div>
           </div>
+          <div class="fc-gun-tag">${wpn.name.toUpperCase()}</div>
         </div>
 
         <div class="fc-info">
