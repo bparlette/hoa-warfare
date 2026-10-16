@@ -345,6 +345,9 @@ export function buildMenu() {
       const fMeta = FACTION_METADATA[id] || {};
       const fRole = fMeta.role || 'HOA OPERATIVE';
       const wpnSrc = state.wpnVisual === '3d' ? wpn.asset3d : wpn.asset;
+      const cryRaw = f.lines?.roundStart?.clean?.[0] || f.lines?.kill?.clean?.[0] || '';
+      const cry = typeof cryRaw === 'object' ? (cryRaw.t || cryRaw.alt || '') : cryRaw;
+      const tagline = f.tagline || 'Defend the cul-de-sac at all costs.';
 
       if (isLocked) {
         el.className = 'fc fc-card locked';
@@ -367,11 +370,17 @@ export function buildMenu() {
             </div>
           </div>
           <div class="fc-label">
-            <div class="fc-label-main">
-              <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-              <b class="fc-name">${f.name}</b>
+            <div class="fc-label-top">
+              <div class="fc-label-main">
+                <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+                <b class="fc-name">${f.name}</b>
+              </div>
+              <span class="fc-faction-role">${fRole}</span>
             </div>
-            <span class="fc-faction-role">${fRole}</span>
+            <div class="fc-humor-wrap">
+              <p class="fc-tagline" title="${tagline}">“${tagline}”</p>
+              <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
+            </div>
           </div>
         `;
         el.onclick = () => showDemoModal(f.name, f.tagline);
@@ -397,11 +406,17 @@ export function buildMenu() {
             </div>
           </div>
           <div class="fc-label">
-            <div class="fc-label-main">
-              <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-              <b class="fc-name">${f.name}</b>
+            <div class="fc-label-top">
+              <div class="fc-label-main">
+                <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+                <b class="fc-name">${f.name}</b>
+              </div>
+              <span class="fc-faction-role">${fRole}</span>
             </div>
-            <span class="fc-faction-role">${fRole}</span>
+            <div class="fc-humor-wrap">
+              <p class="fc-tagline" title="${tagline}">“${tagline}”</p>
+              <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
+            </div>
           </div>
         `;
         el.onclick = () => { state.faction = id; buildMenu(); };
@@ -459,9 +474,37 @@ export function buildMenu() {
   if ($('mutTurbo')) $('mutTurbo').checked = !!state.mutators.turbo;
   if ($('optGoldSkin')) $('optGoldSkin').checked = !!state.goldSkin;
   if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
+  updateMatchSettingsSummary();
 }
-if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; };
-if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; };
+
+function updateMatchSettingsSummary() {
+  const sumEl = $('matchSettingsSummary');
+  if (!sumEl) return;
+  const mDef = MODES[state.mode];
+  const mapDef = MAPS[state.map];
+  const mLabel = mDef ? mDef.label.replace('Cul-de-sac ', '') : 'Clash';
+  const mapLabel = mapDef ? mapDef.name.replace('Oakridge ', '').replace(' Club', '').replace('Sunset ', '') : 'Cul-de-Sac';
+  const diffLabel = state.difficulty === 'easy' ? 'Easy' : state.difficulty === 'hard' ? 'Hard' : 'Med';
+  sumEl.textContent = `${mLabel} · ${mapLabel} · ${diffLabel}`;
+}
+
+if ($('btnMatchSettings')) {
+  $('btnMatchSettings').onclick = () => { $('matchSettingsModal')?.classList.remove('hidden'); };
+}
+if ($('closeMatchSettings')) {
+  $('closeMatchSettings').onclick = () => { $('matchSettingsModal')?.classList.add('hidden'); };
+}
+if ($('saveMatchSettings')) {
+  $('saveMatchSettings').onclick = () => { $('matchSettingsModal')?.classList.add('hidden'); };
+}
+if ($('matchSettingsModal')) {
+  $('matchSettingsModal').onclick = (e) => {
+    if (e.target === $('matchSettingsModal')) $('matchSettingsModal').classList.add('hidden');
+  };
+}
+
+if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; updateMatchSettingsSummary(); };
+if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; updateMatchSettingsSummary(); };
 if ($('optMap')) {
   $('optMap').onchange = e => {
     const val = e.target.value;
@@ -474,6 +517,7 @@ if ($('optMap')) {
       return;
     }
     state.map = val;
+    updateMatchSettingsSummary();
   };
 }
 if ($('mutBigHead')) $('mutBigHead').onchange = e => { state.mutators.bigHead = e.target.checked; };

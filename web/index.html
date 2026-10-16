@@ -72,39 +72,26 @@
     <!-- TOP HEADER -->
     <header class="lobby-header">
       <div class="lobby-brand">
-        <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="main-logo" width="380" height="201">
-        <h1 class="sr-only">CALL OF KAREN: HOA WARFARE</h1>
-        <p class="tag">The Satirical Suburban FPS · 6v6 Cul-de-Sac Combat</p>
+        <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="main-logo" width="964" height="510">
+        <div class="lobby-brand-text">
+          <h1 class="sr-only">CALL OF KAREN: HOA WARFARE</h1>
+          <div class="pitch-badge">THE SATIRICAL SUBURBAN FPS</div>
+          <p class="tag">6v6 Cul-de-Sac Warfare · Karen vs HOA Dads vs VC Bros</p>
+        </div>
       </div>
       <div class="lobby-quick-bar">
-        <div class="lobby-mode-select">
+        <div class="lobby-mode-select lobby-name-select">
           <label for="optName">NAME:</label>
           <input id="optName" type="text" maxlength="16" placeholder="Your name" autocomplete="off" spellcheck="false">
         </div>
-        <div class="lobby-mode-select">
-          <label for="optMode">MODE:</label>
-          <select id="optMode"></select>
-        </div>
-        <div class="lobby-mode-select">
-          <label for="optMap">MAP:</label>
-          <select id="optMap">
-            <option value="culdesac" selected>Oakridge Cul-de-Sac</option>
-            <option value="pickleball">Shady Pines Pickleball Club</option>
-            <option value="stripmall">Sunset Strip Mall</option>
-          </select>
-        </div>
-        <div class="lobby-mode-select">
-          <label for="optDifficulty">DIFF:</label>
-          <select id="optDifficulty">
-            <option value="easy">Easy (Lock-On · 3x HP)</option>
-            <option value="medium" selected>Medium (2x HP)</option>
-            <option value="hard">Hard (Classic 1x)</option>
-          </select>
-        </div>
-        <div class="lobby-online">
-          <button type="button" id="btnQuickMatch" class="btn-online" disabled>🌐 QUICK MATCH</button>
-          <button type="button" id="btnFriends" class="btn-online btn-online-alt" disabled>👥 FRIENDS</button>
-        </div>
+        <button type="button" id="btnMatchSettings" class="btn-match-settings" title="Change Mode, Map, and Bot Difficulty">
+          <span class="settings-gear">⚙️</span>
+          <span class="settings-text-wrap">
+            <span class="settings-title">MATCH SETTINGS</span>
+            <span id="matchSettingsSummary" class="settings-sub">Clash · Cul-de-Sac · Med</span>
+          </span>
+        </button>
+        <button type="button" id="btnFriends" class="btn-online btn-online-alt" disabled title="Play with friends in a private room">👥 FRIENDS</button>
         <button type="button" id="btnFullscreen" class="btn-online btn-online-alt" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
         <a id="btnWishlist" data-steam="menu" href="#" onclick="return false" class="btn-wishlist btn-wishlist-compact">★ WISHLIST ON STEAM ($4.99)</a>
       </div>
@@ -127,6 +114,7 @@
       <div id="factions" class="factions-grid-2x3"></div>
       <div class="lobby-action-bar">
         <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY NOW</button>
+        <button type="button" id="btnQuickMatch" class="btn-online btn-quickmatch-main" disabled>🌐 QUICK MATCH</button>
         <div id="heroDossier" style="display:none;"></div>
       </div>
 
@@ -202,6 +190,43 @@
     <h2>🌐 Connecting…</h2>
     <p id="connectingMsg">Finding a match…</p>
     <button id="cancelConnect" type="button">Cancel</button>
+  </div>
+</div>
+
+<div id="matchSettingsModal" class="overlay hidden">
+  <div class="panel match-settings-card">
+    <div class="modal-header">
+      <h3>⚙️ MATCH SETTINGS</h3>
+      <button type="button" id="closeMatchSettings" class="btn-close-modal" aria-label="Close match settings">✕</button>
+    </div>
+    <div class="match-settings-body">
+      <div class="settings-field">
+        <label for="optMode">GAME MODE</label>
+        <select id="optMode"></select>
+        <small class="field-desc">Choose your suburban objective: Cul-de-sac Clash, Steal the Casserole, or HOA Patrol.</small>
+      </div>
+      <div class="settings-field">
+        <label for="optMap">BATTLEGROUND MAP</label>
+        <select id="optMap">
+          <option value="culdesac" selected>Oakridge Cul-de-Sac (Free in Demo)</option>
+          <option value="pickleball">Shady Pines Pickleball Club ($4.99 Full Game)</option>
+          <option value="stripmall">Sunset Strip Mall ($4.99 Full Game)</option>
+        </select>
+        <small class="field-desc">Battle across manicured lawns, neon pickleball courts, or the supermarket parking lot.</small>
+      </div>
+      <div class="settings-field">
+        <label for="optDifficulty">BOT DIFFICULTY</label>
+        <select id="optDifficulty">
+          <option value="easy">Easy (Auto Lock-On · 3x HP)</option>
+          <option value="medium" selected>Medium (Standard Aim · 2x HP)</option>
+          <option value="hard">Hard (Classic 1x · Tournament)</option>
+        </select>
+        <small class="field-desc">Tweak damage scaling and aim-assist lock-on.</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="saveMatchSettings" class="btn-deploy btn-primary-settings">CONFIRM SETTINGS</button>
+    </div>
   </div>
 </div>
 
