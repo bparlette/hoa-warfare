@@ -106,21 +106,17 @@ const cropScript = `
   results['fratHouse'] = extractCard(img1, 20, 220, 120, 420);
   results['brainRot'] = extractCard(img1, 140, 230, 125, 410);
   results['valleyGirls'] = extractCard(img1, 255, 215, 120, 425);
-  results['oldMoney'] = extractCard(img1, 365, 225, 120, 415);
   results['rednecks'] = extractCard(img1, 475, 210, 120, 430);
   results['karens'] = extractCard(img1, 585, 225, 110, 415);
   results['gymRats'] = extractCard(img1, 675, 190, 160, 450);
-  results['theaterKids'] = extractCard(img1, 820, 215, 115, 425);
   results['cloutStreamers'] = extractCard(img1, 915, 210, 130, 430);
   results['wallstreetBets'] = extractCard(img1, 1030, 220, 115, 420);
   results['hoaDads'] = extractCard(img1, 1130, 220, 125, 420);
-  results['emoKids'] = extractCard(img1, 1235, 230, 120, 410);
 
   // 8 from img2
   results['fabulous'] = extractCard(img2, 20, 195, 150, 460);
   results['trumpers'] = extractCard(img2, 165, 210, 175, 445);
   results['wokeLibs'] = extractCard(img2, 345, 200, 155, 455);
-  results['mlmHuns'] = extractCard(img2, 510, 190, 145, 465);
   results['furries'] = extractCard(img2, 635, 165, 255, 490);
   results['animeWeebs'] = extractCard(img2, 870, 205, 155, 450);
   results['tradwives'] = extractCard(img2, 1025, 210, 170, 445);

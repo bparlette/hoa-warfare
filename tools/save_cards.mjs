@@ -63,9 +63,9 @@ if (!ready) {
 }
 
 const factions = [
-  'fratHouse', 'brainRot', 'valleyGirls', 'oldMoney', 'rednecks', 'karens',
-  'gymRats', 'theaterKids', 'cloutStreamers', 'wallstreetBets', 'hoaDads', 'emoKids',
-  'fabulous', 'trumpers', 'wokeLibs', 'mlmHuns', 'furries', 'animeWeebs', 'tradwives', 'pickleballRetirees',
+  'fratHouse', 'brainRot', 'valleyGirls', 'rednecks', 'karens',
+  'gymRats', 'cloutStreamers', 'wallstreetBets', 'hoaDads',
+  'fabulous', 'trumpers', 'wokeLibs', 'furries', 'animeWeebs', 'tradwives', 'pickleballRetirees',
   '__master__'
 ];
 
