@@ -23,6 +23,29 @@ export function resolveLoadout(weapons, loadout = 'default') {
   return out;
 }
 
+export const FACTION_DEFAULT_LOADOUTS = {
+  karens: 'allowance',
+  hoaDads: 'allowance',
+  wokeLibs: 'allowance',
+  animeWeebs: 'allowance',
+  tradwives: 'divorceSettlement',
+  rednecks: 'divorceSettlement',
+  gymRats: 'divorceSettlement',
+  emoKids: 'divorceSettlement',
+  furries: 'sideHustle',
+  brainRot: 'sideHustle',
+  valleyGirls: 'sideHustle',
+  cloutStreamers: 'sideHustle',
+  fratHouse: 'sideHustle',
+  mlmHuns: 'sideHustle',
+  oldMoney: 'trustFund',
+  vcBros: 'trustFund',
+  theGays: 'trustFund',
+  theaterKids: 'trustFund',
+  trumpers: 'subdivision',
+  pickleballRetirees: 'permit',
+};
+
 export const BODY = { radius: 0.4, height: 1.8, eye: 1.6, hitRadius: 0.42, hitHeight: 1.42, headY: 1.62, headR: 0.25 };
 export const SPAWN_SAFE_M = 25;
 
@@ -84,6 +107,9 @@ export class Sim {
   }
 
   addActor({ id, name, team, faction, isBot = true, loadout = 'default' }) {
+    if (loadout === 'default' && faction && FACTION_DEFAULT_LOADOUTS[faction]) {
+      loadout = FACTION_DEFAULT_LOADOUTS[faction];
+    }
     const weapons = resolveLoadout(this.weapons, loadout);
     const a = {
       id, name, team, faction, isBot, weapons, triggerHeld: false,

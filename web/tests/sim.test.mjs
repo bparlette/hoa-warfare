@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { ContentLibrary } from '../src/core/content.js';
 import { mulberry32 } from '../src/core/rng.js';
 import { buildCulDeSac, findPath } from '../src/engine/map.js';
-import { Sim, rayActor, BODY, resolveLoadout } from '../src/engine/sim.js';
+import { Sim, rayActor, BODY, resolveLoadout, FACTION_DEFAULT_LOADOUTS } from '../src/engine/sim.js';
 import { MODES } from '../src/engine/modes.js';
 import { BarkSystem } from '../src/engine/barks.js';
 
@@ -155,6 +155,19 @@ test('weapons.json: every loadout resolves and every weapon has the fields its f
   for (const name of Object.keys(weapons.loadouts)) {
     const l = resolveLoadout(weapons, name);
     assert.equal(l.primary.slot, 'primary', `${name}.primary`);
+  }
+});
+
+test('faction weapons: every faction has a signature weapon loadout that assigns on spawn', () => {
+  const factionKeys = Object.keys(content.factions);
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(42) });
+  for (const f of factionKeys) {
+    assert.ok(FACTION_DEFAULT_LOADOUTS[f], `missing default loadout for faction ${f}`);
+    const actor = sim.addActor({ id: `test_${f}`, name: f, team: 0, faction: f });
+    assert.ok(actor.weapons.primary, `missing primary weapon for faction ${f}`);
+    const loadoutKey = FACTION_DEFAULT_LOADOUTS[f];
+    const expectedLoadout = resolveLoadout(weapons, loadoutKey);
+    assert.equal(actor.weapons.primary.id, expectedLoadout.primary.id, `${f} weapon mismatch`);
   }
 });
 

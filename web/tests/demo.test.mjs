@@ -272,10 +272,16 @@ test('buildMenu: renders demo-lock badges on locked factions and clicking opens 
     assert.ok(box.children.length > 0, 'buildMenu must populate factions box');
 
     const unlockedCards = box.children.filter(c => !c.className.includes('locked'));
-    const lockedCards = box.children.filter(c => c.className.includes('locked'));
+    assert.equal(unlockedCards.length, 6, 'Page 1 displays the 6 unlocked demo factions');
 
-    assert.equal(unlockedCards.length, 6, 'Page 1 must display the 6 unlocked demo factions');
-    assert.ok(lockedCards.length > 0, 'Page 1 includes locked factions to fill the page');
+    // Advance to page 2 to verify locked cards in demo mode
+    const nextBtn = $('fcNext');
+    if (nextBtn && nextBtn.onclick) {
+      nextBtn.onclick({ stopPropagation: () => {} });
+    }
+    const page2Cards = box.children;
+    const lockedCards = page2Cards.filter(c => c.className.includes('locked'));
+    assert.ok(lockedCards.length > 0, 'Page 2 includes locked factions');
 
     for (const card of lockedCards) {
       assert.ok(card.innerHTML.includes('demo-lock'), 'Locked card must contain demo-lock badge');

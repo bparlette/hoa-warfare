@@ -149,8 +149,31 @@ export function hideDemoModal() {
 
 // ------------------------------------------------------------------ menu
 
+export const FACTION_LOADOUTS = {
+  karens: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
+  hoaDads: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
+  tradwives: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
+  rednecks: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
+  gymRats: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
+  furries: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  brainRot: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  valleyGirls: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  cloutStreamers: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  fratHouse: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  trumpers: { loadout: 'lmg', name: 'The Subdivision', class: 'LMG', icon: '🏘️' },
+  oldMoney: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
+  vcBros: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
+  theGays: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
+  pickleballRetirees: { loadout: 'pistol', name: 'The Building Permit', class: 'PISTOL', icon: '📄' },
+  wokeLibs: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
+  mlmHuns: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
+  animeWeebs: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
+  theaterKids: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
+  emoKids: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' }
+};
+
 let menuPage = 0;
-const FACTIONS_PER_PAGE = 8;
+export const FACTIONS_PER_PAGE = 6;
 
 export function buildMenu() {
   const box = $('factions');
@@ -178,38 +201,34 @@ export function buildMenu() {
       const f = factions[id];
       const el = document.createElement('div');
       const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
-      const meta = FACTION_METADATA[id] || { icon: '🎖️', role: 'OPERATIVE', gear: f.tagline, nemesis: 'Cul-de-Sac', quote: f.tagline };
+      const isSel = id === state.faction;
+      const wpn = FACTION_LOADOUTS[id] || { name: 'The Allowance', class: 'AR', icon: '🔫' };
 
       if (isLocked) {
-        el.className = 'fc locked';
+        el.className = 'fc fc-card locked';
         el.innerHTML = `
-          <div class="fc-badge" style="border-color:${f.look.accent};">
-            <span class="fc-icon">${meta.icon}</span>
-            <div class="fc-pip"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.accent}"></i></div>
-          </div>
-          <div class="fc-info">
-            <div class="fc-name-row">
-              <b class="fc-name">${f.name}</b>
-              <span class="fc-role" style="color:${f.look.accent};">[${meta.role}]</span>
-            </div>
-            <div class="fc-gear">🎒 ${meta.gear}</div>
+          <div class="fc-char-wrap" style="background: radial-gradient(circle, ${f.look.accent}22 0%, rgba(10,16,30,0.85) 75%);">
+            <span class="fc-wpn-badge" title="${wpn.name}">${wpn.icon} ${wpn.class}</span>
+            <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
             <span class="demo-lock">🔒 STEAM ONLY</span>
+          </div>
+          <div class="fc-label">
+            <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+            <b class="fc-name">${f.name}</b>
           </div>
         `;
         el.onclick = () => showDemoModal(f.name, f.tagline);
       } else {
-        el.className = 'fc' + (id === state.faction ? ' sel' : '');
+        el.className = 'fc fc-card' + (isSel ? ' sel' : '');
+        el.style.borderColor = isSel ? '#ffec27' : f.look.accent;
         el.innerHTML = `
-          <div class="fc-badge" style="border-color:${f.look.accent};">
-            <span class="fc-icon">${meta.icon}</span>
-            <div class="fc-pip"><i style="background:${f.look.shirt}"></i><i style="background:${f.look.accent}"></i></div>
+          <div class="fc-char-wrap" style="background: radial-gradient(circle, ${f.look.accent}33 0%, rgba(10,16,30,0.85) 75%);">
+            <span class="fc-wpn-badge" title="${wpn.name}">${wpn.icon} ${wpn.class}</span>
+            <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
           </div>
-          <div class="fc-info">
-            <div class="fc-name-row">
-              <b class="fc-name">${f.name}</b>
-              <span class="fc-role" style="color:${f.look.accent};">[${meta.role}]</span>
-            </div>
-            <div class="fc-gear">🎒 ${meta.gear}</div>
+          <div class="fc-label">
+            <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+            <b class="fc-name">${f.name}</b>
           </div>
         `;
         el.onclick = () => { state.faction = id; buildMenu(); };
@@ -217,11 +236,10 @@ export function buildMenu() {
       box.appendChild(el);
     }
     if (pag) {
-      const start = startIdx + 1;
-      const end = Math.min(displayFactions.length, (menuPage + 1) * FACTIONS_PER_PAGE);
+      const pageNum = menuPage + 1;
       pag.innerHTML = `
         <button type="button" class="page-btn" id="fcPrev" ${menuPage === 0 ? 'disabled' : ''} aria-label="Previous factions">◀ Prev</button>
-        <span>${start}–${end} of ${displayFactions.length}</span>
+        <span>Page ${pageNum} of ${totalPages}</span>
         <button type="button" class="page-btn" id="fcNext" ${menuPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next factions">Next ▶</button>
       `;
       const prevBtn = $('fcPrev');
@@ -233,69 +251,18 @@ export function buildMenu() {
 
   renderPage();
 
-  const dossier = $('heroDossier');
-  if (dossier) {
-    const selF = factions[state.faction] || factions.karens;
-    const selMeta = FACTION_METADATA[state.faction] || FACTION_METADATA.karens;
-    const isLocked = demoActive && !DEMO_FACTIONS.includes(state.faction);
-    dossier.innerHTML = `
-      <div class="dossier-card" style="border-color:${selF.look.accent};">
-        <div class="dossier-top">
-          <div class="dossier-avatar" style="border-color:${selF.look.accent};">
-            <span class="dossier-big-icon">${selMeta.icon}</span>
-          </div>
-          <div class="dossier-titles">
-            <div class="dossier-role-pill" style="color:${selF.look.accent};">[ ${selMeta.role} ]</div>
-            <h2 class="dossier-title">${selF.name}</h2>
-            <div class="dossier-tagline">${selF.tagline}</div>
-          </div>
-        </div>
-
-        <div class="dossier-balloon">
-          <div class="balloon-lbl">BATTLE CRY</div>
-          <div class="balloon-text">${selMeta.quote}</div>
-          <button type="button" id="btnHearCry" class="btn-battle-cry">🔊 HEAR BATTLE CRY</button>
-        </div>
-
-        <div class="dossier-stats-grid">
-          <div class="dossier-cell">
-            <span class="cell-label">SIGNATURE TOOL</span>
-            <span class="cell-val">🎒 ${selMeta.gear}</span>
-          </div>
-          <div class="dossier-cell">
-            <span class="cell-label">ARCH-NEMESIS</span>
-            <span class="cell-val cell-nemesis">⚔️ vs ${selMeta.nemesis}</span>
-          </div>
-          <div class="dossier-cell full">
-            <span class="cell-label">DEFAULT LOADOUT</span>
-            <span class="cell-val">🔫 The Allowance (AR) · 🗡️ Trophy · 💣 Lawsuit x2</span>
-          </div>
-        </div>
-
-        <div class="dossier-action">
-          ${isLocked ? `
-            <button type="button" id="deploy" class="btn-deploy btn-locked">🔒 LOCKED IN DEMO (WISHLIST ON STEAM)</button>
-          ` : `
-            <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY AS ${selF.name.toUpperCase()}</button>
-          `}
-        </div>
-      </div>
-    `;
-    const cryBtn = $('btnHearCry');
-    if (cryBtn) {
-      cryBtn.onclick = (e) => {
-        e.stopPropagation();
-        sfx.tone({ type: 'sine', f0: 440, f1: 880, dur: 0.05, vol: 0.1 });
-        voice.say({ text: selMeta.quote, lineId: selMeta.voLine, faction: state.faction, priority: 9, force: true });
-      };
-    }
-    const depBtn = $('deploy');
-    if (depBtn) {
-      if (isLocked) {
-        depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
-      } else {
-        depBtn.onclick = () => startGame();
-      }
+  const selF = factions[state.faction] || factions.karens;
+  const isLocked = demoActive && !DEMO_FACTIONS.includes(state.faction);
+  const depBtn = $('deploy');
+  if (depBtn) {
+    if (isLocked) {
+      depBtn.textContent = '🔒 LOCKED IN DEMO (WISHLIST ON STEAM)';
+      depBtn.classList.add('btn-locked');
+      depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
+    } else {
+      depBtn.textContent = `▶ DEPLOY AS ${selF.name.toUpperCase()}`;
+      depBtn.classList.remove('btn-locked');
+      depBtn.onclick = () => startGame();
     }
   }
 
@@ -322,6 +289,17 @@ if ($('demoModal')) {
   $('demoModal').addEventListener('click', e => {
     if (e.target === $('demoModal')) hideDemoModal();
   });
+}
+if ($('btnFullscreen')) {
+  $('btnFullscreen').onclick = () => {
+    try {
+      if (!document.fullscreenElement) {
+        (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen)?.call(document.documentElement);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen)?.call(document);
+      }
+    } catch {}
+  };
 }
 
 // ------------------------------------------------------------------ online lobby
@@ -472,10 +450,13 @@ class Game {
       // Online: the server runs the match; this Sim is a mirror that is only written into (see online.js).
       this.me = session.buildMirror(this.sim);
     } else {
-      this.me = this.sim.addActor({ id: 'you', name: 'You', team: 0, faction: state.faction, isBot: state.spectate });
+      const myLoadout = FACTION_LOADOUTS[state.faction]?.loadout || 'default';
+      this.me = this.sim.addActor({ id: 'you', name: 'You', team: 0, faction: state.faction, loadout: myLoadout, isBot: state.spectate });
       for (let i = 0; i < 11; i++) {
         const team = i < 5 ? 0 : 1;
-        this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: pickFaction(), isBot: true });
+        const botFaction = pickFaction();
+        const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
+        this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
       }
     }
     for (const a of this.sim.actors) renderer.ensureCharacter(a, this.me.team);

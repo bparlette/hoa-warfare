@@ -76,10 +76,16 @@
   },
   "loadouts": {
     "default": { "primary": "allowance", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "allowance": { "primary": "allowance", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "smg": { "primary": "sideHustle", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "sideHustle": { "primary": "sideHustle", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "shotgun": { "primary": "divorceSettlement", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "divorceSettlement": { "primary": "divorceSettlement", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "sniper": { "primary": "trustFund", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "trustFund": { "primary": "trustFund", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "lmg": { "primary": "subdivision", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
-    "pistol": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" }
+    "subdivision": { "primary": "subdivision", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "pistol": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "permit": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" }
   }
 }

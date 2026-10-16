@@ -88,61 +88,60 @@
           <button type="button" id="btnQuickMatch" class="btn-online" disabled>🌐 QUICK MATCH</button>
           <button type="button" id="btnFriends" class="btn-online btn-online-alt" disabled>👥 FRIENDS</button>
         </div>
+        <button type="button" id="btnFullscreen" class="btn-online btn-online-alt" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
         <a id="btnWishlist" data-steam="menu" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist btn-wishlist-compact">★ WISHLIST ON STEAM ($4.99)</a>
       </div>
       <div id="onlineNote" class="online-note"></div>
     </header>
 
-    <!-- MAIN LOBBY SPLIT -->
-    <div class="lobby-main">
-      <!-- LEFT: FACTION ROSTER -->
-      <section class="lobby-roster">
-        <div class="faction-header">
-          <h2>PICK YOUR FACTION</h2>
-          <div id="factionPagination" class="faction-pagination"></div>
-        </div>
-        <div id="factions"></div>
-      </section>
+    <!-- MAIN LOBBY: 2 ROWS X 3 COLUMNS SQUARES -->
+    <main class="lobby-center">
+      <div class="faction-header">
+        <h2>CHOOSE YOUR FACTION</h2>
+        <div id="factionPagination" class="faction-pagination"></div>
+      </div>
+      <div id="factions" class="factions-grid-2x3"></div>
+      <div class="lobby-action-bar">
+        <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY NOW</button>
+        <div id="heroDossier" style="display:none;"></div>
+      </div>
 
-      <!-- RIGHT: HERO DOSSIER -->
-      <aside class="lobby-dossier" id="heroDossier"></aside>
-    </div>
-
-    <!-- COLLAPSED SETTINGS & CONTROLS ACCORDION -->
-    <details id="menuSettings" class="menu-settings">
-      <summary class="settings-summary">⚙️ Settings, Visual Styles & Controls Reference</summary>
-      <div class="settings-drawer">
-        <div class="settings-grid">
-          <div class="settings-block">
-            <h3>Visual Style</h3>
-            <select id="optStyle">
-              <option value="modern">⚡ Modern Tactical (Default Clean 60fps)</option>
-              <option value="007">🍸 GoldenEye 007 (N64 Segmented HUD)</option>
-              <option value="cctv">📹 Ring Cam CCTV (Night Vision Surveillance)</option>
-              <option value="vhs">📼 VHS 1993 (HOA Evidence Camcorder)</option>
-              <option value="noir">🕵️ Subpoena Noir (Sin City High-Contrast)</option>
-              <option value="gameboy">🕹️ Game Boy 1989 (DMG-01 4-Shade LCD)</option>
-            </select>
-          </div>
-          <div class="settings-block">
-            <h3>Build & Audio Options</h3>
-            <div class="toggles">
-              <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
-              <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
-              <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
-              <label style="display:none;"><input type="checkbox" id="opt007"></label>
-              <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
+      <!-- COLLAPSED SETTINGS & CONTROLS ACCORDION -->
+      <details id="menuSettings" class="menu-settings">
+        <summary class="settings-summary">⚙️ Settings, Visual Styles & Controls Reference</summary>
+        <div class="settings-drawer">
+          <div class="settings-grid">
+            <div class="settings-block">
+              <h3>Visual Style</h3>
+              <select id="optStyle">
+                <option value="modern">⚡ Modern Tactical (Default Clean 60fps)</option>
+                <option value="007">🍸 GoldenEye 007 (N64 Segmented HUD)</option>
+                <option value="cctv">📹 Ring Cam CCTV (Night Vision Surveillance)</option>
+                <option value="vhs">📼 VHS 1993 (HOA Evidence Camcorder)</option>
+                <option value="noir">🕵️ Subpoena Noir (Sin City High-Contrast)</option>
+                <option value="gameboy">🕹️ Game Boy 1989 (DMG-01 4-Shade LCD)</option>
+              </select>
+            </div>
+            <div class="settings-block">
+              <h3>Build & Audio Options</h3>
+              <div class="toggles">
+                <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
+                <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
+                <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
+                <label style="display:none;"><input type="checkbox" id="opt007"></label>
+                <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <h3>Controls Reference</h3>
-        <p class="keys"><b>Phone / tablet:</b> Left thumb move (push edge to sprint) · Drag right screen to pan camera & aim · Tap FIRE to shoot · Auto-fires when crosshair is on target<br>
-        <b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
-        <b>Controller:</b> L stick move (click sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · START pause · menu: LB/RB faction, A deploy<br>
-        O/0 visual style · [ Clean/Steam · ] legal-safe · P 16-bit filter · M mute</p>
-      </div>
-    </details>
+          <h3>Controls Reference</h3>
+          <p class="keys"><b>Phone / tablet:</b> Left thumb move (push edge to sprint) · Drag right screen to pan camera & aim · Tap FIRE to shoot · Auto-fires when crosshair is on target<br>
+          <b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
+          <b>Controller:</b> L stick move (click sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · START pause · menu: LB/RB faction, A deploy<br>
+          O/0 visual style · [ Clean/Steam · ] legal-safe · P 16-bit filter · M mute</p>
+        </div>
+      </details>
+    </main>
   </div>
 </div>
 

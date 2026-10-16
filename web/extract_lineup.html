@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Lineup Extractor</title>
+</head>
+<body style="background:#222; color:#fff; font-family:sans-serif;">
+  <h1>Lineup Extractor & Stitcher</h1>
+  <div id="status">Loading images...</div>
+  <script>
+    async function run() {
+      const status = document.getElementById('status');
+      function loadImg(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = (e) => reject(new Error('Failed to load ' + src));
+          img.src = src;
+        });
+      }
+
+      try {
+        const img1 = await loadImg('assets/faction_lineup.jpg');
+        const img2 = await loadImg('assets/new_8_factions.jpg');
+        status.textContent = 'Images loaded! Processing...';
+
+        function extractCard(img, sx, sy, sw, sh) {
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = sw;
+          sliceCanvas.height = sh;
+          const sliceCtx = sliceCanvas.getContext('2d');
+          sliceCtx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+          const imgData = sliceCtx.getImageData(0, 0, sw, sh);
+          const d = imgData.data;
+
+          // Corner background sample
+          const bR = d[0], bG = d[1], bB = d[2];
+          const isBg = (r, g, b) => Math.hypot(r - bR, g - bG, b - bB) < 28;
+
+          // Step 1: Mark background pixels transparent
+          for (let i = 0; i < d.length; i += 4) {
+            const r = d[i], g = d[i+1], b = d[i+2];
+            const diff = Math.hypot(r - bR, g - bG, b - bB);
+            if (diff < 26) {
+              d[i+3] = 0;
+            } else if (diff < 40) {
+              d[i+3] = Math.round(((diff - 26) / 14) * 255);
+            }
+          }
+
+          // Step 2: Flood-fill from outer edges to clear any detached neighbour slivers
+          const visited = new Uint8Array(sw * sh);
+          const queue = [];
+          for (let x = 0; x < sw; x++) {
+            queue.push(x, 0); queue.push(x, sh - 1);
+            visited[x] = 1; visited[(sh - 1) * sw + x] = 1;
+          }
+          for (let y = 0; y < sh; y++) {
+            queue.push(0, y); queue.push(sw - 1, y);
+            visited[y * sw] = 1; visited[y * sw + sw - 1] = 1;
+          }
+
+          let qIdx = 0;
+          while (qIdx < queue.length) {
+            const qx = queue[qIdx++];
+            const qy = queue[qIdx++];
+            const pIdx = (qy * sw + qx) * 4;
+            // If transparent or near-bg, propagate
+            if (d[pIdx + 3] < 120) {
+              d[pIdx + 3] = 0;
+              const nbs = [[qx+1, qy], [qx-1, qy], [qx, qy+1], [qx, qy-1]];
+              for (const [nx, ny] of nbs) {
+                if (nx >= 0 && nx < sw && ny >= 0 && ny < sh) {
+                  const nIdx = ny * sw + nx;
+                  if (!visited[nIdx]) {
+                    visited[nIdx] = 1;
+                    if (d[nIdx * 4 + 3] < 120) {
+                      queue.push(nx, ny);
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Also zero out any opaque column pixels along the very outer 3px edges (left and right)
+          for (let y = 0; y < sh; y++) {
+            for (let x = 0; x < 4; x++) { d[(y * sw + x) * 4 + 3] = 0; }
+            for (let x = sw - 4; x < sw; x++) { d[(y * sw + x) * 4 + 3] = 0; }
+          }
+
+          sliceCtx.putImageData(imgData, 0, 0);
+
+          const c = document.createElement('canvas');
+          c.width = 300;
+          c.height = 300;
+          const ctx = c.getContext('2d');
+          const scale = Math.min(270 / sh, 270 / sw);
+          const dw = sw * scale;
+          const dh = sh * scale;
+          const dx = (300 - dw) / 2;
+          const dy = 300 - dh - 12;
+          ctx.drawImage(sliceCanvas, 0, 0, sw, sh, dx, dy, dw, dh);
+          return c.toDataURL('image/png');
+        }
+
+        const cards = {};
+        // 12 from img1 - full character head to toe
+        cards['fratHouse'] = extractCard(img1, 25, 230, 105, 385);
+        cards['brainRot'] = extractCard(img1, 142, 245, 115, 370);
+        cards['valleyGirls'] = extractCard(img1, 260, 230, 108, 385);
+        cards['oldMoney'] = extractCard(img1, 370, 240, 110, 375);
+        cards['rednecks'] = extractCard(img1, 480, 225, 112, 390);
+        cards['karens'] = extractCard(img1, 592, 240, 95, 375);
+        cards['gymRats'] = extractCard(img1, 680, 205, 150, 410);
+        cards['theaterKids'] = extractCard(img1, 825, 230, 105, 385);
+        cards['cloutStreamers'] = extractCard(img1, 920, 225, 120, 390);
+        cards['vcBros'] = extractCard(img1, 1032, 235, 108, 380);
+        cards['hoaDads'] = extractCard(img1, 1135, 235, 118, 380);
+        cards['emoKids'] = extractCard(img1, 1240, 245, 112, 370);
+
+        // 8 from img2 - full character head to toe
+        cards['theGays'] = extractCard(img2, 25, 215, 138, 420);
+        cards['trumpers'] = extractCard(img2, 172, 225, 162, 410);
+        cards['wokeLibs'] = extractCard(img2, 350, 220, 145, 415);
+        cards['mlmHuns'] = extractCard(img2, 520, 210, 132, 425);
+        cards['furries'] = extractCard(img2, 650, 180, 230, 455);
+        cards['animeWeebs'] = extractCard(img2, 878, 225, 142, 410);
+        cards['tradwives'] = extractCard(img2, 1030, 230, 160, 405);
+        cards['pickleballRetirees'] = extractCard(img2, 1200, 235, 155, 400);
+
+        // Master 20-character lineup
+        const fullCanvas = document.createElement('canvas');
+        fullCanvas.width = 2480;
+        fullCanvas.height = 768;
+        const fullCtx = fullCanvas.getContext('2d');
+        fullCtx.fillStyle = '#cbcbcb';
+        fullCtx.fillRect(0, 0, fullCanvas.width, fullCanvas.height);
+        fullCtx.drawImage(img1, 0, 0, 1376, 768, 0, 0, 1440, 768);
+        fullCtx.drawImage(img2, 20, 0, 1350, 768, 1440, 0, 1040, 768);
+        cards['__master__'] = fullCanvas.toDataURL('image/jpeg', 0.94);
+
+        window.__CARDS__ = cards;
+        status.textContent = 'DONE! Extracted ' + Object.keys(cards).length + ' items.';
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+        console.error(err);
+      }
+    }
+    run();
+  </script>
+</body>
+</html>
