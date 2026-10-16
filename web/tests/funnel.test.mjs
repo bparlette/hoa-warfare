@@ -38,10 +38,16 @@ test('share text and pitch: real K-D, demo link, no multiplayer promise', () => 
 });
 
 test('wireSteamLinks rewrites every tagged button', () => {
-  const mk = (placement, small = false) => ({ dataset: { steam: placement }, classList: { contains: c => small && c === 'btn-wishlist-small' }, href: '', textContent: '' });
-  const els = [mk('menu'), mk('pause', true)];
-  const n = new Funnel(demo, 'newgrounds').wireSteamLinks({ querySelectorAll: () => els });
-  assert.equal(n, 2);
-  assert.ok(els.every(e => e.href.includes('utm_source=newgrounds')));
-  assert.ok(els[1].textContent.startsWith('★ Coming soon') || els[1].textContent.startsWith('★ Wishlist'));
+  const mk = (placement, small = false) => ({ dataset: { steam: placement }, classList: { contains: c => small && c === 'btn-wishlist-small' }, href: '', textContent: '', removeAttribute() {}, onclick: null });
+  // Live: real Steam URL -> tagged links
+  const liveEls = [mk('menu'), mk('pause', true)];
+  const nLive = new Funnel({ ...demo, steamUrl: 'https://store.steampowered.com/app/1234560/' }, 'newgrounds').wireSteamLinks({ querySelectorAll: () => liveEls });
+  assert.equal(nLive, 2);
+  assert.ok(liveEls.every(e => e.href.includes('utm_source=newgrounds')));
+  assert.ok(liveEls[1].textContent.startsWith('★ Coming soon') || liveEls[1].textContent.startsWith('★ Wishlist'));
+  // Not live yet (steamUrl null): buttons do nothing until the Steam account exists
+  const idleEls = [mk('menu'), mk('pause', true)];
+  const nIdle = new Funnel(demo, 'newgrounds').wireSteamLinks({ querySelectorAll: () => idleEls });
+  assert.equal(nIdle, 2);
+  assert.ok(idleEls.every(e => e.href === '#' && e.onclick() === false), 'buttons must do nothing before the Steam URL exists');
 });

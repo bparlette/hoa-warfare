@@ -31,6 +31,7 @@ for (const f of ['index.html', 'style.css']) copy(join(WEB, f), join(DEMO, f));
 copy(join(WEB, 'src'), join(DEMO, 'src'));
 copy(join(WEB, 'vendor'), join(DEMO, 'vendor'));
 for (const f of ['logo.png', 'favicon.png', 'badge.png']) if (existsSync(join(WEB, 'assets', f))) copy(join(WEB, 'assets', f), join(DEMO, 'assets', f));
+if (existsSync(join(WEB, 'assets', 'characters'))) copy(join(WEB, 'assets', 'characters'), join(DEMO, 'assets', 'characters'));
 copy(join(ROOT, 'assets', 'art', 'cover_key_art.jpg'), join(DEMO, 'assets', 'art', 'cover_key_art.jpg'));
 for (const f of ['hoa_content.json', 'weapons.json', 'demo.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
 

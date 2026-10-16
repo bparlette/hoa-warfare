@@ -67,9 +67,16 @@ export class Funnel {
     if (!root?.querySelectorAll) return 0;
     let n = 0;
     for (const a of root.querySelectorAll('a[data-steam]')) {
-      a.href = this.steamLink(a.dataset.steam || 'button');
-      a.target = '_blank';
-      a.rel = 'noopener';
+      if (!this.live) {
+        // No Steam URL yet — buttons do nothing until Steam account exists
+        a.href = '#';
+        a.onclick = () => false;
+        a.removeAttribute('target');
+      } else {
+        a.href = this.steamLink(a.dataset.steam || 'button');
+        a.target = '_blank';
+        a.rel = 'noopener';
+      }
       if (!a.dataset.keepLabel) a.textContent = a.classList.contains('btn-wishlist-small') ? this.ctaLabel(true) : this.ctaLabel();
       n++;
     }
