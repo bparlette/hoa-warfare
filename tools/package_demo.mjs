@@ -27,7 +27,9 @@ if (existsSync(ZIP_PATH)) rmSync(ZIP_PATH, { force: true });
 mkdirSync(DEMO, { recursive: true });
 
 // 1. Game files
-for (const f of ['index.html', 'style.css']) copy(join(WEB, f), join(DEMO, f));
+for (const f of ['index.html', 'style.css', 'manifest.webmanifest']) {
+  if (existsSync(join(WEB, f))) copy(join(WEB, f), join(DEMO, f));
+}
 copy(join(WEB, 'src'), join(DEMO, 'src'));
 copy(join(WEB, 'vendor'), join(DEMO, 'vendor'));
 for (const f of ['logo.png', 'favicon.png', 'badge.png']) if (existsSync(join(WEB, 'assets', f))) copy(join(WEB, 'assets', f), join(DEMO, 'assets', f));

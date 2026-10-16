@@ -290,7 +290,7 @@ if ($('demoModal')) {
     if (e.target === $('demoModal')) hideDemoModal();
   });
 }
-export function tryEnterFullscreen(lockLandscape = false) {
+export function tryEnterFullscreen(lockLandscape = false, allowIframeBreakout = false) {
   if (typeof document === 'undefined') return;
   try {
     const el = document.documentElement;
@@ -300,8 +300,16 @@ export function tryEnterFullscreen(lockLandscape = false) {
       if (p && typeof p.then === 'function') {
         p.then(() => {
           if (lockLandscape) screen.orientation?.lock?.('landscape')?.catch?.(() => {});
-        }).catch(() => {});
+        }).catch(() => {
+          if (allowIframeBreakout && typeof window !== 'undefined' && window.self !== window.top) {
+            try { window.top.location.href = window.location.href; } catch { window.open(window.location.href, '_top'); }
+          }
+        });
       }
+    } else if (!req && allowIframeBreakout && typeof window !== 'undefined' && window.self !== window.top) {
+      // iOS Safari on iPhone does not support Fullscreen API on HTML elements;
+      // breaking out of the itch.io wrapper iframe removes the outer page chrome.
+      try { window.top.location.href = window.location.href; } catch { window.open(window.location.href, '_top'); }
     } else if (lockLandscape) {
       screen.orientation?.lock?.('landscape')?.catch?.(() => {});
     }
@@ -313,7 +321,7 @@ if ($('btnFullscreen')) {
   $('btnFullscreen').onclick = () => {
     try {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        tryEnterFullscreen(true);
+        tryEnterFullscreen(true, true);
       } else {
         (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen)?.call(document);
       }

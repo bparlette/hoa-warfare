@@ -458,6 +458,7 @@ export class Hud {
         <button id="again" style="margin-top:0">${againLabel}</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
+        <button id="btnShareCard" class="btn-share" style="margin-top:0">📸 SAVE / SHARE CARD</button>
         ${!isDemoMode ? '<a data-steam="end_row" href="#" onclick="return false" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
@@ -503,7 +504,159 @@ export class Hud {
         if (typeof window !== 'undefined' && window.prompt) window.prompt('Copy your score to share:', text);
       };
     }
+    const btnShareCard = $('btnShareCard');
+    if (btnShareCard) {
+      btnShareCard.onclick = async () => {
+        btnShareCard.textContent = '⏳ GENERATING...';
+        try {
+          await this.shareScoreCard({ sim, me, won, draw, mvpLine, funnel });
+          btnShareCard.textContent = '✓ CARD SAVED!';
+        } catch {
+          btnShareCard.textContent = '📸 SAVE / SHARE CARD';
+        }
+        setTimeout(() => { if (btnShareCard) btnShareCard.textContent = '📸 SAVE / SHARE CARD'; }, 2500);
+      };
+    }
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
+  }
+
+  async renderScoreCardCanvas({ sim, me, won, draw, mvpLine }) {
+    if (typeof document === 'undefined' || !document.createElement) return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 450;
+    const ctx = canvas.getContext?.('2d');
+    if (!ctx) return canvas;
+
+    // Background gradient
+    const grad = ctx.createLinearGradient(0, 0, 800, 450);
+    grad.addColorStop(0, '#0b1222');
+    grad.addColorStop(1, '#162647');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 800, 450);
+
+    // Double HOA citation border
+    ctx.strokeStyle = '#ffec27';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(12, 12, 776, 426);
+    ctx.strokeStyle = 'rgba(255, 236, 39, 0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(20, 20, 760, 410);
+
+    // Top header bar
+    ctx.fillStyle = '#ffec27';
+    ctx.font = 'bold 15px monospace';
+    ctx.fillText('CALL OF KAREN: HOA WARFARE  ·  OFFICIAL SUBURBAN CITATION', 36, 50);
+
+    // Portrait frame on left
+    ctx.fillStyle = '#0e172c';
+    ctx.fillRect(36, 70, 230, 310);
+    ctx.strokeStyle = '#ffec27';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(36, 70, 230, 310);
+
+    const factionKey = me?.faction || 'karens';
+    const factionObj = this.factions?.[factionKey] || { name: 'The Karens', tagline: 'I want to speak to the board.' };
+    if (typeof Image !== 'undefined') {
+      await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try { ctx.drawImage(img, 42, 76, 218, 298); } catch {}
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = `assets/characters/${factionKey}.png`;
+        setTimeout(resolve, 600);
+      });
+    }
+
+    // Outcome Stamp & Score
+    const statusText = draw ? 'COVENANT DRAW' : won ? 'BLOCK SECURED' : 'EVICTED';
+    const statusColor = draw ? '#ffec27' : won ? '#00e436' : '#ff004d';
+    ctx.fillStyle = statusColor;
+    ctx.font = '900 42px Impact, "Arial Black", sans-serif';
+    ctx.fillText(`${statusText}  (${sim?.score?.[0] ?? 0} - ${sim?.score?.[1] ?? 0})`, 290, 112);
+
+    // Player & Faction
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 26px "Arial Black", sans-serif';
+    ctx.fillText(`${me?.name || 'Homeowner'}  ·  ${factionObj.name}`, 290, 152);
+
+    const weaponName = me?.weapons?.primary?.name || 'The Allowance';
+    const modeLabel = sim?.mode?.constructor?.label || 'Cul-de-Sac Clash';
+    ctx.fillStyle = '#29adff';
+    ctx.font = 'bold 16px monospace';
+    ctx.fillText(`WEAPON: ${weaponName.toUpperCase()}   |   MODE: ${modeLabel.toUpperCase()}`, 290, 180);
+
+    // K/D Stats Box
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.fillRect(290, 200, 470, 92);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.strokeRect(290, 200, 470, 92);
+
+    const kills = me?.kills ?? 0;
+    const deaths = me?.deaths ?? 0;
+    const kd = (kills / Math.max(1, deaths)).toFixed(2);
+    ctx.fillStyle = '#ffec27';
+    ctx.font = '900 34px Impact, "Arial Black", sans-serif';
+    ctx.fillText(`${kills} FINES`, 312, 252);
+    ctx.fillStyle = '#ff77a8';
+    ctx.fillText(`${deaths} CITATIONS`, 465, 252);
+    ctx.fillStyle = '#00e436';
+    ctx.fillText(`${kd} K/D`, 650, 252);
+
+    ctx.fillStyle = '#c2c3c7';
+    ctx.font = '12px monospace';
+    ctx.fillText('ENEMIES FINED', 312, 276);
+    ctx.fillText('TIMES EVICTED', 465, 276);
+    ctx.fillText('EFFICIENCY RATIO', 650, 276);
+
+    // Quote
+    const quote = (mvpLine || factionObj.tagline || 'See you at the next board meeting!').slice(0, 72);
+    ctx.fillStyle = '#fff1e8';
+    ctx.font = 'italic 16px Georgia, serif';
+    ctx.fillText(`"${quote}"`, 290, 335);
+
+    // Footer CTA
+    ctx.fillStyle = '#ffec27';
+    ctx.font = 'bold 14px monospace';
+    ctx.fillText('PLAY FREE: homebrewgametrailers.itch.io/call-of-karen-hoa-warfare  ·  $4.99 ON STEAM', 36, 415);
+
+    return canvas;
+  }
+
+  async shareScoreCard({ sim, me, won, draw, mvpLine, funnel }) {
+    const canvas = await this.renderScoreCardCanvas({ sim, me, won, draw, mvpLine });
+    if (!canvas) return false;
+    const factionName = this.factions?.[me?.faction]?.name || 'a Karen';
+    const text = funnel
+      ? funnel.shareText({ kills: me?.kills || 0, deaths: me?.deaths || 0, factionName, won, modeLabel: sim?.mode?.constructor?.label })
+      : `I went ${me?.kills || 0}-${me?.deaths || 0} as ${factionName} in Call of Karen: HOA Warfare!`;
+
+    const blob = await new Promise((resolve) => {
+      if (canvas.toBlob) canvas.toBlob(resolve, 'image/png');
+      else resolve(null);
+    });
+
+    if (blob && typeof File !== 'undefined' && typeof navigator !== 'undefined' && navigator.canShare) {
+      try {
+        const file = new File([blob], 'hoa-warfare-scorecard.png', { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ title: 'Call of Karen: HOA Warfare', text, files: [file] });
+          return true;
+        }
+      } catch {}
+    }
+
+    if (typeof document !== 'undefined' && canvas.toDataURL) {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `hoa-warfare-${me?.faction || 'scorecard'}.png`;
+      a.click?.();
+      return true;
+    }
+    return false;
   }
 
   popScore(text, isGold = false) {
