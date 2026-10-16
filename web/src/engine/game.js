@@ -13,6 +13,7 @@ export function haptic(pattern) {
   }
 }
 import { BarkSystem } from './barks.js';
+import { ChatterDirector } from '../core/chatter.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac, buildMap, MAPS } from './map.js';
@@ -88,15 +89,11 @@ export const FACTION_METADATA = {
   rednecks: { icon: '🚚', role: 'FRONT-YARD GUNNER', gear: 'Fringe Trucker Cap', nemesis: 'The Woke Libs', quote: '"I do not create joinder with this HOA!"', voLine: 'rednecks.roundStart.c.0' },
   fratHouse: { icon: '🍺', role: 'RUSHER', gear: 'Red Solo Cup & Zyn', nemesis: 'Pickleball Retirees', quote: '"Rush week is OVER for you!"', voLine: 'fratHouse.roundStart.c.0' },
   gymRats: { icon: '💪', role: 'TANK BRUTE', gear: 'Frosted Protein Shaker', nemesis: 'The Weeb Mods', quote: '"Chest day is every day. No excuses!"', voLine: 'gymRats.roundStart.c.0' },
-  mlmHuns: { icon: '✨', role: 'PYRAMID STRATEGIST', gear: '40oz Stanley Tumbler', nemesis: 'The Karens', quote: '"Hey boss babe! Ready to invest in defeat?"', voLine: 'mlmHuns.roundStart.c.0' },
   animeWeebs: { icon: '⚔️', role: 'MALL NINJA MOD', gear: 'Heavy Ban-Hammer & Katana', nemesis: 'Gym Rats', quote: '"While you cut grass, I studied the blade."', voLine: 'animeWeebs.roundStart.c.0' },
   cloutStreamers: { icon: '📱', role: 'CONTENT SNIPER', gear: 'LED Ring Light & Tripod', nemesis: 'Old Money', quote: '"Chat, are we clipping this 360 citation?!"', voLine: 'cloutStreamers.roundStart.c.0' },
-  oldMoney: { icon: '🏛️', role: 'ESTATE OVERSEER', gear: 'Cashmere Wrap & Cane', nemesis: 'Clout Streamers', quote: '"Our family founded this cul-de-sac in 1842."', voLine: 'oldMoney.roundStart.c.0' },
   valleyGirls: { icon: '🛍️', role: 'SOCIALITE ASSAULT', gear: 'Iced Oat Latte & Scrunchie', nemesis: 'Emo Kids', quote: '"Like, literally get evicted right now."', voLine: 'valleyGirls.roundStart.c.0' },
   fabulous: { icon: '💅', role: 'AESTHETIC VANGUARD', gear: 'Designer Shades & Pastels', nemesis: 'The Trumpers', quote: '"Your property values are simply unlivable, darling."', voLine: 'fabulous.roundStart.c.0' },
   brainRot: { icon: '💀', role: 'SKIBIDI CHAOS', gear: 'Noise-Canceling Cans', nemesis: 'HOA Dads', quote: '"Zero fanum tax on this cul-de-sac, unc."', voLine: 'brainRot.roundStart.c.0' },
-  theaterKids: { icon: '🎭', role: 'DRAMA BOMBARDIER', gear: 'Black Beret & Masks', nemesis: 'Valley Girls', quote: '"This whole neighborhood is my opening act!"', voLine: 'theaterKids.roundStart.c.0' },
-  emoKids: { icon: '🖤', role: 'ANGST SHADOW', gear: 'Studded Belt & Eyeliner', nemesis: 'Valley Girls', quote: '"Nobody understands the pain of this cul-de-sac."', voLine: 'emoKids.roundStart.c.0' },
 };
 
 const initialFaction = params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens';
@@ -114,7 +111,6 @@ const state = {
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
-  scoreLimit: parseInt(params.get('scoreLimit') || '60', 10),
   difficulty: initialDifficulty,
   map: !isDemo && MAPS[initialMapParam] ? initialMapParam : 'culdesac',
   goldSkin: !isDemo && params.get('gold') === '1',
@@ -257,15 +253,11 @@ export const FACTION_LOADOUTS = {
   cloutStreamers: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
   fratHouse: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
   trumpers: { loadout: 'lmg', ...WEAPON_DEFINITIONS.lmg },
-  oldMoney: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
   wallstreetBets: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
   fabulous: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
   pickleballRetirees: { loadout: 'pistol', ...WEAPON_DEFINITIONS.pistol },
   wokeLibs: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
-  mlmHuns: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
   animeWeebs: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
-  theaterKids: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
-  emoKids: { loadout: 'shotgun', ...WEAPON_DEFINITIONS.shotgun }
 };
 
 export const FEATURED_RIVALRIES = [
@@ -275,7 +267,6 @@ export const FEATURED_RIVALRIES = [
   ['pickleballRetirees', 'fratHouse'],
   ['trumpers', 'fabulous'],
   ['gymRats', 'animeWeebs'],
-  ['mlmHuns', 'valleyGirls']
 ];
 
 export function getFeaturedRivalry(weekNumber = null) {
@@ -428,8 +419,7 @@ function updateMatchSettingsSummary() {
   const mLabel = mDef ? mDef.label.replace('Cul-de-sac ', '') : 'Clash';
   const mapLabel = mapDef ? mapDef.name.replace('Oakridge ', '').replace(' Club', '').replace('Sunset ', '') : 'Cul-de-Sac';
   const diffLabel = state.difficulty === 'easy' ? 'Easy' : state.difficulty === 'hard' ? 'Hard' : 'Med';
-  const lenLabel = state.scoreLimit ? `${state.scoreLimit}k` : '60k';
-  sumEl.textContent = `${mLabel} · ${mapLabel} · ${diffLabel} · ${lenLabel}`;
+  sumEl.textContent = `${mLabel} · ${mapLabel} · ${diffLabel}`;
 }
 
 if ($('btnMatchSettings')) {
@@ -449,7 +439,6 @@ if ($('matchSettingsModal')) {
 
 if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; updateMatchSettingsSummary(); };
 if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; updateMatchSettingsSummary(); };
-if ($('optScoreLimit')) $('optScoreLimit').onchange = e => { state.scoreLimit = parseInt(e.target.value, 10); updateMatchSettingsSummary(); };
 if ($('optMap')) {
   $('optMap').onchange = e => {
     const val = e.target.value;
@@ -641,7 +630,6 @@ async function startOnline(room = 'auto') {
   try {
     const u = new URL(base, location.href);
     u.searchParams.set('room', room);
-    if (state.mode && state.mode !== 'clash') u.searchParams.set('mode', state.mode);
     const session = await OnlineSession.join({ url: u.toString(), name: playerName(), faction: state.faction, timeoutMs: 60000, knownFactions: Object.keys(factions) });
     clearTimeout(wakeNote);
     if (token !== connectToken) { session.close(); return; }
@@ -740,7 +728,6 @@ class Game {
       mode: state.mode,
       difficulty: state.difficulty,
       botDifficulty: params.get('bots') || undefined,
-      scoreLimit: state.scoreLimit || undefined,
       mutators: state.mutators,
       isDemo,
     });
@@ -763,31 +750,11 @@ class Game {
       const customName = ($('optName')?.value || params.get('name') || '').trim();
       const myName = customName ? playerName() : 'You';
       this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, isBot: state.spectate });
-      // Determine unified rival faction for enemy team (Team 1)
-      let enemyFaction = factions[state.faction]?.brief?.rivalsFirst?.find(id => pool.includes(id));
-      if (!enemyFaction) {
-        const match = weeklyRivalry && weeklyRivalry.includes(state.faction) ? weeklyRivalry : null;
-        if (match) enemyFaction = match[0] === state.faction ? match[1] : match[0];
-      }
-      if (!enemyFaction || !pool.includes(enemyFaction) || enemyFaction === state.faction) {
-        const candidates = pool.filter(id => id !== state.faction);
-        enemyFaction = candidates[Math.floor(this.rng() * candidates.length)] || 'hoaDads';
-      }
-
-      if (state.mode === 'loneWolf') {
-        // Lone Wolf: 1 Player on Team 0 vs 6 Rival Bots on Team 1
-        for (let i = 0; i < 6; i++) {
-          const botLoadout = FACTION_LOADOUTS[enemyFaction]?.loadout || 'default';
-          this.sim.addActor({ id: 'b' + i, name: names[i], team: 1, faction: enemyFaction, loadout: botLoadout, isBot: true });
-        }
-      } else {
-        // Unified Faction Wars: Team 0 is all player faction, Team 1 is all rival faction
-        for (let i = 0; i < 11; i++) {
-          const team = i < 5 ? 0 : 1;
-          const botFaction = team === 0 ? state.faction : enemyFaction;
-          const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
-          this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
-        }
+      for (let i = 0; i < 11; i++) {
+        const team = i < 5 ? 0 : 1;
+        const botFaction = pickFaction(team);
+        const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
+        this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
       }
     }
     for (const a of this.sim.actors) renderer.ensureCharacter(a, this.me.team);
@@ -807,6 +774,8 @@ class Game {
     this.voiceQueue = [];
     this._voiceWasBusy = false;
     this._voiceGapUntil = 0;
+    // Ambient chatter: quiet back-and-forth banter when nothing else is talking.
+    this.chatter = new ChatterDirector({ rng: this.rng });
     this.realTime = 0;
     this.radar = $('radar') ? new Radar($('radar')) : null;
     this.meFiredThisStep = false;
@@ -886,8 +855,12 @@ class Game {
     }
 
     const ann = this.barks.updateAnnouncer(sim.time, sim.time < this.hearing.until ? this.hearing.priority : -1);
-    if (ann) { voice.say({ text: ann, priority: 9, force: true, announcer: true }); this.showBanner(ann); }
+    if (ann) {
+      if (voice.say({ text: ann, priority: 9, force: true, announcer: true })) this.chatter.notifyVoicePlayed(sim.time);
+      this.showBanner(ann);
+    }
     this.updateVoiceQueue();
+    this.updateChatter(sim.time);
 
     if (this.hud.killcam) this.hud.updateKillcam(dt, sim, renderer, voice);
     else {
@@ -1211,9 +1184,28 @@ class Game {
     const { b, verdict } = next;
     const speaker = this.sim.byId.get(b.speakerId);
     if (speaker) this.hud.addBubble(speaker, b, me, this.realTime);
-    const started = voice.say({ text: b.text, lineId: b.lineId, faction: b.faction, priority: b.priority, volume: verdict.volume, force: true });
-    if (started) this.hearing = { priority: b.priority, until: simNow + b.duration };
+    const started = voice.say({ text: b.text, lineId: b.lineId, faction: b.faction, priority: b.priority, volume: b.chatter ? 0.6 : verdict.volume, force: true });
+    if (started) {
+      this.hearing = { priority: b.priority, until: simNow + b.duration };
+      this.chatter.notifyVoicePlayed(simNow);
+    }
     this.hud.addSub(b, verdict.channel);
+  }
+
+  /**
+   * Ambient chatter: if nothing has spoken for 5s and the voice channel +
+   * bark queue are idle, enqueue one quiet background line, alternating
+   * teams for back-and-forth feel. Never interrupts action voices.
+   */
+  updateChatter(simNow) {
+    const c = this.chatter.maybeChatter(simNow, {
+      actors: this.sim.actors,
+      isVoiceBusy: () => voice.isBusy() || this.voiceQueue.length > 0,
+    });
+    if (!c) return;
+    const r = this.barks.director(c.actor).request(c.eventId, simNow, { skipChance: true });
+    const b = this.barks.bark(c.actor, r, { chatter: true });
+    if (b) this.onBark(b, simNow);
   }
 
   // Thin delegators to this.hud for backwards compatibility
