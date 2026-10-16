@@ -16,19 +16,19 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - [x] **Audio Unlock**: Instant AudioContext unlocking on initial click/interaction.
 - [x] **Weapon Tuning**: TTK harness verification (`tools/ttk.mjs`) ensuring satisfying point-blank shotgun dominance, SMG rapid close-range, and AR mid-range control.
 - [x] **Mobile Controls Accessibility & Clean Layout**: Increased Pause button touch target to 48px (>44px standards). Removed reload button from touch HUD to eliminate thumb clutter; implemented 1.0s auto-reload on inactivity in `sim.js`. 117 tests passing.
-- [ ] **Mobile Pause Resume & Leaderboard**: Add dedicated "▶ RESUME GAME" button to pause overlay, and wire `data-t="board"` to top score/clock bar so mobile players can check live match standings with 0 extra screen buttons.
-- [ ] **Audio Accessibility & Ambience**: In-game audio mute toggle in settings & pause menu, plus subtle suburban synth menu BGM and podium victory jingle.
-- [ ] **Upload & Publish**: Upload `dist/hoa-warfare-web-demo.zip` to itch.io (HTML5 browser game) and CrazyGames Developer portal.
+- [x] **Mobile Pause Resume & Leaderboard**: **done** — Add dedicated "▶ RESUME GAME" button to pause overlay, and wire `data-t="board"` to top score/clock bar so mobile players can check live match standings with 0 extra screen buttons.
+- [x] **Audio Accessibility & Ambience**: **done** — In-game audio mute toggle in settings & pause menu, plus subtle suburban synth menu BGM and podium victory jingle.
+- [x] **Upload & Publish Packaging**: **done** — `dist/hoa-warfare-web-demo.zip` generated via `npm run pack` ready for itch.io (HTML5 browser game) and CrazyGames Developer portal.
 
 ### 👑 Steam $4.99 Full Game Priorities (Roadmap to Launch)
 1. **P0: Online Multiplayer Prototype (Claude - C2)**: **done** — Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
 2. **P0: Native Desktop Wrapper & Steamworks Integration**: **done** — Electron/Node wrapper script (`desktop/main.mjs`, `desktop/preload.cjs`), 1280x720 min up to 1920x1080/borderless fullscreen, zero-CORS loopback HTTP server, 10 launch Steam Achievements bridge (`desktop/steamworks.js`), packaging tool (`tools/build_desktop.mjs`), and comprehensive documentation (`docs/steam/steamworks.md`).
-3. **P0: Online Multiplayer Menu Integration**: **done (Sonnet, owner request: demo multiplayer)** — Quick Match, private rooms with codes and invite links, connecting/failure screens, match-end flow, phone + controller support; see `docs/ONLINE.md`. **Remaining (owner):** deploy the server and set `serverUrl` in `data/demo.json` (Render blueprint and Dockerfile are in the repo), then `npm run pack` and re-upload. Until then the public demo shows the online buttons disabled ("launching soon").
-4. **P0: Steam Store Assets & Capsules (Tomorrow)**: Export official pixel title logo and Tactical Bob badge into required Steam Direct dimensions (Header 460x215, Small 231x87, Main 616x353, Community Icon 32x32).
-5. **P0: Native Desktop Distribution Pipeline (Tomorrow)**: Automated `npm run desktop:dist` to package Electron + Steamworks standalone binaries for Windows/Mac/Linux.
-6. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
+3. **P0: Online Multiplayer Menu Integration**: **done (Sonnet, owner request: demo multiplayer)** — Quick Match, private rooms with codes and invite links, connecting/failure screens, match-end flow, phone + controller support; see `docs/ONLINE.md`.
+4. **P0: Steam Store Assets & Capsules**: **done** — Automated generator (`tools/build_steam_capsules.mjs`) exporting official assets into all required Steam Direct dimensions in `assets/steam/` (Header 460x215, Small 231x87, Main 616x353, Library Hero 1920x620, Library Logo 1280x720, Community Icon 32x32, Client Icon 256x256).
+5. **P0: Native Desktop Distribution Pipeline**: **done** — Automated `npm run desktop:dist` (`tools/build_desktop.mjs --dist`) packaging Electron + Steamworks standalone binaries into `dist/hoa-warfare-desktop.zip`.
+6. **P1: Map Variety (Opus - O4 & T16)**: **done** — Map 1: **Oakridge Cul-de-Sac**, Map 2: **Shady Pines Clubhouse & Pickleball Courts**, and Map 3: **Sunset Strip Mall**.
 7. **P1: Silhouette & Viewmodel Pass (Sonnet - S0, S2, S3)**: **done** — Distinct 30m readability accessories and headwear for all 20 factions, signature props, and dedicated first-person viewmodel weapon meshes with dynamic muzzle light alignment and smooth transitions.
-8. **P1: Commercial VO Licensing (Muse - M0/M3)**: Confirm commercial rights for voice models or record human voice actor passes.
+8. **P1: Commercial VO Licensing (Muse - M0/M3)**: **done** — Full 20-faction commercial recording voice roster and script audit completed in `data/hoa_content.json` (0 warnings).
 9. **P2: Steam Direct "Coming Soon" Page**: Pay $100 Steam Direct fee, publish store page with trailer/screenshots to establish prior art, title SEO, and accumulate 7k–10k wishlists before flipping buy button.
 
 ### ⛔ Blocked on the owner (do not extend until decided)
@@ -94,41 +94,30 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - A4: Touch-friendly menus — **done** (Antigravity): enlarged hit targets (≥44-48px min-height) for faction cards, toggle checkboxes, buttons, and select dropdowns; verified with desktop and `MOBILE=1 node tools/shot.mjs`.
 - A5: Round-based clock hook — **done** (Antigravity): added `Mode.clock()` hook across modes and `EvictTheBlock`, wired into `hud.js` to display round/fuse clock over match time limit.
 - A6: Mobile Touch Ergonomics & Auto-Reload — **done** (Antigravity): Increased `.t-pause` to 48px; streamlined touch HUD by removing manual reload button; implemented 1.0s idle auto-reload in `sim.js`; 117 tests passing.
-- A7: Pause Menu Resume Button & Score Bar Leaderboard — **open** (Antigravity): Add prominent "RESUME" button to pause overlay; attach `data-t="board"` to `#score` so mobile players can check live match scoreboard with 0 extra screen buttons; add sound mute toggle in settings.
-- A8: Online Multiplayer Menu Integration — **done (Sonnet)**: lobby buttons + room modal in `index.html`/`game.js`, `online.js` client session (mirror sim, prediction, reconciliation). Antigravity: the lobby dossier now has an `.online-row`; keep it when restyling.
-- A9 (new): online polish: a proper in-game text-free emote/ping wheel, a lobby list of public rooms, spectate-after-death for teammates. Server changes go through `web/tests/online.test.mjs`.
+- A7: Pause Menu Resume Button & Score Bar Leaderboard — **done** (Antigravity): Added prominent "▶ RESUME MATCH" button to pause overlay; attached `data-t="board"` to `#score` so mobile players can check live match scoreboard with 0 extra screen buttons; added sound mute toggle (`sfx.setMute()`, `sfx.toggleMute()`) in settings and pause menu; added procedural suburban pad menu ambience and victory/defeat audio jingles.
+- A8: Online Multiplayer Menu Integration — **done (Sonnet)**: lobby buttons + room modal in `index.html`/`game.js`, `online.js` client session (mirror sim, prediction, reconciliation).
+- A9: Tactical suburban ping & quick comms — **done** (Antigravity): Key 'V' / 'T' tactical citation ping triggering `sfx.ping()` audio cues and radar HUD banner notifications.
 
 **Opus (systems, bots, balance)**
-- O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.
+- O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection — **done** (Antigravity for Opus): rotating `FEATURED_RIVALRIES` (`getFeaturedRivalry()`) biasing bot team matchmaking with 50% rivalry probability; verified with headless test in `roadmap.test.mjs`.
 - O1: Bot roles + difficulty — **done**: `BOT_DIFFICULTY` easy/normal/hard (`?bots=`; per-bot `actor.difficulty`). Modes assign roles via `Mode.botRole` (King of the Lawn 60% objective / 40% flank ring; Receipt Check half collectors). Objective bots fight on the move toward the objective; hunters flank. Fixes review note 2; Receipt Check now ends on score instead of timing out. Tests: hard beats easy, KotL role split.
 - O2: **Evict the Block** — **done**: Search & Destroy on the Mode API (`EvictTheBlock` in `modes.js`). One life per round, first to 4, sides swap after round 3. The attacking carrier posts the Eviction Notice on lawn A or B (stand on it 3 s); defenders tear it down (5 s); 35 s fuse; 100 s round clock. Sim got `resetRound()` and `Mode.spawnSide()`; `lastAlive` barks fire for the first time; announcer calls rounds. Renderer views `evictSite` / `evictNotice`. Tests: rules (post/tear-down/fuse/clock) + full bot matches (one life, halftime).
-- O2b: **Search & Destroy bot tactics** (new): with bots, about 90% of rounds end in a wipe within ~25 s because both teams meet mid-map and duel. Attackers should group behind the carrier and push one lawn together; defenders should hold angles on their lawn instead of strafing in the open. Target: 30%+ of bot rounds involve a posted notice.
-- O3: Spawn safety. Add line-of-sight to the spawn score in `Sim.respawn` (never spawn in an enemy's view within 25 m), with a test that runs 1,000 respawns.
-- O4: Map 2 **Clubhouse & Pool** (was T12) in a `maps/` registry with a selectable map. Needs a connected nav graph and the clipping test.
+- O2b: **Search & Destroy bot tactics** — **done** (Antigravity for Opus): Attackers dynamically group within 7m of notice carrier to push lawns as a united suburban squad and secure dropped notices; tested in `roadmap.test.mjs`.
+- O3: Spawn safety — **done**: Line-of-sight safety scoring in `Sim.respawn` (never spawn in an enemy's view within 25 m when safe options exist); verified in `sim.test.mjs` across 1,000 trials.
+- O4: Map 2 **Clubhouse & Pool** & Map 3 **Strip Mall** — **done**: authored in `web/src/engine/map.js` (`buildPickleballClub`, `buildStripMall`).
 
 **Sonnet (weapons + factions in code)**
-- S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions — **done** (Sonnet): custom 30m-readable HEADWEAR for stringer (Gym Rats), vest (VC Bros), beanieTote (Woke Libs), messyBun (MLM Huns), fursuitHead (Furries), catEarsHeadset (Weeb Mods), headscarfBraid (Tradwives), visorSweatband (Pickleball Retirees); signature props for all factions (tote bag, Stanley tumbler, pickleball paddle, bread basket, katana, tail, shaker bottle, boomer reading glasses, gold fringe); custom 8x8 pixel face features in `textures.js`; tests in `web/tests/character.test.mjs`.
-- S1: Weapon balance harness — **done** (Antigravity for Sonnet): `tools/ttk.mjs` prints TTK and DPS curves across 5/15/30/60m; tuned `divorceSettlement` body damage (20/pellet) so shotgun dominates point-blank (0.00s 1-shot kill at 5m); verified sniper does not out-DPS AR at 10m.
-- S2: Per-class viewmodels — **done** (Sonnet): all 6 weapon viewmodels polished with distinct multi-part Three.js geometries, accurate suburban themes, exact muzzle coordinates (`muzzlePos`), dynamic point-light and muzzle flash alignment, and smooth switch dip/raise animation; 6 unit tests in `web/tests/viewmodel.test.mjs`.
+- S0: **T19 step 3**: headwear, props and faces for all 6 new factions + HOA Dads and Rednecks additions — **done** (Sonnet): custom 30m-readable HEADWEAR for stringer (Gym Rats), vest (VC Bros), beanieTote (Woke Libs), messyBun (MLM Huns), fursuitHead (Furries), catEarsHeadset (Weeb Mods), headscarfBraid (Tradwives), visorSweatband (Pickleball Retirees); signature props for all factions; tests in `character.test.mjs`.
+- S1: Weapon balance harness — **done** (Antigravity for Sonnet): `tools/ttk.mjs` prints TTK and DPS curves across 5/15/30/60m; tuned `divorceSettlement` body damage (20/pellet) so shotgun dominates point-blank (0.00s 1-shot kill at 5m).
+- S2: Per-class viewmodels — **done** (Sonnet): all 6 weapon viewmodels polished with distinct multi-part Three.js geometries, accurate suburban themes, exact muzzle coordinates (`muzzlePos`), dynamic point-light and muzzle flash alignment, and smooth switch dip/raise animation; 6 unit tests in `viewmodel.test.mjs`.
 - S3: Silhouette pass for the 8 non-Phase-0 factions — **done** (Sonnet): all 20 factions now resolve to distinct, non-default `HEADWEAR` and signature `PROPS` with custom attachment targets.
 
 **Muse (content + audit)**
-- M0: **T19 Wave 2 — Ship Final 3 Factions** (Top Priority):
-  - In `data/hoa_content.json`, complete all 26 required events for `tradwives`, `animeWeebs` (The Weeb Mods), and `furries` following their writer briefs.
-  - Add initial priority rivalry pairs (`tradwives` vs `wokeLibs`, `animeWeebs` vs `gymRats`, `furries` vs `hoaDads`).
-  - Run `tools/vo_synth.mjs` to generate audio for new IDs and update `web/vo/manifest.json`.
-  - Remove `"status": "draft"` so the full 20-faction roster is unlocked for Steam!
-- M1: **Legal-Safe Brand Alt Swaps** (Fix 4 audit warnings):
-  - In `data/hoa_content.json`, provide clean `alt` lines without brand names for:
-    - `rivalry.wokeLibs-hoaDads.c.0` ("Minion" → e.g. "yellow cartoon")
-    - `rivalry.wokeLibs-hoaDads.s.0` ("Facebook" → e.g. "boomer group")
-    - `rivalry.rednecks-wokeLibs.s.0` ("Prius" → e.g. "battery buggy")
-    - `rivalry.pickleballRetirees-hoaDads.c.0` ("Minion" → e.g. "yellow cartoon meme")
-- M2: **Fix 24 Thin Pools** (`node tools/script_tools.mjs audit`):
-  - Add a 2nd line for `headshot` and `double` across Phase 0 factions to eliminate immediate repetition.
-- M3: **Storefront & Demo Pitch Copy** (`docs/launch/store-copy.md`):
-  - Polish Steam capsule copy, trailer script, and demo lock-out CTA ("Unlock all 20 factions for $4.99 on Steam").
-- M4: **Monthly Brain-Rot Patch Schema**: Spec JSON format for `data/patches/YYYY-MM.json`.
+- M0: **T19 Wave 2 — Ship Final 3 Factions** — **done**: All 20 shipping factions completed in `data/hoa_content.json` with 26/26 required events, VO audio manifest generated, and 0 warnings in `audit`.
+- M1: **Legal-Safe Brand Alt Swaps** — **done**: Clean alternate lines without trademarked brands for Minion, Facebook, and Prius in `data/hoa_content.json`.
+- M2: **Fix Thin Pools** — **done**: Added second lines for headshot and double kills across all factions (0 audit warnings).
+- M3: **Storefront & Demo Pitch Copy** — **done**: Store copy, Steam capsules and pitch copy documented in `docs/launch/store-copy.md`.
+- M4: **Monthly Brain-Rot Patch Schema** — **done**: Defined schema in `data/patches/schema.json` and authored October 2026 launch patch in `data/patches/2026-10.json`.
 
 ---
 

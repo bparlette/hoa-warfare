@@ -189,7 +189,11 @@ export class Controls {
     root.addEventListener('pointercancel', end);
 
     // Buttons: data-t="fire|jump|reload|melee|grenade|swap|board|pause". FIRE also aims while held (drag).
-    for (const el of root.querySelectorAll('[data-t]')) {
+    const touchButtons = new Set([
+      ...root.querySelectorAll('[data-t]'),
+      ...(typeof document !== 'undefined' ? document.querySelectorAll('[data-t="board"]') : []),
+    ]);
+    for (const el of touchButtons) {
       const kind = el.dataset.t;
       let last = null;
       el.addEventListener('pointerdown', e => {

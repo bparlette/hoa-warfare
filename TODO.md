@@ -65,3 +65,31 @@
 - [x] **Dual-Tier Itch.io & Steam Store Release**:
   - [x] Free Web Demo packaged via `node tools/package_demo.mjs` into `dist/hoa-warfare-web-demo.zip` with 6 playable factions, Cul-de-Sac map, Easy/Medium/Hard difficulty, Ranks 1–5, and Big Head mutator.
   - [x] Full $4.99 Purchase features (14 additional factions, Maps 2 & 3, 7-killstreak Mower Stampede, Ranks 6–10, 24K Gold Skins, Party Mutators) wired with Demo gating modal and Steam CTA upsell.
+
+---
+
+## Phase 3: Steam Direct & Desktop Distribution Pipeline (COMPLETED)
+- [x] **Steam Store Capsules Tooling (`tools/build_steam_capsules.mjs` & `assets/steam/`)**:
+  - [x] Header Capsule: 460 x 215 (`assets/steam/header_capsule.jpg`)
+  - [x] Small Capsule: 231 x 87 (`assets/steam/small_capsule.jpg`)
+  - [x] Main Capsule: 616 x 353 (`assets/steam/main_capsule.jpg`)
+  - [x] Library Hero: 1920 x 620 (`assets/steam/library_hero.jpg`)
+  - [x] Library Logo: 1280 x 720 (`assets/steam/library_logo.png`)
+  - [x] Community Icon: 32 x 32 (`assets/steam/community_icon.png`)
+  - [x] Client Icon: 256 x 256 (`assets/steam/client_icon.png`)
+- [x] **Native Desktop Distribution Pipeline (`npm run desktop:dist`)**:
+  - [x] Automated staging and zip compression into `dist/hoa-warfare-desktop.zip` (55.71 MB) with Steamworks bridge and standalone Electron wrapper.
+- [x] **Mobile Pause Resume, Sound Mute & Top Bar Leaderboard**:
+  - [x] Added `#btnResume` to pause overlay, `#btnPauseMute` and `#optMuteSound` for instant sound FX mute.
+  - [x] Wired `data-t="board"` to `#score` so tapping the top clock/score bar toggles live scoreboard without adding screen clutter.
+- [x] **Suburban Synth Pad Ambience & Audio Immersion**:
+  - [x] Synthesized warm suburban pad chord ambience (`sfx.startAmbience`, `sfx.stopAmbience`).
+  - [x] Added joyous 4-note victory flourish (`sfx.victory`) and 3-note eviction chime (`sfx.defeat`).
+  - [x] Tactical suburban citation pings (`KeyV` / `KeyT`, `sfx.ping`).
+- [x] **Rivalry-of-the-Week Matchmaking Bias (`FEATURED_RIVALRIES`)**:
+  - [x] Rotating weekly featured rivalry matchups (Karens vs VC Bros, Tradwives vs Woke Libs, HOA Dads vs Furries, etc.) biasing bot team composition by 50%.
+- [x] **Search & Destroy Bot Squad Tactics (`EvictTheBlock`)**:
+  - [x] Attackers dynamically escort the Eviction Notice carrier within 7m and secure dropped notices.
+- [x] **Monthly Brain-Rot Patch Architecture (`data/patches/`)**:
+  - [x] Authored JSON schema in `data/patches/schema.json` and launch patch `data/patches/2026-10.json` (Season 1: Pumpkin Spice Martial Law).
+

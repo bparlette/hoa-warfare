@@ -16,7 +16,8 @@ const ZIP_PATH = join(DIST, 'hoa-warfare-desktop.zip');
 // Parse flags
 const args = process.argv.slice(2);
 const shouldRun = args.includes('--run');
-const shouldZip = args.includes('--zip');
+const shouldDist = args.includes('--dist') || args.includes('--zip');
+const shouldZip = shouldDist;
 const appIdArg = args.find(a => a.startsWith('--appId='));
 const APP_ID = appIdArg ? appIdArg.split('=')[1] : (process.env.STEAM_APP_ID || '480');
 

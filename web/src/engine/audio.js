@@ -259,4 +259,77 @@ export class Sfx {
   swing() { this.tone({ type: 'triangle', f0: 400, f1: 120, dur: 0.15, vol: 0.2 }); }
   clang() { this.tone({ type: 'square', f0: 1800, f1: 1600, dur: 0.18, vol: 0.2 }); }
   warn() { this.tone({ type: 'square', f0: 880, f1: 880, dur: 0.06, vol: 0.12 }); }
+
+  setMute(muted) {
+    this.enabled = !muted;
+    if (this.master) this.master.gain.value = this.enabled ? 0.35 : 0;
+    if (!this.enabled) this.stopAmbience();
+    return !this.enabled;
+  }
+
+  toggleMute() {
+    return this.setMute(this.enabled);
+  }
+
+  startAmbience() {
+    if (!this.ctx || !this.enabled || this._ambienceNodes) return;
+    try {
+      const now = this.ctx.currentTime;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.001, now);
+      g.gain.linearRampToValueAtTime(0.04, now + 2);
+
+      // Low warm suburban pad chord (F major 7 / C)
+      const freqs = [130.81, 174.61, 220.00, 261.63];
+      const oscs = freqs.map(f => {
+        const o = this.ctx.createOscillator();
+        o.type = 'sine';
+        o.frequency.value = f;
+        o.connect(g);
+        o.start(now);
+        return o;
+      });
+
+      g.connect(this.master);
+      this._ambienceNodes = { g, oscs };
+    } catch {}
+  }
+
+  stopAmbience() {
+    if (!this._ambienceNodes || !this.ctx) return;
+    try {
+      const { g, oscs } = this._ambienceNodes;
+      const now = this.ctx.currentTime;
+      g.gain.linearRampToValueAtTime(0.0001, now + 0.8);
+      setTimeout(() => {
+        try { for (const o of oscs) { o.stop(); o.disconnect(); } g.disconnect(); } catch {}
+      }, 900);
+    } catch {}
+    this._ambienceNodes = null;
+  }
+
+  victory() {
+    // Joyous 4-note victory flourish: C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((f, i) => {
+      this.tone({ type: 'triangle', f0: f, f1: f * 1.01, dur: 0.22, vol: 0.28, delay: i * 0.11 });
+    });
+  }
+
+  defeat() {
+    // Somber descending 3-note eviction: Eb4, D4, C4
+    const notes = [311.13, 293.66, 261.63];
+    notes.forEach((f, i) => {
+      this.tone({ type: 'sawtooth', f0: f, f1: f * 0.96, dur: 0.32, vol: 0.24, delay: i * 0.16 });
+    });
+  }
+
+  ping(type = 'alert') {
+    if (type === 'danger') {
+      this.tone({ type: 'square', f0: 1200, f1: 800, dur: 0.09, vol: 0.22 });
+      this.tone({ type: 'square', f0: 1200, f1: 800, dur: 0.09, vol: 0.22, delay: 0.1 });
+    } else {
+      this.tone({ type: 'triangle', f0: 880, f1: 1760, dur: 0.08, vol: 0.25 });
+    }
+  }
 }

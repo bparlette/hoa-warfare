@@ -651,9 +651,17 @@ export class EvictTheBlock extends Mode {
     if (this.planted) return this.planted.goal; // attackers guard it, defenders tear it down
     if (atk) {
       if (this.dropped) return this.dropped.goal ??= { x: this.dropped.x, z: this.dropped.z, radius: 0.5 };
+      const carrier = this.carrierId ? this.sim.byId.get(this.carrierId) : null;
+      // O2b: If actor is not the carrier and carrier is advancing, escort the carrier within 7m!
+      if (carrier && carrier.id !== actor.id && carrier.alive) {
+        const distToCarrier = Math.hypot(carrier.pos.x - actor.pos.x, carrier.pos.z - actor.pos.z);
+        if (distToCarrier > 7) {
+          return { x: carrier.pos.x, z: carrier.pos.z, radius: 3.5 };
+        }
+      }
       return this.goals[this.siteIdx];
     }
-    // defenders split between the two lawns
+    // defenders split between the two lawns and hold defensive positions
     const team = this.sim.actors.filter(a => a.team === actor.team);
     return this.goals[team.indexOf(actor) % this.goals.length];
   }

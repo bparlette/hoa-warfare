@@ -36,7 +36,7 @@
   <canvas id="radar" width="130" height="130"></canvas>
   <div id="netInfo" class="hidden"></div>
   <div id="nextMatch" class="hidden"></div>
-  <div id="score"><span class="t0">BLOCK <b id="s0">0</b></span><span class="t1"><b id="clock">5:00</b></span><span class="t1"><b id="s1">0</b> BOARD</span></div>
+  <div id="score" data-t="board" title="Tap to view match standings"><span class="t0">BLOCK <b id="s0">0</b></span><span class="t1"><b id="clock">5:00</b></span><span class="t1"><b id="s1">0</b> BOARD</span></div>
   <div id="feed"></div>
   <div id="crosshair">+</div>
   <div id="hitmark"></div>
@@ -148,6 +148,7 @@
                 <label><input type="checkbox" id="optRetro"> 16-bit pixel filter (off = HD 3D)</label>
                 <label style="display:none;"><input type="checkbox" id="opt007"></label>
                 <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
+                <label><input type="checkbox" id="optMuteSound"> Mute All Sound FX</label>
               </div>
             </div>
             <div class="settings-block">
@@ -163,7 +164,7 @@
           </div>
 
           <h3>Controls Reference</h3>
-          <p class="keys"><b>Phone / tablet:</b> Left thumb move (push edge to sprint) · Drag right screen to pan camera & aim · Tap FIRE to shoot · Auto-fires when crosshair is on target<br>
+          <p class="keys"><b>Phone / tablet:</b> Left thumb move (push edge to sprint) · Drag right screen to pan camera & aim · Tap FIRE to shoot · Auto-fires when crosshair is on target · Tap top score bar to view scoreboard<br>
           <b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
           <b>Controller:</b> L stick move (click sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · START pause · menu: LB/RB faction, A deploy<br>
           O/0 visual style · [ Clean/Steam · ] legal-safe · P 16-bit filter · M mute</p>
@@ -175,12 +176,16 @@
 
 <div id="pause" class="overlay hidden">
   <div class="panel small">
-    <h2>Paused</h2>
-    <p id="pauseHint">Click to keep fighting for the block.</p>
-    <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
-      <button id="btnInvite" type="button" class="hidden">🔗 COPY INVITE LINK</button>
-      <button id="toMenu">Quit to menu</button>
-      <a data-steam="pause" href="#" onclick="return false" class="btn-wishlist-small">★ Wishlist on Steam</a>
+    <h2>PAUSED</h2>
+    <p id="pauseHint">Tap resume or click to keep fighting for the block.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:stretch;width:100%;max-width:320px;margin:0 auto">
+      <button id="btnResume" type="button" class="btn-deploy" style="font-size:16px;padding:12px 16px;">▶ RESUME MATCH</button>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button id="btnPauseMute" type="button" class="btn-online" style="flex:1;">🔊 MUTE SOUND</button>
+        <button id="btnInvite" type="button" class="hidden btn-online" style="flex:1;">🔗 COPY LINK</button>
+        <button id="toMenu" type="button" class="btn-plain" style="flex:1;">Quit to Menu</button>
+      </div>
+      <a data-steam="pause" href="#" onclick="return false" class="btn-wishlist-small" style="text-align:center;margin-top:6px;">★ Wishlist on Steam ($4.99)</a>
     </div>
   </div>
 </div>

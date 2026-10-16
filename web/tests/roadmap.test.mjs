@@ -191,4 +191,96 @@ describe('Roadmap Features: Difficulty, Career Progression, Maps, Killstreaks & 
     const evs = sim.drainEvents();
     assert.ok(evs.some(e => e.type === 'carAlarm'), 'Shooting car emits carAlarm event');
   });
+
+  it('verifies weekly featured rivalry matchmaking bias', async () => {
+    const { FEATURED_RIVALRIES, getFeaturedRivalry, pickBotFaction } = await import('../src/engine/game.js');
+    assert.ok(FEATURED_RIVALRIES.length >= 7, 'Has at least 7 featured rivalry matchups');
+
+    const week0Rivalry = getFeaturedRivalry(0);
+    assert.deepEqual(week0Rivalry, ['karens', 'vcBros']);
+
+    const pool = ['karens', 'vcBros', 'tradwives', 'wokeLibs', 'hoaDads', 'fratHouse'];
+    // When rng generates a low value (< bias of 0.5), it picks the rivalry faction
+    const biasedRng = () => 0.1;
+    const team0Choice = pickBotFaction({ rng: biasedRng, pool, team: 0, featuredRivalry: week0Rivalry, bias: 0.5 });
+    assert.equal(team0Choice, 'karens', 'Team 0 bot biased towards first rivalry faction');
+
+    const team1Choice = pickBotFaction({ rng: biasedRng, pool, team: 1, featuredRivalry: week0Rivalry, bias: 0.5 });
+    assert.equal(team1Choice, 'vcBros', 'Team 1 bot biased towards second rivalry faction');
+  });
+
+  it('verifies audio mute, ambience, victory/defeat jingles, and suburban pings', async () => {
+    const { Sfx } = await import('../src/engine/audio.js');
+    const sfx = new Sfx();
+
+    assert.equal(sfx.enabled, true);
+    // Test setMute
+    sfx.setMute(true);
+    assert.equal(sfx.enabled, false);
+
+    // Test toggleMute
+    const toggled = sfx.toggleMute();
+    assert.equal(sfx.enabled, true);
+    assert.equal(toggled, false, 'Unmuted returns false for muted');
+
+    // Test safe invocations (no audio context crash)
+    assert.doesNotThrow(() => sfx.startAmbience());
+    assert.doesNotThrow(() => sfx.stopAmbience());
+    assert.doesNotThrow(() => sfx.victory());
+    assert.doesNotThrow(() => sfx.defeat());
+    assert.doesNotThrow(() => sfx.ping('alert'));
+    assert.doesNotThrow(() => sfx.ping('danger'));
+  });
+
+  it('verifies Search & Destroy bot carrier escort tactics (O2b)', async () => {
+    const { EvictTheBlock } = await import('../src/engine/modes.js');
+    const rng = mulberry32(11);
+    const sim = new Sim({ rules: dummyRules, weapons: dummyWeapons, rng });
+    const mode = new EvictTheBlock(sim);
+    sim.mode = mode;
+
+    // Add attacker actors first
+    const atk1 = sim.addActor({ id: 'atk1', name: 'CarrierCandidate', team: mode.attackers, isBot: true });
+    const companion = sim.addActor({ id: 'comp1', name: 'EscortBot', team: mode.attackers, isBot: true });
+    mode.onStart();
+
+    const carrier = sim.actors.find(a => a.id === mode.carrierId);
+    assert.ok(carrier, 'Carrier is selected on mode start');
+    carrier.alive = true;
+
+    const follower = sim.actors.find(a => a.id !== mode.carrierId && a.team === mode.attackers);
+    assert.ok(follower, 'Follower attacker is found');
+    follower.alive = true;
+    follower.pos.x = carrier.pos.x + 15;
+    follower.pos.z = carrier.pos.z + 15;
+
+    const goal = mode.botGoal(follower);
+    assert.ok(goal, 'Escort bot gets goal');
+    // Escort goal directs towards carrier within 7m
+    assert.equal(goal.x, carrier.pos.x);
+    assert.equal(goal.z, carrier.pos.z);
+    assert.equal(goal.radius, 3.5);
+  });
+
+  it('verifies Steam store capsules exist with exact required Direct dimensions', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const steamDir = path.resolve('assets/steam');
+
+    const expected = [
+      'header_capsule.jpg',
+      'small_capsule.jpg',
+      'main_capsule.jpg',
+      'library_hero.jpg',
+      'library_logo.png',
+      'community_icon.png',
+      'client_icon.png',
+    ];
+
+    for (const file of expected) {
+      const p = path.join(steamDir, file);
+      assert.ok(fs.existsSync(p), `Steam asset ${file} exists`);
+      assert.ok(fs.statSync(p).size > 100, `Steam asset ${file} has valid file size`);
+    }
+  });
 });

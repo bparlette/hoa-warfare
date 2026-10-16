@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HOABrainRotPatch",
+  "description": "Schema for Call of Karen: HOA Warfare monthly brain-rot content and balance patches",
+  "type": "object",
+  "required": [
+    "patchId",
+    "title",
+    "releaseDate",
+    "featuredRivalry",
+    "seasonalMutators",
+    "weaponTuning",
+    "newBarks"
+  ],
+  "properties": {
+    "patchId": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "description": "Monthly patch identifier in YYYY-MM format"
+    },
+    "title": {
+      "type": "string",
+      "description": "Seasonal patch marketing and community headline"
+    },
+    "releaseDate": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO-8601 release date"
+    },
+    "featuredRivalry": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "Weekly matchmaking priority rivalry pair [factionA, factionB]"
+    },
+    "seasonalMutators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "enabledByDefault"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "enabledByDefault": { "type": "boolean" },
+          "paidExclusive": { "type": "boolean" }
+        }
+      }
+    },
+    "weaponTuning": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["weaponId", "field", "delta", "rationale"],
+        "properties": {
+          "weaponId": { "type": "string" },
+          "field": { "type": "string" },
+          "delta": { "type": "number" },
+          "rationale": { "type": "string" }
+        }
+      }
+    },
+    "newBarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["faction", "event", "lineId", "text"],
+        "properties": {
+          "faction": { "type": "string" },
+          "event": { "type": "string" },
+          "lineId": { "type": "string" },
+          "text": { "type": "string" },
+          "alt": { "type": "string" }
+        }
+      }
+    },
+    "mapTheme": {
+      "type": "object",
+      "properties": {
+        "skyColor": { "type": "string" },
+        "groundTint": { "type": "string" },
+        "festiveProps": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

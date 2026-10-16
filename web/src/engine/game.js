@@ -191,6 +191,29 @@ export const FACTION_LOADOUTS = {
   emoKids: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' }
 };
 
+export const FEATURED_RIVALRIES = [
+  ['karens', 'vcBros'],
+  ['tradwives', 'wokeLibs'],
+  ['hoaDads', 'furries'],
+  ['pickleballRetirees', 'fratHouse'],
+  ['trumpers', 'theGays'],
+  ['gymRats', 'animeWeebs'],
+  ['mlmHuns', 'valleyGirls']
+];
+
+export function getFeaturedRivalry(weekNumber = null) {
+  const week = weekNumber != null ? weekNumber : Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
+  return FEATURED_RIVALRIES[Math.abs(week) % FEATURED_RIVALRIES.length];
+}
+
+export function pickBotFaction({ rng, pool, team, featuredRivalry = null, bias = 0.5 }) {
+  if (featuredRivalry && rng() < bias) {
+    const candidate = team === 0 ? featuredRivalry[0] : featuredRivalry[1];
+    if (pool.includes(candidate)) return candidate;
+  }
+  return pool[Math.floor(rng() * pool.length)];
+}
+
 let menuPage = 0;
 export const FACTIONS_PER_PAGE = 6;
 
@@ -360,6 +383,18 @@ if ($('optLegal')) $('optLegal').onchange = e => { state.legalSafe = e.target.ch
 if ($('optRetro')) $('optRetro').onchange = e => { state.retro = e.target.checked; renderer?.setRetro(state.retro); };
 if ($('opt007')) $('opt007').onchange = e => { applyStyle(e.target.checked ? '007' : 'modern', state, renderer, $); };
 if ($('optVoice')) $('optVoice').onchange = e => { state.voice = e.target.checked; };
+if ($('optMuteSound')) {
+  $('optMuteSound').onchange = e => {
+    sfx.setMute?.(e.target.checked);
+    if ($('btnPauseMute')) $('btnPauseMute').textContent = e.target.checked ? '🔇 UNMUTE' : '🔊 MUTE SOUND';
+  };
+}
+if ($('btnResume')) $('btnResume').onclick = () => { if (input) { input.userPaused = false; lock(); } };
+if ($('btnPauseMute')) $('btnPauseMute').onclick = () => {
+  const isMuted = sfx.toggleMute?.();
+  $('btnPauseMute').textContent = isMuted ? '🔇 UNMUTE' : '🔊 MUTE SOUND';
+  if ($('optMuteSound')) $('optMuteSound').checked = isMuted;
+};
 if ($('deploy')) $('deploy').onclick = () => startGame();
 if ($('toMenu')) $('toMenu').onclick = () => toMenu();
 if ($('closeDemoModal')) $('closeDemoModal').onclick = () => hideDemoModal();
@@ -538,6 +573,7 @@ function toMenu() {
   for (const id of ['hud', 'pause', 'end', 'connecting']) $(id).classList.add('hidden');
   $('menu').classList.remove('hidden');
   buildMenu();
+  sfx.startAmbience?.();
 }
 
 // ------------------------------------------------------------------ game
@@ -569,11 +605,10 @@ class Game {
     voice.enabled = state.voice;
 
     const names = [...content.playerNames].sort(() => this.rng() - 0.5);
-    const pickFaction = () => {
-      const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
-      const pool = demoActive ? DEMO_FACTIONS : shippingFactions;
-      return pool[Math.floor(this.rng() * pool.length)];
-    };
+    const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+    const pool = demoActive ? DEMO_FACTIONS : shippingFactions;
+    const weeklyRivalry = getFeaturedRivalry();
+    const pickFaction = (team) => pickBotFaction({ rng: () => this.rng(), pool, team, featuredRivalry: weeklyRivalry });
     if (session) {
       // Online: the server runs the match; this Sim is a mirror that is only written into (see online.js).
       this.me = session.buildMirror(this.sim);
@@ -584,7 +619,7 @@ class Game {
       this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, isBot: state.spectate });
       for (let i = 0; i < 11; i++) {
         const team = i < 5 ? 0 : 1;
-        const botFaction = pickFaction();
+        const botFaction = pickFaction(team);
         const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
         this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
       }
@@ -933,6 +968,8 @@ class Game {
           if (!me.isBot) {
             this.hud.stopClipRecorder?.();
             career.recordMatchEnd({ won: e.winner === me.team, mode: state.mode });
+            if (e.winner === me.team) sfx.victory?.();
+            else sfx.defeat?.();
           }
           setTimeout(() => {
             if (game !== this) return;
@@ -1049,6 +1086,10 @@ if (typeof document !== 'undefined') {
     if (!game) return;
     if (e.code === 'KeyP') { state.retro = !state.retro; renderer?.setRetro(state.retro); }
     if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
+    if (e.code === 'KeyV' || e.code === 'KeyT') {
+      sfx.ping?.('alert');
+      game.showBanner('📍 LOCATION PINGED', 'Suburban citation marked on radar');
+    }
     if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
     if (e.code === 'BracketRight') { state.legalSafe = !state.legalSafe; game.library.setLegalSafe(state.legalSafe); game.showBanner(`LEGAL-SAFE ${state.legalSafe ? 'ON' : 'OFF'}`); }
   });
@@ -1122,6 +1163,7 @@ function setupShortRecorder() {
 
 function startGame(session = null) {
   if (game) game.dispose();
+  sfx.stopAmbience?.();
   $('menu').classList.add('hidden');
   $('end').classList.add('hidden');
   sfx.unlock();
@@ -1180,6 +1222,7 @@ function showLineup() {
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined' && $('view')) {
   buildMenu();
+  sfx.startAmbience?.();
   // Dismiss the loading screen
   const loader = document.getElementById('loader');
   if (loader) { loader.classList.add('done'); setTimeout(() => loader.remove(), 600); }

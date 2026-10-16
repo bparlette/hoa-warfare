@@ -1,0 +1,72 @@
+{
+  "$schema": "./schema.json",
+  "patchId": "2026-10",
+  "title": "Season 1: Pumpkin Spice Martial Law",
+  "releaseDate": "2026-10-16",
+  "featuredRivalry": [
+    "tradwives",
+    "wokeLibs"
+  ],
+  "seasonalMutators": [
+    {
+      "id": "bigHead",
+      "name": "Big Head Mode",
+      "description": "2.2x inflated heads with crisp popping headshot hitboxes.",
+      "enabledByDefault": false,
+      "paidExclusive": false
+    },
+    {
+      "id": "shotgunsOnly",
+      "name": "Divorce Settlement Only",
+      "description": "Double-barrel close-quarters suburban carnage.",
+      "enabledByDefault": false,
+      "paidExclusive": true
+    },
+    {
+      "id": "turbo",
+      "name": "Turbo Speed",
+      "description": "Double sprint velocity for high-speed cul-de-sac run-and-gun.",
+      "enabledByDefault": false,
+      "paidExclusive": true
+    }
+  ],
+  "weaponTuning": [
+    {
+      "weaponId": "divorceSettlement",
+      "field": "damagePerPellet",
+      "delta": 2.0,
+      "rationale": "Ensures clean point-blank 1-shot elimination for suburban shotgun dominance."
+    },
+    {
+      "weaponId": "sideHustle",
+      "field": "fireRate",
+      "delta": 0.05,
+      "rationale": "Smooth rapid-fire close-quarters burst cadence for MLM and Furry run-and-gun."
+    }
+  ],
+  "newBarks": [
+    {
+      "faction": "tradwives",
+      "event": "kill",
+      "lineId": "tradwives.kill.seasonal_pumpkin",
+      "text": "Pumpkin spice and pure domestic discipline!",
+      "alt": "Seasonal spice and domestic discipline!"
+    },
+    {
+      "faction": "wokeLibs",
+      "event": "kill",
+      "lineId": "wokeLibs.kill.seasonal_compost",
+      "text": "You're getting composted into the community garden!",
+      "alt": "You're getting composted into the community plot!"
+    }
+  ],
+  "mapTheme": {
+    "skyColor": "#ff9f43",
+    "groundTint": "#d35400",
+    "festiveProps": [
+      "inflatablePumpkin",
+      "lawnGraveStone",
+      "fakeCobwebs"
+    ]
+  }
+}
