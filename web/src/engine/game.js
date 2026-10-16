@@ -356,7 +356,7 @@ if ($('btnFriends')) $('btnFriends').onclick = () => openRoomModal();
 /** Free hosts put idle servers to sleep. Poke it while the player is still picking a faction. */
 function prewarmServer() {
   const base = onlineServerUrl();
-  if (!base || isLocalHost(location.hostname)) return;
+  if (!base || typeof location === 'undefined' || isLocalHost(location.hostname)) return;
   try { fetch(base.replace(/^ws/, 'http').replace(/\/ws.*$/, '/'), { mode: 'no-cors', cache: 'no-store' }).catch(() => {}); } catch {}
 }
 prewarmServer();

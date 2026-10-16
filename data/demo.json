@@ -7,7 +7,7 @@
     "serverUrl: wss:// address of the deployed multiplayer server (see docs/ONLINE.md), e.g. wss://hoa-warfare.onrender.com/ws. While null, the online buttons are disabled in the public demo (they still work on localhost via npm run online)."
   ],
   "steamUrl": null,
-  "serverUrl": null,
+  "serverUrl": "wss://hoa-warfare-online.onrender.com/ws",
   "fallbackUrl": "https://bparlette.github.io/hoa-warfare/",
   "shareUrl": "https://bparlette.github.io/hoa-warfare/web/?demo=1",
   "priceLabel": "$4.99",
