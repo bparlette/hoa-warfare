@@ -275,6 +275,38 @@ export class Renderer {
       // South Golf Cart parking bay paving
       const cartBay = add(new THREE.Mesh(new THREE.PlaneGeometry(36, 20), lam({ map: T.concrete([9, 5]) })), { cast: false });
       cartBay.rotation.x = -Math.PI / 2; cartBay.position.set(0, 0.021, 35);
+    } else if (map.id === 'stripmall') {
+      // Sunset Strip Mall Parking Lot Ground
+      // Main asphalt parking lot
+      const parkingLot = add(new THREE.Mesh(new THREE.PlaneGeometry(92, 96), lam({ map: T.asphalt([12, 12]) })), { cast: false });
+      parkingLot.rotation.x = -Math.PI / 2; parkingLot.position.set(0, 0.02, 0);
+
+      // Concrete Storefront Promenade (North: z = -26 to -16)
+      const promenade = add(new THREE.Mesh(new THREE.PlaneGeometry(90, 10), lam({ map: T.concrete([15, 2]) })), { cast: false });
+      promenade.rotation.x = -Math.PI / 2; promenade.position.set(0, 0.022, -21);
+
+      // Concrete Sidewalk along South Entrance Boulevard
+      const southBoulevard = add(new THREE.Mesh(new THREE.PlaneGeometry(36, 12), lam({ map: T.concrete([6, 2]) })), { cast: false });
+      southBoulevard.rotation.x = -Math.PI / 2; southBoulevard.position.set(0, 0.022, 42);
+
+      // Yellow Parking Stall Lines for North and South Parking Aisles
+      const lineMat = lam({ color: '#f3c623' }); // Striping Yellow
+      const evGreenMat = lam({ color: '#00c853' }); // EV green stall marker
+      // North row stalls (z = -8, length 5.2m, x from -32 to 32)
+      for (let x = -32; x <= 32; x += 8) {
+        const stallL = add(new THREE.Mesh(new THREE.PlaneGeometry(0.14, 5.2), lineMat), { cast: false });
+        stallL.rotation.x = -Math.PI / 2; stallL.position.set(x, 0.025, -8);
+      }
+      // South row stalls (z = 18, length 5.2m, x from -32 to 32)
+      for (let x = -32; x <= 32; x += 8) {
+        const stallL = add(new THREE.Mesh(new THREE.PlaneGeometry(0.14, 5.2), lineMat), { cast: false });
+        stallL.rotation.x = -Math.PI / 2; stallL.position.set(x, 0.025, 18);
+      }
+      // EV Supercharger stall green boundary markers (z = 32)
+      for (const evX of [-20, -12, 12, 20]) {
+        const evBox = add(new THREE.Mesh(new THREE.PlaneGeometry(4.2, 5.2), evGreenMat), { cast: false });
+        evBox.rotation.x = -Math.PI / 2; evBox.position.set(evX, 0.023, 32);
+      }
     } else {
       // Default Cul-de-Sac Ground
       const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 36), lam({ map: T.asphalt([6, 6]) })), { cast: false });
@@ -506,6 +538,96 @@ export class Renderer {
       case 'tree': {
         const trunk = add(new THREE.Mesh(new THREE.CylinderGeometry(w * 0.36, w * 0.52, h, 10), lam({ map: T.bark() })));
         trunk.position.set(cx, cy, cz);
+        break;
+      }
+      case 'supermarket': {
+        // High-end supermarket facade with modern architectural trim and display windows
+        box(lam({ map: T.siding(b.color || '#e8dec8', [w / 4, h / 3]) }), w, h, d);
+        box(lam({ color: '#33272a' }), w + 0.2, 0.35, d + 0.2, h + 0.15);
+        box(lam({ color: '#87ceeb', transparent: true, opacity: 0.85 }), w * 0.88, 2.8, 0.1, 1.4, cx, cz + d / 2 + 0.02);
+        for (let i = -3; i <= 3; i++) {
+          box(lam({ color: '#1c1c1e' }), 0.08, 2.8, 0.14, 1.4, cx + i * (w * 0.12), cz + d / 2 + 0.04);
+        }
+        break;
+      }
+      case 'boutique': {
+        // Boutique storefront facade with display glass
+        box(lam({ map: T.siding(b.color || '#f5ebe0', [w / 3, h / 3]) }), w, h, d);
+        box(lam({ color: '#594a42' }), w + 0.15, 0.3, d + 0.15, h + 0.15);
+        box(lam({ color: '#a2d2ff', transparent: true, opacity: 0.85 }), w * 0.82, 2.4, 0.1, 1.2, cx, cz + d / 2 + 0.02);
+        break;
+      }
+      case 'awning': {
+        // Sloped / angled canvas awning
+        box(lam({ color: b.color || '#2d6a4f' }), w, h, d);
+        break;
+      }
+      case 'hvac': {
+        // Galvanized sheet metal rooftop AC / condenser unit
+        box(lam({ color: b.color || '#8d99ae' }), w, h, d);
+        const fan = add(new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.35, Math.min(w, d) * 0.35, 0.08, 14), lam({ color: '#2b2d42' })));
+        fan.position.set(cx, b.maxY + 0.04, cz);
+        break;
+      }
+      case 'dumpster': {
+        // Heavy commercial steel dumpster with angled split lids
+        const c = b.color || '#283618';
+        box(lam({ color: c }), w, h * 0.8, d, h * 0.4);
+        box(lam({ color: '#1a1a1a' }), w * 1.02, 0.1, d * 1.02, h * 0.85);
+        for (const sx of [-1, 1]) {
+          box(lam({ color: shade(c, -0.2) }), 0.12, 0.24, d * 0.8, h * 0.38, cx + sx * (w / 2 + 0.06), cz);
+        }
+        break;
+      }
+      case 'cartCorral': {
+        // Tubular silver safety rail fence with cart return sign
+        const railMat = lam({ color: '#d3d3d3' });
+        box(railMat, 0.08, h, d, h / 2, cx - w / 2, cz);
+        box(railMat, 0.08, h, d, h / 2, cx + w / 2, cz);
+        box(railMat, w, h, 0.08, h / 2, cx, cz - d / 2);
+        box(lam({ color: '#f3c623' }), w + 0.1, 0.35, 0.06, h, cx, cz + d / 2);
+        for (let czOff = -d / 3; czOff <= d / 3; czOff += 1.3) {
+          box(lam({ color: '#adb5bd', wireframe: true }), w * 0.65, 0.6, 0.9, 0.45, cx, cz + czOff);
+        }
+        break;
+      }
+      case 'evCharger': {
+        // Sleek EV pedestal charging kiosk
+        box(lam({ color: '#f8f9fa' }), w, h, d);
+        box(lam({ color: '#212529' }), w * 0.7, h * 0.7, d * 0.1, h * 0.55, cx, cz + d / 2 + 0.02);
+        box(lam({ color: '#00e676', emissive: '#00e676', emissiveIntensity: 0.6 }), w * 0.5, 0.12, 0.06, h * 0.82, cx, cz + d / 2 + 0.03);
+        break;
+      }
+      case 'container': {
+        // Corrugated freight shipping container
+        const c = b.color || '#1d3557';
+        box(lam({ color: c }), w, h, d);
+        box(lam({ color: shade(c, -0.2) }), w + 0.08, h + 0.08, 0.15, h / 2, cx, cz + d / 2);
+        box(lam({ color: shade(c, -0.2) }), w + 0.08, h + 0.08, 0.15, h / 2, cx, cz - d / 2);
+        break;
+      }
+      case 'crate': {
+        // Wooden shipping pallet crate
+        box(lam({ map: T.privacy([1, 1]), color: b.color || '#bc6c25' }), w, h, d);
+        break;
+      }
+      case 'ramp': {
+        box(lam({ color: b.color || '#4a4e69' }), w, h, d);
+        break;
+      }
+      case 'glassTable': {
+        // Glass top patio table
+        box(lam({ color: '#cbe3eb', transparent: true, opacity: 0.75 }), w, 0.08, d, h);
+        box(lam({ color: '#d3d3d3' }), 0.1, h, 0.1, h / 2);
+        box(lam({ color: '#a0a0a0' }), w * 0.6, 0.06, d * 0.6, 0.03);
+        break;
+      }
+      case 'rocketPropane': {
+        // Propane tank
+        const tank = add(new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, h * 0.75, 12), lam({ color: '#f0f0f0' })));
+        tank.position.set(cx, cy, cz);
+        box(lam({ color: '#d0d0d0' }), w * 0.7, 0.2, d * 0.7, h * 0.85);
+        box(lam({ color: '#c59b27' }), 0.1, 0.12, 0.1, h * 0.95);
         break;
       }
       default: box(lam({ color: '#ff00ff' }));

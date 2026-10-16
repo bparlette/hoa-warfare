@@ -514,22 +514,247 @@ export function buildPickleballClub() {
 }
 
 export function buildStripMall() {
-  const base = buildCulDeSac();
-  // Customize cover with Strip Mall stucco & luxury SUVs
-  for (const b of base.boxes) {
-    if (b.kind === 'house') b.color = '#e6ccb2';
-    if (b.kind === 'car') b.color = '#2b2d42';
+  const boxes = [];
+  function box(cx, cz, w, d, h, kind, extra = {}) {
+    const minY = extra.minY ?? 0;
+    const b = {
+      cx, cz, w, d, h,
+      minX: cx - w / 2, maxX: cx + w / 2,
+      minZ: cz - d / 2, maxZ: cz + d / 2,
+      minY, maxY: minY + h,
+      kind,
+      ...extra,
+    };
+    boxes.push(b);
+    return b;
   }
-  base.id = 'stripmall';
-  base.name = 'Sunset Strip Mall & Whole Foods Lot';
-  return base;
+
+  const { minX, maxX, minZ, maxZ } = BOUNDS;
+
+  // 1. Strip Mall Boundary Walls (North back wall, East & West perimeter)
+  box(0, minZ - 0.5, maxX - minX + 2, 1, 3.8, 'wall'); // North service alley wall
+  box(minX - 0.5, 0, 1, maxZ - minZ, 3.2, 'wall');    // West drive-thru wall
+  box(maxX + 0.5, 0, 1, maxZ - minZ, 3.2, 'wall');    // East loading dock wall
+  // South perimeter wall leaves a wide 28m open boulevard entrance in the center
+  box(-30, maxZ + 0.5, 32, 1, 2.2, 'wall');
+  box(30, maxZ + 0.5, 32, 1, 2.2, 'wall');
+
+  // 2. North Retail Buildings
+  // Anchor Supermarket: "Wholesome Harvest Organic Market" (West-North)
+  // Two wings leaving an open automatic glass sliding entrance in between (from x = -13 to -9)
+  box(-27, -36, 26, 14, 6.2, 'supermarket', { face: 's', color: '#e8dec8', id: 'sm_west' });
+  box(-1, -36, 14, 14, 6.2, 'supermarket', { face: 's', color: '#e8dec8', id: 'sm_east' });
+  // Overhanging Entrance Canopy / Awning
+  box(-11, -27.5, 12, 4, 0.4, 'awning', { minY: 3.8, color: '#2d6a4f' });
+  box(-16, -27.5, 0.4, 0.4, 3.8, 'post');
+  box(-6, -27.5, 0.4, 0.4, 3.8, 'post');
+
+  // Boutique Retail Strip (East-North: "Pure Pilates", "Artisanal Drip Coffee", "Chic Spa")
+  // Lower building with accessible rooftop sniper terrace (height 4.2m)
+  box(24, -36, 22, 12, 4.2, 'boutique', { face: 's', color: '#f5ebe0', id: 'boutique_main' });
+  // Boutique Shop Canvas Awnings over front sidewalk
+  box(18, -28.5, 8, 2.5, 0.35, 'awning', { minY: 3.2, color: '#7f4f24' });
+  box(28, -28.5, 8, 2.5, 0.35, 'awning', { minY: 3.2, color: '#2b2d42' });
+
+  // Accessible Rooftop Sniper Perch & Cover:
+  // Access Ramp on the East side (ascends from ground to roof at height 2.2m)
+  box(38, -26, 3.2, 8, 2.2, 'ramp', { color: '#4a4e69' });
+  // Rooftop Industrial HVAC Condenser Units (Cover on the roof)
+  box(20, -35, 2.4, 3.2, 1.4, 'hvac', { minY: 4.2, color: '#8d99ae' });
+  box(28, -35, 2.4, 3.2, 1.4, 'hvac', { minY: 4.2, color: '#8d99ae' });
+  // Rooftop Parapet Safety Fence
+  box(24, -29.8, 22, 0.25, 0.9, 'courtFence', { minY: 4.2 });
+  box(13, -36, 0.25, 12, 0.9, 'courtFence', { minY: 4.2 });
+
+  // Commercial Delivery Bay & Loading Dock (Far East: x = 32 to 44, z = -44 to -28)
+  // Semi-truck Freight Container / Trailer
+  box(38, -40, 3.2, 9, 3.2, 'container', { color: '#1d3557' });
+  // Heavy Commercial Steel Dumpsters
+  box(33, -32, 2.4, 1.6, 1.5, 'dumpster', { color: '#283618', id: 'dumpster_east' });
+  box(-41, -28, 2.4, 1.6, 1.5, 'dumpster', { color: '#283618', id: 'dumpster_west' });
+  // Cargo Wooden Crates / Pallets for cover
+  box(42, -32, 1.8, 1.8, 1.2, 'crate', { color: '#bc6c25' });
+  box(42, -34, 1.8, 1.8, 2.2, 'crate', { color: '#bc6c25' });
+
+  // 3. West Drive-Thru Corridor (x = -44 to -34, z = -24 to 16)
+  // Drive-Thru Order Menu Speaker Post & Canopy
+  box(-38, -12, 0.8, 1.4, 2.2, 'mailbox', { id: 'sm_drivethru_menu', hp: 40, maxHp: 40, destroyed: false });
+  // Steel Crash Bollards protecting the corner
+  box(-38, 2, 0.35, 0.35, 1.1, 'post');
+  box(-38, 12, 0.35, 0.35, 1.1, 'post');
+
+  // 4. Center Parking Lot: Shopping Cart Corrals & Luxury SUVs
+  // 2 Shopping Cart Corrals (metal tubular frames with rows of carts)
+  box(-16, 4, 2.4, 5.4, 1.15, 'cartCorral');
+  box(16, 4, 2.4, 5.4, 1.15, 'cartCorral');
+
+  // Parked Luxury Suburban SUVs and Crossovers (tactical waist-high & head-high cover)
+  const suvFleet = [
+    // North Parking Row (z = -8)
+    { x: -24, z: -8, w: 2.3, d: 4.6, color: '#d8d8d8' }, // Tesla Model X (Silver)
+    { x: -8,  z: -8, w: 2.3, d: 4.6, color: '#1c1c1e' }, // Range Rover (Black)
+    { x: 8,   z: -8, w: 2.3, d: 4.6, color: '#1b263b' }, // Suburban Minivan (Navy)
+    { x: 24,  z: -8, w: 2.3, d: 4.6, color: '#f8f9fa' }, // Lexus RX (White)
+    // South Parking Row (z = 18)
+    { x: -24, z: 18, w: 2.3, d: 4.6, color: '#6b1d2f' }, // Porsche Cayenne (Burgundy)
+    { x: -8,  z: 18, w: 2.3, d: 4.6, color: '#d4af37' }, // Cadillac Escalade (Champagne)
+    { x: 8,   z: 18, w: 2.3, d: 4.6, color: '#2d4a22' }, // Jeep Wagoneer (Green)
+    { x: 24,  z: 18, w: 2.3, d: 4.6, color: '#2b2d42' }, // Charcoal Crossover
+  ];
+  for (const suv of suvFleet) {
+    box(suv.x, suv.z, suv.w, suv.d, 1.85, 'car', { color: suv.color, isCar: true, isSuv: true });
+  }
+
+  // Parking Island Curbs / Planters separating lanes
+  box(0, -6, 2.2, 10, 0.35, 'post', { color: '#a0a0a0' });
+  box(0, 16, 2.2, 10, 0.35, 'post', { color: '#a0a0a0' });
+
+  // 5. South Plaza: EV Charging Stations & Monument Entrance
+  // 4 EV Supercharging Kiosks
+  const evChargers = [
+    { x: -20, z: 32 }, { x: -12, z: 32 },
+    { x: 12, z: 32 },  { x: 20, z: 32 },
+  ];
+  for (const ev of evChargers) {
+    box(ev.x, ev.z, 0.6, 0.6, 1.6, 'evCharger');
+  }
+
+  // Strip Mall Monument Entrance Sign (South Center)
+  box(0, 42, 6.4, 1.4, 2.8, 'house', { face: 's', color: '#d4c7b0', id: 0 });
+
+  // Amazon / HOA Package Parcel Locker Bank
+  const parcelLockers = [
+    { id: 'sm_locker_1', kind: 'mailbox', pos: { x: -8, y: 0, z: 38 }, hp: 35, maxHp: 35, destroyed: false },
+    { id: 'sm_locker_2', kind: 'mailbox', pos: { x: 8, y: 0, z: 38 }, hp: 35, maxHp: 35, destroyed: false },
+    { id: 'sm_kiosk_1',  kind: 'mailbox', pos: { x: -3, y: 0, z: -22 }, hp: 25, maxHp: 25, destroyed: false },
+    { id: 'sm_kiosk_2',  kind: 'mailbox', pos: { x: 3, y: 0, z: -22 }, hp: 25, maxHp: 25, destroyed: false },
+  ];
+  for (const pl of parcelLockers) {
+    box(pl.pos.x, pl.pos.z, 0.5, 0.5, 1.4, 'mailbox', { id: pl.id, hp: pl.hp, maxHp: pl.maxHp, destroyed: pl.destroyed });
+  }
+
+  // Outdoor Cafe Glass Tables outside boutique coffee shop
+  const glassTables = [
+    { id: 'sm_table_1', kind: 'glassTable', pos: { x: 16, y: 0, z: -22 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'sm_table_2', kind: 'glassTable', pos: { x: 22, y: 0, z: -22 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'sm_table_3', kind: 'glassTable', pos: { x: 28, y: 0, z: -22 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'sm_table_4', kind: 'glassTable', pos: { x: 34, y: 0, z: -22 }, hp: 20, maxHp: 20, destroyed: false },
+  ];
+  for (const t of glassTables) {
+    box(t.pos.x, t.pos.z, 1.6, 1.6, 0.85, 'glassTable', { id: t.id, hp: t.hp, maxHp: t.maxHp, destroyed: t.destroyed });
+  }
+
+  // Rocket Propane Tanks (Stored near delivery bay and outdoor patio display)
+  const rocketPropane = [
+    { id: 'sm_propane_1', kind: 'rocketPropane', pos: { x: 34, y: 0.5, z: -24 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+    { id: 'sm_propane_2', kind: 'rocketPropane', pos: { x: 42, y: 0.5, z: -26 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+    { id: 'sm_propane_3', kind: 'rocketPropane', pos: { x: -34, y: 0.5, z: 28 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+  ];
+  for (const p of rocketPropane) {
+    box(p.pos.x, p.pos.z, 0.6, 0.6, 1.1, 'rocketPropane', { id: p.id, hp: p.hp, maxHp: p.maxHp, triggered: false, destroyed: false });
+  }
+
+  // Ornamental Palm / Landscape Trees on islands and perimeter
+  const trees = [
+    [-34, -40], [34, -40], [-34, 40], [34, 40],
+    [0, -8], [0, -2], [0, 14], [0, 20],
+    [-28, 38], [28, 38], [-40, 0], [42, 0],
+  ];
+  trees.forEach(([x, z]) => box(x, z, 0.6, 0.6, 3.6, 'tree'));
+
+  // Commercial Sprinklers on parking lot landscape strips
+  const smSprinklerNodes = [
+    [0, -5], [0, 17], [-28, 36], [28, 36],
+    [-36, -34], [36, 34], [-40, -4], [40, -4],
+  ];
+  const sprinklers = smSprinklerNodes.map(([x, z], id) => Object.assign([x, z], {
+    id: `sm_sprinkler_${id + 1}`,
+    index: id,
+    kind: 'sprinkler',
+    pos: { x, y: 0, z },
+    x, y: 0, z,
+    radius: 2.6,
+    arc: Math.PI,
+    active: true,
+    isSprinkler: true,
+  }));
+
+  const destructibles = [...parcelLockers, ...glassTables, ...rocketPropane];
+
+  // Spawns: Team 0 = South Entrance & EV Stalls, Team 1 = North Storefront Promenade & Loading Bay
+  const spawns = {
+    0: [[-8, 42], [-4, 43], [4, 43], [8, 42], [-16, 40], [16, 40], [-20, 36], [20, 36]],
+    1: [[-8, -22], [-4, -22], [4, -22], [8, -22], [-18, -22], [18, -22], [28, -24], [34, -18]],
+  };
+
+  // Nav nodes covering the entire map
+  const nodeCoords = [
+    // North Storefront Sidewalk & Cafe Terrace
+    [-24, -22], [-18, -22], [-11, -22], [-4, -22], [4, -22], [11, -22], [18, -22], [24, -22], [30, -22], [36, -22],
+    // Loading Dock & Freight Area
+    [34, -28], [34, -36], [42, -28], [42, -38],
+    // West Drive-Thru Corridor
+    [-38, -22], [-38, -12], [-38, 0], [-38, 12], [-38, 24],
+    // North Parking Aisle
+    [-30, -14], [-16, -14], [0, -14], [16, -14], [30, -14],
+    // Mid Parking Crossings (Between SUV rows)
+    [-30, 4], [-24, 4], [-8, 4], [0, 4], [8, 4], [24, 4], [30, 4],
+    // South Parking Aisle
+    [-30, 24], [-16, 24], [0, 24], [16, 24], [30, 24],
+    // South Plaza & EV Supercharger Row
+    [-20, 34], [-12, 34], [0, 34], [12, 34], [20, 34],
+    // Southern Entrance Boulevard
+    [-8, 42], [-4, 43], [4, 43], [8, 42], [0, 44],
+  ];
+
+  const nodes = [];
+  const seen = new Set();
+  for (const [x, z] of nodeCoords) {
+    const k = `${x},${z}`;
+    if (!seen.has(k)) {
+      seen.add(k);
+      nodes.push({ x, z, links: [] });
+    }
+  }
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const d = Math.hypot(a.x - b.x, a.z - b.z);
+      if (d <= 22 && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, 1.15)) {
+        a.links.push({ to: j, d });
+        b.links.push({ to: i, d });
+      }
+    }
+  }
+
+  return {
+    id: 'stripmall',
+    name: 'Sunset Strip Mall Parking Lot',
+    label: 'Sunset Strip Mall Parking Lot',
+    boxes,
+    spawns,
+    nodes,
+    bounds: BOUNDS,
+    court: { x: 0, z: 6, r: 18 },
+    street: { minX: -14, maxX: 14, minZ: 26, maxZ: 48 },
+    trees,
+    sprinklers,
+    sprinklerNodes: sprinklers,
+    mailboxes: parcelLockers,
+    glassTables,
+    rocketPropane,
+    rocketPropanes: rocketPropane,
+    destructibles,
+  };
 }
 
 export const MAPS = {
   culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                name: 'Oakridge Cul-de-Sac',                demoAllowed: true,  freeInDemo: true,  build: buildCulDeSac },
   // Shady Pines Pickleball Club: Full custom layout with 4 tournament courts, nets, clubhouse, golf carts, bleachers!
   pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, wip: false, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
-  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, wip: true, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
+  // Sunset Strip Mall Parking Lot: Supermarket & boutique storefronts, delivery docks, SUV corridors & EV superchargers!
+  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, wip: false, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
 };
 
 export function buildMap(mapId = 'culdesac') {
