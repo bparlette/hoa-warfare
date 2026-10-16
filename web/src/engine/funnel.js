@@ -5,7 +5,7 @@
 //              from ?portal= or the hostname; becomes utm_source on every Steam link
 //   steamLink  Steam store URL with UTM tags, or the fallback page while there is no Steam app yet
 
-const DEFAULTS = { steamUrl: null, fallbackUrl: 'https://bparlette.github.io/hoa-warfare/', shareUrl: 'https://bparlette.github.io/hoa-warfare/web/?demo=1', priceLabel: '$4.99', ctaLockSec: 4 };
+const DEFAULTS = { steamUrl: null, fallbackUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', shareUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', priceLabel: '$4.99', ctaLockSec: 4 };
 
 export function detectPortal(loc = typeof location !== 'undefined' ? location : null) {
   if (!loc) return 'local';
