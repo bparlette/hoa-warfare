@@ -276,15 +276,7 @@ export function buildMenu() {
           ${isLocked ? `
             <button type="button" id="deploy" class="btn-deploy btn-locked">🔒 LOCKED IN DEMO (WISHLIST ON STEAM)</button>
           ` : `
-            <div class="dossier-deploy-group">
-              <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY AS ${selF.name.toUpperCase()}</button>
-              ${onlineServerUrl() ? `
-                <div class="dossier-online-actions">
-                  <button type="button" id="dossierQuickMatch" class="btn-dossier-online">🌐 QUICK MATCH</button>
-                  <button type="button" id="dossierFriends" class="btn-dossier-online btn-dossier-friends">👥 FRIENDS</button>
-                </div>
-              ` : ''}
-            </div>
+            <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY AS ${selF.name.toUpperCase()}</button>
           `}
         </div>
       </div>
@@ -305,10 +297,6 @@ export function buildMenu() {
         depBtn.onclick = () => startGame();
       }
     }
-    const dqm = $('dossierQuickMatch');
-    if (dqm) dqm.onclick = (e) => { e.stopPropagation(); startOnline('auto'); };
-    const dfr = $('dossierFriends');
-    if (dfr) dfr.onclick = (e) => { e.stopPropagation(); openRoomModal(); };
   }
 
   syncOnlineButtons(demoActive && !DEMO_FACTIONS.includes(state.faction));
@@ -513,26 +501,6 @@ class Game {
   }
 
   showBanner(text, small = '') { this.hud.showBanner(text, small); }
-
-  taunt() {
-    const me = this.me;
-    if (!me || !me.alive) return;
-    const now = this.realTime;
-    if (now < (this._lastTauntAt || 0) + 2.5) return;
-    this._lastTauntAt = now;
-    const lines = this.library.linesFor(me.faction, 'roundStart') || this.library.linesFor(me.faction, 'kill') || [];
-    if (lines.length) {
-      const line = lines[Math.floor(this.rng() * lines.length)];
-      const b = {
-        text: line.text, lineId: line.id, faction: me.faction, name: me.name,
-        speakerId: me.id, priority: 8, duration: 2.2, position: { ...me.pos },
-      };
-      this.hud.addBubble(me, b, me, this.realTime);
-      voice.say({ text: b.text, lineId: b.lineId, faction: b.faction, priority: 8, force: true });
-      this.hud.addSub(b, 'world');
-      this.showBanner(b.text, `${me.name} (${factions[me.faction]?.name || ''})`);
-    }
-  }
 
   dispose() {
     if (this.session) {
@@ -1078,34 +1046,13 @@ if (canvas) {
   canvas.addEventListener('click', () => { if (game && !game.sim.over && !state.spectate) lock(); sfx.unlock(); });
 }
 if ($('pause')) {
-  $('pause').addEventListener('click', e => { if (e.target.id !== 'toMenu' && e.target.id !== 'btnResume') lock(); });
-}
-if ($('btnResume')) {
-  $('btnResume').onclick = () => {
-    if (game && !game.sim.over && !state.spectate) lock();
-    if (input) input.userPaused = false;
-    $('pause')?.classList.add('hidden');
-  };
-}
-if ($('score')) {
-  $('score').style.cursor = 'pointer';
-  $('score').addEventListener('click', e => {
-    e.stopPropagation();
-    if (input) input.scoreboard = !input.scoreboard;
-  });
-}
-if ($('board')) {
-  $('board').style.cursor = 'pointer';
-  $('board').addEventListener('click', () => {
-    if (input) input.scoreboard = false;
-  });
+  $('pause').addEventListener('click', e => { if (e.target.id !== 'toMenu') lock(); });
 }
 if (typeof document !== 'undefined') {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') hideDemoModal();
     if (e.code === 'KeyO' || e.code === 'Digit0') cycleStyle(state, renderer, $, name => { if (game) game.showBanner(name); });
     if (!game) return;
-    if (e.code === 'KeyV' && game.me && game.me.alive) game.taunt();
     if (e.code === 'KeyP') { state.retro = !state.retro; renderer?.setRetro(state.retro); }
     if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
     if (e.code === 'BracketLeft') { state.script = state.script === 'steam' ? 'clean' : 'steam'; game.library.setScript(state.script); game.showBanner(state.script === 'steam' ? 'STEAM SCRIPT' : 'CLEAN SCRIPT'); }
@@ -1136,7 +1083,6 @@ if (input) {
       if (pr.START) input.userPaused = !input.userPaused;
       else if (input.userPaused && pr.VIEW) toMenu();
       else if (input.userPaused && pr.A) input.userPaused = false;
-      else if (!input.userPaused && pr.DOWN && game.me && game.me.alive) game.taunt();
     }
   };
 }
@@ -1240,6 +1186,9 @@ function showLineup() {
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined' && $('view')) {
   buildMenu();
+  // Dismiss the loading screen
+  const loader = document.getElementById('loader');
+  if (loader) { loader.classList.add('done'); setTimeout(() => loader.remove(), 600); }
   if (params.get('lineup') === '1') showLineup();
   else if (params.get('autostart') === '1' || state.spectate) startGame();
   // Invite link (?room=CODE): open the join prompt with the code filled in. Joining needs a click anyway

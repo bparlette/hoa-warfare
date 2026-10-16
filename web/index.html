@@ -24,6 +24,11 @@
 <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
+<div id="loader">
+  <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="loader-logo">
+  <div class="loader-bar"><div id="loaderFill"></div></div>
+  <div id="loaderText" class="loader-text">LOADING THE CUL-DE-SAC...</div>
+</div>
 <canvas id="view"></canvas>
 
 <div id="hud" class="hidden">
@@ -146,7 +151,6 @@
     <h2>Paused</h2>
     <p id="pauseHint">Click to keep fighting for the block.</p>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
-      <button id="btnResume" type="button" class="btn-deploy" style="min-height:44px;font-size:16px;padding:8px 16px;margin:0;">▶ RESUME GAME</button>
       <button id="btnInvite" type="button" class="hidden">🔗 COPY INVITE LINK</button>
       <button id="toMenu">Quit to menu</button>
       <a data-steam="pause" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist-small">★ Wishlist on Steam</a>

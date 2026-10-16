@@ -1,5 +1,14 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; font-family: "Courier New", ui-monospace, monospace; color: #fff1e8; }
+
+/* Loading screen */
+#loader { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; background: #111d35; transition: opacity 0.5s; }
+#loader.done { opacity: 0; pointer-events: none; }
+.loader-logo { width: min(420px, 80vw); image-rendering: pixelated; animation: loaderPulse 1.5s ease-in-out infinite; }
+@keyframes loaderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+.loader-bar { width: min(320px, 70vw); height: 18px; background: #0a0f1e; border: 3px solid #fff1e8; }
+#loaderFill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff004d, #ffa300, #ffec27); transition: width 0.3s; }
+.loader-text { font-size: 14px; color: #ffec27; letter-spacing: 2px; text-shadow: 2px 2px 0 #000; }
 #view { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; image-rendering: pixelated; }
 .hidden { display: none !important; }
 
@@ -476,52 +485,12 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 .dossier-action {
   margin-top: 4px;
 }
-.dossier-deploy-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.dossier-online-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-.btn-dossier-online {
-  margin: 0;
-  min-height: 30px;
-  height: 30px;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 3px 6px;
-  background: #0b3d5c;
-  border: 2px solid #29adff;
-  color: #e8f6ff;
-  border-radius: 3px;
-  box-shadow: 2px 2px 0 #000;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s, transform .1s;
-}
-.btn-dossier-online:hover {
-  background: #14608f;
-  transform: translateY(-1px);
-}
-.btn-dossier-friends {
-  background: #2b1f4d;
-  border-color: #b39cff;
-}
-.btn-dossier-friends:hover {
-  background: #412f73;
-}
 .dossier-action .btn-deploy {
   width: 100%;
   font-size: 18px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   margin: 0;
-  min-height: 42px;
+  min-height: 46px;
 }
 .btn-locked {
   background: #332029 !important;
@@ -1231,22 +1200,10 @@ body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; 
   .cell-val {
     font-size: 8.5px;
   }
-  .dossier-deploy-group {
-    gap: 3px;
-  }
-  .dossier-online-actions {
-    gap: 4px;
-  }
-  .btn-dossier-online {
-    min-height: 22px;
-    height: 22px;
-    font-size: 8px;
-    padding: 1px 4px;
-  }
   .dossier-action .btn-deploy {
-    min-height: 26px;
-    font-size: 11px;
-    padding: 2px 5px;
+    min-height: 30px;
+    font-size: 13px;
+    padding: 3px 6px;
   }
   .menu-settings {
     display: none;
