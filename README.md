@@ -35,6 +35,40 @@ automatically: drop `<line_id with . -> _>.ogg` files in `web/vo/` and list the 
 `web/vo/manifest.json`. `node tools/script_tools.mjs csv > dist/vo_session_sheet.csv` makes the
 recording sheet with matching file names.
 
+## Store Media & Branding
+
+This section documents exactly what images, videos, GIFs, and descriptions are live on each storefront, so any agent can keep them in sync.
+
+### itch.io (Demo — Public)
+- **Page:** https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare
+- **Edit:** https://itch.io/game/edit/5164539
+- **Cover:** `web/assets/badge.png` (military shield with crosshair — official logo)
+- **Secondary logo:** `web/assets/logo.png` (pixel-art Karen mascot — wide displays only)
+- **Screenshots:** 3 gameplay stills from viral renders (`~/workspace/itch_media/shot1.png`, `shot2.png`, `shot3.png`)
+- **GIFs:** 3 kill-shot GIFs (`~/workspace/itch_media/karen_kill.gif`, `trumper_kill.gif`, `tradwife_kill.gif`)
+- **Trailer:** YouTube embed (pending — viral video upload)
+- **Tagline:** "Satirical suburban tactical FPS — coming soon."
+- **Description:** Multiplayer promo + feature list (see edit page)
+
+### itch.io (Full Game — Coming Soon / Preorder)
+- **Page:** https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare-full
+- **Edit:** https://itch.io/game/edit/5166220
+- **Price:** $4.99 — no files uploaded yet, no payment method configured
+- **Status:** Public (Coming Soon) — followers get launch notifications
+
+### CrazyGames (Draft)
+- **Dashboard:** https://developer.crazygames.com/games/f297f3d3-eeaa-40bd-a670-2e9ae903bba9
+- **Display name:** `homebrewgametrailers`
+- **Category:** Shooting — **Tags:** `3D`, `FPS`, `Battle`, `Gun`, `Meme`
+- **Assets:** `~/workspace/crazygames_assets/` (landscape + portrait previews, portrait cover)
+- **Blocked:** Landscape + square cover uploads failing — needs manual upload or site fix before QA review
+- **Status:** Draft (not submitted)
+
+### Branding Rules (owner-locked)
+- Only two logos in repo: `web/assets/badge.png` (official) and `web/assets/logo.png` (secondary)
+- No "Parlette" / "bparlette" / GitHub URLs in any files delivered to itch.io or CrazyGames
+- Wishlist/Steam buttons are inert until a Steam page exists
+
 ## Layout
 
 ```
