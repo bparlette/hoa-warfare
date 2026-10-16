@@ -235,10 +235,7 @@ export function faceTex(faction, skin) {
       case 'brainRot': px(2, 3, '#7ff7ff'); px(5, 3, '#7ff7ff'); px(3, 6, eye, 2, 1); px(0, 7, '#5b6ee1', 8, 1); break;
       case 'fratHouse': eyes(); px(2, 6, '#ffffff', 4, 1); px(2, 5, eye); px(5, 5, eye); break;
       case 'cloutStreamers': eyes(); px(2, 6, eye, 4, 1); px(1, 2, '#fff', 1, 1); px(4, 6, '#ffffff', 1, 1); break;
-      case 'emoKids': px(0, 1, '#141414', 5, 4); px(5, 3, eye); px(3, 6, eye, 2, 1); break;
-      case 'oldMoney': eyes(); px(5, 3, '#e8c547'); px(2, 6, '#e8e1d0', 4, 1); break;
       case 'gymRats': eyes(); px(2, 6, '#ffffff', 4, 1); px(1, 2, eye, 2, 1); px(5, 2, eye, 2, 1); break;
-      case 'theaterKids': eyes(); px(2, 5, eye, 4, 2); px(3, 6, '#9c1f2f', 2, 1); break;
       case 'hoaDads': px(1, 3, '#111', 6, 1); px(2, 6, '#7b5a3a', 4, 1); break;
       case 'wallstreetBets': eyes(); px(3, 6, eye, 3, 1); break;
       case 'valleyGirls': eyes(); px(3, 6, '#ff77a8', 2, 1); px(1, 2, eye); px(6, 2, eye); break;
@@ -246,7 +243,6 @@ export function faceTex(faction, skin) {
       case 'fabulous': eyes(); px(1, 2, '#2d1e18', 2, 1); px(5, 2, '#2d1e18', 2, 1); px(3, 6, '#e05688', 2, 1); break;
       case 'trumpers': eyes(); px(2, 2, '#e0aa38', 4, 1); px(3, 6, eye, 2, 1); break;
       case 'wokeLibs': eyes(); px(3, 5, '#c25a3a', 2, 1); px(3, 6, eye, 2, 1); px(2, 4, '#e89090'); px(5, 4, '#e89090'); break;
-      case 'mlmHuns': eyes(); px(2, 2, '#2b1b17'); px(5, 2, '#2b1b17'); px(2, 6, '#e91e63', 4, 1); px(1, 4, '#f48fb1'); px(6, 4, '#f48fb1'); break;
       case 'furries': eyes(); px(3, 4, '#ff70a6', 2, 1); px(1, 5, '#222', 2, 1); px(5, 5, '#222', 2, 1); px(3, 6, '#222', 2, 1); break;
       case 'animeWeebs': eyes(); px(1, 4, '#ff4f9a', 2, 1); px(5, 4, '#ff4f9a', 2, 1); px(3, 5, '#ffffff', 2, 1); px(3, 6, eye, 2, 1); break;
       case 'tradwives': eyes(); px(1, 4, '#e57373', 2, 1); px(5, 4, '#e57373', 2, 1); px(2, 6, '#d32f2f', 4, 1); break;
