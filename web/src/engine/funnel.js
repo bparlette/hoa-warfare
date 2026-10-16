@@ -27,6 +27,18 @@ export class Funnel {
 
   get live() { return !!this.cfg.steamUrl; }
 
+  /**
+   * Is a store button allowed at this placement? CrazyGames forbids cross-promotion except a store link
+   * on the main menu, on desktop only (docs.crazygames.com/requirements/gameplay/). Other portals: anywhere.
+   */
+  allowsStoreLink(placement, { touch = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches } = {}) {
+    if (this.portal !== 'crazygames') return true;
+    return placement === 'menu' && !touch;
+  }
+
+  /** Whether the end-of-match Steam card (and its unskippable lock) may be shown here. */
+  get endCard() { return this.allowsStoreLink('end_card'); }
+
   /** Steam store link tagged with where the click came from; fallback page until the app exists. */
   steamLink(placement = 'button') {
     const base = this.cfg.steamUrl || this.cfg.fallbackUrl;
@@ -67,6 +79,12 @@ export class Funnel {
     if (!root?.querySelectorAll) return 0;
     let n = 0;
     for (const a of root.querySelectorAll('a[data-steam]')) {
+      if (!this.allowsStoreLink(a.dataset.steam || 'button')) {
+        a.style.display = 'none';
+        a.href = '#';
+        n++;
+        continue;
+      }
       if (!this.live) {
         // No Steam URL yet — buttons do nothing until Steam account exists
         a.href = '#';

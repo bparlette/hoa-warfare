@@ -25,6 +25,7 @@ import { Hud } from './hud.js';
 import { NetClient } from './net.js';
 import { Funnel } from './funnel.js';
 import { OnlineSession } from './online.js';
+import { Portal } from './portal.js';
 import { CareerProfile } from './progression.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
@@ -69,6 +70,9 @@ const [content, weaponsData, demoConfig] = await Promise.all([
 // Web demo -> Steam funnel (links, CTA copy, share text). Steam buttons in the static HTML are wired now.
 export const funnel = new Funnel(demoConfig || {});
 funnel.wireSteamLinks();
+// CrazyGames SDK (loaded only on CrazyGames; no-op elsewhere)
+export const portal = new Portal(funnel.portal);
+portal.init();
 const factions = content.factions;
 const shippingFactions = Object.keys(factions).filter(id => !factions[id].status || factions[id].status !== 'draft');
 
@@ -156,7 +160,9 @@ export function showDemoModal(factionName, factionTagline = '') {
   }
   const body = $('demoModalBody');
   if (body) {
-    body.innerHTML = `Unlock <strong>${factionName}</strong> and ${funnel.pitch(Object.keys(factions).length)} in the full ${funnel.cfg.priceLabel} release on Steam!`;
+    body.innerHTML = funnel.allowsStoreLink('locked_faction')
+      ? `Unlock <strong>${factionName}</strong> and ${funnel.pitch(Object.keys(factions).length)} in the full ${funnel.cfg.priceLabel} release on Steam!`
+      : `<strong>${factionName}</strong> is in the full game. Pick a faction without a lock to play now.`; // CrazyGames: no cross-promotion here
   }
   modal.classList.remove('hidden');
 }
@@ -311,7 +317,7 @@ export function buildMenu() {
   syncOnlineButtons(demoActive && !DEMO_FACTIONS.includes(state.faction));
   if ($('careerRankBadge')) {
     const rInfo = career.getRankInfo();
-    const capNote = rInfo.cappedInDemo ? ' 🔒 (MAX IN DEMO)' : rInfo.nextRank ? ` (${rInfo.xp}/${rInfo.nextRank.xpRequired} XP)` : ' (MAX)';
+    const capNote = rInfo.cappedInDemo ? ' 🔒 (MAX IN DEMO)' : rInfo.nextRank ? ` (${rInfo.xp}/${rInfo.nextRank.xp} XP)` : ' (MAX)';
     $('careerRankBadge').textContent = `${rInfo.current.badge} RANK ${rInfo.current.rank}: ${rInfo.current.title.toUpperCase()}${capNote}`;
   }
   if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
@@ -492,7 +498,7 @@ prewarmServer();
 const NAME_KEY = 'hoa.name';
 function playerName() {
   const raw = ($('optName')?.value || params.get('name') || '').trim();
-  const name = raw.normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').slice(0, 16) || `Karen${100 + Math.floor(Math.random() * 900)}`;
+  const name = raw.normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').slice(0, 20) || `Karen${100 + Math.floor(Math.random() * 900)}`;
   try { localStorage.setItem(NAME_KEY, name); } catch {}
   return name;
 }
@@ -526,6 +532,7 @@ async function startOnline(room = 'auto') {
     if (token !== connectToken) { session.close(); return; }
     $('connecting').classList.add('hidden');
     startGame(session);
+    reportRoom(session);
   } catch (err) {
     clearTimeout(wakeNote);
     if (token !== connectToken) return;
@@ -554,18 +561,41 @@ if ($('joinCode')) $('joinCode').addEventListener('keydown', e => { if (e.key ==
 if ($('closeRoomModal')) $('closeRoomModal').onclick = () => $('roomModal').classList.add('hidden');
 if ($('cancelConnect')) $('cancelConnect').onclick = () => { connectToken++; $('connecting').classList.add('hidden'); $('menu').classList.remove('hidden'); };
 if ($('btnInvite')) $('btnInvite').onclick = async () => {
-  const link = game?.session?.inviteLink(funnel.shareLink());
-  if (!link) return;
+  const s = game?.session;
+  if (!s) return;
+  const cgLink = portal.inviteLink(s.roomCode);
+  const link = cgLink || s.inviteLink(funnel.shareLink());
+  // itch.io and most portals don't pass ?room= into the game's iframe, so the code travels in the text too
+  const text = cgLink ? `Join my Call of Karen room!` : `Join my Call of Karen room ${s.roomCode}: open the game, tap FRIENDS, enter ${s.roomCode}.`;
   try {
-    if (navigator.share && matchMedia('(pointer: coarse)').matches) await navigator.share({ title: 'Join my Call of Karen room', url: link });
-    else { await navigator.clipboard.writeText(link); $('btnInvite').textContent = '✓ LINK COPIED'; setTimeout(() => { $('btnInvite').textContent = '🔗 COPY INVITE LINK'; }, 2000); }
-  } catch { window.prompt('Send this link to your friends:', link); }
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) await navigator.share({ title: 'Join my Call of Karen room', text, url: link });
+    else { await navigator.clipboard.writeText(`${text} ${link}`); $('btnInvite').textContent = '✓ INVITE COPIED'; setTimeout(() => { $('btnInvite').textContent = '🔗 COPY INVITE LINK'; }, 2000); }
+  } catch { window.prompt('Send this to your friends:', `${text} ${link}`); }
 };
 if ($('optName')) {
   try { $('optName').value = localStorage.getItem(NAME_KEY) || params.get('name') || ''; } catch { $('optName').value = params.get('name') || ''; }
 }
 
+// CrazyGames: show their username, follow their invite / instant-multiplayer / join-room flows.
+portal.ready.then(async ok => {
+  if (!ok) return;
+  const cgName = await portal.username();
+  if (cgName && $('optName')) $('optName').value = cgName;
+  portal.onJoinRoom(room => startOnline(room.toUpperCase()));
+  if (!onlineServerUrl()) return;
+  const invited = portal.invitedRoom();
+  if (invited) startOnline(String(invited).toUpperCase());           // friend's invite: straight in, no onboarding
+  else if (portal.instantMultiplayer) startOnline(newRoomCode());    // Instant Multiplayer: private room, joinable at once
+});
+
+/** Keep CrazyGames' "join friend" button accurate (room code, still has a free human seat). */
+function reportRoom(session) {
+  if (!session) return;
+  portal.updateRoom(session.roomCode, session.players.filter(p => !p.bot).length < 8);
+}
+
 function toMenu() {
+  portal.gameplayStop();
   connectToken++;
   if (game) game.dispose();
   game = null;
@@ -658,6 +688,7 @@ class Game {
   dispose() {
     this.hud.stopClipRecorder?.();
     if (this.session) {
+      portal.leftRoom();
       this.session.close();
       this.session = null;
       for (const id of ['nextMatch', 'netInfo']) $(id)?.classList.add('hidden');
@@ -693,6 +724,7 @@ class Game {
     $('pause').classList.toggle('hidden', !showPause);
     if (showPause) $('pauseHint').textContent = PAUSE_HINT[input.device];
     document.body.classList.toggle('touch-mode', input.device === 'touch');
+    if (!paused && !sim.over && $('menu').classList.contains('hidden')) portal.gameplayStart(); else portal.gameplayStop();
     if (this.session) {
       this.updateOnline(dt, paused);
     } else if (!paused) {
@@ -797,6 +829,7 @@ class Game {
 
   /** Players joined/left (bots swap seats) or a new match started: keep characters and bark state in step. */
   onRosterChange({ added, removed, reset }) {
+    reportRoom(this.session);
     for (const id of removed) {
       const c = renderer.characters.get(id);
       if (c) { renderer.scene.remove(c.root); renderer.characters.delete(id); }
@@ -968,7 +1001,7 @@ class Game {
           if (!me.isBot) {
             this.hud.stopClipRecorder?.();
             career.recordMatchEnd({ won: e.winner === me.team, mode: state.mode });
-            if (e.winner === me.team) sfx.victory?.();
+            if (e.winner === me.team) { sfx.victory?.(); portal.happytime(); }
             else sfx.defeat?.();
           }
           setTimeout(() => {

@@ -41,9 +41,10 @@ function maskedFrame(payload, opcode = 0x1) {
 // ------------------------------------------------------------------ sanitising
 
 test('names and room codes are sanitised (names are rendered into other players\' HUD)', () => {
-  assert.equal(sanitizeName('<img src=x onerror=alert(1)>'), 'img srcx onerror', 'markup characters removed, cut to 16');
+  assert.equal(sanitizeName('<img src=x onerror=alert(1)>'), 'img srcx onerroraler', 'markup characters removed, cut to 20');
   assert.equal(sanitizeName('  Karen   Queen  '), 'Karen Queen');
-  assert.equal(sanitizeName('A'.repeat(40)).length, 16);
+  assert.equal(sanitizeName('A'.repeat(40)).length, 20);
+  assert.equal(sanitizeName('SingingCheese.TLNU'), 'SingingCheese.TLNU', 'CrazyGames usernames survive intact');
   assert.equal(sanitizeName(''), 'Player');
   assert.equal(sanitizeName(null), 'Player');
   assert.equal(sanitizeName('Zoë 王'), 'Zoë 王');
@@ -105,7 +106,7 @@ test('hostile input is clamped: NaN/Infinity angles, out-of-range sticks, bad we
     await sleep(50);
     const init = msgs.find(m => m.type === 'init');
     const me = init.players.find(p => p.id === init.actorId);
-    assert.equal(me.name, 'scriptalert1scri', 'markup stripped, cut to 16');
+    assert.equal(me.name, 'scriptalert1script', 'markup stripped');
     assert.equal(me.faction, 'karens', 'unknown faction falls back instead of crashing other clients');
     ws.send(JSON.stringify({ type: 'input', seq: 1, keys: { fire: true }, mv: [1e9, -Infinity], yaw: 1e300, pitch: 99, weaponSlot: 'bfg' }));
     ws.send('{"type":"input","seq":2,"yaw":null,"pitch":"x","keys":7,"mv":"no"}');

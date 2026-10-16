@@ -2959,9 +2959,13 @@
    "lines": {
     "kill": {
      "clean": [
-      "You're FIRED!",
+      {
+       "t": "You're FIRED!",
+       "retired": true
+      },
       "Winning so much, I'm tired!",
-      "Total and complete disaster!"
+      "Total and complete disaster!",
+      "Your lawn sign? Yard sale!"
      ],
      "steam": [
       "Rigged! But I still won!",
@@ -3105,8 +3109,12 @@
     },
     "killcam": {
      "clean": [
-      "You're FIRED! Roll tape!",
-      "Tremendous shot, everybodys saying it!"
+      {
+       "t": "You're FIRED! Roll tape!",
+       "retired": true
+      },
+      "Tremendous shot, everybodys saying it!",
+      "Roll the tape! Run it back!"
      ],
      "steam": [
       "Total disaster for your team!",

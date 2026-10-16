@@ -61,7 +61,8 @@ export function readDemoFactions() {
 
 /** Names end up in other players' HUD; keep letters, digits, space, _ . - only. */
 export function sanitizeName(raw) {
-  const s = String(raw ?? '').normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
+  // 20 = CrazyGames' maximum username length (they require showing it in game)
+  const s = String(raw ?? '').normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 20);
   return s || 'Player';
 }
 export function sanitizeRoomCode(raw) {

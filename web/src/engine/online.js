@@ -18,7 +18,7 @@ const CORRECTION = 0.15;             // fraction of the error removed per snapsh
 const HISTORY = 180;                 // predicted positions kept for reconciliation (3 s of inputs)
 
 /** Same rule as the server: letters, digits, space, _ . - only. Names are rendered into the HUD. */
-export const cleanName = n => String(n ?? '').normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16) || 'Player';
+export const cleanName = n => String(n ?? '').normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 20) || 'Player';
 
 export class OnlineSession {
   /**

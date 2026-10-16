@@ -441,7 +441,7 @@ export class Hud {
     const mvpLine = mvpLines.length ? mvpLines[Math.floor(rng() * mvpLines.length)].text : '';
     const won = sim.winner === me.team, draw = sim.winner === null;
     const isDemoMode = isDemo ?? (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
-    const demoCard = isDemoMode ? `
+    const demoCard = isDemoMode && (funnel ? funnel.endCard : true) ? `
       <div class="demo-end-card">
         <h3>THANKS FOR PLAYING THE CALL OF KAREN WEB DEMO!</h3>
         <p>The full game unlocks ${funnel ? funnel.pitch(Object.keys(this.factions).length) : 'every faction, weapon and mode'}.</p>
@@ -468,7 +468,7 @@ export class Hud {
     $('again').onclick = () => onAgain();
     $('endMenu').onclick = () => onMenu();
     // Demo: the Steam card is unskippable for a few seconds before RUN IT BACK / MENU unlock.
-    const lock = isDemoMode ? (funnel?.cfg.ctaLockSec ?? 4) : 0;
+    const lock = isDemoMode && (funnel ? funnel.endCard : true) ? (funnel?.cfg.ctaLockSec ?? 4) : 0;
     if (lock > 0) {
       const again = $('again'), menu = $('endMenu');
       const labels = [again.textContent, menu.textContent];
