@@ -428,8 +428,15 @@ export class Room {
       events: this.bufferedEvents,
       over: sim.over,
       winner: sim.winner,
-      restartIn: this.restartAt === null ? null : Math.max(0, +((this.restartAt - performance.now()) / 1000).toFixed(1)),
-      helicopters: [],
+      helicopters: (sim.helicopters || []).map(h => ({
+        id: h.id, team: h.team, ownerId: h.ownerId, hp: h.hp, maxHp: h.maxHp, alive: h.alive,
+        pos: { x: h.pos.x, y: h.pos.y, z: h.pos.z }, angle: h.angle, radius: h.radius,
+      })),
+      objects: (sim.mode?.objects || []).map(o => ({
+        id: o.id, kind: o.kind, team: o.team, pos: { x: o.pos.x, y: o.pos.y, z: o.pos.z },
+        state: o.state, ownerTeam: o.ownerTeam, captureProgress: o.captureProgress,
+        label: o.label, carrierId: o.carrierId,
+      })),
     }, roundNumbers);
     this.bufferedEvents = [];
 
@@ -683,7 +690,8 @@ export function createMultiplayerServer(port = 8080, options = {}) {
     try { url = new URL(req.url, 'http://localhost'); } catch { return refuse(socket, 400, 'Bad Request'); }
     const requested = sanitizeRoomCode(url.searchParams.get('room'));
     const isQuick = !requested || requested.toLowerCase() === 'auto';
-    const room = isQuick ? roomManager.quickMatchRoom() : roomManager.getOrCreateRoom(requested);
+    const reqMode = url.searchParams.get('mode');
+    const room = isQuick ? roomManager.quickMatchRoom() : roomManager.getOrCreateRoom(requested, reqMode ? { mode: reqMode } : {});
     if (!room) return refuse(socket, 503, 'Service Unavailable');
 
     activeSockets.add(socket);

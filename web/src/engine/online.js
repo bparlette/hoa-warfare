@@ -10,6 +10,7 @@
 // No DOM access here, so it runs headless in Node tests.
 
 import { NetClient } from './net.js';
+import { createMode, MODES } from './modes.js';
 
 export const INTERP_DELAY = 0.1;     // seconds; must match INTERP_S in the server's lag compensation
 const SNAP_DISTANCE = 2.0;           // metres of disagreement above which we teleport to the server position
@@ -91,6 +92,9 @@ export class OnlineSession {
     sim.started = true;
     sim.over = false;
     sim.winner = null;
+    if (this.init?.mode && MODES[this.init.mode] && sim.mode?.constructor?.id !== this.init.mode) {
+      sim.mode = createMode(this.init.mode, sim);
+    }
     this.me = sim.byId.get(this.actorId) || null;
     this.events.length = 0;
     this.history.length = 0;
@@ -212,6 +216,8 @@ export class OnlineSession {
     sim.grenades = latest.projectiles || [];
     sim.over = !!latest.over;
     sim.winner = latest.winner ?? null;
+    if (latest.helicopters) sim.helicopters = latest.helicopters;
+    if (latest.objects && sim.mode) sim.mode.objects = latest.objects;
 
     const stats = this.net.statsById;
     const lastById = new Map(latest.actors.map(a => [a.id, a]));
