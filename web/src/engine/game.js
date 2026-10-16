@@ -1290,19 +1290,37 @@ function setupShortRecorder() {
   const header = document.createElement('div');
   header.className = 'short-top-header';
   header.innerHTML = `
-    <div class="short-badge">🔴 CUL-DE-SAC WARFARE</div>
-    <div class="short-title">WHEN AN HOA BOARD MEMBER SNAPS 💀</div>
+    <div class="short-badge">🚨 SUBURBAN CODE VIOLATION</div>
+    <div class="short-title">POV: YOU DIDN'T MOW AT 7:00 AM ON SATURDAY 💀</div>
     <div class="short-sub">Call of Karen: HOA Warfare</div>
   `;
   document.body.appendChild(header);
 
+  const subBox = document.createElement('div');
+  subBox.className = 'short-subtitle-box';
+  subBox.innerHTML = `
+    <div class="short-bark-label">SAVAGE BARK · KARENS:</div>
+    <div class="short-bark-text">"I WANT TO SPEAK TO YOUR MANAGER!"</div>
+  `;
+  document.body.appendChild(subBox);
+
   const footer = document.createElement('div');
   footer.className = 'short-bottom-tag';
-  footer.innerHTML = `🔥 CALL OF KAREN: HOA WARFARE #shorts #gaming`;
+  footer.innerHTML = `CALL OF KAREN: HOA WARFARE - WISHLIST ON STEAM ($4.99)`;
   document.body.appendChild(footer);
 
   try {
     const stream = renderer.canvas.captureStream(60);
+    if (sfx?.ctx) {
+      try {
+        const dest = sfx.ctx.createMediaStreamDestination();
+        sfx.master?.connect(dest);
+        const track = dest.stream.getAudioTracks()[0];
+        if (track) stream.addTrack(track);
+      } catch (err) {
+        console.warn('Could not attach audio track:', err);
+      }
+    }
     const mime = typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported?.('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
     const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8000000 });
     const chunks = [];

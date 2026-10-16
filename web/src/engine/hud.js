@@ -4,6 +4,7 @@ const KILLCAM_SEC = 3.2;
 const KILLCAM_HOLD = 1.6;
 
 export const SUBURBAN_SHORTS_MEMES = [
+  "POV: YOU DIDN'T MOW AT 7:00 AM ON SATURDAY 💀",
   "WHEN YOU DON'T MOW ON SATURDAY AT 7AM",
   "POV: YOU PARKED ON THE STREET AFTER 9PM",
   "HOA PRESIDENT SPOTTED A 3-INCH WEED",
@@ -249,6 +250,261 @@ export function exportShortsCanvas(victim, killer, barkLine, options = {}) {
   return canvas;
 }
 
+export const HOA_DEFAULT_VIOLATIONS = [
+  { code: 'Code 4.12', desc: 'Uncut Kentucky Bluegrass (>2.5 inches)', fine: 150.00 },
+  { code: 'Code 7.08', desc: 'Trash Can Left Out 14 Minutes Past Curbside Pickup', fine: 250.00 },
+  { code: 'Code 9.01', desc: 'Weaponized Incompetence in Cul-de-Sac Clash', fine: 500.00 },
+  { code: 'Code 12.3', desc: 'Unsanctioned Riding Lawn Mower Roadkill', fine: 1200.00 },
+];
+
+export function formatDoorbellTimestamp(time) {
+  let hh = 14, mm = 22, ss = 31, ff = 18;
+  if (time instanceof Date) {
+    hh = time.getHours();
+    mm = time.getMinutes();
+    ss = time.getSeconds();
+    ff = Math.floor((time.getMilliseconds() / 1000) * 30);
+  } else if (typeof time === 'number' && time > 100000) {
+    const d = new Date(time);
+    hh = d.getHours();
+    mm = d.getMinutes();
+    ss = d.getSeconds();
+    ff = Math.floor((d.getMilliseconds() / 1000) * 30);
+  } else if (typeof time === 'number') {
+    const totalSec = Math.floor(time);
+    hh = Math.floor(totalSec / 3600) % 24;
+    mm = Math.floor(totalSec / 60) % 60;
+    ss = totalSec % 60;
+    ff = Math.floor((time % 1) * 30);
+  } else if (typeof Date !== 'undefined') {
+    const d = new Date();
+    hh = d.getHours();
+    mm = d.getMinutes();
+    ss = d.getSeconds();
+    ff = Math.floor((d.getMilliseconds() / 1000) * 30);
+  }
+  const sH = String(hh).padStart(2, '0');
+  const sM = String(mm).padStart(2, '0');
+  const sS = String(ss).padStart(2, '0');
+  const sF = String(ff).padStart(2, '0');
+  return `${sH}:${sM}:${sS}:${sF}`;
+}
+
+export function exportHoaCitationCanvas(victim, killer, stats = {}, options = {}) {
+  const canvas = (typeof document !== 'undefined' && document.createElement)
+    ? document.createElement('canvas')
+    : { width: 800, height: 1000 };
+  canvas.width = 800;
+  canvas.height = 1000;
+  const ctx = canvas.getContext?.('2d');
+  if (!ctx) return canvas;
+
+  // Background: Official off-white / parchment legal document
+  ctx.fillStyle = '#fcfbf7';
+  ctx.fillRect?.(0, 0, 800, 1000);
+
+  // Outer gold & navy border
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 6;
+  ctx.strokeRect?.(20, 20, 760, 960);
+
+  ctx.strokeStyle = '#1d2b53';
+  ctx.lineWidth = 2;
+  ctx.strokeRect?.(28, 28, 744, 944);
+
+  // Corner rosettes
+  ctx.fillStyle = '#d4af37';
+  const corners = [[36, 36], [756, 36], [36, 956], [756, 956]];
+  for (const [cx, cy] of corners) {
+    ctx.beginPath?.();
+    ctx.arc?.(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill?.();
+  }
+
+  // Gold HOA Seal
+  ctx.save?.();
+  ctx.strokeStyle = '#c59b27';
+  ctx.fillStyle = '#fdf6e2';
+  ctx.lineWidth = 3;
+  ctx.beginPath?.();
+  ctx.arc?.(400, 90, 42, 0, Math.PI * 2);
+  ctx.fill?.();
+  ctx.stroke?.();
+
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath?.();
+  ctx.arc?.(400, 90, 36, 0, Math.PI * 2);
+  ctx.stroke?.();
+
+  ctx.fillStyle = '#c59b27';
+  ctx.font = 'bold 18px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText?.('★ ⌂ ★', 400, 94);
+  ctx.restore?.();
+
+  // Header Title
+  ctx.fillStyle = '#1d2b53';
+  ctx.font = 'bold 22px "Georgia", "Times New Roman", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText?.('SHADY PINES CUL-DE-SAC HOA - OFFICIAL NOTICE OF VIOLATION', 400, 165);
+
+  ctx.font = 'bold 12px monospace, sans-serif';
+  ctx.fillStyle = '#7e2553';
+  ctx.fillText?.('SUBDIVISION CODE ENFORCEMENT DIVISION · CUL-DE-SAC JURISDICTION', 400, 185);
+
+  // Dividing Line
+  ctx.strokeStyle = '#c2c3c7';
+  ctx.lineWidth = 1;
+  ctx.beginPath?.();
+  ctx.moveTo?.(50, 200);
+  ctx.lineTo?.(750, 200);
+  ctx.stroke?.();
+
+  // Case details block
+  const caseNum = stats?.caseNumber || stats?.caseId || `HOA-2026-${Math.floor(100000 + (victim?.id ? String(victim.id).charCodeAt(0) * 1337 : 83719)) % 900000}`;
+  const offenderName = victim?.name || stats?.offenderName || 'Offending Neighbor';
+  const offenderFaction = options?.factions?.[victim?.faction]?.name || victim?.faction || stats?.faction || 'The Karens';
+  const complainantName = killer?.name ? `${killer.name} (${options?.factions?.[killer.faction]?.name || killer.faction || 'HOA Enforcement'})` : 'Todd (HOA President)';
+  const dateStr = stats?.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+  // Details box background
+  ctx.fillStyle = '#f4f0e6';
+  ctx.fillRect?.(50, 215, 700, 110);
+  ctx.strokeStyle = '#a28879';
+  ctx.lineWidth = 1;
+  ctx.strokeRect?.(50, 215, 700, 110);
+
+  ctx.fillStyle = '#1d2b53';
+  ctx.font = 'bold 13px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText?.(`CASE NUMBER: ${caseNum}`, 65, 240);
+  ctx.fillText?.(`DATE OF INFRACTION: ${dateStr}`, 450, 240);
+
+  ctx.fillText?.(`OFFENDER: ${offenderName}`, 65, 270);
+  ctx.fillText?.(`OFFENDING FACTION: ${offenderFaction}`, 450, 270);
+
+  ctx.fillText?.(`REPORTING MEMBER: ${complainantName}`, 65, 300);
+  ctx.fillText?.(`LOCATION: Front Lawn & Curbside`, 450, 300);
+
+  // Itemized Bill Table Header
+  ctx.fillStyle = '#1d2b53';
+  ctx.fillRect?.(50, 345, 700, 32);
+
+  ctx.fillStyle = '#fff1e8';
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText?.('CODE', 65, 366);
+  ctx.fillText?.('INFRACTION DESCRIPTION', 180, 366);
+  ctx.textAlign = 'right';
+  ctx.fillText?.('FINE AMOUNT', 735, 366);
+
+  // Itemized violations
+  const violations = stats?.violations || HOA_DEFAULT_VIOLATIONS;
+
+  let y = 410;
+  ctx.textAlign = 'left';
+  violations.forEach((v, idx) => {
+    if (idx % 2 === 1) {
+      ctx.fillStyle = '#f8f6f0';
+      ctx.fillRect?.(50, y - 24, 700, 38);
+    }
+    ctx.strokeStyle = '#e6e2d8';
+    ctx.lineWidth = 1;
+    ctx.beginPath?.();
+    ctx.moveTo?.(50, y + 14);
+    ctx.lineTo?.(750, y + 14);
+    ctx.stroke?.();
+
+    ctx.fillStyle = '#7e2553';
+    ctx.font = 'bold 13px monospace';
+    ctx.fillText?.(v.code, 65, y);
+
+    ctx.fillStyle = '#291814';
+    ctx.font = '13px "Arial", sans-serif';
+    ctx.fillText?.(v.desc, 180, y);
+
+    ctx.fillStyle = '#ff004d';
+    ctx.font = 'bold 13px monospace';
+    ctx.textAlign = 'right';
+    const fineStr = `$${v.fine.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    ctx.fillText?.(fineStr, 735, y);
+    ctx.textAlign = 'left';
+
+    ctx.fillStyle = '#83769c';
+    ctx.font = '10px monospace';
+    ctx.fillText?.(`${v.code}: ${v.desc}: ${fineStr}`, 180, y + 12);
+
+    y += 44;
+  });
+
+  // Total summary box
+  const totalFine = violations.reduce((s, v) => s + (v.fine || 0), 0);
+  const totalFineStr = `$${totalFine.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  ctx.fillStyle = '#fff1e8';
+  ctx.fillRect?.(50, y + 10, 700, 75);
+  ctx.strokeStyle = '#ff004d';
+  ctx.lineWidth = 2;
+  ctx.strokeRect?.(50, y + 10, 700, 75);
+
+  ctx.fillStyle = '#be1250';
+  ctx.font = 'bold 18px "Arial Black", Impact, sans-serif';
+  ctx.fillText?.(`Total Due Immediately: ${totalFineStr} (Late fee: $100/hour).`, 65, y + 42);
+
+  ctx.fillStyle = '#7e2553';
+  ctx.font = 'italic 12px serif';
+  ctx.fillText?.('Failure to pay within 24 hours will result in immediate lawn foreclosure and HOA tribunal hearing.', 65, y + 68);
+
+  // Legal / Satirical fine print
+  const legalY = y + 115;
+  ctx.fillStyle = '#5f574f';
+  ctx.font = '10px monospace';
+  ctx.fillText?.('PURSUANT TO SECTION 42-B OF THE SHADY PINES SUBDIVISION COVENANTS, CONDITIONS & RESTRICTIONS (CC&Rs):', 50, legalY);
+  ctx.fillText?.('All residents agree to waive right to legal counsel in favor of HOA President judgment. Grass heights subject', 50, legalY + 16);
+  ctx.fillText?.('to laser calibration. Weaponized lawn mowers and tactical garden hoses must remain parked inside garage by dusk.', 50, legalY + 30);
+
+  // Signatures
+  const sigY = legalY + 70;
+  ctx.strokeStyle = '#1d2b53';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath?.();
+  ctx.moveTo?.(50, sigY + 35);
+  ctx.lineTo?.(320, sigY + 35);
+  ctx.moveTo?.(480, sigY + 35);
+  ctx.lineTo?.(750, sigY + 35);
+  ctx.stroke?.();
+
+  ctx.fillStyle = '#1d2b53';
+  ctx.font = 'bold 12px serif';
+  ctx.fillText?.('Todd Henderson, HOA President & Lead Grass Inspector', 50, sigY + 52);
+  ctx.fillText?.('Karen Bowman, Disciplinary Committee Chair', 480, sigY + 52);
+
+  // Red rubber stamp: "FINAL NOTICE - EVICTION PENDING"
+  ctx.save?.();
+  ctx.translate?.(560, 680);
+  ctx.rotate?.(-0.20);
+  ctx.strokeStyle = '#ff004d';
+  ctx.lineWidth = 5;
+  ctx.strokeRect?.(-190, -35, 380, 70);
+  ctx.strokeStyle = '#be1250';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect?.(-184, -29, 368, 58);
+
+  ctx.fillStyle = '#ff004d';
+  ctx.font = 'bold 22px "Arial Black", Impact, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText?.('FINAL NOTICE - EVICTION PENDING', 0, 8);
+  ctx.restore?.();
+
+  // Bottom footer branding
+  ctx.fillStyle = '#a28879';
+  ctx.font = 'bold 11px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText?.('CALL OF KAREN: HOA WARFARE · OFFICIAL CITATION NOTICE', 400, 975);
+
+  return canvas;
+}
+
 function createFallbackElement(tag = 'div') {
   return {
     tagName: tag.toUpperCase(),
@@ -269,10 +525,53 @@ function createFallbackElement(tag = 'div') {
         if (idx >= 0) this.parentNode.children.splice(idx, 1);
       }
     },
+    querySelector(sel) {
+      if (!sel) return null;
+      if (sel.startsWith('#')) {
+        const id = sel.slice(1);
+        for (const c of this.children) {
+          if (c.id === id) return c;
+          const found = c.querySelector?.(sel);
+          if (found) return found;
+        }
+        return null;
+      }
+      if (sel.startsWith('.')) {
+        const cls = sel.slice(1);
+        for (const c of this.children) {
+          if (c.classList?.contains?.(cls)) return c;
+          const found = c.querySelector?.(sel);
+          if (found) return found;
+        }
+        return null;
+      }
+      return null;
+    },
+    querySelectorAll(sel) {
+      const results = [];
+      if (!sel) return results;
+      const walk = (node) => {
+        for (const c of node.children || []) {
+          if (sel.startsWith('.') && c.classList?.contains?.(sel.slice(1))) results.push(c);
+          walk(c);
+        }
+      };
+      walk(this);
+      return results;
+    },
     get lastChild() { return this.children[this.children.length - 1] || null; },
     get firstChild() { return this.children[0] || null; },
+    _textContent: '',
+    get textContent() {
+      if (this.children.length > 0) {
+        return this.children.map(c => c.textContent).join(' ');
+      }
+      return this._textContent;
+    },
+    set textContent(v) {
+      this._textContent = String(v);
+    },
     innerHTML: '',
-    textContent: '',
   };
 }
 
@@ -284,6 +583,8 @@ export class Hud {
     this.bubbles = [];
     this.bannerT = null;
     this.killcam = null;
+    this.isDoorbellCam = false;
+    this._doorbellEl = null;
     this._hitmarkAnim = null;
     this.lastLoiterBeep = 0;
 
@@ -338,6 +639,204 @@ export class Hud {
       }
     }
     return isLow;
+  }
+
+  setDoorbellCam(active, renderer) {
+    this.isDoorbellCam = !!active;
+    if (renderer) renderer.isDoorbellCam = !!active;
+    this.updateDoorbellOverlay(!!active);
+    return this.isDoorbellCam;
+  }
+
+  getDoorbellOverlayElement() {
+    let el = this.$('doorbellOverlay') || this._doorbellEl;
+    if (!el) {
+      const isBrowser = typeof document !== 'undefined' && document.createElement;
+      if (isBrowser) {
+        el = document.createElement('div');
+        el.id = 'doorbellOverlay';
+        el.className = 'doorbell-cam-overlay hidden';
+        const parent = this.$('hud') || (typeof document.body !== 'undefined' ? document.body : null);
+        if (parent?.appendChild) parent.appendChild(el);
+      } else {
+        el = createFallbackElement('div');
+        el.id = 'doorbellOverlay';
+        el.className = 'doorbell-cam-overlay hidden';
+      }
+      this._doorbellEl = el;
+    }
+    if (el && !el._doorbellBuilt && (!el.children || el.children.length === 0)) {
+      this._buildDoorbellOverlayHtml(el);
+      el._doorbellBuilt = true;
+    }
+    return el;
+  }
+
+  _buildDoorbellOverlayHtml(el) {
+    if (!el) return;
+    const make = (tag, id, cls, text) => {
+      let e = null;
+      if (typeof document !== 'undefined' && document.createElement) {
+        try { e = document.createElement(tag); } catch {}
+      }
+      if (!e || typeof e.appendChild !== 'function') {
+        const fb = createFallbackElement(tag);
+        if (e && typeof e === 'object') Object.assign(fb.style, e.style || {});
+        e = fb;
+      }
+      if (!e.children) e.children = [];
+      if (typeof e.appendChild !== 'function') {
+        e.appendChild = function(child) { child.parentNode = this; this.children.push(child); return child; };
+      }
+      if (!e.classList || typeof e.classList.add !== 'function') {
+        e.classList = {
+          _classes: new Set(),
+          add(...cs) { cs.forEach(c => this._classes.add(c)); },
+          remove(...cs) { cs.forEach(c => this._classes.delete(c)); },
+          contains(c) { return this._classes.has(c); },
+          toggle(c, val) { if (val) this.add(c); else this.remove(c); },
+        };
+      }
+      if (id) e.id = id;
+      if (cls) {
+        e.className = cls;
+        cls.split(/\s+/).forEach(c => { if (c) e.classList.add(c); });
+      }
+      if (text !== null && text !== undefined) {
+        e.textContent = text;
+      }
+      return e;
+    };
+
+    if (typeof el.appendChild !== 'function') {
+      el.appendChild = function(child) { child.parentNode = this; if (!this.children) this.children = []; this.children.push(child); return child; };
+    }
+    if (!el.children) el.children = [];
+
+    if (el.style) {
+      el.style.position = 'fixed';
+      el.style.inset = '0';
+      el.style.pointerEvents = 'none';
+      el.style.zIndex = '48';
+      el.style.display = 'none';
+    }
+
+    // Subtle vignette / barrel distortion aesthetic overlay
+    const vignette = make('div', 'doorbellVignette', 'doorbell-vignette');
+    if (vignette.style) {
+      vignette.style.position = 'absolute';
+      vignette.style.inset = '0';
+      vignette.style.pointerEvents = 'none';
+      vignette.style.boxShadow = 'inset 0 0 130px rgba(0, 0, 0, 0.88), inset 0 0 50px rgba(0, 0, 0, 0.65)';
+      vignette.style.background = 'radial-gradient(ellipse at center, transparent 48%, rgba(0, 15, 8, 0.12) 75%, rgba(0, 0, 0, 0.78) 100%)';
+      vignette.style.border = '8px solid rgba(0, 0, 0, 0.45)';
+      vignette.style.borderRadius = '28px / 18px';
+    }
+    el.appendChild(vignette);
+
+    // Top Bar
+    const topBar = make('div', 'doorbellTopBar', 'doorbell-top-bar');
+    if (topBar.style) {
+      topBar.style.position = 'absolute';
+      topBar.style.top = '16px';
+      topBar.style.left = '24px';
+      topBar.style.right = '24px';
+      topBar.style.display = 'flex';
+      topBar.style.justifyContent = 'space-between';
+      topBar.style.alignItems = 'center';
+      topBar.style.fontFamily = 'monospace, "Courier New", sans-serif';
+      topBar.style.fontSize = '14px';
+      topBar.style.fontWeight = 'bold';
+      topBar.style.letterSpacing = '1px';
+      topBar.style.pointerEvents = 'none';
+      topBar.style.zIndex = '2';
+    }
+
+    // Top left: REC ● [LIVE] with ticking timestamp
+    const rec = make('div', 'doorbellRec', 'doorbell-rec');
+    if (rec.style) {
+      rec.style.color = '#00e436';
+      rec.style.textShadow = '0 0 8px #00e436, 0 0 16px #ff004d';
+      rec.style.display = 'flex';
+      rec.style.alignItems = 'center';
+      rec.style.gap = '8px';
+    }
+    const recTag = make('span', null, 'doorbell-rec-tag', 'REC');
+    const recDot = make('span', null, 'doorbell-dot', '●');
+    if (recDot.style) {
+      recDot.style.color = '#ff004d';
+      recDot.style.textShadow = '0 0 8px #ff004d';
+    }
+    const recLive = make('span', null, 'doorbell-live', '[LIVE]');
+    const tsEl = make('span', 'doorbellTimestamp', 'doorbell-timestamp', formatDoorbellTimestamp());
+    if (tsEl.style) {
+      tsEl.style.color = '#fff1e8';
+      tsEl.style.textShadow = '0 0 6px #000';
+    }
+    rec.appendChild(recTag);
+    rec.appendChild(recDot);
+    rec.appendChild(recLive);
+    rec.appendChild(tsEl);
+    topBar.appendChild(rec);
+
+    // Top right: FRONT PORCH CAM #01 - 1080P HD · BATTERY 84%
+    const info = make('div', 'doorbellCamInfo', 'doorbell-info', 'FRONT PORCH CAM #01 - 1080P HD · BATTERY 84%');
+    if (info.style) {
+      info.style.color = '#fff1e8';
+      info.style.textShadow = '0 0 6px rgba(0, 0, 0, 0.9)';
+    }
+    topBar.appendChild(info);
+    el.appendChild(topBar);
+
+    // Center warning notification: ⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY
+    const banner = make('div', 'doorbellMotionBanner', 'doorbell-motion-banner', '⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY');
+    if (banner.style) {
+      banner.style.position = 'absolute';
+      banner.style.top = '22%';
+      banner.style.left = '50%';
+      banner.style.transform = 'translate(-50%, -50%)';
+      banner.style.background = 'rgba(255, 0, 77, 0.88)';
+      banner.style.color = '#fff1e8';
+      banner.style.padding = '8px 22px';
+      banner.style.border = '2px solid #ffec27';
+      banner.style.borderRadius = '4px';
+      banner.style.fontFamily = 'Impact, "Arial Black", sans-serif';
+      banner.style.fontSize = '18px';
+      banner.style.letterSpacing = '1px';
+      banner.style.textAlign = 'center';
+      banner.style.boxShadow = '0 0 20px rgba(255, 0, 77, 0.6), 4px 4px 0 #000';
+      banner.style.pointerEvents = 'none';
+      banner.style.zIndex = '2';
+    }
+    el.appendChild(banner);
+
+    this._doorbellRec = rec;
+    this._doorbellTs = tsEl;
+    this._doorbellInfo = info;
+    this._doorbellBanner = banner;
+    el.textContent = `REC ● [LIVE] ${formatDoorbellTimestamp()} FRONT PORCH CAM #01 - 1080P HD · BATTERY 84% ⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY`;
+  }
+
+  updateDoorbellOverlay(active, time) {
+    const el = this.getDoorbellOverlayElement();
+    if (!el) return;
+    if (!active) {
+      if (el.style) el.style.display = 'none';
+      el.classList?.add?.('hidden');
+      return;
+    }
+    if (el.style) el.style.display = 'block';
+    el.classList?.remove?.('hidden');
+
+    const ts = formatDoorbellTimestamp(time);
+    const tsEl = el.querySelector?.('#doorbellTimestamp') || this.$('doorbellTimestamp') || this._doorbellTs;
+    if (tsEl) tsEl.textContent = ts;
+
+    const recEl = el.querySelector?.('#doorbellRec') || this.$('doorbellRec') || this._doorbellRec;
+    if (recEl) {
+      recEl.textContent = `REC ● [LIVE] ${ts}`;
+    }
+    el.textContent = `REC ● [LIVE] ${ts} FRONT PORCH CAM #01 - 1080P HD · BATTERY 84% ⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY`;
   }
 
   _applySuburbanHudStyle(el) {
@@ -607,10 +1106,17 @@ export class Hud {
     };
     if (kc.selfKill || !this.killcam.frames.length) {
       this.killcam = null;
+      this.isDoorbellCam = false;
+      if (renderer) renderer.isDoorbellCam = false;
+      this.updateDoorbellOverlay(false);
       this.showBanner('YOU PLAYED YOURSELF', kc.line?.text || '');
       if (kc.line) voice.say({ text: kc.line.text, lineId: kc.line.id, faction: sim.actors.find(a => a.id === kc.victimId)?.faction, priority: 9, force: true });
       return;
     }
+    if (renderer) renderer.isDoorbellCam = true;
+    this.isDoorbellCam = true;
+    this.updateDoorbellOverlay(true, deathT);
+
     for (const c of renderer.characters.values()) c.root.visible = false;
     const killer = sim.byId.get(kc.killerId);
     const victim = sim.byId.get(kc.victimId);
@@ -632,12 +1138,44 @@ export class Hud {
         setTimeout(() => { if (btnShort) btnShort.textContent = '📱 9:16 TIKTOK / REEL'; }, 2500);
       };
     }
+
+    let btnCitation = this.$('killcam')?.querySelector?.('#btnExportCitation') || $('btnExportCitation') || $('btnExportCitationKc');
+    if (!btnCitation && $('killcam')) {
+      const kcEl = $('killcam');
+      const isBrowser = typeof document !== 'undefined' && document.createElement;
+      btnCitation = isBrowser ? document.createElement('button') : createFallbackElement('button');
+      btnCitation.id = 'btnExportCitation';
+      btnCitation.className = 'btn-share btn-citation-kc';
+      btnCitation.type = 'button';
+      btnCitation.textContent = '📜 HOA CITATION';
+      if (btnCitation.style) {
+        btnCitation.style.position = 'absolute';
+        btnCitation.style.top = '16px';
+        btnCitation.style.right = '200px';
+        btnCitation.style.zIndex = '50';
+      }
+      kcEl.appendChild(btnCitation);
+    }
+    if (btnCitation) {
+      btnCitation.onclick = async (e) => {
+        e?.stopPropagation?.();
+        btnCitation.textContent = '⏳ ISSUING CITATION...';
+        try {
+          await this.shareCitation({ victim, killer, stats: { killEv } });
+          btnCitation.textContent = '✓ CITATION SAVED!';
+        } catch {
+          btnCitation.textContent = '📜 HOA CITATION';
+        }
+        setTimeout(() => { if (btnCitation) btnCitation.textContent = '📜 HOA CITATION'; }, 2500);
+      };
+    }
   }
 
   updateKillcam(dt, sim, renderer, voice) {
     const $ = this.$;
     const kc = this.killcam;
     if (!kc) return;
+    this.updateDoorbellOverlay(true, sim?.time);
     kc.t += dt;
     const pt = Math.min(kc.deathT, kc.deathT - KILLCAM_SEC + kc.t);
     let frame = kc.frames[0];
@@ -665,6 +1203,9 @@ export class Hud {
     if (kc.t >= KILLCAM_SEC + KILLCAM_HOLD) {
       this.killcam = null;
       $('killcam').classList.add('hidden');
+      this.isDoorbellCam = false;
+      if (renderer) renderer.isDoorbellCam = false;
+      this.updateDoorbellOverlay(false);
     }
   }
 
@@ -737,6 +1278,7 @@ export class Hud {
         <button id="btnShareCard" class="btn-share" style="margin-top:0">📸 SAVE / SHARE CARD</button>
         <button id="btnSaveClip" class="btn-share" style="margin-top:0">🎥 SAVE CLIP</button>
         <button id="btnExportShort" class="btn-share" style="margin-top:0">📱 9:16 TIKTOK / REEL</button>
+        <button id="btnExportCitation" class="btn-share" style="margin-top:0">📜 HOA CITATION</button>
         ${!isDemoMode ? '<a data-steam="end_row" href="#" onclick="return false" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
@@ -819,6 +1361,23 @@ export class Hud {
           btnShareShort.textContent = '📱 9:16 TIKTOK / REEL';
         }
         setTimeout(() => { if (btnShareShort) btnShareShort.textContent = '📱 9:16 TIKTOK / REEL'; }, 2500);
+      };
+    }
+    const btnShareCitation = this.$('endPanel')?.querySelector?.('#btnExportCitation') || $('btnExportCitation');
+    if (btnShareCitation) {
+      btnShareCitation.onclick = async () => {
+        btnShareCitation.textContent = '⏳ ISSUING CITATION...';
+        try {
+          await this.shareCitation({
+            victim: bottomFragger || me,
+            killer: mvp || me,
+            stats: { score: me?.kills, deaths: me?.deaths, won, draw }
+          });
+          btnShareCitation.textContent = '✓ CITATION SAVED!';
+        } catch {
+          btnShareCitation.textContent = '📜 HOA CITATION';
+        }
+        setTimeout(() => { if (btnShareCitation) btnShareCitation.textContent = '📜 HOA CITATION'; }, 2500);
       };
     }
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
@@ -1037,6 +1596,16 @@ export class Hud {
     return exportShortsCanvas(victim, killer, barkLine, { factions: this.factions, ...options });
   }
 
+  exportHoaCitationCanvas(victim, killer, stats, options = {}) {
+    return exportHoaCitationCanvas(victim, killer, stats, { factions: this.factions, ...options });
+  }
+
+  async shareCitation({ victim, killer, stats, options } = {}) {
+    const canvas = await this.exportHoaCitationCanvas(victim, killer, stats, options);
+    if (!canvas) return false;
+    return this.shareOrDownloadCanvas(canvas, 'hoa-violation-notice.png', 'SHADY PINES CUL-DE-SAC HOA - OFFICIAL NOTICE OF VIOLATION');
+  }
+
   async shareOrDownloadCanvas(canvas, filename = 'hoa-warfare.png', title = 'Call of Karen: HOA Warfare') {
     if (!canvas) return false;
     const blob = await new Promise((resolve) => {
@@ -1186,6 +1755,9 @@ export class Hud {
       perfEl.style.display = 'none';
     }
 
+    const doorbellActive = !!(this.isDoorbellCam || this.killcam || renderer?.isDoorbellCam);
+    this.updateDoorbellOverlay(doorbellActive, sim?.time ?? realTime);
+
     $('board').classList.toggle('hidden', !input.scoreboard);
     if (input.scoreboard) this.renderBoard($('board'), sim, me);
   }
@@ -1194,6 +1766,8 @@ export class Hud {
     for (const b of this.bubbles) b.el?.remove?.();
     this.bubbles = [];
     this.killcam = null;
+    this.isDoorbellCam = false;
+    this.updateDoorbellOverlay(false);
     clearTimeout(this.bannerT);
     this._perfFrames = [];
     this._lastPerfTime = 0;

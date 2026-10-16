@@ -21,6 +21,18 @@ createServer(async (req, res) => {
     });
     return;
   }
+  if (req.method === 'POST' && req.url === '/api/save_overlay') {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', async () => {
+      const buf = Buffer.concat(chunks);
+      await mkdir(join(root, 'dist/shorts'), { recursive: true });
+      await writeFile(join(root, 'dist/shorts/overlay.png'), buf);
+      console.log('Saved overlay image:', buf.length, 'bytes');
+      res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ ok: true, bytes: buf.length }));
+    });
+    return;
+  }
   let path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));
   if (path.endsWith('/')) path += 'index.html';
   const file = join(root, path);

@@ -799,6 +799,317 @@ export class SuburbanWipeout extends Mode {
   }
 }
 
+/**
+ * 30-Second Suburban Firing Range & Tutorial Mode:
+ * Safe HOA practice zone with infinite ammo, 4 progressive suburban drill objectives:
+ * 1. Movement Drill: Walk across the manicured lawn to inspect the grass height meter.
+ * 2. Target Practice: Shoot 3 cardboard cutout HOA violators (wooden target dummies: Karen with haircut, Dad with clipboard, VC Bro with vest).
+ * 3. Suburban Ordinance: Throw a Lawsuit Grenade (key Q) to bounce it off the driveway.
+ * 4. Heavy Machinery: Mount the riding lawn mower (key E) and run over a row of weeds!
+ * Upon completion: triggers "HOA BOARD CERTIFICATION PASSED" banner, awards bonus XP, and invites player to Cul-de-Sac Clash!
+ */
+export class SuburbanTutorial extends Mode {
+  static id = 'tutorial';
+  static label = 'Suburban Tutorial';
+  static parent = 'Firing Range';
+  static defaults = { scoreLimit: 100, timeLimit: 600 };
+
+  constructor(sim) {
+    super(sim);
+    this.step = 1;
+    this.completed = false;
+    this.bonusXp = 500;
+    this.bonusXpAwarded = false;
+    this.mowerMounted = false;
+    this.grenadeThrown = false;
+    this.grenadeBounced = false;
+
+    this.grassMeter = {
+      id: 'grass_meter',
+      kind: 'lawnZone',
+      name: 'Grass Height Meter',
+      pos: { x: 0, y: 0, z: 12 },
+      radius: 3.5,
+      inspected: false,
+    };
+
+    this.targets = [
+      { id: 'dummy_karen', name: 'Karen with haircut', faction: 'karens', pos: { x: -6, y: 0, z: -5 }, hit: false },
+      { id: 'dummy_dad', name: 'Dad with clipboard', faction: 'hoaDads', pos: { x: 0, y: 0, z: -7 }, hit: false },
+      { id: 'dummy_vcbro', name: 'VC Bro with vest', faction: 'wallstreetBets', pos: { x: 6, y: 0, z: -5 }, hit: false },
+    ];
+
+    this.weeds = [
+      { id: 'weed_1', name: 'Dandelion Row 1', kind: 'weed', pos: { x: -8, y: 0, z: 0 }, radius: 1.8, cut: false },
+      { id: 'weed_2', name: 'Crabgrass Row 2', kind: 'weed', pos: { x: -8, y: 0, z: -4 }, radius: 1.8, cut: false },
+      { id: 'weed_3', name: 'Clover Row 3', kind: 'weed', pos: { x: -8, y: 0, z: -8 }, radius: 1.8, cut: false },
+    ];
+  }
+
+  onStart() {
+    const sim = this.sim;
+    // Spawn player in safe practice zone
+    const player = sim.actors.find(a => !a.isBot || a.team === 0);
+    if (player) {
+      player.pos.x = 0;
+      player.pos.y = 0;
+      player.pos.z = 25; // South driveway / practice zone
+      player.yaw = Math.PI; // Face north toward targets and lawn
+      player.hp = 100;
+      player.maxHp = 100;
+      player.alive = true;
+    }
+
+    // Pacify / remove hostile roaming bots from sim actors in safe practice zone
+    if (sim.actors) {
+      sim.actors = sim.actors.filter(a => a.id === player?.id || !a.isBot || a.id.startsWith('dummy_'));
+      sim.byId = new Map(sim.actors.map(a => [a.id, a]));
+    }
+
+    // Spawn 3 wooden target dummies into sim actors
+    for (const t of this.targets) {
+      t.hit = false;
+      let dummyActor = sim.byId.get(t.id);
+      if (!dummyActor) {
+        dummyActor = sim.addActor({
+          id: t.id,
+          name: t.name,
+          team: 1,
+          faction: t.faction,
+          isBot: true,
+        });
+      }
+      dummyActor.pos.x = t.pos.x;
+      dummyActor.pos.y = t.pos.y;
+      dummyActor.pos.z = t.pos.z;
+      dummyActor.hp = 1;
+      dummyActor.maxHp = 1;
+      dummyActor.alive = true;
+      dummyActor.scripted = true;
+      dummyActor.isDummy = true;
+    }
+
+    // Spawn or position riding lawn mower in practice zone
+    let mower = sim.vehicles?.find(v => v.id === 'mower_driveable' || v.id === 'tutorial_mower');
+    if (!mower && typeof sim.spawnMower === 'function') {
+      mower = sim.spawnMower({ id: 'tutorial_mower', pos: { x: -8, y: 0, z: 8 }, yaw: Math.PI });
+    } else if (mower) {
+      mower.pos.x = -8;
+      mower.pos.y = 0;
+      mower.pos.z = 8;
+      mower.yaw = Math.PI;
+      mower.alive = true;
+      mower.hp = mower.maxHp;
+    }
+    this.mower = mower;
+
+    this.syncObjects();
+  }
+
+  syncObjects() {
+    this.objects = [
+      this.grassMeter,
+      ...this.targets.map(t => ({ id: 'target_' + t.id, kind: 'targetDummy', name: t.name, pos: { ...t.pos }, hit: t.hit })),
+      ...this.weeds.map(w => ({ id: w.id, kind: 'weed', name: w.name, pos: { ...w.pos }, cut: w.cut })),
+    ];
+  }
+
+  campingExempt(actor) {
+    return true;
+  }
+
+  spawnSide(actor) {
+    return 0;
+  }
+
+  respawnDelay(actor) {
+    return 1.5;
+  }
+
+  advanceStep() {
+    this.step++;
+    if (this.step === 2) {
+      this.sim.emit({ type: 'drillComplete', drill: 1, name: 'Movement Drill', message: 'Lawn height inspected: 2.4 inches (APPROVED)' });
+    } else if (this.step === 3) {
+      this.sim.emit({ type: 'drillComplete', drill: 2, name: 'Target Practice', message: 'Cardboard cutout HOA violators neutralized!' });
+    } else if (this.step === 4) {
+      this.sim.emit({ type: 'drillComplete', drill: 3, name: 'Suburban Ordinance', message: 'Lawsuit Ordinance filed and bounced!' });
+    } else if (this.step >= 5) {
+      this.completeTutorial();
+    }
+  }
+
+  hitTarget(targetId) {
+    const t = this.targets.find(x => x.id === targetId || x.name.includes(targetId));
+    if (t) {
+      t.hit = true;
+      const actor = this.sim.byId?.get(t.id);
+      if (actor) {
+        actor.hp = 0;
+        actor.alive = false;
+      }
+      if (this.step === 2 && this.targets.every(x => x.hit)) {
+        this.advanceStep();
+      }
+    }
+  }
+
+  cutWeed(weedId) {
+    const w = this.weeds.find(x => x.id === weedId || x.name.includes(weedId));
+    if (w) {
+      w.cut = true;
+      this.sim.emit({ type: 'weedCut', id: w.id, name: w.name });
+      if (this.step === 4 && this.weeds.every(x => x.cut)) {
+        this.advanceStep();
+      }
+    }
+  }
+
+  onKill(ev, killer, victim) {
+    if (victim) {
+      const t = this.targets.find(x => x.id === victim.id || x.name === victim.name);
+      if (t) {
+        t.hit = true;
+        if (this.step === 2 && this.targets.every(x => x.hit)) {
+          this.advanceStep();
+        }
+      }
+    }
+  }
+
+  completeTutorial() {
+    if (this.completed) return;
+    this.completed = true;
+    this.step = 5;
+    this.bonusXpAwarded = true;
+    this.sim.addScore(0, 100);
+
+    if (typeof globalThis !== 'undefined' && globalThis.__HOA_CAREER__?.addXp) {
+      try { globalThis.__HOA_CAREER__.addXp(500); } catch {}
+    }
+
+    this.sim.emit({
+      type: 'tutorialComplete',
+      banner: 'HOA BOARD CERTIFICATION PASSED',
+      sub: 'Ready for Cul-de-Sac Clash! +500 Bonus XP Awarded.',
+      bonusXp: 500,
+    });
+    this.sim.emit({
+      type: 'hardpointRotated',
+      name: 'HOA BOARD CERTIFICATION PASSED',
+    });
+
+    if (typeof document !== 'undefined') {
+      const bannerEl = document.getElementById('banner');
+      if (bannerEl) {
+        bannerEl.innerHTML = '<div style="font-size:24px;font-weight:900;color:#00e436;text-shadow:0 0 10px rgba(0,228,54,0.7);">HOA BOARD CERTIFICATION PASSED</div><div style="font-size:14px;color:#ffec27;">+500 Bonus XP · Ready for Cul-de-Sac Clash!</div>';
+        bannerEl.classList.remove('hidden');
+      }
+    }
+
+    this.sim.over = true;
+    this.sim.winner = 0;
+    this.sim.emit({
+      type: 'matchEnd',
+      winner: 0,
+      reason: 'HOA Board Certification Passed! Ready for Cul-de-Sac Clash!',
+    });
+  }
+
+  update(dt) {
+    const sim = this.sim;
+    const player = sim.actors.find(a => !a.isBot || a.team === 0);
+
+    // Infinite ammo and grenades in practice zone
+    for (const a of sim.actors) {
+      if (a.alive && (!a.isBot || a.team === 0)) {
+        const w = sim.activeWeapon(a);
+        if (w) a.ammo = w.mag;
+        a.grenades = Math.max(a.grenades, 2);
+      }
+    }
+
+    if (this.completed) return;
+
+    // Drill 1: Movement Drill (Walk across the manicured lawn to inspect the grass height meter)
+    if (this.step === 1 && player) {
+      const dist = Math.hypot(player.pos.x - this.grassMeter.pos.x, player.pos.z - this.grassMeter.pos.z);
+      if (dist <= this.grassMeter.radius) {
+        this.grassMeter.inspected = true;
+        this.advanceStep();
+      }
+    } else if (this.step === 2) {
+      // Drill 2: Target Practice (Shoot 3 cardboard cutout HOA violators)
+      for (const t of this.targets) {
+        const actor = sim.byId.get(t.id);
+        if (actor && actor.hp <= 0) {
+          t.hit = true;
+          actor.alive = false;
+        }
+      }
+      if (this.targets.every(t => t.hit)) {
+        this.advanceStep();
+      }
+    } else if (this.step === 3) {
+      // Drill 3: Suburban Ordinance (Throw a Lawsuit Grenade (key Q) to bounce it off the driveway)
+      if (sim.grenades && sim.grenades.length > 0) {
+        this.grenadeThrown = true;
+        for (const g of sim.grenades) {
+          // Bounced on driveway / ground
+          if (g.pos.y <= 0.2 || Math.abs(g.vel.y) > 0.5) {
+            this.grenadeBounced = true;
+          }
+        }
+      }
+      if (this.grenadeBounced || this.grenadeThrown) {
+        this.advanceStep();
+      }
+    } else if (this.step === 4) {
+      // Drill 4: Heavy Machinery (Mount the riding lawn mower (key E) and run over a row of weeds!)
+      const mower = this.mower || sim.vehicles?.find(v => v.isMower || v.id.includes('mower'));
+      const isMounted = mower && (mower.driverId === player?.id || player?.inVehicle === mower.id);
+      if (isMounted) {
+        this.mowerMounted = true;
+        for (const weed of this.weeds) {
+          if (!weed.cut) {
+            const d = Math.hypot(mower.pos.x - weed.pos.x, mower.pos.z - weed.pos.z);
+            if (d <= (weed.radius || 1.8) + 1.2) {
+              weed.cut = true;
+              sim.emit({ type: 'weedCut', id: weed.id, name: weed.name });
+            }
+          }
+        }
+        if (this.weeds.every(w => w.cut)) {
+          this.advanceStep();
+        }
+      }
+    }
+
+    this.syncObjects();
+  }
+
+  hud(localActor) {
+    if (this.completed) {
+      return '<b style="color:#00e436">HOA BOARD CERTIFICATION PASSED!</b> +500 Bonus XP · Ready for Cul-de-Sac Clash!';
+    }
+    if (this.step === 1) {
+      return '<b style="color:#ffec27">DRILL 1/4 (Movement):</b> Walk across the manicured lawn to inspect the Grass Height Meter';
+    }
+    if (this.step === 2) {
+      const remaining = this.targets.filter(t => !t.hit).length;
+      return `<b style="color:#ffec27">DRILL 2/4 (Target Practice):</b> Shoot 3 cardboard cutout HOA violators (${3 - remaining}/3 eliminated)`;
+    }
+    if (this.step === 3) {
+      return '<b style="color:#ffec27">DRILL 3/4 (Suburban Ordinance):</b> Throw a Lawsuit Grenade [G/Q] to bounce it off the driveway';
+    }
+    if (this.step === 4) {
+      const remaining = this.weeds.filter(w => !w.cut).length;
+      return `<b style="color:#ffec27">DRILL 4/4 (Heavy Machinery):</b> Press [E] to mount the riding lawn mower and run over the weeds (${3 - remaining}/3 cut)`;
+    }
+    return null;
+  }
+}
+
 export const MODES = {
   clash: Clash,
   wipeout: SuburbanWipeout,
@@ -808,7 +1119,11 @@ export const MODES = {
   hoaPatrol: HoaPatrol,
   stealTheCasserole: StealTheCasserole,
   loneWolf: LoneWolf,
+  tutorial: SuburbanTutorial,
 };
+
+Object.defineProperty(MODES, 'range', { value: SuburbanTutorial, enumerable: false, writable: true, configurable: true });
+Object.defineProperty(MODES, 'firingRange', { value: SuburbanTutorial, enumerable: false, writable: true, configurable: true });
 
 export const MODE_ALIASES = {
   patrol: 'hoaPatrol',
@@ -819,6 +1134,9 @@ export const MODE_ALIASES = {
   lonewolf: 'loneWolf',
   survival: 'loneWolf',
   elimination: 'wipeout',
+  range: 'tutorial',
+  firingRange: 'tutorial',
+  tutorial: 'tutorial',
 };
 
 export function resolveModeId(id) {
@@ -827,7 +1145,7 @@ export function resolveModeId(id) {
 
 export function createMode(id, sim) {
   const canonical = resolveModeId(id);
-  const M = MODES[canonical];
+  const M = MODES[canonical] || MODES[id];
   if (!M) throw new Error(`unknown mode ${id}`);
   return new M(sim);
 }

@@ -110,6 +110,7 @@
       <div id="factions" class="factions-grid-2x3"></div>
       <div class="lobby-action-bar">
         <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY NOW</button>
+        <button type="button" id="btnTutorial" class="btn-online btn-tutorial" title="30-Second Suburban Firing Range & Tutorial">🎯 TUTORIAL / FIRING RANGE</button>
         <button type="button" id="btnQuickMatch" class="btn-online btn-quickmatch-main" disabled>🌐 QUICK MATCH</button>
         <div id="heroDossier" style="display:none;"></div>
       </div>
@@ -272,5 +273,15 @@
 </div>
 
 <script type="module" src="src/engine/game.js?v=4"></script>
+<script type="module">
+  document.getElementById('btnTutorial')?.addEventListener('click', () => {
+    const opt = document.getElementById('optMode');
+    if (opt) {
+      opt.value = 'tutorial';
+      opt.dispatchEvent(new Event('change'));
+    }
+    document.getElementById('deploy')?.click();
+  });
+</script>
 </body>
 </html>

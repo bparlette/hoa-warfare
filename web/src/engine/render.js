@@ -108,10 +108,38 @@ export class Renderer {
     this.casings = [];
     this.splatCount = 0;
     this.camRecoil = 0;
+    this._isDoorbellCam = false;
+    this.doorbellFov = 115;
     this.buildLights();
     this.buildWorld();
     this.buildViewmodel();
     this.resize();
+  }
+
+  get isDoorbellCam() {
+    return !!this._isDoorbellCam;
+  }
+
+  set isDoorbellCam(v) {
+    this._isDoorbellCam = !!v;
+    this.updateCameraFov();
+  }
+
+  setDoorbellCam(on) {
+    this.isDoorbellCam = !!on;
+    return this.isDoorbellCam;
+  }
+
+  updateCameraFov() {
+    if (!this.camera) return;
+    const w = this.canvas?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 800),
+          h = this.canvas?.clientHeight || (typeof window !== 'undefined' ? window.innerHeight : 600);
+    const baseFov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
+    const targetFov = this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
+    if (this.camera.fov !== targetFov) {
+      this.camera.fov = targetFov;
+      this.camera.updateProjectionMatrix?.();
+    }
   }
 
   resize() {
@@ -121,7 +149,8 @@ export class Renderer {
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
     // Widen vertical FOV on portrait mobile screens so horizontal field-of-view stays comfortable
-    this.camera.fov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
+    const baseFov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
+    this.camera.fov = this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
     this.camera.updateProjectionMatrix();
     const lh = this.lowHeight, lw = Math.round(lh * w / h);
     this.rt.setSize(lw, lh);
@@ -1441,12 +1470,19 @@ export class Renderer {
 
   /** Over-the-shoulder camera behind `from`, looking at `at` (killcam / spectator). */
   chase(from, at, dist = 3.2) {
+    this.updateCameraFov();
     if (this.muzzleLight) this.muzzleLight.intensity = 0;
-    const dx = at.x - from.x, dz = at.z - from.z;
+    const fx = from.x ?? from.pos?.x ?? 0;
+    const fy = from.y ?? from.pos?.y ?? 0;
+    const fz = from.z ?? from.pos?.z ?? 0;
+    const ax = at.x ?? at.pos?.x ?? 0;
+    const ay = at.y ?? at.pos?.y ?? 0;
+    const az = at.z ?? at.pos?.z ?? 0;
+    const dx = ax - fx, dz = az - fz;
     const d = Math.hypot(dx, dz) || 1;
     const back = { x: -dx / d, z: -dz / d };
-    this.camera.position.set(from.x + back.x * dist + back.z * 0.8, from.y + 2.4, from.z + back.z * dist - back.x * 0.8);
-    this.camera.lookAt(at.x, at.y + 1.1, at.z);
+    this.camera.position.set(fx + back.x * dist + back.z * 0.8, fy + 2.4, fz + back.z * dist - back.x * 0.8);
+    this.camera.lookAt(ax, ay + 1.1, az);
     this.viewmodel.visible = false;
     this.trophy.visible = false;
   }
@@ -1460,6 +1496,7 @@ export class Renderer {
   }
 
   render() {
+    this.updateCameraFov();
     this.gl.info.reset();
     if (this.retro) {
       this.gl.setRenderTarget(this.rt);

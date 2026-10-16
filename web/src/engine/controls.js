@@ -74,7 +74,7 @@ export class Controls {
    */
   constructor({ canvas, touchRoot = null }) {
     this.canvas = canvas;
-    this.device = matchMedia?.('(pointer: coarse)').matches ? 'touch' : 'mouse';
+    this.device = typeof matchMedia !== 'undefined' && matchMedia?.('(pointer: coarse)')?.matches ? 'touch' : 'mouse';
     this.locked = false;
     this.userPaused = false;
     this.keys = new Set();
@@ -88,7 +88,7 @@ export class Controls {
     this.onTarget = false;
     this.touch = { stick: null, look: new Map(), fire: false, jump: false, board: false, move: { forward: 0, right: 0, sprint: false } };
     this.onPadPress = null;
-    this.bindMouseKeys();
+    if (typeof document !== 'undefined') this.bindMouseKeys();
     if (touchRoot) this.bindTouch(touchRoot);
   }
 
@@ -342,9 +342,47 @@ export class Controls {
       this.touchInteractBtn.style.display = 'none';
     }
   }
+
+  triggerHaptic(type) {
+    return triggerHaptic(type);
+  }
 }
 
 function clampPitch(p) { return Math.max(-LOOK.maxPitch, Math.min(LOOK.maxPitch, p)); }
+
+/**
+ * Mobile Haptics & Vibration Feedback:
+ * - fire: subtle 12ms pulse.
+ * - hit: 25ms tactile bump.
+ * - kill: double pulse [30, 40, 50].
+ * - explosion / roadkill: heavy rumble [60, 30, 80].
+ * - damage: sharp pulse [40].
+ */
+export const HAPTIC_PATTERNS = {
+  fire: 12,
+  hit: 25,
+  kill: [30, 40, 50],
+  explosion: [60, 30, 80],
+  roadkill: [60, 30, 80],
+  damage: [40],
+};
+
+/**
+ * Trigger mobile haptic / vibration feedback using navigator.vibrate.
+ * Gracefully checks navigator?.vibrate support so desktop browsers never throw errors.
+ */
+export function triggerHaptic(type) {
+  if (typeof navigator === 'undefined' || typeof navigator?.vibrate !== 'function') {
+    return false;
+  }
+  const pattern = HAPTIC_PATTERNS[type] ?? (Array.isArray(type) || typeof type === 'number' ? type : null);
+  if (pattern === null || pattern === undefined) return false;
+  try {
+    return navigator.vibrate(pattern);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Aim helper for pad/touch (and Easy Mode auto lock-on for all devices):
@@ -381,3 +419,4 @@ export function aimAssist(sim, me, { cone = 0.09, hitCone = 0.035, range = 45, l
   // on target = within the body's angular half-width (0.42 m hit radius) plus a small margin
   return { slow: 0.45, onTarget: best < Math.max(hitCone, Math.atan(0.42 / bestD)), locked: false, lockYaw: null, lockPitch: null };
 }
+
