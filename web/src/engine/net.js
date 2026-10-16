@@ -16,6 +16,7 @@ export class NetClient {
       yaw: 0,
       pitch: 0,
       weaponSlot: 'primary',
+      move: null,   // analog [forward, right] from a stick; null = use the key booleans
     };
     this.snapshotBuffer = [];
     this.maxBufferLength = options.maxBufferLength || 30;
@@ -25,6 +26,14 @@ export class NetClient {
     this.onSnapshot = null;
     this.onConnect = null;
     this.onDisconnect = null;
+    this.onRoster = null;      // ({players, newMatch, ...}) someone joined/left or a new match started
+    this.onError = null;       // ({code}) server refused or kicked us
+    this.onInputSent = null;   // (seq) just before each input packet goes out (client-side prediction history)
+    this.players = [];
+    this.latest = null;        // newest snapshot received
+    this.once = {};            // one-shot actions (reload, melee, grenade) sent in exactly one packet
+    this.serverOffsets = [];   // recent (client seconds - server seconds) samples; the minimum is the clock offset
+    this.serverOffset = null;
   }
 
   /**
@@ -33,10 +42,12 @@ export class NetClient {
    * @param {{ name?: string, faction?: string, team?: number, onSnapshot?: Function, onConnect?: Function, onDisconnect?: Function }} callbacks
    * @returns {Promise<{ actorId: string, team: number, roomCode: string }>}
    */
-  connect(url, { name = 'Player', faction = 'karens', team, onSnapshot, onConnect, onDisconnect } = {}) {
+  connect(url, { name = 'Player', faction = 'karens', team, onSnapshot, onConnect, onDisconnect, onRoster, onError, timeoutMs = 6000 } = {}) {
     this.onSnapshot = onSnapshot;
     this.onConnect = onConnect;
     this.onDisconnect = onDisconnect;
+    this.onRoster = onRoster ?? this.onRoster;
+    this.onError = onError ?? this.onError;
 
     return new Promise((resolve, reject) => {
       try {
@@ -49,6 +60,13 @@ export class NetClient {
         this.ws = ws;
 
         let resolved = false;
+        const timer = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            try { ws.close(); } catch {}
+            reject(new Error('timeout'));
+          }
+        }, timeoutMs);
 
         ws.onopen = () => {
           this.connected = true;
@@ -64,10 +82,12 @@ export class NetClient {
 
             if (msg.type === 'init' && !resolved) {
               resolved = true;
+              clearTimeout(timer);
               resolve({
                 actorId: this.actorId,
                 team: this.team,
                 roomCode: this.roomCode,
+                init: msg,
               });
             }
           } catch (err) {
@@ -75,15 +95,21 @@ export class NetClient {
           }
         };
 
-        ws.onclose = () => {
+        ws.onclose = ev => {
           this.connected = false;
           this.cleanup();
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timer);
+            reject(Object.assign(new Error(ev?.code === 1013 ? 'room_full' : 'closed'), { code: ev?.code }));
+          }
           this.onDisconnect?.();
         };
 
         ws.onerror = err => {
           if (!resolved) {
             resolved = true;
+            clearTimeout(timer);
             reject(err);
           }
         };
@@ -100,7 +126,14 @@ export class NetClient {
       this.actorId = msg.actorId;
       this.team = msg.team;
       this.roomCode = msg.roomCode;
+      this.players = msg.players || [];
       this.onConnect?.(msg);
+    } else if (msg.type === 'roster') {
+      this.players = msg.players || [];
+      if (msg.newMatch) { this.snapshotBuffer.length = 0; this.latest = null; }
+      this.onRoster?.(msg);
+    } else if (msg.type === 'error') {
+      this.onError?.(msg);
     } else if (msg.type === 'snapshot') {
       const entry = {
         ...msg,
@@ -109,6 +142,12 @@ export class NetClient {
       this.snapshotBuffer.push(entry);
       if (this.snapshotBuffer.length > this.maxBufferLength) {
         this.snapshotBuffer.shift();
+      }
+      this.latest = entry;
+      if (typeof msg.time === 'number') {
+        this.serverOffsets.push(entry.receivedAt / 1000 - msg.time);
+        if (this.serverOffsets.length > 60) this.serverOffsets.shift();
+        this.serverOffset = Math.min(...this.serverOffsets);
       }
       this.onSnapshot?.(msg);
     } else if (msg.type === 'pong') {
@@ -147,28 +186,37 @@ export class NetClient {
     this.sendCurrentInput();
   }
 
+  /** Queue a one-shot action (reload / melee / grenade); it goes out in exactly one input packet. */
+  press(action) { this.once[action] = true; }
+
   sendCurrentInput() {
     if (!this.ws || this.ws.readyState !== 1) return; // 1 = OPEN
     this.inputSeq++;
+    const k = this.currentInput.keys || {};
+    const once = this.once;
+    this.once = {};
     const packet = {
       type: 'input',
       seq: this.inputSeq,
       keys: {
-        fwd: Boolean(this.currentInput.keys?.fwd),
-        back: Boolean(this.currentInput.keys?.back),
-        left: Boolean(this.currentInput.keys?.left),
-        right: Boolean(this.currentInput.keys?.right),
-        jump: Boolean(this.currentInput.keys?.jump),
-        fire: Boolean(this.currentInput.keys?.fire),
-        sprint: Boolean(this.currentInput.keys?.sprint),
-        reload: Boolean(this.currentInput.keys?.reload),
-        melee: Boolean(this.currentInput.keys?.melee),
-        grenade: Boolean(this.currentInput.keys?.grenade),
+        fwd: Boolean(k.fwd),
+        back: Boolean(k.back),
+        left: Boolean(k.left),
+        right: Boolean(k.right),
+        jump: Boolean(k.jump),
+        fire: Boolean(k.fire),
+        sprint: Boolean(k.sprint),
+        reload: Boolean(k.reload || once.reload),
+        melee: Boolean(k.melee || once.melee),
+        grenade: Boolean(k.grenade || once.grenade),
       },
       yaw: this.currentInput.yaw || 0,
       pitch: this.currentInput.pitch || 0,
       weaponSlot: this.currentInput.weaponSlot || 'primary',
     };
+    const mv = this.currentInput.move;
+    if (mv) packet.mv = [mv[0], mv[1]];
+    this.onInputSent?.(this.inputSeq);
     try {
       this.ws.send(JSON.stringify(packet));
     } catch {}
@@ -187,7 +235,7 @@ export class NetClient {
     const sendPing = () => {
       if (this.ws && this.ws.readyState === 1) {
         try {
-          this.ws.send(JSON.stringify({ type: 'ping', clientTime: Date.now() }));
+          this.ws.send(JSON.stringify({ type: 'ping', clientTime: Date.now(), rtt: this.latency }));
         } catch {}
       }
     };
@@ -271,6 +319,42 @@ export class NetClient {
       events: s1.events || [],
       helicopters: s1.helicopters || [],
     };
+  }
+
+  /**
+   * Smooth view of the world `delaySec` in the past, on the SERVER clock (so network jitter in when
+   * packets happened to arrive doesn't make remote players stutter). Falls back to the newest snapshot.
+   * Remote actors are interpolated; every other field comes from the later snapshot.
+   */
+  sample(delaySec = 0.1) {
+    const buf = this.snapshotBuffer;
+    if (buf.length === 0) return null;
+    const last = buf[buf.length - 1];
+    if (buf.length === 1 || this.serverOffset === null) return last;
+    const t = performance.now() / 1000 - this.serverOffset - delaySec;
+    if (t >= last.time) return last;
+    if (t <= buf[0].time) return buf[0];
+    let i = buf.length - 2;
+    while (i > 0 && buf[i].time > t) i--;
+    const s0 = buf[i], s1 = buf[i + 1];
+    const f = s1.time > s0.time ? Math.max(0, Math.min(1, (t - s0.time) / (s1.time - s0.time))) : 1;
+    const prev = new Map(s0.actors.map(a => [a.id, a]));
+    const actors = s1.actors.map(a1 => {
+      const a0 = prev.get(a1.id);
+      if (!a0 || !a0.alive || !a1.alive) return a1;
+      let dy = a1.yaw - a0.yaw;
+      while (dy > Math.PI) dy -= 2 * Math.PI;
+      while (dy < -Math.PI) dy += 2 * Math.PI;
+      return {
+        ...a1,
+        x: a0.x + (a1.x - a0.x) * f,
+        y: a0.y + (a1.y - a0.y) * f,
+        z: a0.z + (a1.z - a0.z) * f,
+        yaw: a0.yaw + dy * f,
+        pitch: a0.pitch + (a1.pitch - a0.pitch) * f,
+      };
+    });
+    return { ...s1, actors, time: t };
   }
 
   cleanup() {
