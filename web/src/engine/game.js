@@ -290,7 +290,8 @@ export function pickBotFaction({ rng, pool, team, featuredRivalry = null, bias =
   return pool[Math.floor(rng() * pool.length)];
 }
 
-let activeFactionIndex = 0;
+let menuPage = 0;
+export const FACTIONS_PER_PAGE = 6;
 
 export function buildMenu() {
   const box = $('factions');
@@ -303,254 +304,95 @@ export function buildMenu() {
     ? [...DEMO_FACTIONS, ...allFactionIds.filter(id => !DEMO_FACTIONS.includes(id))]
     : shippingFactions;
 
-  activeFactionIndex = displayFactions.indexOf(state.faction);
-  if (activeFactionIndex < 0) activeFactionIndex = 0;
-  state.faction = displayFactions[activeFactionIndex];
+  const totalPages = Math.ceil(displayFactions.length / FACTIONS_PER_PAGE);
+  const curIdx = displayFactions.indexOf(state.faction);
+  if (curIdx >= 0) {
+    menuPage = Math.floor(curIdx / FACTIONS_PER_PAGE);
+  }
+  menuPage = Math.max(0, Math.min(totalPages - 1, menuPage));
 
-  box.innerHTML = '';
-  const cardElements = [];
+  function renderPage() {
+    box.innerHTML = '';
+    const startIdx = menuPage * FACTIONS_PER_PAGE;
+    const pageFactions = displayFactions.slice(startIdx, startIdx + FACTIONS_PER_PAGE);
+    for (const id of pageFactions) {
+      const f = factions[id];
+      const el = document.createElement('div');
+      const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
+      const isSel = id === state.faction;
+      const wpn = FACTION_LOADOUTS[id] || { ...WEAPON_DEFINITIONS.ar, loadout: 'default' };
+      const wpnSrc = wpn.asset; // Always 2D vector art
+      const cryRaw = f.lines?.roundStart?.clean?.[0] || f.lines?.kill?.clean?.[0] || '';
+      const cry = typeof cryRaw === 'object' ? (cryRaw.t || cryRaw.alt || '') : cryRaw;
+      const tagline = f.tagline || 'Defend the cul-de-sac at all costs.';
 
-  for (let i = 0; i < displayFactions.length; i++) {
-    const id = displayFactions[i];
-    const f = factions[id];
-    const el = document.createElement('div');
-    if (el.dataset) {
-      el.dataset.factionId = id;
-      el.dataset.index = String(i);
-    }
-    const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
-    const isSel = id === state.faction;
-    const wpn = FACTION_LOADOUTS[id] || { ...WEAPON_DEFINITIONS.ar, loadout: 'default' };
-    const wpnSrc = wpn.asset; // Always 2D vector art
-    const cryRaw = f.lines?.roundStart?.clean?.[0] || f.lines?.kill?.clean?.[0] || '';
-    const cry = typeof cryRaw === 'object' ? (cryRaw.t || cryRaw.alt || '') : cryRaw;
-    const tagline = f.tagline || 'Defend the cul-de-sac at all costs.';
+      const cardInner = `
+        <div class="fc-stage" style="background: radial-gradient(circle at 50% 35%, ${f.look.accent}30 0%, rgba(9,14,26,0.96) 85%);">
+          ${isLocked ? '<div class="fc-stage-badges"><span class="demo-lock">🔒 STEAM ONLY</span></div>' : ''}
 
-    const cardInner = `
-      <div class="fc-stage" style="background: radial-gradient(circle at 50% 35%, ${f.look.accent}30 0%, rgba(9,14,26,0.96) 85%);">
-        ${isLocked ? '<div class="fc-stage-badges"><span class="demo-lock">🔒 STEAM ONLY</span></div>' : ''}
-
-        <div class="fc-visuals">
-          <div class="fc-wpn-hero-wrap">
-            <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
-          </div>
-          <div class="fc-char-hero-wrap">
-            <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
-          </div>
-        </div>
-      </div>
-
-      <div class="fc-info">
-        <div class="fc-info-header">
-          <div class="fc-name-group">
-            <span class="fc-dot" style="background:${f.look.accent};"></span>
-            <b class="fc-name">${f.name}</b>
+          <div class="fc-visuals">
+            <div class="fc-wpn-hero-wrap">
+              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
+            </div>
+            <div class="fc-char-hero-wrap">
+              <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
+            </div>
           </div>
         </div>
-        <div class="fc-tagline" title="${tagline}">“${tagline}”</div>
-        <div class="fc-info-bottom">
+
+        <div class="fc-info">
+          <div class="fc-info-header">
+            <div class="fc-name-group">
+              <span class="fc-dot" style="background:${f.look.accent};"></span>
+              <b class="fc-name">${f.name}</b>
+            </div>
+          </div>
+          <div class="fc-tagline" title="${tagline}">“${tagline}”</div>
           <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
-          <span class="fc-wpn-corner" title="${wpn.name}">🔫 ${wpn.name.toUpperCase()}</span>
         </div>
-      </div>
-    `;
+      `;
 
-    el.className = 'fc fc-card' + (isLocked ? ' locked' : '') + (isSel ? ' sel' : '');
-    if (!isLocked) {
-      el.style.borderColor = isSel ? '#ffec27' : f.look.accent;
-    }
-    el.innerHTML = cardInner;
-
-    el.onclick = () => {
-      selectFactionIndex(i, true);
-      if (isLocked) showDemoModal(f.name, f.tagline);
-    };
-
-    box.appendChild(el);
-    cardElements.push(el);
-  }
-
-  function updateDeployButton() {
-    const selF = factions[state.faction] || factions.karens;
-    const isLocked = demoActive && !DEMO_FACTIONS.includes(state.faction);
-    const depBtn = $('deploy');
-    if (depBtn) {
       if (isLocked) {
-        depBtn.textContent = '🔒 LOCKED IN DEMO (WISHLIST ON STEAM)';
-        depBtn.classList.add('btn-locked');
-        depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
+        el.className = 'fc fc-card locked';
+        el.innerHTML = cardInner;
+        el.onclick = () => showDemoModal(f.name, f.tagline);
       } else {
-        depBtn.textContent = `▶ DEPLOY AS ${selF.name.toUpperCase()}`;
-        depBtn.classList.remove('btn-locked');
-        depBtn.onclick = () => startGame();
+        el.className = 'fc fc-card' + (isSel ? ' sel' : '');
+        el.style.borderColor = isSel ? '#ffec27' : f.look.accent;
+        el.innerHTML = cardInner;
+        el.onclick = () => { state.faction = id; buildMenu(); };
       }
+      box.appendChild(el);
     }
-    syncOnlineButtons(isLocked);
-  }
-
-  function updateCounterAndNav() {
-    const total = displayFactions.length;
-    const currentNum = activeFactionIndex + 1;
     if (pag) {
+      const pageNum = menuPage + 1;
       pag.innerHTML = `
-        <button type="button" class="page-btn" id="fcPrev" aria-label="Previous faction">◀ Prev</button>
-        <span id="fcCounter" class="fc-counter-badge">Faction ${currentNum} of ${total}</span>
-        <button type="button" class="page-btn" id="fcNext" aria-label="Next faction">Next ▶</button>
+        <button type="button" class="page-btn" id="fcPrev" ${menuPage === 0 ? 'disabled' : ''} aria-label="Previous factions">◀ Prev</button>
+        <span>Page ${pageNum} of ${totalPages}</span>
+        <button type="button" class="page-btn" id="fcNext" ${menuPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next factions">Next ▶</button>
       `;
       const prevBtn = $('fcPrev');
       const nextBtn = $('fcNext');
-      if (prevBtn) prevBtn.onclick = (e) => { e?.stopPropagation?.(); selectFactionIndex(activeFactionIndex - 1, true); };
-      if (nextBtn) nextBtn.onclick = (e) => { e?.stopPropagation?.(); selectFactionIndex(activeFactionIndex + 1, true); };
-    }
-    const sidePrev = $('sliderPrev');
-    const sideNext = $('sliderNext');
-    if (sidePrev) sidePrev.onclick = (e) => { e?.stopPropagation?.(); selectFactionIndex(activeFactionIndex - 1, true); };
-    if (sideNext) sideNext.onclick = (e) => { e?.stopPropagation?.(); selectFactionIndex(activeFactionIndex + 1, true); };
-  }
-
-  function selectFactionIndex(idx, shouldScroll = true) {
-    if (idx < 0) idx = displayFactions.length - 1;
-    if (idx >= displayFactions.length) idx = 0;
-    activeFactionIndex = idx;
-    const newFaction = displayFactions[activeFactionIndex];
-    state.faction = newFaction;
-
-    cardElements.forEach((cEl, i) => {
-      const sel = i === activeFactionIndex;
-      const isL = cEl.classList?.contains?.('locked') || (demoActive && !DEMO_FACTIONS.includes(displayFactions[i]));
-      if (sel) {
-        cEl.classList?.add?.('sel');
-        if (!isL && cEl.style) cEl.style.borderColor = '#ffec27';
-      } else {
-        cEl.classList?.remove?.('sel');
-        const fId = displayFactions[i];
-        if (!isL && cEl.style) cEl.style.borderColor = factions[fId]?.look?.accent || '#5f574f';
-      }
-    });
-
-    updateCounterAndNav();
-    updateDeployButton();
-
-    if (shouldScroll && cardElements[activeFactionIndex]) {
-      const targetEl = cardElements[activeFactionIndex];
-      if (typeof targetEl.scrollIntoView === 'function') {
-        try {
-          targetEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        } catch {
-          const targetLeft = (targetEl.offsetLeft || 0) - ((box.clientWidth || 300) - (targetEl.clientWidth || 260)) / 2;
-          box.scrollTo?.({ left: targetLeft, behavior: 'smooth' });
-        }
-      }
+      if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); if (menuPage > 0) { menuPage--; renderPage(); } };
+      if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); if (menuPage < totalPages - 1) { menuPage++; renderPage(); } };
     }
   }
 
-  // Touch Swipe Support for Mobile
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let isTouching = false;
+  renderPage();
 
-  box.ontouchstart = (e) => {
-    if (e.touches && e.touches.length === 1) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      isTouching = true;
+  const selF = factions[state.faction] || factions.karens;
+  const isLocked = demoActive && !DEMO_FACTIONS.includes(state.faction);
+  const depBtn = $('deploy');
+  if (depBtn) {
+    if (isLocked) {
+      depBtn.textContent = '🔒 LOCKED IN DEMO (WISHLIST ON STEAM)';
+      depBtn.classList.add('btn-locked');
+      depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
+    } else {
+      depBtn.textContent = `▶ DEPLOY AS ${selF.name.toUpperCase()}`;
+      depBtn.classList.remove('btn-locked');
+      depBtn.onclick = () => startGame();
     }
-  };
-
-  box.ontouchend = (e) => {
-    if (!isTouching || !e.changedTouches || e.changedTouches.length === 0) return;
-    isTouching = false;
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-    const dx = touchEndX - touchStartX;
-    const dy = Math.abs(touchEndY - touchStartY);
-
-    if (Math.abs(dx) > 35 && Math.abs(dx) > dy) {
-      if (dx < 0) {
-        selectFactionIndex(activeFactionIndex + 1, true);
-      } else {
-        selectFactionIndex(activeFactionIndex - 1, true);
-      }
-    }
-  };
-
-  // Debounced scroll listener to sync active faction when swiped/scrolled natively
-  let scrollTimer = null;
-  box.onscroll = () => {
-    if (scrollTimer) clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-      if (typeof box.getBoundingClientRect !== 'function') return;
-      const boxRect = box.getBoundingClientRect();
-      const boxCenter = boxRect.left + boxRect.width / 2;
-      let closestIdx = activeFactionIndex;
-      let minDistance = Infinity;
-
-      cardElements.forEach((cEl, idx) => {
-        if (typeof cEl.getBoundingClientRect !== 'function') return;
-        const cRect = cEl.getBoundingClientRect();
-        const cardCenter = cRect.left + cRect.width / 2;
-        const dist = Math.abs(cardCenter - boxCenter);
-        if (dist < minDistance) {
-          minDistance = dist;
-          closestIdx = idx;
-        }
-      });
-
-      if (closestIdx !== activeFactionIndex) {
-        selectFactionIndex(closestIdx, false);
-      }
-    }, 60);
-  };
-
-  // Mouse drag support for desktop
-  let isMouseDown = false;
-  let mouseStartX = 0;
-  let scrollStartLeft = 0;
-  let mouseMoved = false;
-
-  box.onmousedown = (e) => {
-    if (!e || e.button !== 0) return;
-    isMouseDown = true;
-    mouseMoved = false;
-    mouseStartX = e.pageX || 0;
-    scrollStartLeft = box.scrollLeft || 0;
-  };
-
-  box.onmousemove = (e) => {
-    if (!isMouseDown || !e) return;
-    const dx = (e.pageX || 0) - mouseStartX;
-    if (Math.abs(dx) > 5) mouseMoved = true;
-    box.scrollLeft = scrollStartLeft - dx;
-  };
-
-  const endDrag = (e) => {
-    if (!isMouseDown) return;
-    isMouseDown = false;
-    if (mouseMoved && e) {
-      const dx = (e.pageX || 0) - mouseStartX;
-      if (Math.abs(dx) > 40) {
-        if (dx < 0) selectFactionIndex(activeFactionIndex + 1, true);
-        else selectFactionIndex(activeFactionIndex - 1, true);
-      }
-    }
-  };
-
-  box.onmouseup = endDrag;
-  box.onmouseleave = endDrag;
-
-  // Initialize
-  updateCounterAndNav();
-  updateDeployButton();
-
-  // Scroll to active card on load
-  if (typeof setTimeout !== 'undefined') {
-    setTimeout(() => {
-      if (cardElements[activeFactionIndex]?.scrollIntoView) {
-        try {
-          cardElements[activeFactionIndex].scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
-        } catch {}
-      }
-    }, 50);
   }
 
   syncOnlineButtons(demoActive && !DEMO_FACTIONS.includes(state.faction));
@@ -1384,11 +1226,7 @@ if (typeof document !== 'undefined') {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') hideDemoModal();
     if (e.code === 'KeyO' || e.code === 'Digit0') cycleStyle(state, renderer, $, name => { if (game) game.showBanner(name); });
-    if (!game) {
-      if (e.key === 'ArrowLeft') { $('fcPrev')?.click(); }
-      if (e.key === 'ArrowRight') { $('fcNext')?.click(); }
-      return;
-    }
+    if (!game) return;
     if (e.code === 'KeyP') { state.retro = !state.retro; renderer?.setRetro(state.retro); }
     if (e.code === 'KeyM') { voice.enabled = !voice.enabled; if (!voice.enabled) voice.stop(); }
     if (e.code === 'KeyV' || e.code === 'KeyT') {
