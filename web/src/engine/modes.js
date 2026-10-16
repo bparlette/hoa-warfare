@@ -687,6 +687,44 @@ export class EvictTheBlock extends Mode {
   }
 }
 
+/**
+ * Lone Wolf: 1 Player vs. The Entire Rival Faction.
+ * Get Off My Lawn! Survive against a horde of 6 rival neighbors.
+ * Player has suburban adrenaline (+100 max HP, siphon +35 HP per kill).
+ */
+export class LoneWolf extends Mode {
+  static id = 'loneWolf';
+  static label = 'Lone Wolf: Get Off My Lawn!';
+  static parent = '1 vs 6';
+  static defaults = { scoreLimit: 25, timeLimit: 300 };
+
+  onStart() {
+    const player = this.sim.actors.find(a => a.team === 0);
+    if (player) {
+      player.maxHp = 200;
+      player.hp = 200;
+    }
+  }
+
+  onKill(ev, killer) {
+    if (killer) {
+      this.sim.addScore(killer.team, 1);
+      if (killer.team === 0 && killer.alive) {
+        killer.hp = Math.min(killer.maxHp || 200, killer.hp + 35);
+        this.sim.emit({ type: 'heal', actorId: killer.id, amount: 35 });
+      }
+    }
+  }
+
+  respawnDelay(actor) {
+    return actor.team === 0 ? 3.0 : 2.0;
+  }
+
+  hud(localActor) {
+    return localActor?.team === 0 ? 'DEFEND YOUR LAWN · 1 VS 6' : null;
+  }
+}
+
 export const MODES = {
   clash: Clash,
   receiptCheck: ReceiptCheck,
@@ -694,6 +732,7 @@ export const MODES = {
   evictTheBlock: EvictTheBlock,
   hoaPatrol: HoaPatrol,
   stealTheCasserole: StealTheCasserole,
+  loneWolf: LoneWolf,
 };
 
 export const MODE_ALIASES = {
@@ -702,6 +741,8 @@ export const MODE_ALIASES = {
   kotl: 'kingOfTheLawn',
   receipt: 'receiptCheck',
   evict: 'evictTheBlock',
+  lonewolf: 'loneWolf',
+  survival: 'loneWolf',
 };
 
 export function resolveModeId(id) {

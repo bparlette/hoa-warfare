@@ -63,6 +63,16 @@
       "recoil": { "viewKick": 0.10 },
       "feedIcon": "📄", "tracer": "faction", "viewmodel": "pistol"
     },
+    "leafBlower": {
+      "name": "The HOA Blower", "class": "special", "slot": "equipment", "fire": "hitscan", "auto": false,
+      "mag": 10, "reloadSec": 1.5, "intervalSec": 0.45, "pellets": 6,
+      "damage": { "body": 35, "head": 50 },
+      "range": 14, "falloff": { "startM": 8, "mult": 0.5 },
+      "spread": { "base": 0.08, "moveMult": 1.2, "airMult": 1.5 },
+      "recoil": { "viewKick": 0.25 },
+      "knockback": 18,
+      "feedIcon": "🍃", "tracer": "faction", "viewmodel": "blaster"
+    },
     "lawsuit": {
       "name": "The Lawsuit", "class": "explosive", "slot": "equipment", "fire": "projectile", "count": 2,
       "projectile": { "speed": 15, "upBoost": 2, "gravity": 20, "fuseSec": 1.6, "bounce": 0.35, "radius": 5, "damage": 130, "selfDamage": true, "friendlyDamage": false },
@@ -86,6 +96,7 @@
     "lmg": { "primary": "subdivision", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "subdivision": { "primary": "subdivision", "secondary": "permit", "equipment": "lawsuit", "melee": "participationTrophy" },
     "pistol": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" },
-    "permit": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" }
+    "permit": { "primary": "permit", "secondary": "allowance", "equipment": "lawsuit", "melee": "participationTrophy" },
+    "leafBlower": { "primary": "allowance", "secondary": "permit", "equipment": "leafBlower", "melee": "participationTrophy" }
   }
 }

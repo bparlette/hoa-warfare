@@ -261,6 +261,136 @@ export class Sfx {
   clang() { this.tone({ type: 'square', f0: 1800, f1: 1600, dur: 0.18, vol: 0.2 }); }
   warn() { this.tone({ type: 'square', f0: 880, f1: 880, dur: 0.06, vol: 0.12 }); }
 
+  sprinklerHiss(vol = 0.25) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    const dur = 0.28;
+    const n = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) {
+      const p = (i / n) * 4;
+      const pulseMod = Math.sin((p % 1) * Math.PI);
+      d[i] = (Math.random() * 2 - 1) * Math.max(0, pulseMod) ** 3 * (1 - i / n);
+    }
+    const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+    s.buffer = buf;
+    g.gain.setValueAtTime(vol, t0);
+    s.connect(g).connect(this.master);
+    s.start(t0);
+    this.tone({ type: 'triangle', f0: 3200, f1: 2400, dur: 0.15, vol: 0.08 * vol });
+    return { source: s, gain: g };
+  }
+
+  glassShatter(vol = 0.35) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    const dur = 0.35;
+    const n = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) {
+      d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 4;
+    }
+    const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+    s.buffer = buf;
+    g.gain.setValueAtTime(vol, t0);
+    s.connect(g).connect(this.master);
+    s.start(t0);
+
+    this.tone({ type: 'triangle', f0: 4200, f1: 3100, dur: 0.12, vol: 0.25 * vol });
+    this.tone({ type: 'sine', f0: 5600, f1: 2800, dur: 0.18, vol: 0.2 * vol, delay: 0.02 });
+    this.tone({ type: 'sine', f0: 6800, f1: 3500, dur: 0.22, vol: 0.15 * vol, delay: 0.05 });
+    return { source: s, gain: g };
+  }
+
+  leafBlowerHum(dur = 0.45, vol = 0.3) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gOsc = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, t0);
+    osc.frequency.linearRampToValueAtTime(155, t0 + dur * 0.4);
+    osc.frequency.linearRampToValueAtTime(130, t0 + dur);
+    gOsc.gain.setValueAtTime(0.01, t0);
+    gOsc.gain.linearRampToValueAtTime(vol * 0.7, t0 + 0.05);
+    gOsc.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gOsc).connect(this.master);
+    osc.start(t0);
+    osc.stop(t0 + dur);
+
+    const n = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let filter = 0;
+    for (let i = 0; i < n; i++) {
+      filter = filter * 0.85 + (Math.random() * 2 - 1) * 0.15;
+      const env = Math.sin((i / n) * Math.PI);
+      d[i] = filter * env;
+    }
+    const s = this.ctx.createBufferSource(), gNoise = this.ctx.createGain();
+    s.buffer = buf;
+    gNoise.gain.setValueAtTime(vol * 0.6, t0);
+    s.connect(gNoise).connect(this.master);
+    s.start(t0);
+    return { osc, gain: gOsc, windSource: s };
+  }
+
+  mailboxCrunch(vol = 0.35) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    this.tone({ type: 'square', f0: 650, f1: 160, dur: 0.12, vol: 0.3 * vol, slapback: true });
+    this.tone({ type: 'triangle', f0: 920, f1: 220, dur: 0.09, vol: 0.25 * vol });
+
+    const dur = 0.22;
+    const n = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) {
+      const crackle = Math.random() > 0.6 ? (Math.random() * 2 - 1) : 0;
+      d[i] = crackle * (1 - i / n) ** 2;
+    }
+    const s = this.ctx.createBufferSource(), g = this.ctx.createGain();
+    s.buffer = buf;
+    g.gain.setValueAtTime(vol * 0.4, t0);
+    s.connect(g).connect(this.master);
+    s.start(t0);
+    return { source: s, gain: g };
+  }
+
+  rocketHiss(dur = 0.6, vol = 0.35) {
+    if (!this.ctx || !this.enabled) return null;
+    const t0 = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gOsc = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, t0);
+    osc.frequency.exponentialRampToValueAtTime(1900, t0 + dur);
+    gOsc.gain.setValueAtTime(0.05 * vol, t0);
+    gOsc.gain.linearRampToValueAtTime(vol, t0 + dur * 0.8);
+    gOsc.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gOsc).connect(this.master);
+    osc.start(t0);
+    osc.stop(t0 + dur);
+
+    const n = Math.floor(this.ctx.sampleRate * dur);
+    const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    let filter = 0;
+    for (let i = 0; i < n; i++) {
+      const progress = i / n;
+      filter = filter * 0.7 + (Math.random() * 2 - 1) * 0.3;
+      d[i] = filter * (progress ** 1.5);
+    }
+    const s = this.ctx.createBufferSource(), gNoise = this.ctx.createGain();
+    s.buffer = buf;
+    gNoise.gain.setValueAtTime(vol * 0.5, t0);
+    s.connect(gNoise).connect(this.master);
+    s.start(t0);
+    return { osc, gain: gOsc, noiseSource: s };
+  }
+
   setMute(muted) {
     this.enabled = !muted;
     if (this.master) this.master.gain.value = this.enabled ? 0.35 : 0;
@@ -329,3 +459,5 @@ export class Sfx {
     return; // Cut: high-pitch alarm beeps removed per Cherie 2026-10-16
   }
 }
+
+export const sfx = new Sfx();

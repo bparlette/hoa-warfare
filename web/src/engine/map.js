@@ -7,6 +7,62 @@ export const BOUNDS = { minX: -44, maxX: 44, minZ: -48, maxZ: 48 };
 export const COURT = { x: 0, z: 0, r: 13 };
 export const STREET = { minX: -5, maxX: 5, minZ: 0, maxZ: 48 };
 
+export const SPRINKLER_NODES = [
+  [-18, -4], [-18, 4],    // House 0 lawn (west)
+  [18, -4], [18, 4],      // House 1 lawn (east)
+  [-15, -16], [-21, -16], // House 2 lawn (northwest)
+  [15, -16], [21, -16],   // House 3 lawn (northeast)
+  [-13, 20], [-13, 28],   // House 4 lawn (southwest)
+  [13, 20], [13, 28],     // House 5 lawn (southeast)
+];
+
+export const MAILBOX_PROPS = [
+  { id: 'mailbox_1', kind: 'mailbox', pos: { x: -6.2, y: 0, z: 10 }, hp: 25, maxHp: 25, destroyed: false },
+  { id: 'mailbox_2', kind: 'mailbox', pos: { x: 6.2, y: 0, z: 12 }, hp: 25, maxHp: 25, destroyed: false },
+  { id: 'mailbox_3', kind: 'mailbox', pos: { x: -13.5, y: 0, z: 16 }, hp: 25, maxHp: 25, destroyed: false },
+  { id: 'mailbox_4', kind: 'mailbox', pos: { x: 13.5, y: 0, z: -16 }, hp: 25, maxHp: 25, destroyed: false },
+];
+
+export const GLASS_TABLE_PROPS = [
+  { id: 'glassTable_1', kind: 'glassTable', pos: { x: 0, y: 0, z: -32 }, hp: 20, maxHp: 20, destroyed: false },
+  { id: 'glassTable_2', kind: 'glassTable', pos: { x: -28, y: 0, z: -14 }, hp: 20, maxHp: 20, destroyed: false },
+  { id: 'glassTable_3', kind: 'glassTable', pos: { x: 28, y: 0, z: -14 }, hp: 20, maxHp: 20, destroyed: false },
+];
+
+export const ROCKET_PROPANE_PROPS = [
+  { id: 'propane_1', kind: 'rocketPropane', pos: { x: -2.0, y: 0.5, z: -34 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+  { id: 'propane_2', kind: 'rocketPropane', pos: { x: -25, y: 0.5, z: -15 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+  { id: 'propane_3', kind: 'rocketPropane', pos: { x: 25, y: 0.5, z: -15 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+];
+
+export function createSprinklers() {
+  return SPRINKLER_NODES.map(([x, z], id) => Object.assign([x, z], {
+    id: `sprinkler_${id + 1}`,
+    index: id,
+    kind: 'sprinkler',
+    pos: { x, y: 0, z },
+    x,
+    y: 0,
+    z,
+    radius: 2.5,
+    arc: Math.PI,
+    active: true,
+    isSprinkler: true,
+  }));
+}
+
+export const sprinklers = createSprinklers();
+export const SPRINKLERS = sprinklers;
+export const mailboxes = MAILBOX_PROPS.map(m => ({ ...m, pos: { ...m.pos } }));
+export const MAILBOXES = mailboxes;
+export const glassTables = GLASS_TABLE_PROPS.map(g => ({ ...g, pos: { ...g.pos } }));
+export const GLASS_TABLES = glassTables;
+export const glassPatioTables = glassTables;
+export const rocketPropane = ROCKET_PROPANE_PROPS.map(p => ({ ...p, pos: { ...p.pos } }));
+export const ROCKET_PROPANE = rocketPropane;
+export const rocketPropanes = rocketPropane;
+export const destructibles = [...mailboxes, ...glassTables, ...rocketPropane];
+
 export function buildCulDeSac() {
   const boxes = [];
   const box = (x, z, w, d, h, kind, extra = {}) => {
@@ -51,8 +107,19 @@ export function buildCulDeSac() {
   box(-9, -14, 5, 1.2, 1.6, 'hedge');
   box(9, -14, 5, 1.2, 1.6, 'hedge');
   box(11.5, 7.5, 0.7, 0.7, 1.1, 'trash');
-  box(-12, -4, 0.7, 0.7, 1.1, 'trash');
-  for (const [x, z] of [[-6.2, 10], [6.2, 12], [-13.5, 16], [13.5, -16]]) box(x, z, 0.35, 0.35, 1.2, 'mailbox');
+  const mailboxes = MAILBOX_PROPS.map(m => ({ ...m, pos: { ...m.pos } }));
+  const glassTables = GLASS_TABLE_PROPS.map(g => ({ ...g, pos: { ...g.pos } }));
+  const rocketPropane = ROCKET_PROPANE_PROPS.map(p => ({ ...p, pos: { ...p.pos } }));
+  const destructibles = [...mailboxes, ...glassTables, ...rocketPropane];
+
+  for (const mb of mailboxes) {
+    box(mb.pos.x, mb.pos.z, 0.35, 0.35, 1.2, 'mailbox', {
+      id: mb.id,
+      hp: mb.hp,
+      maxHp: mb.maxHp,
+      destroyed: mb.destroyed,
+    });
+  }
 
   // Street + south spawn cover
   box(3, 30, 2, 4.4, 1.5, 'car', { color: '#f2f2f2', isCar: true });
@@ -71,24 +138,7 @@ export function buildCulDeSac() {
   trees.forEach(([x, z]) => box(x, z, 0.6, 0.6, 3.2, 'tree'));
 
   // Lawn sprinkler nodes placed across residential front lawns
-  const sprinklerCoords = [
-    [-18, -4], [-18, 4],    // House 0 lawn (west)
-    [18, -4], [18, 4],      // House 1 lawn (east)
-    [-15, -16], [-21, -16], // House 2 lawn (northwest)
-    [15, -16], [21, -16],   // House 3 lawn (northeast)
-    [-13, 20], [-13, 28],   // House 4 lawn (southwest)
-    [13, 20], [13, 28],     // House 5 lawn (southeast)
-  ];
-  const sprinklers = sprinklerCoords.map(([x, z], id) => Object.assign([x, z], {
-    id,
-    x,
-    y: 0,
-    z,
-    radius: 4,
-    arc: Math.PI,
-    active: true,
-    isSprinkler: true,
-  }));
+  const sprinklers = createSprinklers();
 
   // Spawns: team 0 = south street end, team 1 = north greenbelt
   const spawns = {
@@ -121,8 +171,22 @@ export function buildCulDeSac() {
       }
     }
   }
-
-  return { boxes, spawns, nodes, bounds: BOUNDS, court: COURT, street: STREET, trees, sprinklers, sprinklerNodes: sprinklers };
+  return {
+    boxes,
+    spawns,
+    nodes,
+    bounds: BOUNDS,
+    court: COURT,
+    street: STREET,
+    trees,
+    sprinklers,
+    sprinklerNodes: sprinklers,
+    mailboxes,
+    glassTables,
+    rocketPropane,
+    rocketPropanes: rocketPropane,
+    destructibles,
+  };
 }
 
 /** True if a disc of `radius` can slide from (ax,az) to (bx,bz) without hitting a box taller than `stepH`. */
@@ -208,15 +272,6 @@ export function nearestNode(nodes, boxes, x, z) {
   }
   return best;
 }
-
-export const SPRINKLER_NODES = [
-  [-18, -4], [-18, 4],    // House 0 lawn (west)
-  [18, -4], [18, 4],      // House 1 lawn (east)
-  [-15, -16], [-21, -16], // House 2 lawn (northwest)
-  [15, -16], [21, -16],   // House 3 lawn (northeast)
-  [-13, 20], [-13, 28],   // House 4 lawn (southwest)
-  [13, 20], [13, 28],     // House 5 lawn (southeast)
-];
 
 export function buildPickleballClub() {
   const base = buildCulDeSac();

@@ -83,7 +83,7 @@ function wrap(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a 
 function gauss(rng) { return Math.sqrt(-2 * Math.log(rng() + 1e-12)) * Math.cos(2 * Math.PI * rng()); }
 
 export function emptyInput() {
-  return { forward: 0, right: 0, jump: false, sprint: false, fire: false, reload: false, melee: false, grenade: false, switchSlot: null, yaw: 0, pitch: 0 };
+  return { forward: 0, right: 0, jump: false, sprint: false, fire: false, reload: false, melee: false, grenade: false, interact: false, switchSlot: null, yaw: 0, pitch: 0 };
 }
 
 export class Sim {
@@ -125,7 +125,28 @@ export class Sim {
     this.nextObjectId = 0;
     this.helicopters = [];
     this.mowers = [];
+    this.vehicles = [];
+    this.spawnMower();
     this.mode = createMode(mode, this);
+  }
+
+  spawnMower({ id = 'mower_driveable', pos = { x: -10, y: 0, z: 6 }, yaw = 0, speed = 0, maxSpeed = 14, reverseSpeed = -5, hp = 250, maxHp = 250 } = {}) {
+    const mower = {
+      id,
+      pos: { ...pos },
+      yaw,
+      speed,
+      maxSpeed,
+      reverseSpeed,
+      driverId: null,
+      hp,
+      maxHp,
+      isMower: true,
+      alive: true,
+    };
+    mower.takeDamage = (amount, attacker, opts) => this.damageVehicle(mower, amount, attacker, opts);
+    this.vehicles.push(mower);
+    return mower;
   }
 
   addBot({ id, name, team, faction, loadout = 'default' } = {}) {
@@ -148,6 +169,7 @@ export class Sim {
       activeSlot: 'primary', ammoBank: {},
       pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 }, yaw: 0, pitch: 0,
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
+      inVehicle: null,
       ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
       onGround: true, kills: 0, deaths: 0, streak: 0, spawnProtectUntil: 0, lowHealthSaid: false,
       lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity, lastShotAt: -Infinity,
@@ -173,6 +195,9 @@ export class Sim {
 
   start() {
     this.started = true;
+    if (!this.vehicles.some(v => v.id === 'mower_driveable')) {
+      this.spawnMower();
+    }
     for (const a of this.actors) this.respawn(a);
     this.assignRoles();
     this.mode.onStart();
@@ -244,6 +269,7 @@ export class Sim {
   }
 
   respawn(a, { roundReset = false } = {}) {
+    if (a.inVehicle) this.exitVehicle(a);
     const best = this.pickSpawn(a);
     Object.assign(a.pos, { x: best[0], y: 0, z: best[1] });
     Object.assign(a.vel, { x: 0, y: 0, z: 0 });
@@ -257,6 +283,54 @@ export class Sim {
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
     this.emit({ type: 'spawn', id: a.id, roundReset });
+  }
+
+  enterVehicle(actor, vehicleId = null) {
+    const a = typeof actor === 'string' ? this.byId.get(actor) : actor;
+    if (!a || !a.alive || a.inVehicle) return false;
+    let mower = null;
+    if (vehicleId) {
+      mower = this.vehicles.find(v => v.id === vehicleId);
+    } else {
+      let bestDist = Infinity;
+      for (const v of this.vehicles) {
+        if (!v.alive || v.driverId) continue;
+        const d = Math.hypot(v.pos.x - a.pos.x, v.pos.z - a.pos.z);
+        if (d <= 3.0 && d < bestDist) {
+          bestDist = d;
+          mower = v;
+        }
+      }
+    }
+    if (!mower || !mower.alive || mower.driverId) return false;
+    const dist = Math.hypot(mower.pos.x - a.pos.x, mower.pos.z - a.pos.z);
+    if (dist > 3.0) return false;
+
+    mower.driverId = a.id;
+    a.inVehicle = mower.id;
+    this.emit({ type: 'vehicleEnter', actorId: a.id, vehicleId: mower.id });
+    return true;
+  }
+
+  exitVehicle(actor) {
+    const a = typeof actor === 'string' ? this.byId.get(actor) : actor;
+    if (!a) return false;
+    const vehicleId = a.inVehicle;
+    const mower = this.vehicles.find(v => v.id === vehicleId || v.driverId === a.id);
+    if (mower) {
+      mower.driverId = null;
+      const rx = Math.cos(mower.yaw);
+      const rz = -Math.sin(mower.yaw);
+      a.pos.x = mower.pos.x + rx * 1.5;
+      a.pos.y = mower.pos.y;
+      a.pos.z = mower.pos.z + rz * 1.5;
+      a.vel.x = 0;
+      a.vel.y = 0;
+      a.vel.z = 0;
+    }
+    a.inVehicle = null;
+    this.emit({ type: 'vehicleExit', actorId: a.id, vehicleId: mower?.id ?? vehicleId });
+    return true;
   }
 
   activeWeapon(a) {
@@ -365,7 +439,14 @@ export class Sim {
       if (!h.alive) continue;
       const t = raySphere(o, dir, h.pos, 2.5, best.t);
       if (t !== null && t < best.t) {
-        best = { t, kind: 'helicopter', actor: null, helicopter: h, head: false };
+        best = { t, kind: 'helicopter', actor: null, helicopter: h, vehicle: null, head: false };
+      }
+    }
+    for (const v of this.vehicles) {
+      if (!v.alive || v.driverId === ignoreId) continue;
+      const t = raySphere(o, dir, { x: v.pos.x, y: v.pos.y + 0.6, z: v.pos.z }, 1.2, best.t);
+      if (t !== null && t < best.t) {
+        best = { t, kind: 'vehicle', actor: null, helicopter: null, vehicle: v, head: false };
       }
     }
     best.point = { x: o.x + dir.x * best.t, y: o.y + dir.y * best.t, z: o.z + dir.z * best.t };
@@ -440,7 +521,7 @@ export class Sim {
       const yaw = baseYaw + gauss(this.rng) * spread, pitch = basePitch + gauss(this.rng) * spread;
       const dir = forwardOf(yaw, pitch);
       const hit = this.raycast(o, dir, w.range, a.id);
-      this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? hit.helicopter?.id ?? null, head: hit.head, kind: hit.kind });
+      this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? hit.helicopter?.id ?? hit.vehicle?.id ?? null, head: hit.head, kind: hit.kind });
       if (hit.actor && hit.actor.team !== a.team) {
         let dmg = hit.head ? w.damage.head : w.damage.body;
         if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
@@ -449,6 +530,10 @@ export class Sim {
         let dmg = w.damage.body;
         if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
         this.damageHelicopter(hit.helicopter, dmg, a, { dir, weaponId: w.id });
+      } else if (hit.vehicle && hit.vehicle.alive) {
+        let dmg = hit.head ? w.damage.head : w.damage.body;
+        if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
+        this.damageVehicle(hit.vehicle, dmg, a, { dir, weaponId: w.id });
       } else if (hit.box?.isCar && now >= (hit.box.alarmUntil || 0)) {
         hit.box.alarmUntil = now + 8;
         this.emit({ type: 'carAlarm', id: a.id, pos: { ...hit.point } });
@@ -545,10 +630,59 @@ export class Sim {
         const dir = { x: (c.x - g.pos.x) / (d || 1), y: 0.6, z: (c.z - g.pos.z) / (d || 1) };
         this.damage(e, g.def.damage * (1 - d / g.def.radius), owner, { explosive: true, dir, weaponId: g.weaponId });
       }
+      for (const v of this.vehicles) {
+        if (!v.alive) continue;
+        const c = { x: v.pos.x, y: v.pos.y + 0.6, z: v.pos.z };
+        const d = Math.hypot(c.x - g.pos.x, c.y - g.pos.y, c.z - g.pos.z);
+        if (d >= g.def.radius) continue;
+        const dir = { x: (c.x - g.pos.x) / (d || 1), y: 0.6, z: (c.z - g.pos.z) / (d || 1) };
+        this.damageVehicle(v, g.def.damage * (1 - d / g.def.radius), owner, { explosive: true, dir, weaponId: g.weaponId });
+      }
+    }
+  }
+
+  damageVehicle(v, amount, attacker = null, { dir = null, explosive = false, weaponId = null } = {}) {
+    if (!v.alive) return;
+    v.hp -= amount;
+    this.emit({ type: 'vehicleHurt', id: v.id, hp: Math.max(0, v.hp), maxHp: v.maxHp, attackerId: attacker?.id ?? null, amount });
+    if (v.hp <= 0) {
+      v.hp = 0;
+      v.alive = false;
+      const boomPos = { ...v.pos };
+      const driver = v.driverId ? this.byId.get(v.driverId) : null;
+      if (driver) {
+        this.exitVehicle(driver);
+        if (driver.alive) {
+          driver.spawnProtectUntil = 0;
+          this.damage(driver, 100, attacker, { explosive: true, weaponId: 'mowerExplosion' });
+        }
+      }
+      this.emit({
+        type: 'vehicleDestroyed',
+        id: v.id,
+        vehicle: 'mower',
+        killerId: attacker?.id ?? null,
+        pos: boomPos,
+      });
+      this.emit({ type: 'explosion', id: attacker?.id ?? v.id, pos: boomPos });
+
+      // Radial damage (100 damage in 5m)
+      for (const e of this.actors) {
+        if (!e.alive || e === driver) continue;
+        const d = Math.hypot(e.pos.x - boomPos.x, (e.pos.y || 0) - boomPos.y, e.pos.z - boomPos.z);
+        if (d <= 5) {
+          const dmg = 100 * (1 - d / 5);
+          this.damage(e, dmg, attacker, { explosive: true, weaponId: 'mowerExplosion' });
+        }
+      }
     }
   }
 
   damage(target, amount, attacker, { headshot = false, melee = false, explosive = false, dir = null, weaponId = null } = {}) {
+    if (!target) return;
+    if (target.isMower || (typeof target.hp === 'number' && target.driverId !== undefined)) {
+      return this.damageVehicle(target, amount, attacker, { headshot, melee, explosive, dir, weaponId });
+    }
     if (!target.alive || this.time < target.spawnProtectUntil || this.over) return;
     const dmgMult = typeof target.damageTakenMult === 'number' ? target.damageTakenMult : 1;
     const effectiveAmount = amount * dmgMult;
@@ -572,6 +706,9 @@ export class Sim {
     }
     target.alive = false;
     target.hp = 0;
+    if (target.inVehicle) {
+      this.exitVehicle(target);
+    }
     target.deaths++;
     target.deathAt = this.time;
     target.respawnAt = this.time + this.mode.respawnDelay(target);
@@ -783,8 +920,18 @@ export class Sim {
         const w = this.activeWeapon(a);
         if (w) a.ammo = w.mag;
       }
-      this.move(a, dt);
+      if (!a.inVehicle) {
+        this.move(a, dt);
+      }
       const inp = a.input;
+      if (inp.interact) {
+        if (a.inVehicle) {
+          this.exitVehicle(a);
+        } else {
+          this.enterVehicle(a);
+        }
+        if (!a.isBot) inp.interact = false;
+      }
       if (inp.switchSlot) {
         this.switchWeapon(a, inp.switchSlot);
         if (!a.isBot) inp.switchSlot = null;
@@ -806,14 +953,108 @@ export class Sim {
     this.stepGrenades(dt);
     this.updateHelicopters(dt);
     this.updateMowers(dt);
+    this.updateVehicles(dt);
     this.mode.update(dt);
     if (now >= this.timeLimit) this.end(this.score[0] === this.score[1] ? null : this.score[0] > this.score[1] ? 0 : 1);
+  }
+
+  updateVehicles(dt) {
+    for (const v of this.vehicles) {
+      if (!v.alive) continue;
+      if (v.hp <= 0) {
+        this.damageVehicle(v, 0);
+        continue;
+      }
+      if (v.driverId) {
+        const driver = this.byId.get(v.driverId);
+        if (!driver || !driver.alive) {
+          v.driverId = null;
+          if (driver) driver.inVehicle = null;
+          continue;
+        }
+
+        const inp = driver.input;
+        const targetSpeed = inp.forward > 0
+          ? inp.forward * v.maxSpeed
+          : inp.forward < 0
+            ? inp.forward * Math.abs(v.reverseSpeed)
+            : 0;
+
+        const accel = 18;
+        const decel = 24;
+        if (targetSpeed > v.speed) {
+          v.speed = Math.min(targetSpeed, v.speed + accel * dt);
+        } else if (targetSpeed < v.speed) {
+          v.speed = Math.max(targetSpeed, v.speed - decel * dt);
+        }
+
+        const steerRate = 2.4;
+        if (inp.right !== 0) {
+          v.yaw = wrap(v.yaw - inp.right * steerRate * dt);
+        }
+        v.steeringAngle = -inp.right * 0.5;
+
+        const fx = -Math.sin(v.yaw);
+        const fz = -Math.cos(v.yaw);
+        v.pos.x += fx * v.speed * dt;
+        v.pos.z += fz * v.speed * dt;
+
+        if (this.map?.bounds) {
+          const { minX, maxX, minZ, maxZ } = this.map.bounds;
+          v.pos.x = Math.max(minX + 0.8, Math.min(maxX - 0.8, v.pos.x));
+          v.pos.z = Math.max(minZ + 0.8, Math.min(maxZ - 0.8, v.pos.z));
+        }
+
+        driver.pos.x = v.pos.x;
+        driver.pos.y = v.pos.y;
+        driver.pos.z = v.pos.z;
+        driver.yaw = v.yaw;
+        driver.vel.x = fx * v.speed;
+        driver.vel.z = fz * v.speed;
+
+        if (v.speed > 4) {
+          v.roadkillCooldowns ??= new Map();
+          for (const e of this.actors) {
+            if (!e.alive || e.id === driver.id) continue;
+            if (e.team !== undefined && driver.team !== undefined && e.team === driver.team) continue;
+            const d = Math.hypot(e.pos.x - v.pos.x, e.pos.z - v.pos.z);
+            if (d < 1.8) {
+              const lastHit = v.roadkillCooldowns.get(e.id);
+              if (lastHit !== undefined && this.time - lastHit < 0.5) continue;
+              v.roadkillCooldowns.set(e.id, this.time);
+
+              this.damage(e, 85, driver, { dir: { x: fx, y: 0.2, z: fz }, weaponId: 'mower' });
+
+              e.vel.x = fx * 16;
+              e.vel.y = 4;
+              e.vel.z = fz * 16;
+              e.onGround = false;
+
+              this.emit({ type: 'roadkill', killerId: driver.id, targetId: e.id, vehicle: 'mower' });
+            }
+          }
+        }
+      } else {
+        if (Math.abs(v.speed) > 0.01) {
+          const decel = 15;
+          if (v.speed > 0) v.speed = Math.max(0, v.speed - decel * dt);
+          else v.speed = Math.min(0, v.speed + decel * dt);
+          const fx = -Math.sin(v.yaw);
+          const fz = -Math.cos(v.yaw);
+          v.pos.x += fx * v.speed * dt;
+          v.pos.z += fz * v.speed * dt;
+        } else {
+          v.speed = 0;
+        }
+      }
+    }
   }
 
   snapshot() {
     const snap = this.actors.map(a => ({
       id: a.id, x: a.pos.x, y: a.pos.y, z: a.pos.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive,
       speed: Math.hypot(a.vel.x, a.vel.z), firing: this.time < a.firingUntil, onGround: a.onGround,
+      inVehicle: a.inVehicle || null,
       hitAgo: a.hitAgo ?? Infinity,
       hitDir: a.hitDir ? { x: a.hitDir.x, y: a.hitDir.y, z: a.hitDir.z } : { x: 0, y: 0, z: 0 },
     }));
@@ -839,6 +1080,22 @@ export class Sim {
       y: m.pos.y,
       z: m.pos.z,
       angle: m.angle,
+    }));
+    snap.vehicles = this.vehicles.map(v => ({
+      id: v.id,
+      pos: { ...v.pos },
+      x: v.pos.x,
+      y: v.pos.y,
+      z: v.pos.z,
+      yaw: v.yaw,
+      speed: v.speed,
+      maxSpeed: v.maxSpeed,
+      reverseSpeed: v.reverseSpeed,
+      driverId: v.driverId,
+      hp: v.hp,
+      maxHp: v.maxHp,
+      isMower: v.isMower,
+      alive: v.alive,
     }));
     return snap;
   }

@@ -759,11 +759,31 @@ class Game {
       const customName = ($('optName')?.value || params.get('name') || '').trim();
       const myName = customName ? playerName() : 'You';
       this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, isBot: state.spectate });
-      for (let i = 0; i < 11; i++) {
-        const team = i < 5 ? 0 : 1;
-        const botFaction = pickFaction(team);
-        const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
-        this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
+      // Determine unified rival faction for enemy team (Team 1)
+      let enemyFaction = factions[state.faction]?.brief?.rivalsFirst?.find(id => pool.includes(id));
+      if (!enemyFaction) {
+        const match = weeklyRivalry && weeklyRivalry.includes(state.faction) ? weeklyRivalry : null;
+        if (match) enemyFaction = match[0] === state.faction ? match[1] : match[0];
+      }
+      if (!enemyFaction || !pool.includes(enemyFaction) || enemyFaction === state.faction) {
+        const candidates = pool.filter(id => id !== state.faction);
+        enemyFaction = candidates[Math.floor(this.rng() * candidates.length)] || 'hoaDads';
+      }
+
+      if (state.mode === 'loneWolf') {
+        // Lone Wolf: 1 Player on Team 0 vs 6 Rival Bots on Team 1
+        for (let i = 0; i < 6; i++) {
+          const botLoadout = FACTION_LOADOUTS[enemyFaction]?.loadout || 'default';
+          this.sim.addActor({ id: 'b' + i, name: names[i], team: 1, faction: enemyFaction, loadout: botLoadout, isBot: true });
+        }
+      } else {
+        // Unified Faction Wars: Team 0 is all player faction, Team 1 is all rival faction
+        for (let i = 0; i < 11; i++) {
+          const team = i < 5 ? 0 : 1;
+          const botFaction = team === 0 ? state.faction : enemyFaction;
+          const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
+          this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
+        }
       }
     }
     for (const a of this.sim.actors) renderer.ensureCharacter(a, this.me.team);

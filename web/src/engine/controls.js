@@ -126,6 +126,7 @@ export class Controls {
       if (e.code === 'KeyR') p.reload = true;
       if (e.code === 'KeyF' || e.code === 'KeyV') p.melee = true;
       if (e.code === 'KeyG') p.grenade = true;
+      if (e.code === 'KeyE') p.interact = true;
       if (e.code === 'KeyQ') p.switchSlot = 'toggle';
       if (e.code === 'Digit1') p.switchSlot = 'primary';
       if (e.code === 'Digit2') p.switchSlot = 'secondary';
@@ -188,7 +189,20 @@ export class Controls {
     root.addEventListener('pointerup', end);
     root.addEventListener('pointercancel', end);
 
-    // Buttons: data-t="fire|jump|reload|melee|grenade|swap|board|pause". FIRE also aims while held (drag).
+    // Buttons: data-t="fire|jump|reload|melee|grenade|swap|board|pause|interact". FIRE also aims while held (drag).
+    let interactBtn = root.querySelector('#touchInteract') || root.querySelector('[data-t="interact"]');
+    if (!interactBtn && typeof document !== 'undefined') {
+      interactBtn = document.createElement('button');
+      interactBtn.id = 'touchInteract';
+      interactBtn.className = 't-btn t-interact';
+      interactBtn.dataset.t = 'interact';
+      interactBtn.setAttribute('aria-label', 'Drive / Exit Mower');
+      interactBtn.textContent = '🚜';
+      interactBtn.style.cssText = 'display:none;position:absolute;bottom:115px;right:155px;width:56px;height:56px;border-radius:50%;background:rgba(46,125,50,0.9);color:#ffeb3b;font-size:24px;border:2px solid #ffeb3b;z-index:90;touch-action:none;align-items:center;justify-content:center;';
+      root.appendChild(interactBtn);
+    }
+    this.touchInteractBtn = interactBtn;
+
     const touchButtons = new Set([
       ...root.querySelectorAll('[data-t]'),
       ...(typeof document !== 'undefined' ? document.querySelectorAll('[data-t="board"]') : []),
@@ -255,7 +269,7 @@ export class Controls {
   }
 
   /** Write this frame's intent into actor.input. */
-  apply(a, dt) {
+  apply(a, dt, sim = null) {
     const k = this.keys, inp = a.input, pad = this.pad, t = this.touch;
     let fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0);
     let right = (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) - (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0);
@@ -293,8 +307,18 @@ export class Controls {
     if (p.reload) inp.reload = true;
     if (p.melee) inp.melee = true;
     if (p.grenade) inp.grenade = true;
+    if (p.interact) {
+      inp.interact = true;
+      const s = sim || this.sim;
+      if (s && typeof s.enterVehicle === 'function') {
+        if (a.inVehicle) s.exitVehicle(a);
+        else s.enterVehicle(a);
+      }
+    }
     if (p.switchSlot) inp.switchSlot = p.switchSlot === 'toggle' ? (a.activeSlot === 'primary' ? 'secondary' : 'primary') : p.switchSlot;
     this.pending = {};
+    const vechs = sim?.vehicles || this.sim?.vehicles;
+    if (vechs) this.updateVehicleInteraction(a, vechs);
     if (!a.alive) this.resetLook(a.team === 0 ? 0 : Math.PI);
     if (this.lockTarget && a.alive) {
       let dyaw = this.lockTarget.yaw - this.yaw;
@@ -306,6 +330,17 @@ export class Controls {
     }
     inp.yaw = this.yaw;
     inp.pitch = this.pitch;
+  }
+
+  updateVehicleInteraction(actor, vehicles = []) {
+    if (!this.touchInteractBtn || !actor) return;
+    const isNearOrIn = actor.inVehicle || vehicles.some(v => v.alive && (!v.driverId || v.driverId === actor.id) && Math.hypot(v.pos.x - actor.pos.x, v.pos.z - actor.pos.z) <= 3.0);
+    if (isNearOrIn) {
+      this.touchInteractBtn.style.display = 'flex';
+      this.touchInteractBtn.textContent = actor.inVehicle ? '🚪' : '🚜';
+    } else {
+      this.touchInteractBtn.style.display = 'none';
+    }
   }
 }
 

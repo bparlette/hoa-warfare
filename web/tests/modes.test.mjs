@@ -272,3 +272,24 @@ test('radar renders patrolZone and casserole mode objectives', () => {
   radarCtf.render(simCtf, a1);
   assert.ok(opsCtf.some(op => op[0] === 'fillRect'), 'radar renders casserole dishes');
 });
+
+test('LoneWolf: onStart buffs player HP to 200 and kill siphons adrenaline heal', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(401), mode: 'loneWolf' });
+  const player = sim.addActor({ id: 'you', team: 0, faction: 'karens', isBot: false });
+  const enemy = sim.addActor({ id: 'b0', team: 1, faction: 'hoaDads', isBot: true });
+  sim.start();
+
+  assert.equal(player.maxHp, 200, 'Lone player should have 200 max HP');
+  assert.equal(player.hp, 200, 'Lone player should start at 200 HP');
+  assert.equal(sim.mode.hud(player), 'DEFEND YOUR LAWN · 1 VS 6', 'HUD should display lone wolf indicator');
+
+  // Damage player to 100 HP
+  player.hp = 100;
+
+  // Player kills enemy
+  sim.mode.onKill({ type: 'kill' }, player, enemy);
+
+  assert.equal(player.hp, 135, 'Kill should siphon +35 HP adrenaline heal');
+  assert.equal(sim.score[0], 1, 'Player team should receive 1 point');
+});
+

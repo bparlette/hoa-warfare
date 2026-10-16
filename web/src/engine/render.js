@@ -102,6 +102,7 @@ export class Renderer {
 
     this.characters = new Map();
     this.helicopterMeshes = new Map();
+    this.vehicleMeshes = new Map();
     this.ragdolls = [];
     this.fx = [];
     this.casings = [];
@@ -743,6 +744,290 @@ export class Renderer {
     }
   }
 
+  buildDriveableMowerMesh() {
+    const root = new THREE.Group();
+
+    // 1. Chassis / frame: dark steel base
+    const chassisMat = new THREE.MeshLambertMaterial({ color: '#2a2a2a' });
+    const chassis = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.18, 1.6), chassisMat);
+    chassis.position.set(0, 0.28, 0);
+    chassis.castShadow = true;
+    root.add(chassis);
+
+    // Foot rests / running boards
+    const footrestMat = new THREE.MeshLambertMaterial({ color: '#1f1f1f' });
+    const footrests = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.05, 0.7), footrestMat);
+    footrests.position.set(0, 0.22, 0.05);
+    root.add(footrests);
+
+    // 2. Suburban green hood
+    const greenMat = new THREE.MeshLambertMaterial({ color: '#367c2b' }); // John Deere suburban green
+    const hood = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.42, 0.8), greenMat);
+    hood.position.set(0, 0.48, -0.38);
+    hood.castShadow = true;
+    root.add(hood);
+
+    // Sloped nose
+    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.32, 0.22), greenMat);
+    nose.position.set(0, 0.4, -0.8);
+    root.add(nose);
+
+    // Front headlights and grill
+    const grillMat = new THREE.MeshLambertMaterial({ color: '#181818' });
+    const grill = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.24, 0.04), grillMat);
+    grill.position.set(0, 0.38, -0.92);
+    root.add(grill);
+
+    const lightMat = new THREE.MeshBasicMaterial({ color: '#fff9b0' });
+    const leftLight = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.05), lightMat);
+    leftLight.position.set(-0.2, 0.44, -0.92);
+    const rightLight = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.05), lightMat);
+    rightLight.position.set(0.2, 0.44, -0.92);
+    root.add(leftLight, rightLight);
+
+    // Rear body cowl
+    const rearBody = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.3, 0.6), greenMat);
+    rearBody.position.set(0, 0.38, 0.42);
+    root.add(rearBody);
+
+    // 3. Black tractor tires with yellow rims
+    const tireMat = new THREE.MeshLambertMaterial({ color: '#151515' });
+    const rimMat = new THREE.MeshLambertMaterial({ color: '#ffde00' }); // John Deere yellow
+
+    const makeWheel = (tireRadius, tireWidth, rimRadius) => {
+      const wheelGroup = new THREE.Group();
+      const tireGeo = new THREE.CylinderGeometry(tireRadius, tireRadius, tireWidth, 14);
+      tireGeo.rotateZ(Math.PI / 2);
+      const tire = new THREE.Mesh(tireGeo, tireMat);
+      tire.castShadow = true;
+      wheelGroup.add(tire);
+
+      const rimGeo = new THREE.CylinderGeometry(rimRadius, rimRadius, tireWidth + 0.02, 12);
+      rimGeo.rotateZ(Math.PI / 2);
+      const rim = new THREE.Mesh(rimGeo, rimMat);
+      wheelGroup.add(rim);
+
+      const capGeo = new THREE.CylinderGeometry(rimRadius * 0.35, rimRadius * 0.35, tireWidth + 0.04, 8);
+      capGeo.rotateZ(Math.PI / 2);
+      const cap = new THREE.Mesh(capGeo, chassisMat);
+      wheelGroup.add(cap);
+
+      return wheelGroup;
+    };
+
+    const frontL = makeWheel(0.2, 0.14, 0.12);
+    frontL.position.set(-0.46, 0.2, -0.55);
+    const frontR = makeWheel(0.2, 0.14, 0.12);
+    frontR.position.set(0.46, 0.2, -0.55);
+
+    const rearL = makeWheel(0.32, 0.22, 0.18);
+    rearL.position.set(-0.48, 0.32, 0.45);
+    const rearR = makeWheel(0.32, 0.22, 0.18);
+    rearR.position.set(0.48, 0.32, 0.45);
+
+    root.add(frontL, frontR, rearL, rearR);
+
+    // 4. Mower cutting deck & spinning deck blades underneath
+    const deckMat = new THREE.MeshLambertMaterial({ color: '#ffde00' });
+    const deckHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.58, 0.12, 16), deckMat);
+    deckHousing.position.set(0, 0.14, -0.05);
+    root.add(deckHousing);
+
+    const chute = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.08, 0.3), deckMat);
+    chute.position.set(0.62, 0.12, -0.05);
+    chute.rotation.z = -0.2;
+    root.add(chute);
+
+    // Spinning deck blades
+    const bladeGroup = new THREE.Group();
+    bladeGroup.position.set(0, 0.08, -0.05);
+    const bladeMat = new THREE.MeshLambertMaterial({ color: '#d0d0d0' });
+    const blade1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.015, 0.08), bladeMat);
+    const blade2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.015, 0.9), bladeMat);
+    bladeGroup.add(blade1, blade2);
+    root.add(bladeGroup);
+
+    // 5. Steering wheel and column
+    const dash = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.28, 0.22), greenMat);
+    dash.position.set(0, 0.58, 0.02);
+    dash.rotation.x = 0.3;
+    root.add(dash);
+
+    const colGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.35, 8);
+    colGeo.rotateX(0.45);
+    const column = new THREE.Mesh(colGeo, chassisMat);
+    column.position.set(0, 0.72, -0.02);
+    root.add(column);
+
+    const wheelMat = new THREE.MeshLambertMaterial({ color: '#1a1a1a' });
+    const wheelGeo = new THREE.TorusGeometry(0.14, 0.025, 8, 16);
+    wheelGeo.rotateX(Math.PI / 2 + 0.45);
+    const steeringWheel = new THREE.Mesh(wheelGeo, wheelMat);
+    steeringWheel.position.set(0, 0.86, -0.09);
+    root.add(steeringWheel);
+
+    // 6. Padded high-back seat
+    const seatMat = new THREE.MeshLambertMaterial({ color: '#202020' });
+    const seatBase = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.12, 0.42), seatMat);
+    seatBase.position.set(0, 0.56, 0.32);
+    seatBase.castShadow = true;
+    root.add(seatBase);
+
+    const seatBack = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.44, 0.1), seatMat);
+    seatBack.position.set(0, 0.8, 0.5);
+    seatBack.rotation.x = -0.15;
+    seatBack.castShadow = true;
+    root.add(seatBack);
+
+    const bolsterL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 0.35), seatMat);
+    bolsterL.position.set(-0.24, 0.65, 0.35);
+    const bolsterR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 0.35), seatMat);
+    bolsterR.position.set(0.24, 0.65, 0.35);
+    root.add(bolsterL, bolsterR);
+
+    // 7. Small exhaust pipe puffing smoke particles
+    const pipeMat = new THREE.MeshLambertMaterial({ color: '#555555' });
+    const pipeGeo = new THREE.CylinderGeometry(0.03, 0.035, 0.38, 8);
+    const pipe = new THREE.Mesh(pipeGeo, pipeMat);
+    pipe.position.set(0.38, 0.7, -0.42);
+    pipe.rotation.z = -0.15;
+    pipe.rotation.x = -0.2;
+    root.add(pipe);
+
+    const tipGeo = new THREE.CylinderGeometry(0.04, 0.03, 0.08, 8);
+    const tip = new THREE.Mesh(tipGeo, pipeMat);
+    tip.position.set(0.41, 0.9, -0.45);
+    tip.rotation.x = -0.4;
+    root.add(tip);
+
+    root.userData = {
+      blades: bladeGroup,
+      frontL,
+      frontR,
+      exhaustTip: tip,
+      smokeParticles: [],
+      smokeTimer: 0,
+    };
+
+    return root;
+  }
+
+  updateVehicles(vehicles = [], dt = 0.016) {
+    this.vehicleMeshes ??= new Map();
+    const activeIds = new Set();
+    for (const v of vehicles) {
+      if (!v.alive) continue;
+      activeIds.add(v.id);
+      let mesh = this.vehicleMeshes.get(v.id);
+      if (!mesh) {
+        mesh = this.buildDriveableMowerMesh();
+        this.scene.add(mesh);
+        this.vehicleMeshes.set(v.id, mesh);
+      }
+
+      const px = v.x ?? v.pos?.x ?? 0;
+      const py = v.y ?? v.pos?.y ?? 0;
+      const pz = v.z ?? v.pos?.z ?? 0;
+      mesh.position.set(px, py, pz);
+      mesh.rotation.y = v.yaw || 0;
+
+      const ud = mesh.userData;
+      // Spinning deck blades underneath
+      if (ud?.blades) {
+        ud.blades.rotation.y += dt * 35;
+      }
+
+      // Front wheel steering angle
+      if (typeof v.steeringAngle === 'number' && ud?.frontL && ud?.frontR) {
+        ud.frontL.rotation.y = v.steeringAngle;
+        ud.frontR.rotation.y = v.steeringAngle;
+      }
+
+      // Exhaust pipe puffing smoke particles
+      if (ud?.exhaustTip) {
+        ud.smokeTimer = (ud.smokeTimer || 0) + dt;
+        if (ud.smokeTimer >= 0.12) {
+          ud.smokeTimer = 0;
+          const tipWorld = new THREE.Vector3();
+          ud.exhaustTip.getWorldPosition(tipWorld);
+          const smokeGeo = new THREE.SphereGeometry(0.06 + Math.random() * 0.03, 6, 6);
+          const smokeMat = new THREE.MeshBasicMaterial({
+            color: '#b0b0b0',
+            transparent: true,
+            opacity: 0.55,
+            depthWrite: false,
+          });
+          const smokeMesh = new THREE.Mesh(smokeGeo, smokeMat);
+          smokeMesh.position.copy(tipWorld);
+          this.scene.add(smokeMesh);
+          ud.smokeParticles.push({
+            mesh: smokeMesh,
+            life: 0,
+            maxLife: 0.6 + Math.random() * 0.3,
+            vel: new THREE.Vector3(
+              (Math.random() - 0.5) * 0.3,
+              0.8 + Math.random() * 0.4,
+              (Math.random() - 0.5) * 0.3
+            ),
+          });
+        }
+
+        for (let i = ud.smokeParticles.length - 1; i >= 0; i--) {
+          const p = ud.smokeParticles[i];
+          p.life += dt;
+          if (p.life >= p.maxLife) {
+            this.scene.remove(p.mesh);
+            p.mesh.geometry.dispose();
+            p.mesh.material.dispose();
+            ud.smokeParticles.splice(i, 1);
+            continue;
+          }
+          p.mesh.position.addScaledVector(p.vel, dt);
+          const progress = p.life / p.maxLife;
+          p.mesh.scale.setScalar(1 + progress * 2.5);
+          p.mesh.material.opacity = 0.55 * (1 - progress);
+        }
+      }
+
+      // When driven, sync driver model position so character sits on the mower seat
+      if (v.driverId) {
+        const c = this.characters.get(v.driverId);
+        if (c && c.root) {
+          const yaw = v.yaw || 0;
+          const sinY = Math.sin(yaw), cosY = Math.cos(yaw);
+          c.root.position.set(
+            px + sinY * 0.32,
+            py + 0.56,
+            pz + cosY * 0.32
+          );
+          c.root.rotation.y = yaw;
+          if (c.legs?.[0] && c.legs?.[1]) {
+            c.legs[0].rotation.x = -Math.PI / 2.3;
+            c.legs[1].rotation.x = -Math.PI / 2.3;
+          }
+          if (c.arms?.[0] && c.arms?.[1]) {
+            c.arms[0].rotation.x = Math.PI / 3;
+            c.arms[1].rotation.x = Math.PI / 3;
+          }
+        }
+      }
+    }
+
+    for (const [id, mesh] of this.vehicleMeshes.entries()) {
+      if (!activeIds.has(id)) {
+        if (mesh.userData?.smokeParticles) {
+          for (const p of mesh.userData.smokeParticles) {
+            this.scene.remove(p.mesh);
+            p.mesh.geometry.dispose();
+            p.mesh.material.dispose();
+          }
+        }
+        this.scene.remove(mesh);
+        this.vehicleMeshes.delete(id);
+      }
+    }
+  }
+
   ensureCharacter(actor, localTeam) {
     let c = this.characters.get(actor.id);
     const isLocalTeam = actor.team === localTeam;
@@ -783,6 +1068,7 @@ export class Renderer {
     }
     if (snap.helicopters) this.updateHelicopters(snap.helicopters, dt);
     if (snap.mowers) this.updateMowers(snap.mowers, dt);
+    if (snap.vehicles) this.updateVehicles(snap.vehicles, dt);
   }
 
   spawnRagdoll(id, ev) {
