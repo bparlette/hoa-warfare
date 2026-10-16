@@ -64,8 +64,8 @@ if (!ready) {
 
 const factions = [
   'fratHouse', 'brainRot', 'valleyGirls', 'oldMoney', 'rednecks', 'karens',
-  'gymRats', 'theaterKids', 'cloutStreamers', 'vcBros', 'hoaDads', 'emoKids',
-  'theGays', 'trumpers', 'wokeLibs', 'mlmHuns', 'furries', 'animeWeebs', 'tradwives', 'pickleballRetirees',
+  'gymRats', 'theaterKids', 'cloutStreamers', 'wallstreetBets', 'hoaDads', 'emoKids',
+  'fabulous', 'trumpers', 'wokeLibs', 'mlmHuns', 'furries', 'animeWeebs', 'tradwives', 'pickleballRetirees',
   '__master__'
 ];
 

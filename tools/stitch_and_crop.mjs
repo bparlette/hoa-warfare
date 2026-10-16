@@ -112,12 +112,12 @@ const cropScript = `
   results['gymRats'] = extractCard(img1, 675, 190, 160, 450);
   results['theaterKids'] = extractCard(img1, 820, 215, 115, 425);
   results['cloutStreamers'] = extractCard(img1, 915, 210, 130, 430);
-  results['vcBros'] = extractCard(img1, 1030, 220, 115, 420);
+  results['wallstreetBets'] = extractCard(img1, 1030, 220, 115, 420);
   results['hoaDads'] = extractCard(img1, 1130, 220, 125, 420);
   results['emoKids'] = extractCard(img1, 1235, 230, 120, 410);
 
   // 8 from img2
-  results['theGays'] = extractCard(img2, 20, 195, 150, 460);
+  results['fabulous'] = extractCard(img2, 20, 195, 150, 460);
   results['trumpers'] = extractCard(img2, 165, 210, 175, 445);
   results['wokeLibs'] = extractCard(img2, 345, 200, 155, 455);
   results['mlmHuns'] = extractCard(img2, 510, 190, 145, 465);
