@@ -180,6 +180,7 @@ export class Sfx {
     return s;
   }
   carAlarm(dur = 2.0, vol = 0.25) {
+    return null; // Cut: high-pitch alarm removed per Cherie 2026-10-16
     if (!this.ctx || !this.enabled) return null;
     const t0 = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
@@ -248,14 +249,14 @@ export class Sfx {
   smg(vol = 1) { this.tone({ f0: 1100, f1: 260, dur: 0.05, vol: 0.16 * vol, slapback: true }); }
   lmg(vol = 1) { this.tone({ type: 'sawtooth', f0: 550, f1: 110, dur: 0.11, vol: 0.24 * vol, slapback: true }); }
   pistol(vol = 1) { this.tone({ f0: 950, f1: 280, dur: 0.06, vol: 0.19 * vol, slapback: true }); }
-  hitmarker() { this.tone({ type: 'square', f0: 2400, f1: 2400, dur: 0.03, vol: 0.18 }); }
+  hitmarker() { this.tone({ type: 'square', f0: 1200, f1: 1200, dur: 0.03, vol: 0.12 }); }
   hit() { this.tone({ type: 'triangle', f0: 1200, f1: 900, dur: 0.05, vol: 0.25 }); }
   headshot() { this.tone({ type: 'square', f0: 300, f1: 1400, dur: 0.12, vol: 0.25 }); }
   kill() { this.tone({ type: 'square', f0: 523, f1: 523, dur: 0.07, vol: 0.2 }); this.tone({ type: 'square', f0: 784, f1: 784, dur: 0.1, vol: 0.2, delay: 0.07 }); }
   hurt() { this.tone({ type: 'sawtooth', f0: 220, f1: 90, dur: 0.12, vol: 0.2 }); }
   boom() { this.noise(0.6, 0.6); this.tone({ type: 'sine', f0: 120, f1: 30, dur: 0.5, vol: 0.5 }); }
   boing() { this.tone({ type: 'sine', f0: 150, f1: 600, dur: 0.25, vol: 0.3 }); }
-  reload() { this.tone({ type: 'square', f0: 2000, f1: 1800, dur: 0.03, vol: 0.1 }); this.tone({ type: 'square', f0: 1500, f1: 1400, dur: 0.03, vol: 0.1, delay: 0.5 }); }
+  reload() { this.tone({ type: 'square', f0: 800, f1: 700, dur: 0.03, vol: 0.08 }); this.tone({ type: 'square', f0: 600, f1: 550, dur: 0.03, vol: 0.08, delay: 0.5 }); }
   swing() { this.tone({ type: 'triangle', f0: 400, f1: 120, dur: 0.15, vol: 0.2 }); }
   clang() { this.tone({ type: 'square', f0: 1800, f1: 1600, dur: 0.18, vol: 0.2 }); }
   warn() { this.tone({ type: 'square', f0: 880, f1: 880, dur: 0.06, vol: 0.12 }); }
@@ -325,11 +326,6 @@ export class Sfx {
   }
 
   ping(type = 'alert') {
-    if (type === 'danger') {
-      this.tone({ type: 'square', f0: 1200, f1: 800, dur: 0.09, vol: 0.22 });
-      this.tone({ type: 'square', f0: 1200, f1: 800, dur: 0.09, vol: 0.22, delay: 0.1 });
-    } else {
-      this.tone({ type: 'triangle', f0: 880, f1: 1760, dur: 0.08, vol: 0.25 });
-    }
+    return; // Cut: high-pitch alarm beeps removed per Cherie 2026-10-16
   }
 }

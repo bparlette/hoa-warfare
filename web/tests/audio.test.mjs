@@ -143,13 +143,12 @@ test('audio: Sfx survives headless/disabled mode gracefully', () => {
   assert.equal(sfx.echoSlapback(null), null);
 });
 
-test('audio: Sfx carAlarm synthesizes alternating 880/660 Hz electronic horn', () => {
+test('audio: Sfx carAlarm is silenced (alarm cut per Cherie 2026-10-16)', () => {
   const sfx = new Sfx();
   sfx.ctx = mockAudioCtx();
   sfx.master = sfx.ctx.createGain();
   const alarm = sfx.carAlarm(1.0, 0.3);
-  assert.ok(alarm && alarm.osc && alarm.gain);
-  assert.equal(alarm.osc.type, 'square');
+  assert.equal(alarm, null);
 });
 
 test('audio: Sfx footstep differentiates grass rustle from asphalt click', () => {
