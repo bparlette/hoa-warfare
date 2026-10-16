@@ -4,16 +4,16 @@
 const STORAGE_KEY = 'hoa.career.v1';
 
 export const HOA_RANKS = [
-  { rank: 1,  title: 'Probationary Renter',         xp: 0,     demoAllowed: true },
-  { rank: 2,  title: 'Lawn Measurer',               xp: 150,   demoAllowed: true },
-  { rank: 3,  title: 'Cul-de-Sac Snitch',           xp: 400,   demoAllowed: true },
-  { rank: 4,  title: 'Junior Block Captain',        xp: 800,   demoAllowed: true },
-  { rank: 5,  title: 'Neighborhood Watch',          xp: 1300,  demoAllowed: true },
-  { rank: 6,  title: 'Bylaw Enforcer',              xp: 2000,  demoAllowed: false },
-  { rank: 7,  title: 'Zoning Commissioner',         xp: 3000,  demoAllowed: false },
-  { rank: 8,  title: 'Covenant Prelate',            xp: 4500,  demoAllowed: false },
-  { rank: 9,  title: 'Gated Community Warlord',     xp: 6500,  demoAllowed: false },
-  { rank: 10, title: 'Supreme HOA Board President', xp: 10000, demoAllowed: false },
+  { rank: 1,  title: 'Probationary Renter',         badge: '🌱', xp: 0,     demoAllowed: true },
+  { rank: 2,  title: 'Lawn Measurer',               badge: '📏', xp: 150,   demoAllowed: true },
+  { rank: 3,  title: 'Cul-de-Sac Snitch',           badge: '👁️', xp: 400,   demoAllowed: true },
+  { rank: 4,  title: 'Junior Block Captain',        badge: '📋', xp: 800,   demoAllowed: true },
+  { rank: 5,  title: 'Neighborhood Watch',          badge: '🛡️', xp: 1300,  demoAllowed: true },
+  { rank: 6,  title: 'Bylaw Enforcer',              badge: '⚖️', xp: 2000,  demoAllowed: false },
+  { rank: 7,  title: 'Zoning Commissioner',         badge: '🏛️', xp: 3000,  demoAllowed: false },
+  { rank: 8,  title: 'Covenant Prelate',            badge: '📜', xp: 4500,  demoAllowed: false },
+  { rank: 9,  title: 'Gated Community Warlord',     badge: '⚔️', xp: 6500,  demoAllowed: false },
+  { rank: 10, title: 'Supreme HOA Board President', badge: '👑', xp: 10000, demoAllowed: false },
 ];
 
 export const ACHIEVEMENTS = {
@@ -32,6 +32,7 @@ export const ACHIEVEMENTS = {
 function defaultProfile() {
   return {
     xp: 0,
+    rank: 1,
     kills: 0,
     deaths: 0,
     headshots: 0,
@@ -48,10 +49,16 @@ function defaultProfile() {
 }
 
 export class CareerProfile {
-  constructor({ isDemo = false, onAchievement = null } = {}) {
+  constructor({ isDemo = false, onAchievement = null, onRankUp = null } = {}) {
     this.isDemo = isDemo;
     this.onAchievement = onAchievement;
+    this.onRankUp = onRankUp;
     this.data = this.load();
+    this.syncRank();
+  }
+
+  get profile() {
+    return this.data;
   }
 
   load() {
@@ -75,6 +82,11 @@ export class CareerProfile {
     } catch {}
   }
 
+  syncRank() {
+    const rInfo = this.getRankInfo();
+    this.data.rank = rInfo.rank;
+  }
+
   getRankInfo() {
     const xp = this.data.xp || 0;
     let current = HOA_RANKS[0];
@@ -95,16 +107,29 @@ export class CareerProfile {
     }
     const demoCapped = this.isDemo && current.rank >= 5 && xp >= 1300;
     return {
+      current,
       rank: current.rank,
       title: current.title,
+      badge: current.badge,
       xp,
       nextRank: next,
       demoCapped,
+      cappedInDemo: demoCapped,
     };
   }
 
+  awardXp(amount) {
+    return this.addXp(amount);
+  }
+
   addXp(amount) {
+    const oldRank = this.getRankInfo().current;
     this.data.xp = Math.max(0, (this.data.xp || 0) + amount);
+    this.syncRank();
+    const newRank = this.getRankInfo().current;
+    if (newRank.rank > oldRank.rank && this.onRankUp) {
+      this.onRankUp(newRank);
+    }
     this.save();
   }
 

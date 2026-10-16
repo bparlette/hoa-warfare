@@ -1048,3 +1048,8 @@ export function raySphere(o, d, center, radius, maxT = Infinity) {
   if (t > 0 && t < maxT) return t;
   return null;
 }
+
+export function findLockOnTarget(sim, a, maxRange = 28) {
+  return sim.findLockOnTarget(a, { maxRange });
+}
+

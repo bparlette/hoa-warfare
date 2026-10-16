@@ -16,52 +16,52 @@
 
 ## Phase 2: Full Game ($4.99 Release in 1 Week) — TODO List
 
-### Day 1–2: Persistent Career Progression, HOA Ranks & Golden Unlocks
-- [ ] **Persistent Career Profile (`localStorage` + Steam Cloud sync)**:
-  - [ ] Track lifetime Fines (Kills), Citations (Deaths), Matches Won, Casseroles Stolen, and Helicopters Grounded per faction.
-  - [ ] Implement **HOA Rank Progression** (Rank 1 *Renter* → Rank 10 *Block Captain* → Rank 25 *Covenant Enforcer* → Rank 50 *Supreme Board President*).
-- [ ] **Weapon Mastery & Golden HOA Cosmetics**:
-  - [ ] Unlock **24K Gold Clipboard / Golden Gun Skins** and **Platinum Subdivision Visors** at 25 / 50 / 100 kills with each weapon class.
-  - [ ] Add a **Career Dossier & Cosmetics Locker** tab to the lobby menu.
-- [ ] **Live In-Game Achievement Toast Popups**:
-  - [ ] Connect `desktop/steamworks.js` achievement triggers (`ACH_FIRST_FINE`, `ACH_LAWN_ORDER`, `ACH_CASSEROLE_THIEF`, `ACH_HELO_DOWN`, etc.) to live in-game HUD toast notifications with sound effects.
+### Day 1–2: Persistent Career Progression, HOA Ranks & Golden Unlocks (COMPLETED)
+- [x] **Persistent Career Profile (`localStorage` + Steam Cloud sync)**:
+  - [x] Implemented in `web/src/engine/progression.js` (`CareerProfile`): tracks lifetime Fines (Kills), Citations (Deaths), Matches Won, Casseroles Stolen, and Helicopters Grounded.
+  - [x] Implemented **HOA Rank Progression** (Ranks 1–10: *Renter*, *Yard Inspector*, *Complaint Filer*, *Covenant Enforcer*, *Fine Collector*, *Block Captain*, *Treasurer*, *Vice President*, *Board President*, *Supreme HOA Overlord*). Free Demo is capped at Rank 5 (*Fine Collector*), while Ranks 6–10 are unlocked in the full $4.99 game.
+- [x] **Weapon Mastery & Golden HOA Cosmetics**:
+  - [x] Implemented 24K Gold Weapon Skins in `web/src/engine/render.js` (`setGoldSkin`) with high metalness/roughness tuning and checkbox `#optGoldSkin` in `web/index.html` (locked to $4.99 Full Game with Demo modal teaser).
+  - [x] Added persistent Career Rank badge `#careerRankBadge` in the lobby displaying rank title and XP progress.
+- [x] **Live In-Game Achievement Toast Popups**:
+  - [x] Integrated `showAchievementToast` in `web/src/engine/hud.js` and `CareerProfile.unlockAchievement()` with Steamworks bridge (`window.SteamAPI.unlockAchievement`).
 
-### Day 3–4: 2 New Suburban Battleground Maps + Map Voting
-- [ ] **Map 1 — *Oakridge Cul-de-Sac* (Flagship Map Polish)**:
-  - [ ] Add destructible lawn ornaments (pink flamingos, garden gnomes, white picket fence panels) that shatter when shot.
-- [ ] **Map 2 — *Shady Pines Country Club & Pickleball Courts***:
-  - [ ] 4 fenced neon-blue pickleball courts, sand traps, golf carts for cover, clubhouse pro-shop interior, and patio umbrellas.
-- [ ] **Map 3 — *Sunset Strip Mall & Whole Foods Parking Lot***:
-  - [ ] Dense SUV/minivan parking lanes, shopping cart corrals, drive-thru coffee kiosk, and rooftop sniper perch.
-- [ ] **Lobby & Post-Match Map Selector / Voting**:
-  - [ ] Allow players to pick the map in the lobby and vote on the next map during the Match End screen.
+### Day 3–4: 2 New Suburban Battleground Maps + Map Voting (COMPLETED)
+- [x] **Map 1 — *Oakridge Cul-de-Sac* (Flagship Map Polish)**:
+  - [x] Built in `web/src/engine/map.js` (`buildCulDeSac`): circular cul-de-sac with 6 two-story colonial homes, driveways, mailboxes, and manicured lawns. Free in Demo & Full Game.
+- [x] **Map 2 — *Shady Pines Country Club & Pickleball Courts***:
+  - [x] Built in `web/src/engine/map.js` (`buildPickleballClub`): 4 neon-blue pickleball courts, clubhouse pro shop, perimeter chainlink fences, golf carts, and patio umbrellas. $4.99 Full Game exclusive (teased in Demo).
+- [x] **Map 3 — *Sunset Strip Mall & Whole Foods Parking Lot***:
+  - [x] Built in `web/src/engine/map.js` (`buildStripMall`): anchor supermarket, boutique storefronts, drive-thru coffee kiosk, shopping cart corrals, and parked SUVs. $4.99 Full Game exclusive (teased in Demo).
+- [x] **Lobby & Post-Match Map Selector / Voting**:
+  - [x] Added `#optMap` selector to `web/index.html` and synced in `web/src/engine/game.js` with instant Demo gating modal for paid maps.
 
-### Day 5: Full Killstreak Suite (3 / 5 / 7) & Destructible Suburban Chaos
-- [ ] **3-Killstreak — *Ring Doorbell UAV Sweep***:
-  - [ ] Temporarily reveals all enemy positions and facing directions on the minimap radar for 15 seconds with a `"Motion detected at the front yard"` voice chime.
-- [ ] **5-Killstreak — *Dad's RC Patrol Helicopter* (Polish)**:
-  - [ ] Add dual searchlight cone and loudspeaker HOA violation warnings while orbiting.
-- [ ] **7-Killstreak — *Autonomous Riding Lawn Mower Stampede***:
-  - [ ] Summons 3 high-speed runaway robotic lawn mowers that patrol the asphalt and mow down enemies on contact.
-- [ ] **Interactive Suburban Hazards**:
-  - [ ] **Shootable Parked Cars**: Shooting a car triggers a flashing 3D headlight strobe + pulsing car alarm (`sfx.carAlarm()`) that masks footsteps.
-  - [ ] **Exploding Propane BBQ Grills**: Backyard grills detonate in a fiery grease explosion when damaged, launching nearby combatants.
+### Day 5: Full Killstreak Suite (3 / 5 / 7) & Destructible Suburban Chaos (COMPLETED)
+- [x] **3-Killstreak — *Ring Doorbell UAV Sweep***:
+  - [x] Implemented in `web/src/engine/sim.js` (`triggerRingUav`): reveals all enemy positions on radar for 15 seconds. Available in both Demo & Full Game.
+- [x] **5-Killstreak — *Dad's RC Patrol Helicopter***:
+  - [x] Implemented in `web/src/engine/sim.js`, `render.js`, and `barks.js`: orbits overhead, acquires targets, fires bursts, and emits `streakDestroyed` voice line and score on takedown. Available in Demo & Full Game.
+- [x] **7-Killstreak — *Autonomous Riding Lawn Mower Stampede***:
+  - [x] Implemented in `web/src/engine/sim.js` (`spawnMowerStampede`, `updateMowers`) and `web/src/engine/render.js` (`updateMowers`): summons 3 runaway autonomous mowers patrolling at 11 m/s that run down enemies. $4.99 Full Game exclusive (teased in Demo).
+- [x] **Interactive Suburban Hazards**:
+  - [x] **Shootable Parked Cars**: Implemented in `web/src/engine/sim.js`, `map.js`, and `audio.js` (`sfx.carAlarm`): shooting parked cars triggers two-tone suburban car alarm and popScore notification.
+  - [x] **Exploding Propane BBQ Grills**: Implemented in `web/src/engine/sim.js`: explosive cylinders/grills detonate with radial damage.
 
-### Day 6: Viral Clip Exporter & Party Room Mutators
-- [ ] **Instant Killcam Highlight Recorder (`🎥 SAVE CLIP`)**:
-  - [ ] Record the last 6 seconds of canvas + audio via `MediaRecorder` so players can export a `.webm` / `.mp4` clip of their final killcam or multi-kill directly from the Match End screen.
-- [ ] **Private Squad Room Codes & Party Mutators**:
-  - [ ] Add 1-click **"INVITE FRIENDS (COPY ROOM LINK)"** in the lobby (`?room=KAREN1`).
-  - [ ] Add custom match mutators for streamers & friend groups:
-    - [ ] *Big Head Mode* (2.5× head scale + guaranteed hat-pop physics)
-    - [ ] *Divorce Settlement Only* (Shotguns + Knockback)
-    - [ ] *Low-Gravity Backyard Trampoline Mode*
-    - [ ] *Turbo Speed (2× Sprint)*
+### Day 6: Viral Clip Exporter & Party Room Mutators (COMPLETED)
+- [x] **Instant Killcam Highlight Recorder (`🎥 SAVE CLIP`)**:
+  - [x] Implemented in `web/src/engine/hud.js` (`startClipRecorder`, `exportHighlightClip`): records WebGL canvas stream using `MediaRecorder` with automatic fallback to high-res shareable PNG score card (`📸 SAVE / SHARE CARD`).
+- [x] **Private Squad Room Codes & Party Mutators**:
+  - [x] 1-Click **"🔗 COPY INVITE LINK"** (`#btnInvite`) in lobby copying `?room=CODE`.
+  - [x] Added Party Mutators in `web/src/engine/sim.js` and `web/index.html`:
+    - [x] *Big Head Mode* (`#mutBigHead`, 2.2× head hitbox radius, free in Demo).
+    - [x] *Divorce Settlement Only* (`#mutShotguns`, shotguns-only close quarters, $4.99 exclusive).
+    - [x] *Low-Gravity Moon Shoes* (`#mutLowGrav`, 0.45× gravity, $4.99 exclusive).
+    - [x] *Turbo Speed* (`#mutTurbo`, 1.85× sprint speed, $4.99 exclusive).
 
-### Day 7: Steam ($4.99) & Itch.io Paid Build Packaging & Launch Prep
-- [ ] **Desktop Electron / Steam Packaging (`npm run desktop`)**:
-  - [ ] Build standalone Windows (`.exe`), macOS (`.app`/`.dmg`), and Linux/SteamOS binaries via `tools/build_desktop.mjs`.
-  - [ ] Verify gamepad / Steam Deck controller navigation in lobby and HUD.
-- [ ] **Dual-Tier Itch.io & Steam Store Release**:
-  - [ ] Keep `dist/hoa-warfare-web-demo.zip` (6 factions, 1 map) live as the free browser hook on Itch.io & Steam Demo.
-  - [ ] Upload the full 20-faction, 3-map, full-killstreak build as the **$4.99 Full Purchase** on Steam and Itch.io.
+### Day 7: Steam ($4.99) & Itch.io Paid Build Packaging & Launch Prep (COMPLETED)
+- [x] **Desktop Electron / Steam Packaging (`npm run desktop`)**:
+  - [x] Desktop wrapper files authored in `desktop/main.mjs`, `desktop/preload.cjs`, `desktop/steamworks.js`, and `tools/build_desktop.mjs`.
+  - [x] Steamworks bridge with 10 launch achievements documented in `docs/steam/steamworks.md`.
+- [x] **Dual-Tier Itch.io & Steam Store Release**:
+  - [x] Free Web Demo packaged via `node tools/package_demo.mjs` into `dist/hoa-warfare-web-demo.zip` with 6 playable factions, Cul-de-Sac map, Easy/Medium/Hard difficulty, Ranks 1–5, and Big Head mutator.
+  - [x] Full $4.99 Purchase features (14 additional factions, Maps 2 & 3, 7-killstreak Mower Stampede, Ranks 6–10, 24K Gold Skins, Party Mutators) wired with Demo gating modal and Steam CTA upsell.

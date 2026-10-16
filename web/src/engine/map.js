@@ -244,9 +244,9 @@ export function buildStripMall() {
 }
 
 export const MAPS = {
-  culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                demoAllowed: true,  build: buildCulDeSac },
-  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        demoAllowed: false, build: buildPickleballClub },
-  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, build: buildStripMall },
+  culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                name: 'Oakridge Cul-de-Sac',                demoAllowed: true,  freeInDemo: true,  build: buildCulDeSac },
+  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
+  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
 };
 
 export function buildMap(mapId = 'culdesac') {
