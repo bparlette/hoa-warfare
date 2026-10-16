@@ -147,7 +147,7 @@ test('character: all signature props instantiate and attach correctly', () => {
   const signatureFactions = [
     'brainRot', 'cloutStreamers', 'wokeLibs', 'mlmHuns',
     'pickleballRetirees', 'tradwives', 'animeWeebs', 'furries',
-    'gymRats', 'vcBros', 'hoaDads', 'rednecks'
+    'gymRats', 'wallstreetBets', 'hoaDads', 'rednecks'
   ];
 
   for (const factionId of signatureFactions) {

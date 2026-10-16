@@ -197,16 +197,16 @@ describe('Roadmap Features: Difficulty, Career Progression, Maps, Killstreaks & 
     assert.ok(FEATURED_RIVALRIES.length >= 7, 'Has at least 7 featured rivalry matchups');
 
     const week0Rivalry = getFeaturedRivalry(0);
-    assert.deepEqual(week0Rivalry, ['karens', 'vcBros']);
+    assert.deepEqual(week0Rivalry, ['karens', 'wallstreetBets']);
 
-    const pool = ['karens', 'vcBros', 'tradwives', 'wokeLibs', 'hoaDads', 'fratHouse'];
+    const pool = ['karens', 'wallstreetBets', 'tradwives', 'wokeLibs', 'hoaDads', 'fratHouse'];
     // When rng generates a low value (< bias of 0.5), it picks the rivalry faction
     const biasedRng = () => 0.1;
     const team0Choice = pickBotFaction({ rng: biasedRng, pool, team: 0, featuredRivalry: week0Rivalry, bias: 0.5 });
     assert.equal(team0Choice, 'karens', 'Team 0 bot biased towards first rivalry faction');
 
     const team1Choice = pickBotFaction({ rng: biasedRng, pool, team: 1, featuredRivalry: week0Rivalry, bias: 0.5 });
-    assert.equal(team1Choice, 'vcBros', 'Team 1 bot biased towards second rivalry faction');
+    assert.equal(team1Choice, 'wallstreetBets', 'Team 1 bot biased towards second rivalry faction');
   });
 
   it('verifies audio mute, ambience, victory/defeat jingles, and suburban pings', async () => {

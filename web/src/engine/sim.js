@@ -39,8 +39,8 @@ export const FACTION_DEFAULT_LOADOUTS = {
   fratHouse: 'sideHustle',
   mlmHuns: 'sideHustle',
   oldMoney: 'trustFund',
-  vcBros: 'trustFund',
-  theGays: 'trustFund',
+  wallstreetBets: 'trustFund',
+  fabulous: 'trustFund',
   theaterKids: 'trustFund',
   trumpers: 'subdivision',
   pickleballRetirees: 'permit',
@@ -776,7 +776,7 @@ export class Sim {
     for (const a of this.actors) {
       if (typeof a.hitAgo === 'number') a.hitAgo += dt;
       if (!a.alive) { if (now >= a.respawnAt) this.respawn(a); continue; }
-      if (a.brain) this.think(a, dt);
+      if (a.brain && !a.scripted) this.think(a, dt);
       if (a.reloadUntil > 0 && now >= a.reloadUntil) {
         a.reloadUntil = 0;
         const w = this.activeWeapon(a);

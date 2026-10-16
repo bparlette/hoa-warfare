@@ -240,10 +240,10 @@ export function faceTex(faction, skin) {
       case 'gymRats': eyes(); px(2, 6, '#ffffff', 4, 1); px(1, 2, eye, 2, 1); px(5, 2, eye, 2, 1); break;
       case 'theaterKids': eyes(); px(2, 5, eye, 4, 2); px(3, 6, '#9c1f2f', 2, 1); break;
       case 'hoaDads': px(1, 3, '#111', 6, 1); px(2, 6, '#7b5a3a', 4, 1); break;
-      case 'vcBros': eyes(); px(3, 6, eye, 3, 1); break;
+      case 'wallstreetBets': eyes(); px(3, 6, eye, 3, 1); break;
       case 'valleyGirls': eyes(); px(3, 6, '#ff77a8', 2, 1); px(1, 2, eye); px(6, 2, eye); break;
       case 'rednecks': eyes(); px(1, 5, '#8a5a2e', 6, 3); px(3, 6, eye, 2, 1); break;
-      case 'theGays': eyes(); px(1, 2, '#2d1e18', 2, 1); px(5, 2, '#2d1e18', 2, 1); px(3, 6, '#e05688', 2, 1); break;
+      case 'fabulous': eyes(); px(1, 2, '#2d1e18', 2, 1); px(5, 2, '#2d1e18', 2, 1); px(3, 6, '#e05688', 2, 1); break;
       case 'trumpers': eyes(); px(2, 2, '#e0aa38', 4, 1); px(3, 6, eye, 2, 1); break;
       case 'wokeLibs': eyes(); px(3, 5, '#c25a3a', 2, 1); px(3, 6, eye, 2, 1); px(2, 4, '#e89090'); px(5, 4, '#e89090'); break;
       case 'mlmHuns': eyes(); px(2, 2, '#2b1b17'); px(5, 2, '#2b1b17'); px(2, 6, '#e91e63', 4, 1); px(1, 4, '#f48fb1'); px(6, 4, '#f48fb1'); break;
