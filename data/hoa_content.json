@@ -281,7 +281,9 @@
      "clean": [
       "BRO. Did you SEE that?!",
       "Rush week is OVER for you.",
-      "That's going in the group chat!"
+      "That's going in the group chat!",
+      "Losers do DISHES.",
+      "Your house got REVOKED."
      ],
      "steam": [
       "Upper-decked your respawn!",
@@ -430,7 +432,8 @@
     "spawn": {
      "clean": [
       "RAGE RESPAWN!",
-      "Back, baby! SHOTGUN!"
+      "Back, baby! SHOTGUN!",
+      "Let's RAGE!"
      ],
      "steam": [
       "Rally! Who's got the JUICE?",
@@ -470,11 +473,17 @@
     "campingWarn": {
      "clean": [
       "I'm not camping, I'm TAILGATING.",
-      "Strategic pregaming. Obviously."
+      {
+       "t": "Strategic pregaming. Obviously.",
+       "retired": true
+      }
      ],
      "steam": [
       "Snitch and you're BANNED.",
-      "I'm holding this spot. FIGHT ME."
+      {
+       "t": "I'm holding this spot. FIGHT ME.",
+       "retired": true
+      }
      ]
     }
    }
@@ -619,7 +628,8 @@
     "spawn": {
      "clean": [
       "Respawn! 67!",
-      "Back like I never left!"
+      "Back like I never left!",
+      "67! LET'S GO!"
      ],
      "steam": [
       "Lag switch? Nah, I'm HIM.",
@@ -649,7 +659,8 @@
     "killcam": {
      "clean": [
       "Clip that! 67!",
-      "Aura: plus one THOUSAND."
+      "Aura: plus one THOUSAND.",
+      "Bro thought he was him. Cooked."
      ],
      "steam": [
       "You're my MORTGAGE payment.",
@@ -688,7 +699,9 @@
      "clean": [
       "You're violating my boundaries.",
       "Gatekeeping this lane.",
-      "That's so toxic of you?"
+      "That's so toxic of you?",
+      "Bye, LOSERS!",
+      "Stay pressed. Literally."
      ],
      "steam": [
       {
@@ -819,7 +832,8 @@
     "spawn": {
      "clean": [
       "Like, I'm BACK!",
-      "Respawn? As if I'd stay dead!"
+      "Respawn? As if I'd stay dead!",
+      "Let's set intentions!"
      ],
      "steam": [
       "Ugh, FINE. I'm up.",
@@ -849,7 +863,8 @@
     "killcam": {
      "clean": [
       "Did you SEE that?!",
-      "Oh. My. GOD."
+      "Oh. My. GOD.",
+      "Your era is over. Muted."
      ],
      "steam": [
       "You're, like, EMBARRASSING.",
@@ -888,7 +903,11 @@
      "clean": [
       "Do you KNOW who my father was?!",
       "Back in MY day, we dueled properly.",
-      "Consider yourself disinherited."
+      "Consider yourself disinherited.",
+      "The club sends regards.",
+      "New money LOSES again.",
+      "Buy a better pedigree.",
+      "As expected. Naturally."
      ],
      "steam": [
       "Your whole bloodline is new money!",
@@ -1033,7 +1052,8 @@
     "killcam": {
      "clean": [
       "Observe. A masterclass.",
-      "Terribly sorry. Not really."
+      "Terribly sorry. Not really.",
+      "The trust has been... dissolved."
      ],
      "steam": [
       "The poor. So fragile.",
@@ -1073,7 +1093,13 @@
       "YEEHAW!",
       "Catalytic converter's MINE now!",
       "Propane'd!",
-      "Consider this a lien, friend."
+      {
+       "t": "Consider this a lien, friend.",
+       "retired": true
+      },
+      "No plate, no problem, no mercy!",
+      "GIT-R-DONE!",
+      "Go back to the CITY!"
      ],
      "steam": [
       "Stripped you for parts!",
@@ -1155,7 +1181,10 @@
     },
     "reload": {
      "clean": [
-      "Reloadin'! Don't touch my truck!",
+      {
+       "t": "Reloadin'! Don't touch my truck!",
+       "retired": true
+      },
       "Reloading, unlicensed and unbothered."
      ],
      "steam": [
@@ -1164,7 +1193,10 @@
     },
     "spotted": {
      "clean": [
-      "We got company, y'all!",
+      {
+       "t": "We got company, y'all!",
+       "retired": true
+      },
       "Agents approaching. Eyes open!"
      ],
      "steam": [
@@ -1173,7 +1205,10 @@
     },
     "lowHealth": {
      "clean": [
-      "Hurtin' worse than tax season.",
+      {
+       "t": "Hurtin' worse than tax season.",
+       "retired": true
+      },
       "I'm injured, not conscripted!"
      ],
      "steam": [
@@ -1182,7 +1217,10 @@
     },
     "objective": {
      "clean": [
-      "Got it! The HOA can't have it!",
+      {
+       "t": "Got it! The HOA can't have it!",
+       "retired": true
+      },
       "This land's under my jurisdiction!"
      ],
      "steam": [
@@ -1191,7 +1229,10 @@
     },
     "enemyStreak": {
      "clean": [
-      "They're squattin' on our streak!",
+      {
+       "t": "They're squattin' on our streak!",
+       "retired": true
+      },
       "His streak's got no authority!"
      ],
      "steam": [
@@ -1200,7 +1241,10 @@
     },
     "lastAlive": {
      "clean": [
-      "Just me? Born ready.",
+      {
+       "t": "Just me? Born ready.",
+       "retired": true
+      },
       "One man, one nation!"
      ],
      "steam": [
@@ -1209,7 +1253,10 @@
     },
     "roundStart": {
      "clean": [
-      "Let's go huntin'!",
+      {
+       "t": "Let's go huntin'!",
+       "retired": true
+      },
       "New round? I never agreed."
      ],
      "steam": [
@@ -1218,7 +1265,10 @@
     },
     "ownStreak": {
      "clean": [
-      "Releasin' the hounds!",
+      {
+       "t": "Releasin' the hounds!",
+       "retired": true
+      },
       "Five kills, sovereign immunity!"
      ],
      "steam": [
@@ -1227,7 +1277,10 @@
     },
     "firstBlood": {
      "clean": [
-      "FIRST BLOOD! Hoo-wee!",
+      {
+       "t": "FIRST BLOOD! Hoo-wee!",
+       "retired": true
+      },
       "First blood, per statute 1776!"
      ],
      "steam": [
@@ -1236,7 +1289,10 @@
     },
     "selfKill": {
      "clean": [
-      "Hair trigger. Like my temper.",
+      {
+       "t": "Hair trigger. Like my temper.",
+       "retired": true
+      },
       "That was a false flag."
      ],
      "steam": [
@@ -1245,7 +1301,10 @@
     },
     "campingSnitch": {
      "clean": [
-      "I ain't campin', I'm tailgatin'!",
+      {
+       "t": "I ain't campin', I'm tailgatin'!",
+       "retired": true
+      },
       "Snitching's a federal offense!"
      ],
      "steam": [
@@ -1255,7 +1314,10 @@
     "streakDestroyed": {
      "clean": [
       "Who shot down Bubba's chopper?!",
-      "Bubba's chopper was registered!"
+      {
+       "t": "Bubba's chopper was registered!",
+       "retired": true
+      }
      ],
      "steam": [
       "It flew under common law!"
@@ -1265,10 +1327,16 @@
      "clean": [
       "Back from the dead, Y'ALL!",
       "Respawned! Hold my tea!",
-      "I do not recognize this timer."
+      {
+       "t": "I do not recognize this timer.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Yeehaw! Who's NEXT?",
+      {
+       "t": "Yeehaw! Who's NEXT?",
+       "retired": true
+      },
       "Bless your heart. NOT.",
       "Am I being detained? Didn't think so."
      ]
@@ -1276,48 +1344,78 @@
     "victory": {
      "clean": [
       "GIT-R-DONE!",
-      "Mud on their boots!",
+      {
+       "t": "Mud on their boots!",
+       "retired": true
+      },
       "We the people won!"
      ],
      "steam": [
       "Go back to the CITY!",
-      "That's how we do it HERE.",
+      {
+       "t": "That's how we do it HERE.",
+       "retired": true
+      },
       "Independent nation of winners!"
      ]
     },
     "defeat": {
      "clean": [
-      "Dang. Good hunt, y'all.",
+      {
+       "t": "Dang. Good hunt, y'all.",
+       "retired": true
+      },
       "Truck's still runnin'. Fine.",
       "This game's rigged. Obviously."
      ],
      "steam": [
       "Y'all cheated. PROBABLY.",
-      "Rematch at the DERBY.",
+      {
+       "t": "Rematch at the DERBY.",
+       "retired": true
+      },
       "I don't recognize this loss."
      ]
     },
     "killcam": {
      "clean": [
       "BULLSEYE, baby!",
-      "That's a TROPHY kill!",
+      {
+       "t": "That's a TROPHY kill!",
+       "retired": true
+      },
       "Watch the tape. It's edited."
      ],
      "steam": [
-      "Gut shot. OOPS.",
+      {
+       "t": "Gut shot. OOPS.",
+       "retired": true
+      },
       "Shoulda stayed on the PORCH.",
       "That camera lacks jurisdiction!"
      ]
     },
     "campingWarn": {
      "clean": [
-      "I'm huntin', not campin'!",
-      "This here's a deer stand.",
+      {
+       "t": "I'm huntin', not campin'!",
+       "retired": true
+      },
+      {
+       "t": "This here's a deer stand.",
+       "retired": true
+      },
       "I'm traveling, not camping!"
      ],
      "steam": [
-      "Snitch and get the HOSE.",
-      "I'm fishin'. Mind it.",
+      {
+       "t": "Snitch and get the HOSE.",
+       "retired": true
+      },
+      {
+       "t": "I'm fishin'. Mind it.",
+       "retired": true
+      },
       "This stand is grandfathered in!"
      ]
     }
@@ -1365,7 +1463,9 @@
      "clean": [
       "I want to speak to your MANAGER!",
       "Consider yourself REPORTED.",
-      "One star. Would not respawn."
+      "One star. Would not respawn.",
+      "Read the bylaws, LOSERS.",
+      "I OWN this neighborhood."
      ],
      "steam": [
       "Your lawn has a LIEN now!",
@@ -1481,7 +1581,8 @@
     "spawn": {
      "clean": [
       "Back, and I brought COMPLAINTS.",
-      "Respawned. Meeting adjourned, NEVER."
+      "Respawned. Meeting adjourned, NEVER.",
+      "Let's get this sorted!"
      ],
      "steam": [
       "I'm escalating to CORPORATE.",
@@ -1511,7 +1612,8 @@
     "killcam": {
      "clean": [
       "Exhibit A: your DEFEAT.",
-      "Caught on camera. Obviously."
+      "Caught on camera. Obviously.",
+      "Your manager's been notified."
      ],
      "steam": [
       "Smile! You're TRESPASSING.",
@@ -1550,7 +1652,9 @@
      "clean": [
       "LIGHT WEIGHT, BABY!",
       "Do you even aim, bro?",
-      "GAINS!"
+      "GAINS!",
+      "Do you even LIFT?",
+      "Stay small, LOSERS."
      ],
      "steam": [
       "Skipped leg day, skipped LIFE!",
@@ -1662,7 +1766,8 @@
     "spawn": {
      "clean": [
       "BACK! No rest days!",
-      "Respawn equals active recovery!"
+      "Respawn equals active recovery!",
+      "CHEST DAY!"
      ],
      "steam": [
       "Spot me, BRO!",
@@ -1732,7 +1837,8 @@
      "clean": [
       "And... SCENE!",
       "The reunion starts NOW.",
-      "I'm not here to make friends!"
+      "I'm not here to make friends!",
+      "Take a BOW, losers."
      ],
      "steam": [
       "Your edit? Unwatchable!",
@@ -1874,7 +1980,8 @@
     "killcam": {
      "clean": [
       "CURTAIN CALL! You're DONE!",
-      "Jazz hands of DOOM!"
+      "Jazz hands of DOOM!",
+      "Your storyline is OVER."
      ],
      "steam": [
       "You're just an EXTRA.",
@@ -1914,7 +2021,9 @@
      "clean": [
       "BOW! Clip that, chat!",
       "You got bodied on live!",
-      "Single droppin' on your grave!"
+      "Single droppin' on your grave!",
+      "That's the CLIP!",
+      "Ratio'd IRL. Clip it."
      ],
      "steam": [
       "Viewbotted your whole team!",
@@ -2028,7 +2137,8 @@
     "spawn": {
      "clean": [
       "WE'RE SO BACK, CHAT!",
-      "Respawn speedrun, ANY%!"
+      "Respawn speedrun, ANY%!",
+      "We live! Chat, watch this!"
      ],
      "steam": [
       "Donos open. Carry me, CHAT.",
@@ -2058,7 +2168,8 @@
     "killcam": {
      "clean": [
       "CLIP IT! CLIP IT!",
-      "That's going VIRAL!"
+      "That's going VIRAL!",
+      "Your career? Canceled."
      ],
      "steam": [
       "Content! You're CONTENT!",
@@ -2095,172 +2206,175 @@
    "lines": {
     "kill": {
      "clean": [
-      "You've been sunsetted.",
-      "Market correction. You're the market.",
-      "I'm disrupting the kill feed."
+      "Expired worthless.",
+      "Margin called, nerd.",
+      "Diamond hands, paper skull.",
+      "Portfolio down 99%. Flatlined.",
+      "Bought at the top. Enjoy the dump."
      ],
      "steam": [
-      "Enjoy the layoff email!",
-      "Rug-pulled your life savings!",
-      "Replaced you with an AI wrapper!"
+      "Say hi to the Wendy's dumpster!",
+      "Thanks for the liquidity, bagholder!",
+      "Zero DTE straight to the grave!"
      ]
     },
     "headshot": {
      "clean": [
-      "Precision-targeted. Like our ads.",
-      "Headshot. Disrupted."
+      "Maximum pain directly to the dome.",
+      "Short squeeze. Brain blown."
      ],
      "steam": [
-      "Liquidated! No severance!"
+      "Account blown up! Absolute zero!"
      ]
     },
     "revenge": {
      "clean": [
-      "Revenge is best served... funded."
+      "Revenge trade! All in on 0DTE!"
      ]
     },
     "shutdown": {
      "clean": [
-      "Your streak got liquidated."
+      "Circuit breaker triggered. Sit down."
      ]
     },
     "melee": {
      "clean": [
-      "Let's take this offline."
+      "Meet me behind the dumpster."
      ]
     },
     "humiliated": {
      "clean": [
-      "Not in the roadmap."
+      "Loss porn Hall of Fame."
      ]
     },
     "double": {
      "clean": [
-      "Double! 2x growth!",
-      "Double! Series A energy!"
+      "Double bagger! Printing!",
+      "Two calls, both deep in the money!"
      ]
     },
     "triple": {
      "clean": [
-      "Triple! We're scaling!"
+      "300% GAINS! GREEN CANDLES!"
      ]
     },
     "rampage": {
      "clean": [
-      "RAMPAGE! Unicorn status!"
+      "RAMPAGE! TO THE LITERAL MOON!"
      ]
     },
     "reload": {
      "clean": [
-      "Reloading! Async!"
+      "Reloading! Buying the dip!"
      ],
      "steam": [
-      "Reloading! Microdosing!"
+      "Taking out another personal loan!"
      ]
     },
     "spotted": {
      "clean": [
-      "I see a blocker!"
+      "Gay bear spotted! Twelve o'clock!"
      ]
     },
     "lowHealth": {
      "clean": [
-      "My equity can't save me."
+      "GUH. Margin call imminent."
      ]
     },
     "objective": {
      "clean": [
-      "Captured. Adding to the sprint."
+      "Objective secured. Locked and DRS'd."
      ]
     },
     "enemyStreak": {
      "clean": [
-      "They're outperforming! PIVOT!"
+      "Market crash! Halting trading!"
      ]
     },
     "lastAlive": {
      "clean": [
-      "Sole contributor."
+      "Solo hodler. It's up to me, degenerates."
      ]
     },
     "roundStart": {
      "clean": [
-      "Move fast, break things!"
+      "Market open! Casino doors are UNLOCKED!"
      ]
     },
     "ownStreak": {
      "clean": [
-      "Series C deployed! Airstrike!"
+      "Whale buy incoming! Nuke the shorts!"
      ]
     },
     "firstBlood": {
      "clean": [
-      "FIRST BLOOD! First-mover advantage!"
+      "FIRST BLOOD! Market-open YOLO!"
      ]
     },
     "selfKill": {
      "clean": [
-      "That was... a pivot."
+      "Ultimate loss porn. GUH."
      ]
     },
     "campingSnitch": {
      "clean": [
-      "I'm not camping, I'm vesting!"
+      "I'm not camping, I'm diamond-handing this corner!"
      ]
     },
     "streakDestroyed": {
      "clean": [
-      "Our helicopter got down-rounded!"
+      "Our chopper got delisted!"
      ]
     },
     "spawn": {
      "clean": [
-      "Pivoting back to LIFE.",
-      "Respawned. Pre-seed round two!"
+      "Resetting the paper trading account!",
+      "Cashed out my 401(k)! Round two!",
+      "We like the stock! Send me in!"
      ],
      "steam": [
-      "My runway's INFINITE.",
-      "Disrupting DEATH itself."
+      "Infinite margin glitch activated!",
+      "Can't liquidate what's already bankrupt!"
      ]
     },
     "victory": {
      "clean": [
-      "We CRUSHED the KPIs!",
-      "Unicorn status: ACHIEVED."
+      "TENDIES FOR EVERYONE! MOONSHOT!",
+      "LAMBOS ORDERED. WE ARE BILLIONAIRES."
      ],
      "steam": [
-      "Your startup's DEAD. Mine's not.",
-      "Series A. You're Series F."
+      "We own the float, you broke bears!",
+      "Squeezed you dry! Complete bankruptcy!"
      ]
     },
     "defeat": {
      "clean": [
-      "Pivoting. Learning. Growing.",
-      "It's a feature, not failure."
+      "Uninstalling the broker app. Delete the app.",
+      "Rigged market. The SEC did this."
      ],
      "steam": [
-      "Market conditions. Obviously.",
-      "You had UNFAIR advantages."
+      "Dark pool ladder attack! Pure fraud!",
+      "Fed turned off the money printer!"
      ]
     },
     "killcam": {
      "clean": [
-      "Disrupted! Scale THAT!",
-      "That's a 10x KILL!"
+      "Post the loss porn or ban!",
+      "1000% gain, straight into your forehead!"
      ],
      "steam": [
-      "You're pre-REVENUE. Dead.",
-      "Synergize THIS."
+      "Enjoy your shift at Wendy's!",
+      "HODL THIS BULLET."
      ]
     },
     "campingWarn": {
      "clean": [
-      "I'm ideating. Strategically.",
-      "Deep work. Do not disturb."
+      "Limit buy order placed. Waiting for the dip.",
+      "Reading the technical charts. Leave me alone."
      ],
      "steam": [
-      "Snitch and you're DILUTED.",
-      "I'm in stealth MODE."
+      "Rat me out and I'll short your mom!",
+      "Trading on insider info. Shhh."
      ]
     }
    }
@@ -2286,7 +2400,13 @@
       "VIOLATION!",
       "The HOA sends its regards!",
       "Grass at three inches? FINED.",
-      "AMEN! Another violator down!"
+      {
+       "t": "AMEN! Another violator down!",
+       "retired": true
+      },
+      "That's how DAD does it!",
+      "Respect your ELDERS.",
+      "I pay the MORTGAGE here."
      ],
      "steam": [
       "Your kid's chalk art? Pressure-washed!",
@@ -2351,7 +2471,10 @@
     "triple": {
      "clean": [
       "Triple! Neighborhood watch approves!",
-      "TRIPLE! The neighborhood group approves!"
+      {
+       "t": "TRIPLE! The neighborhood group approves!",
+       "retired": true
+      }
      ],
      "steam": [
       "Three for the meme page!"
@@ -2368,7 +2491,10 @@
     },
     "reload": {
      "clean": [
-      "Reloading! Pull start!",
+      {
+       "t": "Reloading! Pull start!",
+       "retired": true
+      },
       "Reloading! Where are my glasses?"
      ],
      "steam": [
@@ -2377,7 +2503,10 @@
     },
     "spotted": {
      "clean": [
-      "Unapproved visitor on the greenbelt!",
+      {
+       "t": "Unapproved visitor on the greenbelt!",
+       "retired": true
+      },
       "SPOTTED! Posting to the group NOW!"
      ],
      "steam": [
@@ -2386,7 +2515,10 @@
     },
     "lowHealth": {
      "clean": [
-      "My back! My beautiful back!",
+      {
+       "t": "My back! My beautiful back!",
+       "retired": true
+      },
       "My BACK! Type 1 for prayers!"
      ],
      "steam": [
@@ -2396,7 +2528,10 @@
     "objective": {
      "clean": [
       "COMMON AREA. Mine.",
-      "Securing it! AMEN if you agree!"
+      {
+       "t": "Securing it! AMEN if you agree!",
+       "retired": true
+      }
      ],
      "steam": [
       "Mine! Posted. No take-backs!"
@@ -2404,7 +2539,10 @@
     },
     "enemyStreak": {
      "clean": [
-      "Filing a complaint with the board!",
+      {
+       "t": "Filing a complaint with the board!",
+       "retired": true
+      },
       "His streak? COPY AND PASTE, everyone!"
      ],
      "steam": [
@@ -2414,7 +2552,10 @@
     "lastAlive": {
      "clean": [
       "One dad. One grill. One mission.",
-      "Last dad standing! AMEN!"
+      {
+       "t": "Last dad standing! AMEN!",
+       "retired": true
+      }
      ],
      "steam": [
       "Just me! The group believes!"
@@ -2423,7 +2564,10 @@
     "roundStart": {
      "clean": [
       "Mow the competition!",
-      "New round! Type 1 if ready!"
+      {
+       "t": "New round! Type 1 if ready!",
+       "retired": true
+      }
      ],
      "steam": [
       "Here we go! NOT a drill!"
@@ -2432,7 +2576,10 @@
     "ownStreak": {
      "clean": [
       "The board approved... AN AIRSTRIKE.",
-      "STREAKING! The group is WATCHING!"
+      {
+       "t": "STREAKING! The group is WATCHING!",
+       "retired": true
+      }
      ],
      "steam": [
       "On fire! Someone call the paper!"
@@ -2441,7 +2588,10 @@
     "firstBlood": {
      "clean": [
       "FIRST BLOOD! First on the block!",
-      "FIRST BLOOD! Sharing to the group!"
+      {
+       "t": "FIRST BLOOD! Sharing to the group!",
+       "retired": true
+      }
      ],
      "steam": [
       "First! Posted publicly. OOPS."
@@ -2450,7 +2600,10 @@
     "selfKill": {
      "clean": [
       "That was NOT up to code.",
-      "That was... an accident. DELETE."
+      {
+       "t": "That was... an accident. DELETE.",
+       "retired": true
+      }
      ],
      "steam": [
       "Didn't mean to post that!"
@@ -2458,7 +2611,10 @@
     },
     "campingSnitch": {
      "clean": [
-      "I'm not camping, I'm inspecting!",
+      {
+       "t": "I'm not camping, I'm inspecting!",
+       "retired": true
+      },
       "Someone's camping! Group post incoming!"
      ],
      "steam": [
@@ -2468,7 +2624,10 @@
     "streakDestroyed": {
      "clean": [
       "That helicopter was board-approved!",
-      "Streak destroyed! AMEN, everyone!"
+      {
+       "t": "Streak destroyed! AMEN, everyone!",
+       "retired": true
+      }
      ],
      "steam": [
       "Gone! The group saw everything!"
@@ -2478,34 +2637,54 @@
      "clean": [
       "Back! Who moved my LAWN?",
       "Respawned. Grill's still hot!",
-      "Back! Did anyone see my glasses?"
+      {
+       "t": "Back! Did anyone see my glasses?",
+       "retired": true
+      },
+      "Mow the competition!",
+      "Here we go! NOT a drill!"
      ],
      "steam": [
       "Dad's HOME.",
       "Back in MY day, respawns took LONGER.",
-      "Respawned! Who shared my post?!"
+      {
+       "t": "Respawned! Who shared my post?!",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
       "That's how DAD does it!",
       "Victory! Who wants BURGERS?",
-      "VICTORY! Type AMEN if you agree!"
+      {
+       "t": "VICTORY! Type AMEN if you agree!",
+       "retired": true
+      }
      ],
      "steam": [
       "Respect your ELDERS.",
       "I pay the MORTGAGE here.",
-      "We won! Group photo time!"
+      {
+       "t": "We won! Group photo time!",
+       "retired": true
+      }
      ]
     },
     "defeat": {
      "clean": [
-      "Good game. Mow anyway.",
+      {
+       "t": "Good game. Mow anyway.",
+       "retired": true
+      },
       "We'll get 'em next weekend.",
       "We lost. Posting about it anyway."
      ],
      "steam": [
-      "Back in MY day...",
+      {
+       "t": "Back in MY day...",
+       "retired": true
+      },
       "I'm telling your MOTHER.",
       "Defeat? This feels like a HOAX."
      ]
@@ -2513,25 +2692,45 @@
     "killcam": {
      "clean": [
       "Dad joke? Dad JOKE!",
-      "That's a teachable MOMENT!",
-      "Watch this! Sending to the group!"
+      {
+       "t": "That's a teachable MOMENT!",
+       "retired": true
+      },
+      "Watch this! Sending to the group!",
+      "Section four, paragraph two. DENIED.",
+      "Reported to the admins. BANNED."
      ],
      "steam": [
       "Grounded. Two WEEKS.",
       "Ask your mother. OH WAIT.",
-      "Killcam's live! Say hi, everyone!"
+      {
+       "t": "Killcam's live! Say hi, everyone!",
+       "retired": true
+      }
      ]
     },
     "campingWarn": {
      "clean": [
       "I'm supervising the YARD.",
-      "Just resting my KNEES.",
-      "Am I camping? Checking the group..."
+      {
+       "t": "Just resting my KNEES.",
+       "retired": true
+      },
+      {
+       "t": "Am I camping? Checking the group...",
+       "retired": true
+      }
      ],
      "steam": [
-      "Snitch and no DESSERT.",
+      {
+       "t": "Snitch and no DESSERT.",
+       "retired": true
+      },
       "I'm not camping, I'm GRILLING.",
-      "Not camping! Just reading comments!"
+      {
+       "t": "Not camping! Just reading comments!",
+       "retired": true
+      }
      ]
     }
    },
@@ -2578,7 +2777,9 @@
      "clean": [
       "I'M FINE!",
       "This changes nothing!",
-      "Another one for the playlist!"
+      "Another one for the playlist!",
+      "THE DARKNESS HUNGERS!",
+      "Your happiness DISGUSTS me."
      ],
      "steam": [
       "Your vibe? Store-bought!",
@@ -2690,7 +2891,8 @@
     "spawn": {
      "clean": [
       "Back. Unfortunately.",
-      "Death rejected me. AGAIN."
+      "Death rejected me. AGAIN.",
+      "Let's get this OVER WITH!"
      ],
      "steam": [
       "Nobody understands my respawn.",
@@ -2720,7 +2922,8 @@
     "killcam": {
      "clean": [
       "Bleed for me. Metaphorically.",
-      "Your pain. My ART."
+      "Your pain. My ART.",
+      "Your happiness: CANCELED."
      ],
      "steam": [
       "Die. Like my DREAMS.",
@@ -2892,7 +3095,8 @@
     "spawn": {
      "clean": [
       "Back and looking fabulous!",
-      "Respawned in mint condition!"
+      "Respawned in mint condition!",
+      "Time to elevate this neighborhood!"
      ],
      "steam": [
       "Runway reset, darlings!",
@@ -3080,7 +3284,8 @@
     "spawn": {
      "clean": [
       "The comeback is ON, folks!",
-      "Back and stronger than ever!"
+      "Back and stronger than ever!",
+      "Make this cul-de-sac GREAT!"
      ],
      "steam": [
       "Unstoppable! Tremendous energy!",
@@ -3173,7 +3378,10 @@
    "lines": {
     "spawn": {
      "clean": [
-      "This spawn sits on stolen land.",
+      {
+       "t": "This spawn sits on stolen land.",
+       "retired": true
+      },
       "Pronouns in bio, tote in hand, let's go.",
       "Trigger warning: I'm about to win."
      ],
@@ -3186,8 +3394,12 @@
      "clean": [
       "Consider this a teachable moment.",
       "You've been called IN.",
-      "That was for the group chat.",
-      "Decolonized your killstreak."
+      {
+       "t": "That was for the group chat.",
+       "retired": true
+      },
+      "Decolonized your killstreak.",
+      "Deplatformed."
      ],
      "steam": [
       "Canceled. Next.",
@@ -3198,7 +3410,10 @@
     "headshot": {
      "clean": [
       "Headshot, with consent of the land.",
-      "Aimed with my third eye.",
+      {
+       "t": "Aimed with my third eye.",
+       "retired": true
+      },
       "That's going in the zine."
      ],
      "steam": [
@@ -3209,7 +3424,10 @@
     "revenge": {
      "clean": [
       "That's called accountability.",
-      "I forgive you, but I don't forget."
+      {
+       "t": "I forgive you, but I don't forget.",
+       "retired": true
+      }
      ],
      "steam": [
       "Revenge is a dish best served ethically sourced."
@@ -3218,7 +3436,10 @@
     "shutdown": {
      "clean": [
       "Your streak has been deplatformed.",
-      "Stopped. Reported. Blocked."
+      {
+       "t": "Stopped. Reported. Blocked.",
+       "retired": true
+      }
      ],
      "steam": [
       "I ended your streak like a bad podcast."
@@ -3227,7 +3448,10 @@
     "melee": {
      "clean": [
       "Tote bag to the face!",
-      "Eat canvas, colonizer!"
+      {
+       "t": "Eat canvas, colonizer!",
+       "retired": true
+      }
      ],
      "steam": [
       "Beaten with a reusable bag. Zero waste."
@@ -3236,7 +3460,10 @@
     "humiliated": {
      "clean": [
       "This goes in the zine.",
-      "I'm telling the group chat."
+      {
+       "t": "I'm telling the group chat.",
+       "retired": true
+      }
      ],
      "steam": [
       "Humiliated? Good. Sit with that."
@@ -3246,7 +3473,10 @@
      "clean": [
       "Two kills, zero carbon.",
       "Double. Both consensual.",
-      "Twice the allyship."
+      {
+       "t": "Twice the allyship.",
+       "retired": true
+      }
      ],
      "steam": [
       "Double kill, ethically sourced.",
@@ -3256,7 +3486,10 @@
     "triple": {
      "clean": [
       "Triple! The land provides.",
-      "Three kills, one teachable moment."
+      {
+       "t": "Three kills, one teachable moment.",
+       "retired": true
+      }
      ],
      "steam": [
       "Hat trick of accountability."
@@ -3265,7 +3498,10 @@
     "rampage": {
      "clean": [
       "This is what doing the work looks like!",
-      "On a rampage for justice!"
+      {
+       "t": "On a rampage for justice!",
+       "retired": true
+      }
      ],
      "steam": [
       "Unstoppable, unlike your growth."
@@ -3274,114 +3510,189 @@
     "reload": {
      "clean": [
       "Reloading. Practicing self-care.",
-      "Pausing to hydrate."
+      {
+       "t": "Pausing to hydrate.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Reloading my emotional support mag."
+      {
+       "t": "Reloading my emotional support mag.",
+       "retired": true
+      }
      ]
     },
     "spotted": {
      "clean": [
-      "I see you. I see ALL of you.",
+      {
+       "t": "I see you. I see ALL of you.",
+       "retired": true
+      },
       "Spotted a problematic."
      ],
      "steam": [
-      "Enemy located. Starting a thread about it."
+      {
+       "t": "Enemy located. Starting a thread about it.",
+       "retired": true
+      }
      ]
     },
     "lowHealth": {
      "clean": [
       "I'm literally shaking right now.",
-      "My aura is damaged."
+      {
+       "t": "My aura is damaged.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Low health, high anxiety."
+      {
+       "t": "Low health, high anxiety.",
+       "retired": true
+      }
      ]
     },
     "objective": {
      "clean": [
-      "Securing the objective for the community.",
+      {
+       "t": "Securing the objective for the community.",
+       "retired": true
+      },
       "This point belongs to everyone."
      ],
      "steam": [
-      "Taking the point. It's called mutual aid."
+      {
+       "t": "Taking the point. It's called mutual aid.",
+       "retired": true
+      }
      ]
     },
     "enemyStreak": {
      "clean": [
       "Someone check his privilege. And his streak.",
-      "That streak ends now, ally."
+      {
+       "t": "That streak ends now, ally.",
+       "retired": true
+      }
      ],
      "steam": [
-      "End that streak like a bad take."
+      {
+       "t": "End that streak like a bad take.",
+       "retired": true
+      }
      ]
     },
     "lastAlive": {
      "clean": [
       "Last one standing. The burden of the ally.",
-      "Just me and my principles."
+      {
+       "t": "Just me and my principles.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Last alive. Carrying, like always."
+      {
+       "t": "Last alive. Carrying, like always.",
+       "retired": true
+      }
      ]
     },
     "roundStart": {
      "clean": [
       "Remember: impact over intent. Let's go.",
-      "New round, same accountability."
+      {
+       "t": "New round, same accountability.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Round start. Be better this time."
+      {
+       "t": "Round start. Be better this time.",
+       "retired": true
+      }
      ]
     },
     "ownStreak": {
      "clean": [
       "On a streak! The work is working!",
-      "Five kills. The arc of history bends."
+      {
+       "t": "Five kills. The arc of history bends.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Streaking. Someone write a thinkpiece."
+      {
+       "t": "Streaking. Someone write a thinkpiece.",
+       "retired": true
+      }
      ]
     },
     "firstBlood": {
      "clean": [
       "First blood, drawn consensually.",
-      "The first kill is the deepest."
+      {
+       "t": "The first kill is the deepest.",
+       "retired": true
+      }
      ],
      "steam": [
-      "First blood! Trigger warning issued."
+      {
+       "t": "First blood! Trigger warning issued.",
+       "retired": true
+      }
      ]
     },
     "selfKill": {
      "clean": [
-      "That was... a learning opportunity.",
+      {
+       "t": "That was... a learning opportunity.",
+       "retired": true
+      },
       "I did that to myself. Growth."
      ],
      "steam": [
-      "Self-inflicted. Holding myself accountable."
+      {
+       "t": "Self-inflicted. Holding myself accountable.",
+       "retired": true
+      }
      ]
     },
     "campingSnitch": {
      "clean": [
       "Camping is a form of gentrification.",
-      "Someone's occupying that corner."
+      {
+       "t": "Someone's occupying that corner.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Camper spotted. This is a callout post."
+      {
+       "t": "Camper spotted. This is a callout post.",
+       "retired": true
+      }
      ]
     },
     "streakDestroyed": {
      "clean": [
-      "Your streak has been held accountable.",
+      {
+       "t": "Your streak has been held accountable.",
+       "retired": true
+      },
       "Deplatformed."
      ],
      "steam": [
-      "Streak destroyed. Log off."
+      {
+       "t": "Streak destroyed. Log off.",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
-      "We did it, together, as a community!",
+      {
+       "t": "We did it, together, as a community!",
+       "retired": true
+      },
       "Victory! Now let's unpack that."
      ],
      "steam": [
@@ -3390,7 +3701,10 @@
     },
     "defeat": {
      "clean": [
-      "We lost, but we learned.",
+      {
+       "t": "We lost, but we learned.",
+       "retired": true
+      },
       "Defeat is just feedback."
      ],
      "steam": [
@@ -3400,19 +3714,31 @@
     "killcam": {
      "clean": [
       "Trigger warning: this killcam.",
-      "Watch and learn."
+      {
+       "t": "Watch and learn.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Enjoy the killcam. It's educational."
+      {
+       "t": "Enjoy the killcam. It's educational.",
+       "retired": true
+      }
      ]
     },
     "campingWarn": {
      "clean": [
       "Am I... camping? Let me reflect.",
-      "Occupying this spot too long?"
+      {
+       "t": "Occupying this spot too long?",
+       "retired": true
+      }
      ],
      "steam": [
-      "Am I the camper? Uncomfortable."
+      {
+       "t": "Am I the camper? Uncomfortable.",
+       "retired": true
+      }
      ]
     }
    }
@@ -3458,7 +3784,10 @@
      "clean": [
       "Hey girl! Ready to hustle?",
       "Be your own boss today!",
-      "My upline believes in me."
+      {
+       "t": "My upline believes in me.",
+       "retired": true
+      }
      ],
      "steam": [
       "Let's make that bread, babe.",
@@ -3470,7 +3799,10 @@
       "Join my downline, bestie!",
       "That's passive income, baby!",
       "She said yes to the pitch!",
-      "Boss babe strikes again!"
+      {
+       "t": "Boss babe strikes again!",
+       "retired": true
+      }
      ],
      "steam": [
       "Recruited. Permanently.",
@@ -3482,7 +3814,10 @@
      "clean": [
       "Headshot! Hey girl, still breathing?",
       "Aim like my sales targets.",
-      "One shot, one recruit."
+      {
+       "t": "One shot, one recruit.",
+       "retired": true
+      }
      ],
      "steam": [
       "Pop! Like my launch party.",
@@ -3492,7 +3827,10 @@
     "revenge": {
      "clean": [
       "My upline warned me about you.",
-      "That's what you get, hater."
+      {
+       "t": "That's what you get, hater.",
+       "retired": true
+      }
      ],
      "steam": [
       "Revenge is my love language."
@@ -3501,7 +3839,10 @@
     "shutdown": {
      "clean": [
       "Your streak filed for bankruptcy.",
-      "Hustle harder next time, sweetie."
+      {
+       "t": "Hustle harder next time, sweetie.",
+       "retired": true
+      }
      ],
      "steam": [
       "Streak terminated. Like my 9-to-5."
@@ -3510,7 +3851,10 @@
     "melee": {
      "clean": [
       "Eat my starter kit!",
-      "Leggings to the face!"
+      {
+       "t": "Leggings to the face!",
+       "retired": true
+      }
      ],
      "steam": [
       "Beaten with a tote bag."
@@ -3519,7 +3863,10 @@
     "humiliated": {
      "clean": [
       "This is going on my vision board.",
-      "Screenshotting this for the group chat."
+      {
+       "t": "Screenshotting this for the group chat.",
+       "retired": true
+      }
      ],
      "steam": [
       "Embarrassing. Unfollowed."
@@ -3529,7 +3876,10 @@
      "clean": [
       "Double kill, double commission!",
       "Two recruits, one party!",
-      "Buy one, get one free!"
+      {
+       "t": "Buy one, get one free!",
+       "retired": true
+      }
      ],
      "steam": [
       "Double! That's a bonus tier.",
@@ -3539,7 +3889,10 @@
     "triple": {
      "clean": [
       "Triple! I'm basically a CEO!",
-      "Three kills, one empire."
+      {
+       "t": "Three kills, one empire.",
+       "retired": true
+      }
      ],
      "steam": [
       "Hat trick, boss babe edition."
@@ -3547,7 +3900,10 @@
     },
     "rampage": {
      "clean": [
-      "I'm on FIRE, girl!",
+      {
+       "t": "I'm on FIRE, girl!",
+       "retired": true
+      },
       "This is my empire era!"
      ],
      "steam": [
@@ -3556,115 +3912,190 @@
     },
     "reload": {
      "clean": [
-      "Reloading. Manifesting more ammo.",
+      {
+       "t": "Reloading. Manifesting more ammo.",
+       "retired": true
+      },
       "Refilling my sample kit."
      ],
      "steam": [
-      "Rebooting my girlboss energy."
+      {
+       "t": "Rebooting my girlboss energy.",
+       "retired": true
+      }
      ]
     },
     "spotted": {
      "clean": [
-      "Hey girl! I see you!",
+      {
+       "t": "Hey girl! I see you!",
+       "retired": true
+      },
       "Spotted a future recruit."
      ],
      "steam": [
-      "Prospect acquired. Sending a DM."
+      {
+       "t": "Prospect acquired. Sending a DM.",
+       "retired": true
+      }
      ]
     },
     "lowHealth": {
      "clean": [
-      "The universe is testing me!",
+      {
+       "t": "The universe is testing me!",
+       "retired": true
+      },
       "My aura is glitching."
      ],
      "steam": [
-      "Low health, high vibes though."
+      {
+       "t": "Low health, high vibes though.",
+       "retired": true
+      }
      ]
     },
     "objective": {
      "clean": [
       "Securing this for my team!",
-      "This point is my territory now."
+      {
+       "t": "This point is my territory now.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Claiming it. Like my tax write-offs."
+      {
+       "t": "Claiming it. Like my tax write-offs.",
+       "retired": true
+      }
      ]
     },
     "enemyStreak": {
      "clean": [
-      "Someone's upline needs a talking-to.",
+      {
+       "t": "Someone's upline needs a talking-to.",
+       "retired": true
+      },
       "End that streak, bestie!"
      ],
      "steam": [
-      "That streak? So last quarter."
+      {
+       "t": "That streak? So last quarter.",
+       "retired": true
+      }
      ]
     },
     "lastAlive": {
      "clean": [
-      "Last one! My downline believes!",
+      {
+       "t": "Last one! My downline believes!",
+       "retired": true
+      },
       "Just me and my dreams."
      ],
      "steam": [
-      "Solo CEO mode. Activated."
+      {
+       "t": "Solo CEO mode. Activated.",
+       "retired": true
+      }
      ]
     },
     "roundStart": {
      "clean": [
       "New round, new opportunities!",
-      "Let's crush it, team!"
+      {
+       "t": "Let's crush it, team!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Rise and grind, besties."
+      {
+       "t": "Rise and grind, besties.",
+       "retired": true
+      }
      ]
     },
     "ownStreak": {
      "clean": [
-      "Streaking! My mentor is proud!",
+      {
+       "t": "Streaking! My mentor is proud!",
+       "retired": true
+      },
       "Five kills! Promotion incoming!"
      ],
      "steam": [
-      "On a roll. Like my enrollments."
+      {
+       "t": "On a roll. Like my enrollments.",
+       "retired": true
+      }
      ]
     },
     "firstBlood": {
      "clean": [
       "First blood! First sale!",
-      "The first one's always free."
+      {
+       "t": "The first one's always free.",
+       "retired": true
+      }
      ],
      "steam": [
-      "First blood. Who wants in?"
+      {
+       "t": "First blood. Who wants in?",
+       "retired": true
+      }
      ]
     },
     "selfKill": {
      "clean": [
-      "The universe redirected me.",
+      {
+       "t": "The universe redirected me.",
+       "retired": true
+      },
       "That was a learning experience."
      ],
      "steam": [
-      "Plot twist: I meant that."
+      {
+       "t": "Plot twist: I meant that.",
+       "retired": true
+      }
      ]
     },
     "campingSnitch": {
      "clean": [
-      "Someone's hiding in the garage.",
+      {
+       "t": "Someone's hiding in the garage.",
+       "retired": true
+      },
       "Camper spotted. Not very boss babe."
      ],
      "steam": [
-      "Camping? That's not the hustle."
+      {
+       "t": "Camping? That's not the hustle.",
+       "retired": true
+      }
      ]
     },
     "streakDestroyed": {
      "clean": [
-      "Your empire just crumbled, babe.",
+      {
+       "t": "Your empire just crumbled, babe.",
+       "retired": true
+      },
       "Downline: deleted."
      ],
      "steam": [
-      "Streak over. Back to retail."
+      {
+       "t": "Streak over. Back to retail.",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
-      "We did it, team! Group hug!",
+      {
+       "t": "We did it, team! Group hug!",
+       "retired": true
+      },
       "Victory! Retire your husbands!"
      ],
      "steam": [
@@ -3673,7 +4104,10 @@
     },
     "defeat": {
      "clean": [
-      "We lost, but we grew.",
+      {
+       "t": "We lost, but we grew.",
+       "retired": true
+      },
       "The universe had other plans."
      ],
      "steam": [
@@ -3682,20 +4116,32 @@
     },
     "killcam": {
      "clean": [
-      "Watch and learn, girl!",
+      {
+       "t": "Watch and learn, girl!",
+       "retired": true
+      },
       "Replay that. Take notes."
      ],
      "steam": [
-      "Killcam: my highlight reel."
+      {
+       "t": "Killcam: my highlight reel.",
+       "retired": true
+      }
      ]
     },
     "campingWarn": {
      "clean": [
-      "Am I camping? Let me journal.",
+      {
+       "t": "Am I camping? Let me journal.",
+       "retired": true
+      },
       "Sitting still? Not very mindful."
      ],
      "steam": [
-      "Me? Camping? Never."
+      {
+       "t": "Me? Camping? Never.",
+       "retired": true
+      }
      ]
     }
    }
@@ -3739,28 +4185,49 @@
     "campingSnitch": {
      "clean": [
       "Someone's camping over there!",
-      "Camper spotted!",
-      "Tell them to move!"
+      {
+       "t": "Camper spotted!",
+       "retired": true
+      },
+      {
+       "t": "Tell them to move!",
+       "retired": true
+      }
      ],
      "steam": [
       "Camper alert!",
-      "Snitching on a camper!"
+      {
+       "t": "Snitching on a camper!",
+       "retired": true
+      }
      ]
     },
     "campingWarn": {
      "clean": [
-      "Move those paws!",
-      "Stop camping, go play!",
+      {
+       "t": "Move those paws!",
+       "retired": true
+      },
+      {
+       "t": "Stop camping, go play!",
+       "retired": true
+      },
       "Zoomies, not camping!"
      ],
      "steam": [
-      "Keep moving!",
+      {
+       "t": "Keep moving!",
+       "retired": true
+      },
       "No camping!"
      ]
     },
     "defeat": {
      "clean": [
-      "Good game, everyone.",
+      {
+       "t": "Good game, everyone.",
+       "retired": true
+      },
       "We'll get them next time!",
       "Tails down, but proud."
      ],
@@ -3772,68 +4239,123 @@
     "double": {
      "clean": [
       "Double! Double the paws!",
-      "Two for one special!",
-      "Double takedown, double badge!",
-      "Twofer, uwu!"
+      {
+       "t": "Two for one special!",
+       "retired": true
+      },
+      {
+       "t": "Double takedown, double badge!",
+       "retired": true
+      },
+      {
+       "t": "Twofer, uwu!",
+       "retired": true
+      }
      ],
      "steam": [
       "Buy one, get one!",
-      "Combo commission!",
-      "Two badges, one match."
+      {
+       "t": "Combo commission!",
+       "retired": true
+      },
+      {
+       "t": "Two badges, one match.",
+       "retired": true
+      }
      ]
     },
     "enemyStreak": {
      "clean": [
-      "Someone stop that streak!",
-      "Enemy's on a roll!",
+      {
+       "t": "Someone stop that streak!",
+       "retired": true
+      },
+      {
+       "t": "Enemy's on a roll!",
+       "retired": true
+      },
       "Take them down, team!"
      ],
      "steam": [
-      "Streak alert!",
+      {
+       "t": "Streak alert!",
+       "retired": true
+      },
       "Shut them down!"
      ]
     },
     "firstBlood": {
      "clean": [
       "First blood! Tail wag!",
-      "I got the first one!",
-      "OwO, first takedown!"
+      {
+       "t": "I got the first one!",
+       "retired": true
+      },
+      {
+       "t": "OwO, first takedown!",
+       "retired": true
+      }
      ],
      "steam": [
       "First blood, baby!",
-      "Opening kill, mine!"
+      {
+       "t": "Opening kill, mine!",
+       "retired": true
+      }
      ]
     },
     "headshot": {
      "clean": [
       "Headshot! Right between the ears!",
       "Boop! Got your nose!",
-      "One shot, one suit!",
-      "Sniped, uwu!"
+      {
+       "t": "One shot, one suit!",
+       "retired": true
+      },
+      {
+       "t": "Sniped, uwu!",
+       "retired": true
+      }
      ],
      "steam": [
       "That shot cost extra.",
-      "Headshot tier unlocked.",
+      {
+       "t": "Headshot tier unlocked.",
+       "retired": true
+      },
       "Precision paw work."
      ]
     },
     "humiliated": {
      "clean": [
-      "Okay, that was embarrassing.",
+      {
+       "t": "Okay, that was embarrassing.",
+       "retired": true
+      },
       "My sona would never!",
-      "Uwu, that hurt my pride."
+      {
+       "t": "Uwu, that hurt my pride.",
+       "retired": true
+      }
      ],
      "steam": [
       "Ouch. That stung.",
-      "Not my finest moment."
+      {
+       "t": "Not my finest moment.",
+       "retired": true
+      }
      ]
     },
     "kill": {
      "clean": [
       "Tail wag! Tail wag!",
-      "Paw-pad high five!",
+      {
+       "t": "Paw-pad high five!",
+       "retired": true
+      },
       "My sona approves of that.",
-      "OwO, nice takedown!"
+      "OwO, nice takedown!",
+      "I'm on a roll!"
      ],
      "steam": [
       "Commission: one takedown.",
@@ -3844,140 +4366,252 @@
     "killcam": {
      "clean": [
       "That one's for the highlight reel, uwu!",
-      "That one's for the reel!",
-      "Highlight material, uwu!"
+      {
+       "t": "That one's for the reel!",
+       "retired": true
+      },
+      {
+       "t": "Highlight material, uwu!",
+       "retired": true
+      }
      ],
      "steam": [
       "Enjoy the show!",
-      "Killcam superstar!"
+      {
+       "t": "Killcam superstar!",
+       "retired": true
+      }
      ]
     },
     "lastAlive": {
      "clean": [
-      "Just me? Okay, I got this!",
-      "Last one standing!",
+      {
+       "t": "Just me? Okay, I got this!",
+       "retired": true
+      },
+      {
+       "t": "Last one standing!",
+       "retired": true
+      },
       "Solo pup mode!"
      ],
      "steam": [
-      "All on me!",
+      {
+       "t": "All on me!",
+       "retired": true
+      },
       "Last alive, let's go!"
      ]
     },
     "lowHealth": {
      "clean": [
       "Ow, my suit!",
-      "I'm hurt, need a breather!",
-      "Paws down, I'm struggling!"
+      {
+       "t": "I'm hurt, need a breather!",
+       "retired": true
+      },
+      {
+       "t": "Paws down, I'm struggling!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Health's low!",
+      {
+       "t": "Health's low!",
+       "retired": true
+      },
       "Need backup, pronto!"
      ]
     },
     "melee": {
      "clean": [
       "Paw slap!",
-      "Boop attack!",
-      "Suit up, fists out!"
+      {
+       "t": "Boop attack!",
+       "retired": true
+      },
+      {
+       "t": "Suit up, fists out!",
+       "retired": true
+      }
      ],
      "steam": [
       "Melee, baby!",
-      "Close and personal!"
+      {
+       "t": "Close and personal!",
+       "retired": true
+      }
      ]
     },
     "objective": {
      "clean": [
-      "On the objective!",
-      "Securing the point!",
+      {
+       "t": "On the objective!",
+       "retired": true
+      },
+      {
+       "t": "Securing the point!",
+       "retired": true
+      },
       "Badge objective, let's go!"
      ],
      "steam": [
       "Objective time!",
-      "Moving to the point!"
+      {
+       "t": "Moving to the point!",
+       "retired": true
+      }
      ]
     },
     "ownStreak": {
      "clean": [
-      "I'm on a streak!",
-      "Keep it rolling!",
+      {
+       "t": "I'm on a streak!",
+       "retired": true
+      },
+      {
+       "t": "Keep it rolling!",
+       "retired": true
+      },
       "Streaking like a champ!"
      ],
      "steam": [
-      "Streak alive!",
+      {
+       "t": "Streak alive!",
+       "retired": true
+      },
       "Feeling unstoppable!"
      ]
     },
     "rampage": {
      "clean": [
       "I'm on a roll!",
-      "Nobody can stop me!",
-      "Full zoomies mode!"
+      {
+       "t": "Nobody can stop me!",
+       "retired": true
+      },
+      {
+       "t": "Full zoomies mode!",
+       "retired": true
+      }
      ],
      "steam": [
       "Rampage! Feel the fluff!",
-      "Unstoppable fur force!"
+      {
+       "t": "Unstoppable fur force!",
+       "retired": true
+      }
      ]
     },
     "reload": {
      "clean": [
-      "Reloading, one sec!",
+      {
+       "t": "Reloading, one sec!",
+       "retired": true
+      },
       "Paws are busy!",
-      "Swapping mags, hold on!"
+      {
+       "t": "Swapping mags, hold on!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Reloading!",
+      {
+       "t": "Reloading!",
+       "retired": true
+      },
       "Fresh mag incoming!"
      ]
     },
     "revenge": {
      "clean": [
       "You messed with the wrong pup!",
-      "Revenge is sweet, uwu!",
-      "My sona would never forgive that!"
+      {
+       "t": "Revenge is sweet, uwu!",
+       "retired": true
+      },
+      {
+       "t": "My sona would never forgive that!",
+       "retired": true
+      }
      ],
      "steam": [
       "Payback, paw style.",
-      "That's for last time!"
+      {
+       "t": "That's for last time!",
+       "retired": true
+      }
      ]
     },
     "roundStart": {
      "clean": [
-      "Round start! Let's go!",
+      {
+       "t": "Round start! Let's go!",
+       "retired": true
+      },
       "Paws up, team!",
-      "New round, new badges!"
+      {
+       "t": "New round, new badges!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Here we go!",
+      {
+       "t": "Here we go!",
+       "retired": true
+      },
       "Round one, fight!"
      ]
     },
     "selfKill": {
      "clean": [
-      "Oops, my bad!",
+      {
+       "t": "Oops, my bad!",
+       "retired": true
+      },
       "Tripped over my own tail!",
-      "That was NOT the plan!"
+      {
+       "t": "That was NOT the plan!",
+       "retired": true
+      }
      ],
      "steam": [
       "Friendly fire, sorry!",
-      "My mistake!"
+      {
+       "t": "My mistake!",
+       "retired": true
+      }
      ]
     },
     "shutdown": {
      "clean": [
       "Streak over, buddy!",
-      "Your run ends here!",
-      "Shut down! Tail wag!"
+      {
+       "t": "Your run ends here!",
+       "retired": true
+      },
+      {
+       "t": "Shut down! Tail wag!",
+       "retired": true
+      }
      ],
      "steam": [
       "Streak: terminated.",
-      "Party's over!"
+      {
+       "t": "Party's over!",
+       "retired": true
+      }
      ]
     },
     "spawn": {
      "clean": [
       "OwO, what's this? A match!",
       "Suit's on, tail's up!",
-      "Paw pads ready, let's go!"
+      {
+       "t": "Paw pads ready, let's go!",
+       "retired": true
+      },
+      "Paws up, team!"
      ],
      "steam": [
       "Time to earn that badge.",
@@ -3987,40 +4621,70 @@
     "spotted": {
      "clean": [
       "OwO, who's that?",
-      "Enemy spotted, paws up!",
-      "I see you, friend!"
+      {
+       "t": "Enemy spotted, paws up!",
+       "retired": true
+      },
+      {
+       "t": "I see you, friend!",
+       "retired": true
+      }
      ],
      "steam": [
       "Eyes on one!",
-      "Got eyes on one!"
+      {
+       "t": "Got eyes on one!",
+       "retired": true
+      }
      ]
     },
     "streakDestroyed": {
      "clean": [
-      "Streak broken!",
+      {
+       "t": "Streak broken!",
+       "retired": true
+      },
       "Got the streaker!",
-      "Their run is done!"
+      {
+       "t": "Their run is done!",
+       "retired": true
+      }
      ],
      "steam": [
       "Streak destroyed!",
-      "Took them out!"
+      {
+       "t": "Took them out!",
+       "retired": true
+      }
      ]
     },
     "triple": {
      "clean": [
       "Triple! I'm unstoppable!",
-      "Three in a row!",
-      "Hat trick, furry edition!"
+      {
+       "t": "Three in a row!",
+       "retired": true
+      },
+      {
+       "t": "Hat trick, furry edition!",
+       "retired": true
+      }
      ],
      "steam": [
       "Triple threat, baby!",
-      "Three for the highlight reel."
+      {
+       "t": "Three for the highlight reel.",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
       "We won! Group howl!",
-      "Victory! Paw party!",
+      {
+       "t": "Victory! Paw party!",
+       "retired": true
+      },
       "Best pack ever, uwu!"
      ],
      "steam": [
@@ -4078,29 +4742,50 @@
    "lines": {
     "campingSnitch": {
      "clean": [
-      "There's a camper! Mods, do your thing!",
-      "Snitching! It's literally my job!",
+      {
+       "t": "There's a camper! Mods, do your thing!",
+       "retired": true
+      },
+      {
+       "t": "Snitching! It's literally my job!",
+       "retired": true
+      },
       "Camper reported! Enjoy the ban!"
      ],
      "steam": [
-      "Camper spotted. I'm telling.",
+      {
+       "t": "Camper spotted. I'm telling.",
+       "retired": true
+      },
       "Reported. The ban hammer hungers."
      ]
     },
     "campingWarn": {
      "clean": [
-      "Stop camping! That's against the rules!",
-      "Move, camper! Rule 7!",
+      {
+       "t": "Stop camping! That's against the rules!",
+       "retired": true
+      },
+      {
+       "t": "Move, camper! Rule 7!",
+       "retired": true
+      },
       "Camping? In MY server?"
      ],
      "steam": [
-      "Move it, camper. Final warning.",
+      {
+       "t": "Move it, camper. Final warning.",
+       "retired": true
+      },
       "Camping's a bannable offense here."
      ]
     },
     "defeat": {
      "clean": [
-      "Defeat?! This is a filler season!",
+      {
+       "t": "Defeat?! This is a filler season!",
+       "retired": true
+      },
       "We lost? The manga was better!",
       "Rematch! I demand a second season!"
      ],
@@ -4111,61 +4796,112 @@
     },
     "double": {
      "clean": [
-      "Double kill! Two-episode special!",
+      {
+       "t": "Double kill! Two-episode special!",
+       "retired": true
+      },
       "Banned, and banned again!",
-      "Friendship doubles the damage!",
-      "NANI?! Twice?!"
+      {
+       "t": "Friendship doubles the damage!",
+       "retired": true
+      },
+      {
+       "t": "NANI?! Twice?!",
+       "retired": true
+      }
      ],
      "steam": [
       "Double ban. Mods are asleep.",
-      "Two for one finale!",
-      "Combo! Chat is spamming emotes."
+      {
+       "t": "Two for one finale!",
+       "retired": true
+      },
+      {
+       "t": "Combo! Chat is spamming emotes.",
+       "retired": true
+      }
      ]
     },
     "enemyStreak": {
      "clean": [
-      "Enemy's streaking! Someone nerf them!",
+      {
+       "t": "Enemy's streaking! Someone nerf them!",
+       "retired": true
+      },
       "They're the protagonist now?!",
-      "End their arc, team!"
+      {
+       "t": "End their arc, team!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Enemy streak! This is bad writing.",
+      {
+       "t": "Enemy streak! This is bad writing.",
+       "retired": true
+      },
       "Shut down their protagonist arc!"
      ]
     },
     "firstBlood": {
      "clean": [
-      "First blood! Episode one!",
+      {
+       "t": "First blood! Episode one!",
+       "retired": true
+      },
       "The season starts with a ban!",
-      "First kill! Senpai, did you see?!"
+      {
+       "t": "First kill! Senpai, did you see?!",
+       "retired": true
+      }
      ],
      "steam": [
       "First blood! Cold open, baby!",
-      "Opening scene. I'm the lead."
+      {
+       "t": "Opening scene. I'm the lead.",
+       "retired": true
+      }
      ]
     },
     "headshot": {
      "clean": [
-      "Headshot! Called it like an episode title!",
-      "One shot, one finale!",
+      {
+       "t": "Headshot! Called it like an episode title!",
+       "retired": true
+      },
+      {
+       "t": "One shot, one finale!",
+       "retired": true
+      },
       "Your arc ended early!",
       "Bullseye, m'lady!"
      ],
      "steam": [
-      "Pop! Like my energy drink tab.",
+      {
+       "t": "Pop! Like my energy drink tab.",
+       "retired": true
+      },
       "Cranial season finale.",
       "Read the manga. Spoilers."
      ]
     },
     "humiliated": {
      "clean": [
-      "That... that was filler!",
+      {
+       "t": "That... that was filler!",
+       "retired": true
+      },
       "I demand a rematch arc!",
-      "My honor! My beautiful honor!"
+      {
+       "t": "My honor! My beautiful honor!",
+       "retired": true
+      }
      ],
      "steam": [
       "Humiliated?! This is a dark timeline.",
-      "That death was non-canon!"
+      {
+       "t": "That death was non-canon!",
+       "retired": true
+      }
      ]
     },
     "kill": {
@@ -4173,7 +4909,11 @@
       "Banned! Reason: existing!",
       "Senpai noticed that one!",
       "NANI?! You died?!",
-      "The power of friendship wins!"
+      {
+       "t": "The power of friendship wins!",
+       "retired": true
+      },
+      "I'M THE PROTAGONIST NOW!"
      ],
      "steam": [
       "Permabanned. No appeal.",
@@ -4184,139 +4924,250 @@
     "killcam": {
      "clean": [
       "Enjoy the replay, casual!",
-      "That's my highlight reel!",
-      "Watch and learn, NPC!"
+      {
+       "t": "That's my highlight reel!",
+       "retired": true
+      },
+      {
+       "t": "Watch and learn, NPC!",
+       "retired": true
+      }
      ],
      "steam": [
       "Killcam! Frame it, chat.",
-      "Replay that in slow-mo."
+      {
+       "t": "Replay that in slow-mo.",
+       "retired": true
+      }
      ]
     },
     "lastAlive": {
      "clean": [
-      "Last one alive! Final episode!",
-      "It's all on me! Dramatic!",
+      {
+       "t": "Last one alive! Final episode!",
+       "retired": true
+      },
+      {
+       "t": "It's all on me! Dramatic!",
+       "retired": true
+      },
       "One mod against the world!"
      ],
      "steam": [
-      "Last alive! This is my movie now.",
+      {
+       "t": "Last alive! This is my movie now.",
+       "retired": true
+      },
       "Solo finale. No pressure, chat."
      ]
     },
     "lowHealth": {
      "clean": [
-      "I'm at one HP! Dramatic!",
+      {
+       "t": "I'm at one HP! Dramatic!",
+       "retired": true
+      },
       "This is my tragic backstory!",
-      "Need a heal! Power of friendship!"
+      {
+       "t": "Need a heal! Power of friendship!",
+       "retired": true
+      }
      ],
      "steam": [
       "Low HP! Cue the sad piano.",
-      "One hit from a flashback scene!"
+      {
+       "t": "One hit from a flashback scene!",
+       "retired": true
+      }
      ]
     },
     "melee": {
      "clean": [
       "BAN HAMMER!",
-      "Eat mall katana!",
-      "Hammer of justice!"
+      {
+       "t": "Eat mall katana!",
+       "retired": true
+      },
+      {
+       "t": "Hammer of justice!",
+       "retired": true
+      }
      ],
      "steam": [
       "Banned by blunt force.",
-      "The hammer has spoken."
+      {
+       "t": "The hammer has spoken.",
+       "retired": true
+      }
      ]
     },
     "objective": {
      "clean": [
-      "On the objective! For the guild!",
-      "Securing! This is canon!",
+      {
+       "t": "On the objective! For the guild!",
+       "retired": true
+      },
+      {
+       "t": "Securing! This is canon!",
+       "retired": true
+      },
       "Objective! No beach episode distractions!"
      ],
      "steam": [
-      "On point. The plot demands it.",
+      {
+       "t": "On point. The plot demands it.",
+       "retired": true
+      },
       "Objective secured, chat goes wild."
      ]
     },
     "ownStreak": {
      "clean": [
       "Streaking! I'm the main character!",
-      "Five kills! No filler!",
-      "The power of friendship compounds!"
+      {
+       "t": "Five kills! No filler!",
+       "retired": true
+      },
+      {
+       "t": "The power of friendship compounds!",
+       "retired": true
+      }
      ],
      "steam": [
-      "On a streak! Mods can't stop me!",
+      {
+       "t": "On a streak! Mods can't stop me!",
+       "retired": true
+      },
       "Streak! Someone update my wiki page!"
      ]
     },
     "rampage": {
      "clean": [
       "I'M THE PROTAGONIST NOW!",
-      "No filler episodes here!",
-      "Witness my final form!"
+      {
+       "t": "No filler episodes here!",
+       "retired": true
+      },
+      {
+       "t": "Witness my final form!",
+       "retired": true
+      }
      ],
      "steam": [
       "Rampage! The mods fear me!",
-      "Canon event. You can't stop this."
+      {
+       "t": "Canon event. You can't stop this.",
+       "retired": true
+      }
      ]
     },
     "reload": {
      "clean": [
-      "Reloading! Cover me, senpai!",
-      "Swapping mags, dramatic pause!",
+      {
+       "t": "Reloading! Cover me, senpai!",
+       "retired": true
+      },
+      {
+       "t": "Swapping mags, dramatic pause!",
+       "retired": true
+      },
       "Just a filler moment!"
      ],
      "steam": [
-      "Reloading. Don't skip this scene.",
+      {
+       "t": "Reloading. Don't skip this scene.",
+       "retired": true
+      },
       "Tactical energy drink break."
      ]
     },
     "revenge": {
      "clean": [
       "Revenge arc starts NOW!",
-      "You killed me? NANI?!",
-      "This means war, filler character!"
+      {
+       "t": "You killed me? NANI?!",
+       "retired": true
+      },
+      {
+       "t": "This means war, filler character!",
+       "retired": true
+      }
      ],
      "steam": [
       "Payback, dubbed and subbed.",
-      "I kept the receipt, traitor."
+      {
+       "t": "I kept the receipt, traitor.",
+       "retired": true
+      }
      ]
     },
     "roundStart": {
      "clean": [
       "Round start! Previously, on HOA Warfare!",
-      "New episode! Stay frosty, chat!",
-      "Let's go! No recap needed!"
+      {
+       "t": "New episode! Stay frosty, chat!",
+       "retired": true
+      },
+      {
+       "t": "Let's go! No recap needed!",
+       "retired": true
+      }
      ],
      "steam": [
       "Round start. Skip the intro.",
-      "New round, same protagonist."
+      {
+       "t": "New round, same protagonist.",
+       "retired": true
+      }
      ]
     },
     "selfKill": {
      "clean": [
-      "I did that to myself? NANI?!",
-      "That was... an artistic choice!",
+      {
+       "t": "I did that to myself? NANI?!",
+       "retired": true
+      },
+      {
+       "t": "That was... an artistic choice!",
+       "retired": true
+      },
       "Plot twist! I betrayed me!"
      ],
      "steam": [
       "Self kill. The writers hate me.",
-      "Oops. That's going in the blooper reel."
+      {
+       "t": "Oops. That's going in the blooper reel.",
+       "retired": true
+      }
      ]
     },
     "shutdown": {
      "clean": [
       "Streak over! Series canceled!",
-      "I muted your whole streak!",
-      "Your finale got skipped!"
+      {
+       "t": "I muted your whole streak!",
+       "retired": true
+      },
+      {
+       "t": "Your finale got skipped!",
+       "retired": true
+      }
      ],
      "steam": [
       "Shutdown! Back to episode one.",
-      "Canceled. Like your favorite show."
+      {
+       "t": "Canceled. Like your favorite show.",
+       "retired": true
+      }
      ]
     },
     "spawn": {
      "clean": [
       "Senpai noticed me! Deploying!",
-      "Power of friendship, ENGAGE!",
+      {
+       "t": "Power of friendship, ENGAGE!",
+       "retired": true
+      },
       "Unpaid and proud, let's go!"
      ],
      "steam": [
@@ -4327,41 +5178,71 @@
     "spotted": {
      "clean": [
       "Enemy spotted! Chat, clip this!",
-      "Contact! This is not a drill!",
-      "I see you, lurker!"
+      {
+       "t": "Contact! This is not a drill!",
+       "retired": true
+      },
+      {
+       "t": "I see you, lurker!",
+       "retired": true
+      }
      ],
      "steam": [
       "Spotted. Say hi to the clip.",
-      "Eyes on the lurker."
+      {
+       "t": "Eyes on the lurker.",
+       "retired": true
+      }
      ]
     },
     "streakDestroyed": {
      "clean": [
-      "My streak! My beautiful streak!",
+      {
+       "t": "My streak! My beautiful streak!",
+       "retired": true
+      },
       "You ended my season early!",
-      "That was my finale episode!"
+      {
+       "t": "That was my finale episode!",
+       "retired": true
+      }
      ],
      "steam": [
-      "Streak destroyed! The fandom will riot!",
+      {
+       "t": "Streak destroyed! The fandom will riot!",
+       "retired": true
+      },
       "My arc! You killed my arc!"
      ]
     },
     "triple": {
      "clean": [
       "Triple! The trilogy is complete!",
-      "Three bans, zero regrets!",
-      "This is my final form!"
+      {
+       "t": "Three bans, zero regrets!",
+       "retired": true
+      },
+      {
+       "t": "This is my final form!",
+       "retired": true
+      }
      ],
      "steam": [
       "Triple kill! Unpaid overtime!",
-      "Hat trick, beach episode style!"
+      {
+       "t": "Hat trick, beach episode style!",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
       "Victory! The power of friendship prevails!",
       "We won! Beach episode unlocked!",
-      "GG! The mods approve!"
+      {
+       "t": "GG! The mods approve!",
+       "retired": true
+      }
      ],
      "steam": [
       "Victory! Unpaid, but victorious!",
@@ -4417,28 +5298,49 @@
     "campingSnitch": {
      "clean": [
       "Somebody's hiding in the pantry.",
-      "There's a camper by the fence.",
-      "She's been there all round."
+      {
+       "t": "There's a camper by the fence.",
+       "retired": true
+      },
+      {
+       "t": "She's been there all round.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Camper spotted. Handle it.",
+      {
+       "t": "Camper spotted. Handle it.",
+       "retired": true
+      },
       "Snitching. It's allowed today."
      ]
     },
     "campingWarn": {
      "clean": [
-      "Move those feet, sweetie.",
+      {
+       "t": "Move those feet, sweetie.",
+       "retired": true
+      },
       "No sitting in the kitchen all day.",
-      "Up and at 'em, honey."
+      {
+       "t": "Up and at 'em, honey.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Move. Now.",
+      {
+       "t": "Move. Now.",
+       "retired": true
+      },
       "Camping's for tents, not corners."
      ]
     },
     "defeat": {
      "clean": [
-      "We'll get 'em next time, loves.",
+      {
+       "t": "We'll get 'em next time, loves.",
+       "retired": true
+      },
       "Even sourdough fails sometimes.",
       "Back to the kitchen, everyone."
      ],
@@ -4449,69 +5351,125 @@
     },
     "double": {
      "clean": [
-      "Two for one, like my coupons.",
+      {
+       "t": "Two for one, like my coupons.",
+       "retired": true
+      },
       "Double batch, fresh from the oven.",
-      "Twins! Just like my sourdough loaves.",
-      "One for me, one for the vlog."
+      {
+       "t": "Twins! Just like my sourdough loaves.",
+       "retired": true
+      },
+      {
+       "t": "One for me, one for the vlog.",
+       "retired": true
+      }
      ],
      "steam": [
       "Double kill, double churn.",
-      "Two down, zero preservatives.",
-      "Batch cooking, baby."
+      {
+       "t": "Two down, zero preservatives.",
+       "retired": true
+      },
+      {
+       "t": "Batch cooking, baby.",
+       "retired": true
+      }
      ]
     },
     "enemyStreak": {
      "clean": [
-      "Somebody stop that one.",
+      {
+       "t": "Somebody stop that one.",
+       "retired": true
+      },
       "She's had too much sugar.",
-      "That streak ends now."
+      {
+       "t": "That streak ends now.",
+       "retired": true
+      }
      ],
      "steam": [
       "Shut her down.",
-      "End it. For the neighborhood."
+      {
+       "t": "End it. For the neighborhood.",
+       "retired": true
+      }
      ]
     },
     "firstBlood": {
      "clean": [
       "First blood! Who's proud of mama?",
-      "Dinner's served, and it's early.",
-      "First of the day, fresh."
+      {
+       "t": "Dinner's served, and it's early.",
+       "retired": true
+      },
+      {
+       "t": "First of the day, fresh.",
+       "retired": true
+      }
      ],
      "steam": [
       "First blood. Farm fresh.",
-      "Opened the stand early."
+      {
+       "t": "Opened the stand early.",
+       "retired": true
+      }
      ]
     },
     "headshot": {
      "clean": [
       "Right between the eyes, bless.",
-      "One shot, like my sourdough.",
+      {
+       "t": "One shot, like my sourdough.",
+       "retired": true
+      },
       "Headshot, no toxins involved.",
-      "Precision, like my meal prep."
+      {
+       "t": "Precision, like my meal prep.",
+       "retired": true
+      }
      ],
      "steam": [
       "Dome. Homestead rules.",
       "Clean shot, clean living.",
-      "Aimed with homestead precision."
+      {
+       "t": "Aimed with homestead precision.",
+       "retired": true
+      }
      ]
     },
     "humiliated": {
      "clean": [
       "That did NOT happen.",
-      "The camera did NOT see that.",
-      "Delete that footage immediately."
+      {
+       "t": "The camera did NOT see that.",
+       "retired": true
+      },
+      {
+       "t": "Delete that footage immediately.",
+       "retired": true
+      }
      ],
      "steam": [
       "We don't talk about that.",
-      "Cut. We're reshooting."
+      {
+       "t": "Cut. We're reshooting.",
+       "retired": true
+      }
      ]
     },
     "kill": {
      "clean": [
       "That one's for my homestead.",
-      "Bless your aim, sweetie.",
+      {
+       "t": "Bless your aim, sweetie.",
+       "retired": true
+      },
       "Should've drank your raw milk.",
-      "Into the compost with you."
+      "Into the compost with you.",
+      "And that's how it's done.",
+      "Destroyed. Composted."
      ],
      "steam": [
       "Harvested.",
@@ -4522,139 +5480,251 @@
     "killcam": {
      "clean": [
       "Smile for the killcam, honey.",
-      "This one's going in the vlog.",
-      "Say cheese, sweetie."
+      {
+       "t": "This one's going in the vlog.",
+       "retired": true
+      },
+      {
+       "t": "Say cheese, sweetie.",
+       "retired": true
+      },
+      "Shut down. Compost it."
      ],
      "steam": [
       "Killcam's up. Looking cute.",
-      "That's content, baby."
+      {
+       "t": "That's content, baby.",
+       "retired": true
+      }
      ]
     },
     "lastAlive": {
      "clean": [
-      "It's just me? Fine.",
-      "Mama's got this alone.",
+      {
+       "t": "It's just me? Fine.",
+       "retired": true
+      },
+      {
+       "t": "Mama's got this alone.",
+       "retired": true
+      },
       "One homemaker against the world."
      ],
      "steam": [
-      "Last one. Make it count.",
+      {
+       "t": "Last one. Make it count.",
+       "retired": true
+      },
       "Solo. Like my mornings."
      ]
     },
     "lowHealth": {
      "clean": [
       "I need my elderberry syrup!",
-      "Mama needs a time-out.",
-      "Somebody get the bone broth!"
+      {
+       "t": "Mama needs a time-out.",
+       "retired": true
+      },
+      {
+       "t": "Somebody get the bone broth!",
+       "retired": true
+      }
      ],
      "steam": [
-      "I'm running on fumes.",
+      {
+       "t": "I'm running on fumes.",
+       "retired": true
+      },
       "Low. Like my patience."
      ]
     },
     "melee": {
      "clean": [
       "Eat wooden spoon!",
-      "Rolling pin says hi!",
-      "Cast iron to the face!"
+      {
+       "t": "Rolling pin says hi!",
+       "retired": true
+      },
+      {
+       "t": "Cast iron to the face!",
+       "retired": true
+      }
      ],
      "steam": [
       "Skillet justice.",
-      "Tenderized."
+      {
+       "t": "Tenderized.",
+       "retired": true
+      }
      ]
     },
     "objective": {
      "clean": [
-      "On the objective, like chores.",
+      {
+       "t": "On the objective, like chores.",
+       "retired": true
+      },
       "Somebody's gotta do the dishes.",
-      "Objective's mine, I called it."
+      {
+       "t": "Objective's mine, I called it.",
+       "retired": true
+      }
      ],
      "steam": [
       "Taking point. Like always.",
-      "Objective secured, homemaker style."
+      {
+       "t": "Objective secured, homemaker style.",
+       "retired": true
+      }
      ]
     },
     "ownStreak": {
      "clean": [
       "Mama's on a streak!",
-      "The homestead is thriving.",
-      "Three in a row, like my loaves."
+      {
+       "t": "The homestead is thriving.",
+       "retired": true
+      },
+      {
+       "t": "Three in a row, like my loaves.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Streaking. Organically.",
+      {
+       "t": "Streaking. Organically.",
+       "retired": true
+      },
       "On a roll. Literally."
      ]
     },
     "rampage": {
      "clean": [
       "Mama's on a roll today!",
-      "The homestead provides!",
-      "Nobody touches my sourdough!"
+      {
+       "t": "The homestead provides!",
+       "retired": true
+      },
+      {
+       "t": "Nobody touches my sourdough!",
+       "retired": true
+      }
      ],
      "steam": [
       "Full homestead mode.",
-      "Rampage, raw and unfiltered."
+      {
+       "t": "Rampage, raw and unfiltered.",
+       "retired": true
+      }
      ]
     },
     "reload": {
      "clean": [
       "Just kneading my mag.",
-      "Reloading, like my sourdough.",
-      "One sec, topping up."
+      {
+       "t": "Reloading, like my sourdough.",
+       "retired": true
+      },
+      {
+       "t": "One sec, topping up.",
+       "retired": true
+      }
      ],
      "steam": [
-      "Swapping mags.",
+      {
+       "t": "Swapping mags.",
+       "retired": true
+      },
       "Fresh batch loading."
      ]
     },
     "revenge": {
      "clean": [
-      "Oh, we're doing this now.",
+      {
+       "t": "Oh, we're doing this now.",
+       "retired": true
+      },
       "That was my favorite apron!",
-      "You messed with the wrong homemaker."
+      {
+       "t": "You messed with the wrong homemaker.",
+       "retired": true
+      }
      ],
      "steam": [
       "Revenge, served warm.",
-      "Payback's a batch."
+      {
+       "t": "Payback's a batch.",
+       "retired": true
+      }
      ]
     },
     "roundStart": {
      "clean": [
       "Fresh round, fresh apron.",
-      "Let's make mama proud.",
-      "Stations, everyone. Like chores."
+      {
+       "t": "Let's make mama proud.",
+       "retired": true
+      },
+      {
+       "t": "Stations, everyone. Like chores.",
+       "retired": true
+      }
      ],
      "steam": [
       "Round starting. Game faces.",
-      "Let's go. Homestead strong."
+      {
+       "t": "Let's go. Homestead strong.",
+       "retired": true
+      }
      ]
     },
     "selfKill": {
      "clean": [
-      "That was… a choice.",
-      "Nobody saw that. Right?",
+      {
+       "t": "That was… a choice.",
+       "retired": true
+      },
+      {
+       "t": "Nobody saw that. Right?",
+       "retired": true
+      },
       "My sourdough saw nothing."
      ],
      "steam": [
       "Editing that out.",
-      "Bloopers reel material."
+      {
+       "t": "Bloopers reel material.",
+       "retired": true
+      }
      ]
     },
     "shutdown": {
      "clean": [
       "Streak's over, sweetie. Hydrate.",
-      "Sit down. Have some kombucha.",
-      "Your run ends at my fence."
+      {
+       "t": "Sit down. Have some kombucha.",
+       "retired": true
+      },
+      {
+       "t": "Your run ends at my fence.",
+       "retired": true
+      }
      ],
      "steam": [
       "Shut down. Compost it.",
-      "Streak canceled, like seed oils."
+      {
+       "t": "Streak canceled, like seed oils.",
+       "retired": true
+      }
      ]
     },
     "spawn": {
      "clean": [
       "Welcome back to my kitchen.",
-      "Filming today, stay outta frame.",
+      {
+       "t": "Filming today, stay outta frame.",
+       "retired": true
+      },
       "My sourdough is my co-host."
      ],
      "steam": [
@@ -4665,39 +5735,69 @@
     "spotted": {
      "clean": [
       "I see you, sweetie.",
-      "Someone's in my garden.",
-      "Heads up, there's a stranger."
+      {
+       "t": "Someone's in my garden.",
+       "retired": true
+      },
+      {
+       "t": "Heads up, there's a stranger.",
+       "retired": true
+      }
      ],
      "steam": [
       "Contact. By the fence.",
-      "Eyes on. Apron on."
+      {
+       "t": "Eyes on. Apron on.",
+       "retired": true
+      }
      ]
     },
     "streakDestroyed": {
      "clean": [
       "And that's how it's done.",
-      "Streak's over. Back to chores.",
-      "Somebody had to say it."
+      {
+       "t": "Streak's over. Back to chores.",
+       "retired": true
+      },
+      {
+       "t": "Somebody had to say it.",
+       "retired": true
+      }
      ],
      "steam": [
       "Destroyed. Composted.",
-      "Streak's done. Moving on."
+      {
+       "t": "Streak's done. Moving on.",
+       "retired": true
+      }
      ]
     },
     "triple": {
      "clean": [
       "Triple batch! Who wants some?",
-      "Three's a homestead, honey.",
-      "My starter could never."
+      {
+       "t": "Three's a homestead, honey.",
+       "retired": true
+      },
+      {
+       "t": "My starter could never.",
+       "retired": true
+      }
      ],
      "steam": [
       "Triple. All organic.",
-      "Hat trick, homestead style."
+      {
+       "t": "Hat trick, homestead style.",
+       "retired": true
+      }
      ]
     },
     "victory": {
      "clean": [
-      "Homestead wins again!",
+      {
+       "t": "Homestead wins again!",
+       "retired": true
+      },
       "Dinner's ready, and so are we.",
       "The sourdough rises. So do we."
      ],
@@ -4745,7 +5845,10 @@
    "lines": {
     "campingSnitch": {
      "clean": [
-      "Camper by the fence. Report him.",
+      {
+       "t": "Camper by the fence. Report him.",
+       "retired": true
+      },
       "Someone's squatting on our court."
      ],
      "steam": [
@@ -4755,7 +5858,10 @@
     "campingWarn": {
      "clean": [
       "Am I camping? I'm resting my knees.",
-      "Just resting my knees here."
+      {
+       "t": "Just resting my knees here.",
+       "retired": true
+      }
      ],
      "steam": [
       "Camping? This is pacing."
@@ -4763,7 +5869,10 @@
     },
     "defeat": {
      "clean": [
-      "We lost. Blame the new balls.",
+      {
+       "t": "We lost. Blame the new balls.",
+       "retired": true
+      },
       "Defeat. I'm telling the board."
      ],
      "steam": [
@@ -4772,7 +5881,10 @@
     },
     "double": {
      "clean": [
-      "Double! Two for one.",
+      {
+       "t": "Double! Two for one.",
+       "retired": true
+      },
       "Two down. Hydration break.",
       "Dink and dunk!"
      ],
@@ -4783,7 +5895,10 @@
     "enemyStreak": {
      "clean": [
       "End that streak. It's past someone's bedtime.",
-      "Somebody stop that kid."
+      {
+       "t": "Somebody stop that kid.",
+       "retired": true
+      }
      ],
      "steam": [
       "Five kills? Showoff."
@@ -4792,7 +5907,10 @@
     "firstBlood": {
      "clean": [
       "First blood! Before noon!",
-      "Drew first blood. Barely broke a sweat."
+      {
+       "t": "Drew first blood. Barely broke a sweat.",
+       "retired": true
+      }
      ],
      "steam": [
       "First kill. Coffee's still hot."
@@ -4801,7 +5919,10 @@
     "headshot": {
      "clean": [
       "Headshot! That's a dink.",
-      "Right between the eyes.",
+      {
+       "t": "Right between the eyes.",
+       "retired": true
+      },
       "Paddle met forehead."
      ],
      "steam": [
@@ -4810,7 +5931,10 @@
     },
     "humiliated": {
      "clean": [
-      "Embarrassing. Tell your grandchildren.",
+      {
+       "t": "Embarrassing. Tell your grandchildren.",
+       "retired": true
+      },
       "That one's going on the bulletin board."
      ],
      "steam": [
@@ -4820,7 +5944,10 @@
     "kill": {
      "clean": [
       "Dinked! Stay outta the kitchen!",
-      "Stay out of the kitchen!",
+      {
+       "t": "Stay out of the kitchen!",
+       "retired": true
+      },
       "Kitchen violation. You're done.",
       "That's a body bag. Folded."
      ],
@@ -4832,7 +5959,12 @@
     "killcam": {
      "clean": [
       "Watch the replay. Learn something.",
-      "That's textbook. Frame it."
+      {
+       "t": "That's textbook. Frame it.",
+       "retired": true
+      },
+      "Shut down like the courts at nine.",
+      "Your run ends here, junior."
      ],
      "steam": [
       "Enjoy the show, junior."
@@ -4841,7 +5973,10 @@
     "lastAlive": {
      "clean": [
       "Last one. Just like bingo night.",
-      "It's all on these old knees."
+      {
+       "t": "It's all on these old knees.",
+       "retired": true
+      }
      ],
      "steam": [
       "Alone again. Naturally."
@@ -4849,7 +5984,10 @@
     },
     "lowHealth": {
      "clean": [
-      "I'm hurt! Somebody call... actually I'm fine.",
+      {
+       "t": "I'm hurt! Somebody call... actually I'm fine.",
+       "retired": true
+      },
       "Low health. Where's my brace?"
      ],
      "steam": [
@@ -4858,7 +5996,10 @@
     },
     "melee": {
      "clean": [
-      "Paddle to the face!",
+      {
+       "t": "Paddle to the face!",
+       "retired": true
+      },
       "Backhand of justice!"
      ],
      "steam": [
@@ -4867,7 +6008,10 @@
     },
     "objective": {
      "clean": [
-      "This court's ours. Has been since Tuesday.",
+      {
+       "t": "This court's ours. Has been since Tuesday.",
+       "retired": true
+      },
       "Securing the kitchen."
      ],
      "steam": [
@@ -4876,7 +6020,10 @@
     },
     "ownStreak": {
      "clean": [
-      "On a streak! Tell the clubhouse!",
+      {
+       "t": "On a streak! Tell the clubhouse!",
+       "retired": true
+      },
       "Five in a row. Unstoppable."
      ],
      "steam": [
@@ -4885,7 +6032,10 @@
     },
     "rampage": {
      "clean": [
-      "I'm on a tear! Clear the court!",
+      {
+       "t": "I'm on a tear! Clear the court!",
+       "retired": true
+      },
       "Unstoppable since '87!"
      ],
      "steam": [
@@ -4894,7 +6044,10 @@
     },
     "reload": {
      "clean": [
-      "Reloading. Knee's acting up.",
+      {
+       "t": "Reloading. Knee's acting up.",
+       "retired": true
+      },
       "New balls, please."
      ],
      "steam": [
@@ -4903,7 +6056,10 @@
     },
     "revenge": {
      "clean": [
-      "I remember everything, kid.",
+      {
+       "t": "I remember everything, kid.",
+       "retired": true
+      },
       "Revenge is a dish. Dig in."
      ],
      "steam": [
@@ -4912,7 +6068,10 @@
     },
     "roundStart": {
      "clean": [
-      "Round start. Paddles up.",
+      {
+       "t": "Round start. Paddles up.",
+       "retired": true
+      },
       "Warm up those rotator cuffs."
      ],
      "steam": [
@@ -4921,7 +6080,10 @@
     },
     "selfKill": {
      "clean": [
-      "That was my own fault. My knee buckled.",
+      {
+       "t": "That was my own fault. My knee buckled.",
+       "retired": true
+      },
       "Tripped over my own paddle."
      ],
      "steam": [
@@ -4930,7 +6092,10 @@
     },
     "shutdown": {
      "clean": [
-      "Streak's over. Nap time.",
+      {
+       "t": "Streak's over. Nap time.",
+       "retired": true
+      },
       "Shut down like the courts at nine."
      ],
      "steam": [
@@ -4939,9 +6104,14 @@
     },
     "spawn": {
      "clean": [
-      "Court time. Don't waste it.",
+      {
+       "t": "Court time. Don't waste it.",
+       "retired": true
+      },
       "Stretch those knees. Let's go.",
-      "First to the kitchen wins."
+      "First to the kitchen wins.",
+      "Warm up those rotator cuffs.",
+      "Let's finish before dinner."
      ],
      "steam": [
       "I'll outlive this lobby."
@@ -4949,7 +6119,10 @@
     },
     "spotted": {
      "clean": [
-      "I see you. These eyes work fine.",
+      {
+       "t": "I see you. These eyes work fine.",
+       "retired": true
+      },
       "Opponent spotted by the fence."
      ],
      "steam": [
@@ -4959,7 +6132,10 @@
     "streakDestroyed": {
      "clean": [
       "Streak's done. Back to shuffleboard.",
-      "Ended. Like my patience."
+      {
+       "t": "Ended. Like my patience.",
+       "retired": true
+      }
      ],
      "steam": [
       "De-streaked. You're welcome."
@@ -4967,7 +6143,10 @@
     },
     "triple": {
      "clean": [
-      "Triple! The court is mine.",
+      {
+       "t": "Triple! The court is mine.",
+       "retired": true
+      },
       "Three in a row. Bingo!"
      ],
      "steam": [
@@ -4976,7 +6155,10 @@
     },
     "victory": {
      "clean": [
-      "We won! Early-bird dinner's on me!",
+      {
+       "t": "We won! Early-bird dinner's on me!",
+       "retired": true
+      },
       "Victory! The courts stay ours."
      ],
      "steam": [
