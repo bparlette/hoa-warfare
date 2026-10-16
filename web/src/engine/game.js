@@ -89,6 +89,8 @@ export const FACTION_METADATA = {
 };
 
 const initialFaction = params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens';
+const initialDiffParam = params.get('difficulty') || params.get('bots') || 'medium';
+const initialDifficulty = ['easy', 'medium', 'hard'].includes(initialDiffParam) ? initialDiffParam : (initialDiffParam === 'normal' ? 'medium' : 'medium');
 const state = {
   faction: isDemo && !DEMO_FACTIONS.includes(initialFaction) ? 'karens' : initialFaction,
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
@@ -100,6 +102,7 @@ const state = {
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
+  difficulty: initialDifficulty,
 };
 
 const viewCanvas = typeof document !== 'undefined' ? $('view') : null;
@@ -273,9 +276,11 @@ export function buildMenu() {
   if ($('optStyle')) $('optStyle').value = state.style;
   if ($('opt007')) $('opt007').checked = state.style === '007';
   if ($('optVoice')) $('optVoice').checked = state.voice;
+  if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
   if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
 if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; };
+if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; };
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
 if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 if ($('optLegal')) $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
@@ -471,7 +476,7 @@ class Game {
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
-    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode, botDifficulty: params.get('bots') || 'normal' });
+    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode, difficulty: state.difficulty, botDifficulty: params.get('bots') || undefined });
     this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
     this.limiter = new AudioLimiter(content.rules.audioLimiter);
     this.hud = new Hud({ $, factions, weaponsData });
@@ -568,9 +573,13 @@ class Game {
       this.updateOnline(dt, paused);
     } else if (!paused) {
       if (!this.me.isBot) {
-        const assist = input.device === 'mouse' ? { slow: 1, onTarget: false } : aimAssist(sim, this.me);
+        const isEasyLock = state.difficulty === 'easy';
+        const assist = (input.device === 'mouse' && !isEasyLock)
+          ? { slow: 1, onTarget: false, locked: false }
+          : aimAssist(sim, this.me, { lockOn: isEasyLock });
         input.assist = assist.slow;
         input.onTarget = assist.onTarget;
+        input.lockTarget = assist.locked ? { yaw: assist.lockYaw, pitch: assist.lockPitch } : null;
         input.apply(this.me, dt);
       }
       this.acc = Math.min((this.acc || 0) + dt, FIXED * 5);
@@ -626,9 +635,13 @@ class Game {
     if (change) this.onRosterChange(change);
     const me = this.me;
     if (!paused) {
-      const assist = input.device === 'mouse' ? { slow: 1, onTarget: false } : aimAssist(sim, me);
+      const isEasyLock = state.difficulty === 'easy';
+      const assist = (input.device === 'mouse' && !isEasyLock)
+        ? { slow: 1, onTarget: false, locked: false }
+        : aimAssist(sim, me, { lockOn: isEasyLock });
       input.assist = assist.slow;
       input.onTarget = assist.onTarget;
+      input.lockTarget = assist.locked ? { yaw: assist.lockYaw, pitch: assist.lockPitch } : null;
       input.apply(me, dt);
     }
     s.step(dt, !paused);

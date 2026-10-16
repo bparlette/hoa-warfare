@@ -59,6 +59,19 @@ export const BOT_DIFFICULTY = {
   normal: { react: [0.3, 0.35], sigma: [0.018, 0.0011, 0.012], burst: [4, 6], pause: [0.25, 0.45], head: 0.18, turn: 7, fov: 1.3, range: 58 },
   hard:   { react: [0.16, 0.16], sigma: [0.011, 0.0007, 0.008], burst: [5, 6], pause: [0.15, 0.25], head: 0.3, turn: 10, fov: 1.5, range: 66 },
 };
+
+/**
+ * Game difficulty profiles for Demo & Full Game:
+ * - easy:   Auto lock-on when close + player takes 1/3 damage (requires 3x as many hits before dying)
+ * - medium: Player takes 1/2 damage (requires 2x as many hits before dying)
+ * - hard:   Classic 1x damage (plays the exact way it played originally)
+ */
+export const DIFFICULTY_PROFILES = {
+  easy:   { id: 'easy',   label: 'Easy (Auto Lock-On · 3x HP)', botDifficulty: 'easy',   playerDamageTakenMult: 1 / 3, lockOn: true,  lockRange: 28, lockCone: 0.55 },
+  medium: { id: 'medium', label: 'Medium (2x HP)',              botDifficulty: 'normal', playerDamageTakenMult: 1 / 2, lockOn: false, lockRange: 0,  lockCone: 0 },
+  hard:   { id: 'hard',   label: 'Hard (Classic 1x HP)',        botDifficulty: 'hard',   playerDamageTakenMult: 1,     lockOn: false, lockRange: 0,  lockCone: 0 },
+};
+
 const STEP = 0.45, GRAVITY = 20, JUMP_V = 6.8, WALK = 5.2, SPRINT = 7.4, TRAMPOLINE_V = 12;
 
 export function forwardOf(yaw, pitch = 0) {
@@ -75,14 +88,18 @@ export function emptyInput() {
 
 export class Sim {
   /**
-   * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number}} o
+   * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number, difficulty?:string}} o
    * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json
    */
-  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty = 'normal' }) {
+  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty, difficulty = null }) {
     if (!weapons) throw new Error('Sim needs weapons (data/weapons.json)');
     this.rules = rules;
     this.weapons = weapons;
-    this.botDifficulty = BOT_DIFFICULTY[botDifficulty] ? botDifficulty : 'normal';
+    const normDiff = difficulty === 'normal' ? 'medium' : difficulty;
+    this.difficulty = DIFFICULTY_PROFILES[normDiff] ? normDiff : null;
+    this.difficultyProfile = this.difficulty ? DIFFICULTY_PROFILES[this.difficulty] : null;
+    const resolvedBotDiff = botDifficulty || this.difficultyProfile?.botDifficulty || 'normal';
+    this.botDifficulty = BOT_DIFFICULTY[resolvedBotDiff] ? resolvedBotDiff : 'normal';
     this.rng = rng;
     this.map = map;
     const defaults = MODES[mode]?.defaults || {};
@@ -106,13 +123,17 @@ export class Sim {
     return this.addActor({ id, name, team, faction, isBot: true, loadout });
   }
 
-  addActor({ id, name, team, faction, isBot = true, loadout = 'default' }) {
+  addActor({ id, name, team, faction, isBot = true, loadout = 'default', damageTakenMult, easyLockOn }) {
     if (loadout === 'default' && faction && FACTION_DEFAULT_LOADOUTS[faction]) {
       loadout = FACTION_DEFAULT_LOADOUTS[faction];
     }
     const weapons = resolveLoadout(this.weapons, loadout);
+    const defaultDmgMult = !isBot && this.difficultyProfile ? this.difficultyProfile.playerDamageTakenMult : 1;
+    const defaultLockOn = !isBot && this.difficultyProfile ? !!this.difficultyProfile.lockOn : false;
     const a = {
       id, name, team, faction, isBot, weapons, triggerHeld: false,
+      damageTakenMult: typeof damageTakenMult === 'number' ? damageTakenMult : defaultDmgMult,
+      easyLockOn: typeof easyLockOn === 'boolean' ? easyLockOn : defaultLockOn,
       activeSlot: 'primary', ammoBank: {},
       pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 }, yaw: 0, pitch: 0,
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
@@ -346,6 +367,36 @@ export class Sim {
 
   eye(a) { return { x: a.pos.x, y: a.pos.y + BODY.eye, z: a.pos.z }; }
 
+  /**
+   * Easy Mode close-range auto lock-on: finds the nearest visible enemy within maxRange and front cone.
+   * Returns { actor, yaw, pitch, dist } or null.
+   */
+  findLockOnTarget(a, { maxRange = 28, maxCone = 0.55 } = {}) {
+    if (!a?.alive) return null;
+    const eye = this.eye(a);
+    const f = forwardOf(a.yaw, a.pitch);
+    let best = null, bestAng = Infinity, bestDist = Infinity, bestYaw = a.yaw, bestPitch = a.pitch;
+    for (const e of this.actors) {
+      if (!e.alive || e.team === a.team) continue;
+      const t = { x: e.pos.x, y: e.pos.y + 1.25, z: e.pos.z };
+      const dx = t.x - eye.x, dy = t.y - eye.y, dz = t.z - eye.z;
+      const d = Math.hypot(dx, dy, dz);
+      if (d > maxRange || d < 0.4) continue;
+      const ang = Math.acos(Math.max(-1, Math.min(1, (dx * f.x + dy * f.y + dz * f.z) / d)));
+      const allowedCone = d < 10 ? Math.max(maxCone, 0.85) : maxCone + 0.8 / d;
+      if (ang <= allowedCone && this.lineClear(eye, t)) {
+        if (ang < bestAng || (Math.abs(ang - bestAng) < 0.08 && d < bestDist)) {
+          best = e;
+          bestAng = ang;
+          bestDist = d;
+          bestYaw = yawTo(dx, dz);
+          bestPitch = Math.asin(Math.max(-1, Math.min(1, dy / d)));
+        }
+      }
+    }
+    return best ? { actor: best, yaw: bestYaw, pitch: bestPitch, dist: bestDist } : null;
+  }
+
   fire(a) {
     const now = this.time, w = this.activeWeapon(a);
     if (!w || now < a.nextShotAt || a.reloadUntil > 0) return;
@@ -357,10 +408,21 @@ export class Sim {
     a.firingUntil = now + 0.15;
     a.revealedUntil = Math.max(a.revealedUntil || 0, now + 1.8);
     const moving = Math.hypot(a.vel.x, a.vel.z) > 1;
-    const spread = w.spread.base * (moving ? w.spread.moveMult : 1) * (a.onGround ? 1 : w.spread.airMult);
+    let spread = w.spread.base * (moving ? w.spread.moveMult : 1) * (a.onGround ? 1 : w.spread.airMult);
+    let baseYaw = a.yaw, basePitch = a.pitch;
+    if (a.easyLockOn && !a.isBot) {
+      const lock = this.findLockOnTarget(a);
+      if (lock) {
+        baseYaw = lock.yaw;
+        basePitch = lock.pitch;
+        a.yaw = lock.yaw;
+        a.pitch = lock.pitch;
+        spread *= 0.45;
+      }
+    }
     const o = this.eye(a);
     for (let p = 0; p < (w.pellets || 1); p++) {
-      const yaw = a.yaw + gauss(this.rng) * spread, pitch = a.pitch + gauss(this.rng) * spread;
+      const yaw = baseYaw + gauss(this.rng) * spread, pitch = basePitch + gauss(this.rng) * spread;
       const dir = forwardOf(yaw, pitch);
       const hit = this.raycast(o, dir, w.range, a.id);
       this.emit({ type: 'shot', id: a.id, weaponId: w.id, from: o, to: hit.point, hitId: hit.actor?.id ?? hit.helicopter?.id ?? null, head: hit.head, kind: hit.kind });
@@ -470,11 +532,13 @@ export class Sim {
 
   damage(target, amount, attacker, { headshot = false, melee = false, explosive = false, dir = null, weaponId = null } = {}) {
     if (!target.alive || this.time < target.spawnProtectUntil || this.over) return;
-    target.hp -= amount;
+    const dmgMult = typeof target.damageTakenMult === 'number' ? target.damageTakenMult : 1;
+    const effectiveAmount = amount * dmgMult;
+    target.hp -= effectiveAmount;
     target.lastHitBy = attacker?.id ?? null;
     target.lastHurtAt = this.time;
     if (typeof target.takeDamage === 'function') {
-      target.takeDamage(amount, attacker, { dir });
+      target.takeDamage(effectiveAmount, attacker, { dir });
     } else {
       target.hitAgo = 0;
       let dx = dir?.x ?? (attacker ? target.pos.x - attacker.pos.x : 0);
@@ -483,7 +547,7 @@ export class Sim {
       const len = Math.hypot(dx, dy, dz) || 1;
       target.hitDir = { x: dx / len, y: dy / len, z: dz / len };
     }
-    this.emit({ type: 'hurt', id: target.id, attackerId: attacker?.id ?? null, amount, headshot, hp: Math.max(0, target.hp) });
+    this.emit({ type: 'hurt', id: target.id, attackerId: attacker?.id ?? null, amount: effectiveAmount, headshot, hp: Math.max(0, target.hp) });
     if (target.hp > 0) {
       if (target.hp < 25 && !target.lowHealthSaid) { target.lowHealthSaid = true; this.emit({ type: 'lowHealth', id: target.id }); }
       return;

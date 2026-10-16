@@ -685,8 +685,18 @@ export class Hud {
     $('ammo').textContent = me.reloadUntil > 0 ? 'RELOADING' : `${me.ammo} / ${activeW.mag}`;
     $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''} · [Q/1/2] Swap`;
     const mh = sim.mode.hud(me);
-    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${library.legalSafe ? 'ON' : 'OFF'} · ${renderer?.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice?.enabled ? '' : ' · muted'}`;
-    $('crosshair').style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
+    const diffLabel = state.difficulty === 'easy' ? 'EASY (3x HP · LOCK-ON)' : state.difficulty === 'hard' ? 'HARD (1x HP)' : 'MEDIUM (2x HP)';
+    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit} · ${diffLabel}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${library.legalSafe ? 'ON' : 'OFF'} · ${renderer?.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice?.enabled ? '' : ' · muted'}`;
+    const ch = $('crosshair');
+    if (ch) {
+      ch.style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';
+      const locked = !!input?.lockTarget;
+      ch.textContent = locked ? '⊕' : '+';
+      if (ch.style) {
+        ch.style.color = locked ? '#00e436' : '';
+        ch.style.transform = locked ? 'translate(-50%, -50%) scale(1.35)' : '';
+      }
+    }
 
     if (state.style007) {
       const hp = me.alive ? me.hp : 0;

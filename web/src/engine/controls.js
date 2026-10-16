@@ -292,6 +292,14 @@ export class Controls {
     if (p.switchSlot) inp.switchSlot = p.switchSlot === 'toggle' ? (a.activeSlot === 'primary' ? 'secondary' : 'primary') : p.switchSlot;
     this.pending = {};
     if (!a.alive) this.resetLook(a.team === 0 ? 0 : Math.PI);
+    if (this.lockTarget && a.alive) {
+      let dyaw = this.lockTarget.yaw - this.yaw;
+      while (dyaw > Math.PI) dyaw -= 2 * Math.PI;
+      while (dyaw < -Math.PI) dyaw += 2 * Math.PI;
+      const pull = Math.min(1, dt * 16);
+      this.yaw += dyaw * pull;
+      this.pitch = clampPitch(this.pitch + (this.lockTarget.pitch - this.pitch) * pull);
+    }
     inp.yaw = this.yaw;
     inp.pitch = this.pitch;
   }
@@ -300,11 +308,18 @@ export class Controls {
 function clampPitch(p) { return Math.max(-LOOK.maxPitch, Math.min(LOOK.maxPitch, p)); }
 
 /**
- * Aim helper for pad/touch: angular distance from the crosshair to the nearest visible enemy chest.
- * Returns { slow: multiplier for look speed, onTarget: crosshair is on them }.
+ * Aim helper for pad/touch (and Easy Mode auto lock-on for all devices):
+ * angular distance from the crosshair to the nearest visible enemy chest.
+ * Returns { slow: multiplier for look speed, onTarget: crosshair is on them, locked?: boolean, lockYaw?: number, lockPitch?: number }.
  */
-export function aimAssist(sim, me, { cone = 0.09, hitCone = 0.035, range = 45 } = {}) {
-  if (!me.alive) return { slow: 1, onTarget: false };
+export function aimAssist(sim, me, { cone = 0.09, hitCone = 0.035, range = 45, lockOn = false, lockRange = 28, lockCone = 0.55 } = {}) {
+  if (!me.alive) return { slow: 1, onTarget: false, locked: false, lockYaw: null, lockPitch: null };
+  if (lockOn && typeof sim.findLockOnTarget === 'function') {
+    const lock = sim.findLockOnTarget(me, { maxRange: lockRange, maxCone: lockCone });
+    if (lock) {
+      return { slow: 0.35, onTarget: true, locked: true, lockYaw: lock.yaw, lockPitch: lock.pitch, target: lock.actor };
+    }
+  }
   const eye = { x: me.pos.x, y: me.pos.y + 1.6, z: me.pos.z };
   const c = Math.cos(me.pitch);
   const f = { x: -Math.sin(me.yaw) * c, y: Math.sin(me.pitch), z: -Math.cos(me.yaw) * c };
@@ -323,7 +338,7 @@ export function aimAssist(sim, me, { cone = 0.09, hitCone = 0.035, range = 45 } 
     const allowed = cone + 0.6 / d;
     if (ang < allowed && ang < best && sim.lineClear(eye, t)) { best = ang; bestD = d; }
   }
-  if (best === Infinity) return { slow: 1, onTarget: false };
+  if (best === Infinity) return { slow: 1, onTarget: false, locked: false, lockYaw: null, lockPitch: null };
   // on target = within the body's angular half-width (0.42 m hit radius) plus a small margin
-  return { slow: 0.45, onTarget: best < Math.max(hitCone, Math.atan(0.42 / bestD)) };
+  return { slow: 0.45, onTarget: best < Math.max(hitCone, Math.atan(0.42 / bestD)), locked: false, lockYaw: null, lockPitch: null };
 }
