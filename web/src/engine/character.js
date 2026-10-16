@@ -58,7 +58,6 @@ const FACTION_GUN_TYPE = {
   trumpers: 'shotgun',
   tradwives: 'shotgun',
   wallstreetBets: 'sniper',
-  oldMoney: 'sniper',
   fabulous: 'sniper',
   pickleballRetirees: 'sniper',
   gymRats: 'lmg',
@@ -68,10 +67,7 @@ const FACTION_GUN_TYPE = {
   brainRot: 'smg',
   cloutStreamers: 'smg',
   valleyGirls: 'smg',
-  emoKids: 'smg',
-  mlmHuns: 'smg',
   hoaDads: 'ar',
-  theaterKids: 'ar',
   wokeLibs: 'ar',
 };
 
@@ -254,13 +250,6 @@ export const PROPS = {
     { hand: 'L', s: 'cyl', size: [0.015, 0.015, 0.4, 4], at: [0, -0.32, -0.04], c: '#d8c8b0' },
     { hand: 'L', s: 'box', size: [0.1, 0.36, 0.3], at: [-0.04, -0.54, -0.02], c: '#d8c8b0' },
     { hand: 'L', s: 'box', size: [0.02, 0.16, 0.18], at: [-0.1, -0.54, -0.02], c: 'accent' },
-  ],
-  mlmHuns: [
-    { hand: 'L', s: 'cyl', size: [0.07, 0.06, 0.14, 8], at: [0, -0.62, -0.08], c: '#f7cad0' },
-    { hand: 'L', s: 'cyl', size: [0.09, 0.08, 0.18, 8], at: [0, -0.48, -0.08], c: '#f7cad0' },
-    { hand: 'L', s: 'cyl', size: [0.095, 0.095, 0.03, 8], at: [0, -0.38, -0.08], c: '#ffffff' },
-    { hand: 'L', s: 'box', size: [0.03, 0.18, 0.06], at: [0, -0.48, -0.16], c: '#f7cad0' },
-    { hand: 'L', s: 'cyl', size: [0.012, 0.012, 0.14, 6], at: [0, -0.3, -0.06], rot: [0.15, 0, 0], c: '#e0f2fe' },
   ],
   pickleballRetirees: [
     { hand: 'L', s: 'cyl', size: [0.09, 0.09, 0.06, 8], at: [0, -0.48, 0], c: 'accent' },
