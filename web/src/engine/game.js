@@ -114,6 +114,7 @@ const state = {
   voice: params.get('voice') !== '0',
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
+  scoreLimit: parseInt(params.get('scoreLimit') || '60', 10),
   difficulty: initialDifficulty,
   map: !isDemo && MAPS[initialMapParam] ? initialMapParam : 'culdesac',
   goldSkin: !isDemo && params.get('gold') === '1',
@@ -427,7 +428,8 @@ function updateMatchSettingsSummary() {
   const mLabel = mDef ? mDef.label.replace('Cul-de-sac ', '') : 'Clash';
   const mapLabel = mapDef ? mapDef.name.replace('Oakridge ', '').replace(' Club', '').replace('Sunset ', '') : 'Cul-de-Sac';
   const diffLabel = state.difficulty === 'easy' ? 'Easy' : state.difficulty === 'hard' ? 'Hard' : 'Med';
-  sumEl.textContent = `${mLabel} · ${mapLabel} · ${diffLabel}`;
+  const lenLabel = state.scoreLimit ? `${state.scoreLimit}k` : '60k';
+  sumEl.textContent = `${mLabel} · ${mapLabel} · ${diffLabel} · ${lenLabel}`;
 }
 
 if ($('btnMatchSettings')) {
@@ -447,6 +449,7 @@ if ($('matchSettingsModal')) {
 
 if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; updateMatchSettingsSummary(); };
 if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; updateMatchSettingsSummary(); };
+if ($('optScoreLimit')) $('optScoreLimit').onchange = e => { state.scoreLimit = parseInt(e.target.value, 10); updateMatchSettingsSummary(); };
 if ($('optMap')) {
   $('optMap').onchange = e => {
     const val = e.target.value;
@@ -737,6 +740,7 @@ class Game {
       mode: state.mode,
       difficulty: state.difficulty,
       botDifficulty: params.get('bots') || undefined,
+      scoreLimit: state.scoreLimit || undefined,
       mutators: state.mutators,
       isDemo,
     });

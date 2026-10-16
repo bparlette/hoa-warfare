@@ -223,6 +223,16 @@
         </select>
         <small class="field-desc">Tweak damage scaling and aim-assist lock-on.</small>
       </div>
+      <div class="settings-field">
+        <label for="optScoreLimit">MATCH LENGTH</label>
+        <select id="optScoreLimit">
+          <option value="30">Quick (30 Kills · ~2 min)</option>
+          <option value="60" selected>Standard (60 Kills · ~5 min)</option>
+          <option value="100">Long (100 Kills · ~8-10 min)</option>
+          <option value="200">Marathon (200 Kills · ~15 min)</option>
+        </select>
+        <small class="field-desc">Set kill threshold before match completes.</small>
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" id="saveMatchSettings" class="btn-deploy btn-primary-settings">CONFIRM SETTINGS</button>

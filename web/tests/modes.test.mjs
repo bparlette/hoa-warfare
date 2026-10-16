@@ -273,7 +273,7 @@ test('radar renders patrolZone and casserole mode objectives', () => {
   assert.ok(opsCtf.some(op => op[0] === 'fillRect'), 'radar renders casserole dishes');
 });
 
-test('LoneWolf: onStart buffs player HP to 200 and kill siphons adrenaline heal', () => {
+test('LoneWolf: onStart buffs player HP, kill siphons heal, and player infinitely respawns until enemies dead', () => {
   const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(401), mode: 'loneWolf' });
   const player = sim.addActor({ id: 'you', team: 0, faction: 'karens', isBot: false });
   const enemy = sim.addActor({ id: 'b0', team: 1, faction: 'hoaDads', isBot: true });
@@ -281,7 +281,10 @@ test('LoneWolf: onStart buffs player HP to 200 and kill siphons adrenaline heal'
 
   assert.equal(player.maxHp, 200, 'Lone player should have 200 max HP');
   assert.equal(player.hp, 200, 'Lone player should start at 200 HP');
-  assert.equal(sim.mode.hud(player), 'DEFEND YOUR LAWN · 1 VS 6', 'HUD should display lone wolf indicator');
+  assert.ok(sim.mode.hud(player).includes('ENEMIES REMAINING'), 'HUD should display enemies remaining');
+
+  // Player has infinite respawns
+  assert.equal(sim.mode.respawnDelay(player), 2.5, 'Player should infinitely respawn in 2.5s');
 
   // Damage player to 100 HP
   player.hp = 100;
@@ -291,5 +294,28 @@ test('LoneWolf: onStart buffs player HP to 200 and kill siphons adrenaline heal'
 
   assert.equal(player.hp, 135, 'Kill should siphon +35 HP adrenaline heal');
   assert.equal(sim.score[0], 1, 'Player team should receive 1 point');
+  assert.equal(sim.mode.enemiesLeft, 29, 'Enemy ticket pool should decrement');
+});
+
+test('SuburbanWipeout: team has infinite respawns and wins when all enemy tickets and living enemies are wiped out', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(402), mode: 'wipeout' });
+  const p0 = sim.addActor({ id: 'p0', team: 0, faction: 'karens', isBot: false });
+  const e0 = sim.addActor({ id: 'e0', team: 1, faction: 'hoaDads', isBot: true });
+  sim.start();
+
+  assert.equal(sim.mode.respawnDelay(p0), 2.5, 'Friendly team has infinite respawns');
+  assert.ok(sim.mode.hud().includes('ENEMIES LEFT'), 'HUD shows enemy count');
+
+  // Deplete tickets
+  sim.mode.enemyTickets = 1;
+  e0.alive = true;
+
+  // Kill last ticket enemy
+  e0.alive = false;
+  sim.mode.onKill({ type: 'kill' }, p0, e0);
+
+  assert.equal(sim.mode.enemyTickets, 0, 'Enemy tickets should reach 0');
+  assert.equal(sim.over, true, 'Match should end in victory when all enemies dead');
+  assert.equal(sim.winner, 0, 'Team 0 should win the match');
 });
 

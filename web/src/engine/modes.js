@@ -45,6 +45,7 @@ export class Clash extends Mode {
   static id = 'clash';
   static label = 'Cul-de-Sac Clash';
   static parent = 'TDM';
+  static defaults = { scoreLimit: 60, timeLimit: 600 };
   onKill(ev, killer) { if (killer) this.sim.addScore(killer.team, 1); }
 }
 
@@ -689,14 +690,18 @@ export class EvictTheBlock extends Mode {
 
 /**
  * Lone Wolf: 1 Player vs. The Entire Rival Faction.
- * Get Off My Lawn! Survive against a horde of 6 rival neighbors.
- * Player has suburban adrenaline (+100 max HP, siphon +35 HP per kill).
+ * Get Off My Lawn! Player has infinite respawns until all enemy reinforcements are dead!
  */
 export class LoneWolf extends Mode {
   static id = 'loneWolf';
   static label = 'Lone Wolf: Get Off My Lawn!';
-  static parent = '1 vs 6';
-  static defaults = { scoreLimit: 25, timeLimit: 300 };
+  static parent = '1 vs Faction';
+  static defaults = { scoreLimit: 30, timeLimit: 900 };
+
+  constructor(sim) {
+    super(sim);
+    this.enemiesLeft = 30; // 30 enemy lives to wipe out
+  }
 
   onStart() {
     const player = this.sim.actors.find(a => a.team === 0);
@@ -706,7 +711,7 @@ export class LoneWolf extends Mode {
     }
   }
 
-  onKill(ev, killer) {
+  onKill(ev, killer, victim) {
     if (killer) {
       this.sim.addScore(killer.team, 1);
       if (killer.team === 0 && killer.alive) {
@@ -714,19 +719,89 @@ export class LoneWolf extends Mode {
         this.sim.emit({ type: 'heal', actorId: killer.id, amount: 35 });
       }
     }
+    if (victim && victim.team === 1) {
+      this.enemiesLeft--;
+      if (this.enemiesLeft <= 0) {
+        this.enemiesLeft = 0;
+        const living = this.sim.actors.filter(a => a.team === 1 && a.alive);
+        if (living.length === 0) this.sim.end(0);
+      }
+    }
+  }
+
+  update() {
+    if (this.enemiesLeft <= 0 && !this.sim.over) {
+      const living = this.sim.actors.filter(a => a.team === 1 && a.alive);
+      if (living.length === 0) this.sim.end(0);
+    }
   }
 
   respawnDelay(actor) {
-    return actor.team === 0 ? 3.0 : 2.0;
+    if (actor.team === 0) return 2.5; // Player has INFINITE RESPAWNS
+    if (this.enemiesLeft <= 0) return Infinity; // Enemies stop respawning once ticket pool is 0
+    return 2.0;
   }
 
   hud(localActor) {
-    return localActor?.team === 0 ? 'DEFEND YOUR LAWN · 1 VS 6' : null;
+    if (localActor?.team === 0) {
+      const living = this.sim.actors.filter(a => a.team === 1 && a.alive).length;
+      const count = Math.max(0, this.enemiesLeft + living);
+      return count === 0 ? 'ALL ENEMIES WIPED OUT!' : `ENEMIES REMAINING: ${count} · DEFEND YOUR LAWN`;
+    }
+    return null;
+  }
+}
+
+/**
+ * Suburban Wipeout: 6v6 Team Elimination.
+ * Friendly squad has infinite respawns. Eliminate all 40 enemy reinforcements to win!
+ */
+export class SuburbanWipeout extends Mode {
+  static id = 'wipeout';
+  static label = 'Suburban Wipeout: Enemy Elimination';
+  static parent = 'Elimination';
+  static defaults = { scoreLimit: 40, timeLimit: 900 };
+
+  constructor(sim) {
+    super(sim);
+    this.enemyTickets = 40;
+  }
+
+  onKill(ev, killer, victim) {
+    if (killer) this.sim.addScore(killer.team, 1);
+    if (victim && victim.team === 1) {
+      this.enemyTickets--;
+      if (this.enemyTickets <= 0) {
+        this.enemyTickets = 0;
+        const living = this.sim.actors.filter(a => a.team === 1 && a.alive);
+        if (living.length === 0) this.sim.end(0);
+      }
+    }
+  }
+
+  update() {
+    if (this.enemyTickets <= 0 && !this.sim.over) {
+      const living = this.sim.actors.filter(a => a.team === 1 && a.alive);
+      if (living.length === 0) this.sim.end(0);
+    }
+  }
+
+  respawnDelay(actor) {
+    if (actor.team === 0) return 2.5; // Infinite friendly respawn
+    if (this.enemyTickets <= 0) return Infinity; // Enemies stay dead once tickets depleted
+    return 2.5;
+  }
+
+  hud() {
+    const living = this.sim.actors.filter(a => a.team === 1 && a.alive).length;
+    const count = Math.max(0, this.enemyTickets + living);
+    return count > 0 ? `ENEMIES LEFT: ${count}` : 'HUNT DOWN FINAL ENEMIES!';
   }
 }
 
 export const MODES = {
   clash: Clash,
+  wipeout: SuburbanWipeout,
   receiptCheck: ReceiptCheck,
   kingOfTheLawn: KingOfTheLawn,
   evictTheBlock: EvictTheBlock,
@@ -743,6 +818,7 @@ export const MODE_ALIASES = {
   evict: 'evictTheBlock',
   lonewolf: 'loneWolf',
   survival: 'loneWolf',
+  elimination: 'wipeout',
 };
 
 export function resolveModeId(id) {
