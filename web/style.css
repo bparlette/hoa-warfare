@@ -209,6 +209,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   justify-content: space-between;
   margin-bottom: 0;
   flex-shrink: 0;
+  gap: 8px;
+}
+.faction-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .faction-header h2 {
   margin: 0;
@@ -216,6 +223,35 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   font-size: clamp(13px, 2.4vh, 18px);
   letter-spacing: 1.5px;
   color: #ffec27;
+}
+.weapon-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(10, 16, 30, 0.9);
+  border: 1.5px solid #29adff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 2px 2px 0 #000;
+}
+.btn-toggle-wpn {
+  background: transparent;
+  color: #83769c;
+  border: none;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(8px, 1.3vh, 10px);
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-toggle-wpn:hover {
+  color: #fff;
+  background: rgba(41, 173, 255, 0.2);
+}
+.btn-toggle-wpn.active {
+  background: #29adff;
+  color: #0c1426;
+  font-weight: 900;
 }
 .faction-pagination {
   display: flex;
@@ -260,7 +296,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   height: 100%;
   min-height: 0;
   border: 3px solid #5f574f;
-  background: #162444;
+  background: #121b33;
   border-radius: 8px;
   padding: 0;
   overflow: hidden;
@@ -272,16 +308,16 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 }
 .fc-card:hover {
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 #000, 0 0 14px rgba(255, 236, 39, 0.35);
+  box-shadow: 4px 4px 0 #000, 0 0 16px rgba(255, 236, 39, 0.4);
   border-color: #ffec27;
 }
 .fc-card.sel {
   border-color: #ffec27 !important;
-  box-shadow: 0 0 0 2px #ffec27, 4px 4px 0 #000, 0 0 18px rgba(255, 236, 39, 0.55);
-  background: #1c2b54;
+  box-shadow: 0 0 0 2px #ffec27, 4px 4px 0 #000, 0 0 20px rgba(255, 236, 39, 0.6);
+  background: #172448;
 }
 .fc-card.locked {
-  opacity: 0.78;
+  opacity: 0.82;
   border-color: #7e2553;
   background: #181122;
 }
@@ -294,82 +330,193 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   flex: 1;
   min-height: 0;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   overflow: hidden;
-  padding: 2px 4px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
-.fc-char-img {
-  width: 96%;
-  height: 96%;
-  object-fit: contain;
-  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.85));
-  transition: transform .15s ease-out;
-}
-.fc-card:hover .fc-char-img {
-  transform: scale(1.06);
-}
-.fc-card .demo-lock {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #ffec27;
-  color: #111;
-  font-weight: 900;
-  font-size: clamp(7px, 1.3vh, 9px);
-  letter-spacing: 0.6px;
-  padding: 2px 5px;
-  border-radius: 3px;
-  box-shadow: 2px 2px 0 #000;
-  z-index: 2;
-}
-.fc-wpn-badge {
+
+.fc-top-badges {
   position: absolute;
   top: 5px;
   left: 5px;
-  background: rgba(17, 29, 53, 0.92);
+  right: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 4;
+  pointer-events: none;
+}
+.fc-wpn-badge {
+  background: rgba(14, 24, 46, 0.94);
   color: #ffec27;
   border: 1.5px solid #29adff;
   font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(8px, 1.4vh, 10px);
-  letter-spacing: 0.5px;
-  padding: 1px 5px;
-  border-radius: 3px;
+  font-size: clamp(8px, 1.3vh, 10px);
+  letter-spacing: 0.6px;
+  padding: 1px 6px;
+  border-radius: 4px;
   box-shadow: 2px 2px 0 #000;
-  z-index: 2;
   display: flex;
   align-items: center;
-  gap: 3px;
-  pointer-events: none;
+  gap: 5px;
 }
-.fc-label {
+.fc-wpn-icon-svg {
+  width: 16px;
+  height: 11px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
+}
+.fc-badge-class {
+  line-height: 1;
+}
+.fc-combat-role-badge {
+  background: rgba(10, 18, 34, 0.88);
+  color: #c2c3c7;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: clamp(6.5px, 1.1vh, 8.5px);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 1px 1px 0 #000;
+}
+.fc-card .demo-lock {
+  position: static;
+  background: #ffec27;
+  color: #111;
+  font-weight: 900;
+  font-size: clamp(7px, 1.2vh, 9px);
+  letter-spacing: 0.6px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.fc-char-img {
+  position: absolute;
+  left: 2%;
+  bottom: 22px;
+  height: 82%;
+  max-width: 58%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.85));
+  transition: transform .2s ease-out, filter .2s;
+  z-index: 1;
+}
+.fc-card:hover .fc-char-img {
+  transform: scale(1.05) translateX(2px);
+}
+
+.fc-wpn-display {
+  position: absolute;
+  right: -2%;
+  bottom: 16px;
+  width: 82%;
+  height: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: clamp(2px, 0.6vh, 5px) 6px;
-  background: rgba(12, 20, 38, 0.95);
-  border-top: 2px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  z-index: 2;
+}
+.fc-wpn-hero-img {
+  width: 100%;
+  height: auto;
+  max-height: 94%;
+  object-fit: contain;
+  transform: rotate(var(--wpn-angle, -28deg)) scale(var(--wpn-scale, 1.15));
+  transform-origin: 65% 55%;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.92)) drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  transition: transform .22s cubic-bezier(0.2, 0.8, 0.2, 1), filter .22s;
+}
+.fc-card:hover .fc-wpn-hero-img {
+  transform: rotate(calc(var(--wpn-angle, -28deg) - 3.5deg)) scale(calc(var(--wpn-scale, 1.15) * 1.08));
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.95)) drop-shadow(0 0 10px rgba(255, 236, 39, 0.5));
+}
+.fc-card.sel .fc-wpn-hero-img {
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.95)) drop-shadow(0 0 12px rgba(255, 236, 39, 0.65));
+}
+
+.fc-wpn-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 8px;
+  background: rgba(9, 15, 28, 0.94);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+.fc-wpn-name {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(8px, 1.3vh, 10.5px);
+  letter-spacing: 0.6px;
+  color: #ffec27;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 1px 1px 0 #000;
+}
+.fc-wpn-class-tag {
+  font-size: clamp(6.5px, 1.1vh, 8.5px);
+  font-weight: 800;
+  color: #29adff;
+  letter-spacing: 0.5px;
+  background: rgba(41, 173, 255, 0.16);
+  padding: 1px 5px;
+  border-radius: 2px;
+  border: 1px solid rgba(41, 173, 255, 0.4);
   flex-shrink: 0;
 }
+
+.fc-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: clamp(3px, 0.7vh, 6px) 8px;
+  background: rgba(12, 20, 38, 0.98);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+.fc-label-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
 .fc-pip-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   border: 1px solid #000;
   flex-shrink: 0;
 }
 .fc-label .fc-name {
   font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(11px, 2vh, 15px);
+  font-size: clamp(10px, 1.8vh, 14px);
   letter-spacing: 0.5px;
   color: #fff1e8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
+}
+.fc-faction-role {
+  font-size: clamp(6.5px, 1.1vh, 8.5px);
+  font-weight: 700;
+  color: #83769c;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 44%;
 }
 
 .lobby-action-bar {
@@ -1097,9 +1244,48 @@ body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; 
   .fc-char-wrap {
     padding-top: 1px;
   }
+  .fc-top-badges {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+  }
+  .fc-wpn-badge {
+    font-size: 7px;
+    padding: 1px 3px;
+    gap: 2px;
+  }
+  .fc-wpn-icon-svg {
+    width: 11px;
+    height: 8px;
+  }
+  .fc-combat-role-badge {
+    display: none;
+  }
+  .fc-card .demo-lock {
+    font-size: 6.5px;
+    padding: 1px 3px;
+  }
   .fc-char-img {
-    width: 92%;
-    height: 92%;
+    left: 1%;
+    bottom: 18px;
+    height: 78%;
+    max-width: 50%;
+  }
+  .fc-wpn-display {
+    right: -4%;
+    bottom: 14px;
+    width: 86%;
+    height: 75%;
+  }
+  .fc-wpn-bar {
+    padding: 1px 4px;
+  }
+  .fc-wpn-name {
+    font-size: 7.5px;
+  }
+  .fc-wpn-class-tag {
+    font-size: 6px;
+    padding: 0 3px;
   }
   .fc-label {
     padding: 2px 4px;
@@ -1110,20 +1296,11 @@ body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; 
     height: 6px;
   }
   .fc-label .fc-name {
-    font-size: 10px;
+    font-size: 9.5px;
     letter-spacing: 0.3px;
   }
-  .fc-wpn-badge {
-    top: 2px;
-    left: 2px;
-    font-size: 7px;
-    padding: 1px 3px;
-  }
-  .fc-card .demo-lock {
-    top: 2px;
-    right: 2px;
-    font-size: 7px;
-    padding: 1px 3px;
+  .fc-faction-role {
+    display: none;
   }
   .lobby-action-bar {
     margin-top: 1px;

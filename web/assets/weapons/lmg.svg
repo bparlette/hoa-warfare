@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" width="100%" height="100%">
+  <defs>
+    <linearGradient id="lmgGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5a966d"/>
+      <stop offset="50%" stop-color="#4a7e5a"/>
+      <stop offset="100%" stop-color="#2d5237"/>
+    </linearGradient>
+    <linearGradient id="lmgDarkGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#366b42"/>
+      <stop offset="100%" stop-color="#1e3d25"/>
+    </linearGradient>
+    <linearGradient id="lmgBullet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff466"/>
+      <stop offset="40%" stop-color="#ffec27"/>
+      <stop offset="100%" stop-color="#c47a00"/>
+    </linearGradient>
+    <linearGradient id="lmgSteel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#424147"/>
+      <stop offset="50%" stop-color="#2c2a30"/>
+      <stop offset="100%" stop-color="#16151a"/>
+    </linearGradient>
+    <filter id="lmgShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#lmgShadow)">
+    <!-- Heavy Clubfoot Fixed Stock -->
+    <path d="M 40,84 L 140,84 L 140,130 L 100,154 L 40,154 Z" fill="url(#lmgGreen)" stroke="#1e3d25" stroke-width="2.5"/>
+    <!-- Heavy Ribbed Recoil Pad -->
+    <rect x="30" y="82" width="12" height="74" rx="3" fill="#1b1b1b" stroke="#000" stroke-width="2"/>
+    <line x1="36" y1="92" x2="36" y2="146" stroke="#444" stroke-width="2" stroke-dasharray="4 4"/>
+    <!-- Stock cheek weld & sling swivel -->
+    <rect x="70" y="78" width="48" height="8" rx="3" fill="#366b42"/>
+    <circle cx="60" cy="136" r="4" fill="#1b1b1b"/>
+
+    <!-- Massive Squad Automatic Receiver -->
+    <rect x="136" y="80" width="220" height="64" rx="4" fill="url(#lmgGreen)" stroke="#1e3d25" stroke-width="2.5"/>
+    
+    <!-- Top Feed Cover Plate -->
+    <rect x="160" y="72" width="170" height="14" rx="3" fill="url(#lmgDarkGreen)" stroke="#142b1a" stroke-width="2"/>
+    <!-- Cocking handle track -->
+    <rect x="156" y="96" width="90" height="8" rx="2" fill="#16151a"/>
+    <circle cx="170" cy="100" r="5" fill="#c2c3c7" stroke="#16151a"/>
+
+    <!-- Top Tactical Carry Handle -->
+    <path d="M 230,72 L 230,42 L 310,42 L 310,72" fill="none" stroke="#1d2b53" stroke-width="6" stroke-linecap="round"/>
+    <rect x="250" y="38" width="46" height="10" rx="3" fill="#5f574f"/>
+
+    <!-- Heavy SAW Pistol Grip -->
+    <path d="M 158,144 L 142,216 L 178,220 L 194,144 Z" fill="#1d2b53" stroke="#0c1322" stroke-width="2.5"/>
+    <line x1="150" y1="168" x2="178" y2="172" stroke="#364975" stroke-width="2"/>
+    <line x1="147" y1="184" x2="174" y2="188" stroke="#364975" stroke-width="2"/>
+    <line x1="144" y1="200" x2="170" y2="204" stroke="#364975" stroke-width="2"/>
+
+    <!-- Trigger Guard & Trigger -->
+    <path d="M 190,144 C 190,166 222,166 224,144" fill="none" stroke="#5f574f" stroke-width="3"/>
+    <path d="M 204,146 Q 202,156 196,160" fill="none" stroke="#c2c3c7" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- 100-Round Ammo Box Drum (Side Mounted) -->
+    <rect x="230" y="138" width="96" height="74" rx="5" fill="url(#lmgDarkGreen)" stroke="#0e1f13" stroke-width="2.5"/>
+    <!-- Ammo box strengthening ribs -->
+    <path d="M 238,150 L 318,150 M 238,174 L 318,174 M 238,198 L 318,198" stroke="#142b1a" stroke-width="2.5"/>
+    <!-- Drum bracket -->
+    <rect x="254" y="132" width="48" height="10" rx="2" fill="#1d2b53"/>
+
+    <!-- Linked 7.62 Bullet Belt Feed into Receiver -->
+    <!-- Bullet 1 -->
+    <g transform="translate(216, 124) rotate(18)">
+      <rect x="0" y="0" width="8" height="18" rx="2" fill="url(#lmgBullet)" stroke="#805000" stroke-width="1"/>
+      <path d="M 0,0 L 4,-6 L 8,0 Z" fill="#ffec27"/>
+      <rect x="-1" y="6" width="10" height="4" fill="#1d2b53"/>
+    </g>
+    <!-- Bullet 2 -->
+    <g transform="translate(228, 126) rotate(10)">
+      <rect x="0" y="0" width="8" height="18" rx="2" fill="url(#lmgBullet)" stroke="#805000" stroke-width="1"/>
+      <path d="M 0,0 L 4,-6 L 8,0 Z" fill="#ffec27"/>
+      <rect x="-1" y="6" width="10" height="4" fill="#1d2b53"/>
+    </g>
+    <!-- Bullet 3 -->
+    <g transform="translate(240, 126) rotate(0)">
+      <rect x="0" y="0" width="8" height="18" rx="2" fill="url(#lmgBullet)" stroke="#805000" stroke-width="1"/>
+      <path d="M 0,0 L 4,-6 L 8,0 Z" fill="#ffec27"/>
+      <rect x="-1" y="6" width="10" height="4" fill="#1d2b53"/>
+    </g>
+
+    <!-- Heavy Barrel with Perforated Cooling Jacket -->
+    <!-- Internal barrel -->
+    <rect x="350" y="98" width="280" height="20" fill="url(#lmgSteel)" stroke="#0e0e12" stroke-width="2"/>
+    
+    <!-- Heat Shield Shroud -->
+    <rect x="352" y="90" width="190" height="36" rx="4" fill="#5f574f" stroke="#36322d" stroke-width="2"/>
+    <!-- Perforated cooling jacket holes -->
+    <circle cx="370" cy="100" r="5" fill="#16151a"/>
+    <circle cx="395" cy="100" r="5" fill="#16151a"/>
+    <circle cx="420" cy="100" r="5" fill="#16151a"/>
+    <circle cx="445" cy="100" r="5" fill="#16151a"/>
+    <circle cx="470" cy="100" r="5" fill="#16151a"/>
+    <circle cx="495" cy="100" r="5" fill="#16151a"/>
+    <circle cx="520" cy="100" r="5" fill="#16151a"/>
+    <circle cx="370" cy="116" r="5" fill="#16151a"/>
+    <circle cx="395" cy="116" r="5" fill="#16151a"/>
+    <circle cx="420" cy="116" r="5" fill="#16151a"/>
+    <circle cx="445" cy="116" r="5" fill="#16151a"/>
+    <circle cx="470" cy="116" r="5" fill="#16151a"/>
+    <circle cx="495" cy="116" r="5" fill="#16151a"/>
+    <circle cx="520" cy="116" r="5" fill="#16151a"/>
+
+    <!-- Heat sink cooling rings -->
+    <rect x="400" y="86" width="10" height="44" rx="2" fill="#1d2b53"/>
+    <rect x="460" y="86" width="10" height="44" rx="2" fill="#1d2b53"/>
+    <rect x="520" y="86" width="10" height="44" rx="2" fill="#1d2b53"/>
+
+    <!-- Front Iron Sight Post -->
+    <path d="M 570,98 L 576,72 L 584,72 L 590,98 Z" fill="#16151a"/>
+    <circle cx="580" cy="78" r="2.5" fill="#ffec27"/>
+
+    <!-- Folded Underbarrel Combat Bipod -->
+    <path d="M 540,126 L 440,138" stroke="#1d2b53" stroke-width="5" stroke-linecap="round"/>
+    <rect x="432" y="132" width="16" height="12" rx="2" fill="#5f574f"/>
+
+    <!-- Heavy Birdcage Flash Hider -->
+    <rect x="626" y="92" width="48" height="32" rx="3" fill="#1b1b1b" stroke="#000" stroke-width="2"/>
+    <line x1="636" y1="92" x2="636" y2="124" stroke="#333" stroke-width="3"/>
+    <line x1="648" y1="92" x2="648" y2="124" stroke="#333" stroke-width="3"/>
+    <line x1="660" y1="92" x2="660" y2="124" stroke="#333" stroke-width="3"/>
+  </g>
+</svg>

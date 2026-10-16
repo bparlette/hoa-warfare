@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="arBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3ab7ff"/>
+      <stop offset="60%" stop-color="#29adff"/>
+      <stop offset="100%" stop-color="#1480c9"/>
+    </linearGradient>
+    <linearGradient id="arShroud" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#065ab5"/>
+      <stop offset="100%" stop-color="#0a3d78"/>
+    </linearGradient>
+    <linearGradient id="arYellow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff466"/>
+      <stop offset="100%" stop-color="#ffcc00"/>
+    </linearGradient>
+    <linearGradient id="arDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a3a60"/>
+      <stop offset="100%" stop-color="#152038"/>
+    </linearGradient>
+    <linearGradient id="arDrum" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#25365d"/>
+      <stop offset="50%" stop-color="#192542"/>
+      <stop offset="100%" stop-color="#0e172a"/>
+    </linearGradient>
+    <linearGradient id="arTip" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff7b33"/>
+      <stop offset="100%" stop-color="#e64c00"/>
+    </linearGradient>
+    <filter id="arShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#arShadow)">
+    <!-- Buttstock & Buffer Tube -->
+    <rect x="52" y="76" width="90" height="14" rx="4" fill="#5f574f" stroke="#1d2b53" stroke-width="2"/>
+    <path d="M 40,60 L 98,66 L 98,98 L 74,102 L 40,126 Z" fill="url(#arShroud)" stroke="#003570" stroke-width="2.5"/>
+    <rect x="36" y="58" width="10" height="72" rx="3" fill="#1d2b53"/>
+    <rect x="58" y="70" width="28" height="6" rx="2" fill="#29adff" opacity="0.8"/>
+
+    <!-- Main Upper & Lower Receiver -->
+    <rect x="138" y="66" width="168" height="46" rx="4" fill="url(#arBody)" stroke="#0f6fae" stroke-width="2.5"/>
+    
+    <!-- Corporate Yellow Tactical Stripe -->
+    <polygon points="142,88 288,88 282,98 142,98" fill="url(#arYellow)"/>
+    <polygon points="186,70 230,70 224,78 180,78" fill="url(#arYellow)"/>
+
+    <!-- Top Rail & Sight Unit -->
+    <rect x="134" y="58" width="176" height="10" rx="2" fill="url(#arDark)"/>
+    <!-- Picatinny teeth -->
+    <line x1="140" y1="58" x2="140" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="150" y1="58" x2="150" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="160" y1="58" x2="160" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="170" y1="58" x2="170" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="180" y1="58" x2="180" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="190" y1="58" x2="190" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="200" y1="58" x2="200" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="210" y1="58" x2="210" y2="68" stroke="#0e172a" stroke-width="2"/>
+    <line x1="220" y1="58" x2="220" y2="68" stroke="#0e172a" stroke-width="2"/>
+
+    <!-- Iron Sights -->
+    <path d="M 148,58 L 148,46 L 158,46 L 158,58 Z" fill="#152038"/>
+    <path d="M 456,60 L 460,42 L 468,42 L 472,60 Z" fill="#152038"/>
+    <circle cx="464" cy="48" r="2.5" fill="#ffec27"/>
+
+    <!-- Handguard / Shroud -->
+    <rect x="304" y="68" width="146" height="40" rx="3" fill="url(#arShroud)" stroke="#043265" stroke-width="2.5"/>
+    <!-- Cooling M-LOK vents -->
+    <rect x="320" y="74" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="352" y="74" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="384" y="74" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="416" y="74" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="320" y="94" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="352" y="94" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="384" y="94" width="22" height="7" rx="3" fill="#152038"/>
+    <rect x="416" y="94" width="22" height="7" rx="3" fill="#152038"/>
+
+    <!-- Steel Barrel -->
+    <rect x="448" y="78" width="86" height="18" fill="#5f574f" stroke="#36322d" stroke-width="2"/>
+    
+    <!-- Flash Hider / Orange Tip -->
+    <rect x="528" y="72" width="46" height="30" rx="3" fill="url(#arTip)" stroke="#b33600" stroke-width="2"/>
+    <line x1="538" y1="72" x2="538" y2="102" stroke="#ffa300" stroke-width="3"/>
+    <line x1="550" y1="72" x2="550" y2="102" stroke="#ffa300" stroke-width="3"/>
+    <rect x="572" y="76" width="12" height="22" rx="2" fill="#ffa300"/>
+
+    <!-- Pistol Grip -->
+    <path d="M 152,112 L 134,178 L 166,182 L 182,112 Z" fill="url(#arDark)" stroke="#0e172a" stroke-width="2.5"/>
+    <!-- Grip stippling lines -->
+    <line x1="144" y1="135" x2="168" y2="138" stroke="#2a3a60" stroke-width="2"/>
+    <line x1="142" y1="147" x2="164" y2="150" stroke="#2a3a60" stroke-width="2"/>
+    <line x1="139" y1="159" x2="160" y2="162" stroke="#2a3a60" stroke-width="2"/>
+
+    <!-- Trigger & Guard -->
+    <path d="M 178,114 C 178,136 210,136 210,114" fill="none" stroke="#5f574f" stroke-width="3"/>
+    <path d="M 194,116 Q 192,126 186,130" fill="none" stroke="#c2c3c7" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Tactical 50-Round Drum Magazine -->
+    <rect x="238" y="108" width="44" height="18" rx="2" fill="#152038"/>
+    <circle cx="260" cy="148" r="44" fill="url(#arDrum)" stroke="#0c1322" stroke-width="3"/>
+    <circle cx="260" cy="148" r="30" fill="none" stroke="#25365d" stroke-width="4" stroke-dasharray="8 6"/>
+    <circle cx="260" cy="148" r="16" fill="#ff77a8" stroke="#d6336c" stroke-width="2"/>
+    <circle cx="260" cy="148" r="6" fill="#ffec27"/>
+  </g>
+</svg>

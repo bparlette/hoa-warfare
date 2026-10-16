@@ -332,10 +332,75 @@ export function buildParts(parent, specs, look = {}) {
   }
 }
 
+export function createTeamBadgeTexture(name, isLocalTeam) {
+  if (typeof document === 'undefined' || !document.createElement) return null;
+  const canvas = document.createElement('canvas');
+  if (!canvas) return null;
+  canvas.width = 128;
+  canvas.height = 64;
+  const ctx = canvas.getContext ? canvas.getContext('2d') : null;
+  if (!ctx) return null;
+
+  const color = isLocalTeam ? '#00e5ff' : '#ff004d';
+  const badgeBg = isLocalTeam ? 'rgba(0, 24, 36, 0.75)' : 'rgba(36, 0, 8, 0.75)';
+
+  if (typeof ctx.beginPath === 'function' && typeof ctx.fillText === 'function') {
+    ctx.clearRect(0, 0, 128, 64);
+
+    // Pill background
+    const rx = 14, ry = 6, rw = 100, rh = 28, rad = 6;
+    ctx.fillStyle = badgeBg;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    if (typeof ctx.roundRect === 'function') {
+      ctx.beginPath();
+      ctx.roundRect(rx, ry, rw, rh, rad);
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.rect(rx, ry, rw, rh);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Name text
+    const label = (name ? String(name).slice(0, 10).toUpperCase() : (isLocalTeam ? 'ALLY' : 'FOE'));
+    ctx.fillStyle = color;
+    ctx.font = 'bold 15px monospace, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 64, 20);
+
+    // Downward chevron pip (▼)
+    ctx.beginPath();
+    ctx.moveTo(56, 38);
+    ctx.lineTo(72, 38);
+    ctx.lineTo(64, 52);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = isLocalTeam ? '#003344' : '#440011';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  } else if (typeof ctx.fillRect === 'function') {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 128, 64);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  return tex;
+}
+
 export class CharacterView {
-  constructor({ faction, look, seed, team, isLocalTeam }) {
+  constructor({ faction, look, seed, team, isLocalTeam, name }) {
     this.faction = faction;
     this.team = team;
+    this.name = name || seed || (isLocalTeam ? 'TEAM' : 'ENEMY');
+    this.isLocalTeam = Boolean(isLocalTeam);
     const skin = SKINS[Math.abs(hashStr(seed)) % SKINS.length];
     const skinM = mat({ color: skin });
     const shirtM = mat({ map: shirtTex(look, seed) });
@@ -457,17 +522,135 @@ export class CharacterView {
     const casters = new Set([this.torso, headMesh, ...this.legs.map(h => h.children[0])]);
     this.body.traverse(o => { if (o.isMesh) o.castShadow = casters.has(o); });
 
-    // Team marker for friendlies; enemies get a red one only when snitched
-    this.marker = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshBasicMaterial({ color: isLocalTeam ? '#29adff' : '#ff004d', depthTest: !isLocalTeam ? false : true }));
-    this.marker.position.y = 2.15;
-    this.marker.renderOrder = 10;
-    this.marker.visible = isLocalTeam;
-    this.isLocalTeam = isLocalTeam;
+    // Team identification: Armband and Sash accents
+    const teamAccent = this.isLocalTeam ? '#00e5ff' : '#8b0020';
+    const teamEmissive = this.isLocalTeam ? '#00e5ff' : '#ff004d';
+    const teamEmissiveI = this.isLocalTeam ? 0.6 : 0.2;
+    this.teamSashMat = mat({ color: teamAccent, emissive: teamEmissive, emissiveIntensity: teamEmissiveI });
+    this.teamArmbandMat = mat({ color: teamAccent, emissive: teamEmissive, emissiveIntensity: teamEmissiveI });
+
+    this.teamSash = new THREE.Mesh(geo(0.58, 0.08, 0.32), this.teamSashMat);
+    this.teamSash.position.set(0, 0.08, 0);
+    this.torso.add(this.teamSash);
+
+    this.teamArmband = new THREE.Mesh(geo(0.18, 0.10, 0.20), this.teamArmbandMat);
+    this.teamArmband.position.set(0, -0.16, 0);
+    this.arms[1].add(this.teamArmband);
+
+    // Upgraded Team Overhead Marker floating at y = 2.25m with pulsing friendly cyan #00e5ff
+    // Features camera-facing team badge / name tag and downward chevron/diamond (▼)
+    this.marker = new THREE.Group();
+    this.marker.position.y = 2.25;
+    this.marker.renderOrder = 100;
+    this.marker.visible = this.isLocalTeam;
+
+    const markerColor = this.isLocalTeam ? '#00e5ff' : '#ff004d';
+    this.markerMat = new THREE.MeshBasicMaterial({
+      color: markerColor,
+      depthTest: false,
+      transparent: true,
+      opacity: 0.95,
+    });
+    this.markerMesh = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.22, 4), this.markerMat);
+    this.markerMesh.rotation.x = Math.PI; // point down ▼
+    this.markerMesh.rotation.y = Math.PI / 4;
+    this.markerMesh.renderOrder = 100;
+    this.marker.add(this.markerMesh);
+
+    // Camera-facing team name badge / chevron sprite
+    const badgeTex = createTeamBadgeTexture(this.name, this.isLocalTeam);
+    if (badgeTex) {
+      this.badgeMat = new THREE.SpriteMaterial({
+        map: badgeTex,
+        depthTest: false,
+        transparent: true,
+        opacity: 0.95,
+      });
+      this.markerBadge = new THREE.Sprite(this.badgeMat);
+      this.markerBadge.position.y = 0.22;
+      this.markerBadge.scale.set(0.68, 0.34, 1);
+      this.markerBadge.renderOrder = 101;
+      this.marker.add(this.markerBadge);
+    }
+    Object.defineProperty(this.marker, 'material', {
+      get: () => this.markerMat,
+      configurable: true,
+    });
     this.root.add(this.marker);
 
+    // Friendly / revealed wall-hack ghost silhouette (Left 4 Dead / Overwatch style)
+    // Uses GreaterDepth so it renders ONLY when occluded behind walls/cover!
+    const ghostColor = this.isLocalTeam ? '#00e5ff' : '#ff004d';
+    this.ghostMat = new THREE.MeshBasicMaterial({
+      color: ghostColor,
+      transparent: true,
+      opacity: this.isLocalTeam ? 0.38 : 0.5,
+      depthTest: true,
+      depthWrite: false,
+      depthFunc: THREE.GreaterDepth,
+      blending: THREE.AdditiveBlending,
+    });
+
+    this.ghostGroup = new THREE.Group();
+    this.ghostGroup.name = 'ghostSilhouette';
+    this.ghostGroup.renderOrder = 999;
+    this.ghostGroup.visible = this.isLocalTeam;
+
+    this.ghostTorso = new THREE.Mesh(geo(0.56, 0.62, 0.3), this.ghostMat);
+    this.ghostTorso.position.y = 1.1;
+    this.ghostHead = new THREE.Mesh(geo(0.38, 0.4, 0.38), this.ghostMat);
+    this.ghostHead.position.y = 1.62;
+    this.ghostLegs = [-1, 1].map(s => {
+      const gLeg = new THREE.Group();
+      gLeg.position.set(s * 0.13, 0.8, 0);
+      const lMesh = new THREE.Mesh(geo(0.2, 0.72, 0.24), this.ghostMat);
+      lMesh.position.y = -0.38;
+      gLeg.add(lMesh);
+      return gLeg;
+    });
+    this.ghostArms = [-1, 1].map(s => {
+      const gArm = new THREE.Group();
+      gArm.position.set(s * 0.37, 1.36, 0);
+      const aMesh = new THREE.Mesh(geo(0.16, 0.56, 0.18), this.ghostMat);
+      aMesh.position.y = -0.24;
+      gArm.add(aMesh);
+      return gArm;
+    });
+    this.ghostGroup.add(this.ghostTorso, this.ghostHead, ...this.ghostLegs, ...this.ghostArms);
+    this.root.add(this.ghostGroup);
+
     this.phase = 0;
+    this.pulsePhase = 0;
     this.recoil = 0;
     this.meleeT = 1;
+  }
+
+  setLocalTeam(isLocalTeam) {
+    this.isLocalTeam = Boolean(isLocalTeam);
+    const teamAccent = this.isLocalTeam ? '#00e5ff' : '#8b0020';
+    const teamEmissive = this.isLocalTeam ? '#00e5ff' : '#ff004d';
+    const teamEmissiveI = this.isLocalTeam ? 0.6 : 0.2;
+    if (this.teamSashMat) {
+      this.teamSashMat.color.set(teamAccent);
+      this.teamSashMat.emissive.set(teamEmissive);
+      this.teamSashMat.emissiveIntensity = teamEmissiveI;
+    }
+    if (this.teamArmbandMat) {
+      this.teamArmbandMat.color.set(teamAccent);
+      this.teamArmbandMat.emissive.set(teamEmissive);
+      this.teamArmbandMat.emissiveIntensity = teamEmissiveI;
+    }
+    if (this.marker) this.marker.visible = this.isLocalTeam;
+    if (this.markerMat) this.markerMat.color.set(this.isLocalTeam ? '#00e5ff' : '#ff004d');
+    if (this.ghostGroup) this.ghostGroup.visible = this.isLocalTeam;
+    if (this.ghostMat) {
+      this.ghostMat.color.set(this.isLocalTeam ? '#00e5ff' : '#ff004d');
+      this.ghostMat.opacity = this.isLocalTeam ? 0.38 : 0.5;
+    }
+    if (this.badgeMat) {
+      const badgeTex = createTeamBadgeTexture(this.name, this.isLocalTeam);
+      if (badgeTex) this.badgeMat.map = badgeTex;
+    }
   }
 
   /** snap = sim snapshot entry */
@@ -522,8 +705,73 @@ export class CharacterView {
       this.torso.rotation.set(0, 0, 0);
     }
 
+    // Marker updates: visibility, rotation, and tactical heartbeat pulse
     this.marker.visible = this.isLocalTeam || revealed;
     this.marker.rotation.y += dt * 3;
+    this.pulsePhase = (this.pulsePhase || 0) + dt * 4;
+    const pulse = 1.0 + 0.12 * Math.sin(this.pulsePhase);
+    if (this.markerMesh) {
+      this.markerMesh.scale.set(pulse, pulse, pulse);
+    }
+    if (this.markerMat) {
+      this.markerMat.opacity = 0.85 + 0.15 * Math.sin(this.pulsePhase);
+      this.markerMat.color.set(this.isLocalTeam ? '#00e5ff' : '#ff004d');
+    }
+    if (this.badgeMat) {
+      this.badgeMat.opacity = 0.88 + 0.12 * Math.sin(this.pulsePhase);
+    }
+
+    // Armband and sash warning accents
+    if (this.teamSashMat && this.teamArmbandMat) {
+      if (this.isLocalTeam) {
+        const glow = 0.6 + 0.15 * Math.sin(this.pulsePhase);
+        this.teamSashMat.color.set('#00e5ff');
+        this.teamSashMat.emissive.set('#00e5ff');
+        this.teamSashMat.emissiveIntensity = glow;
+        this.teamArmbandMat.color.set('#00e5ff');
+        this.teamArmbandMat.emissive.set('#00e5ff');
+        this.teamArmbandMat.emissiveIntensity = glow;
+      } else {
+        if (revealed) {
+          const warnPulse = 1.1 + 0.4 * Math.sin(this.pulsePhase * 2);
+          this.teamSashMat.color.set('#ff004d');
+          this.teamSashMat.emissive.set('#ff004d');
+          this.teamSashMat.emissiveIntensity = warnPulse;
+          this.teamArmbandMat.color.set('#ff004d');
+          this.teamArmbandMat.emissive.set('#ff004d');
+          this.teamArmbandMat.emissiveIntensity = warnPulse;
+        } else {
+          this.teamSashMat.color.set('#8b0020');
+          this.teamSashMat.emissive.set('#ff004d');
+          this.teamSashMat.emissiveIntensity = 0.2;
+          this.teamArmbandMat.color.set('#8b0020');
+          this.teamArmbandMat.emissive.set('#ff004d');
+          this.teamArmbandMat.emissiveIntensity = 0.2;
+        }
+      }
+    }
+
+    // Ghost silhouette synchronization for friendly / revealed wall-hack awareness
+    if (this.ghostGroup) {
+      const showGhost = this.isLocalTeam || revealed;
+      this.ghostGroup.visible = showGhost;
+      if (showGhost) {
+        this.ghostGroup.position.copy(this.body.position);
+        this.ghostTorso.rotation.copy(this.torso.rotation);
+        this.ghostHead.rotation.copy(this.head.rotation);
+        if (this.head?.scale) this.ghostHead.scale.copy(this.head.scale);
+        this.ghostLegs[0].rotation.copy(this.legs[0].rotation);
+        this.ghostLegs[1].rotation.copy(this.legs[1].rotation);
+        this.ghostArms[0].rotation.copy(this.arms[0].rotation);
+        this.ghostArms[1].rotation.copy(this.arms[1].rotation);
+        this.ghostArms[0].position.copy(this.arms[0].position);
+        this.ghostArms[1].position.copy(this.arms[1].position);
+
+        const ghostPulse = 0.32 + 0.1 * Math.sin(this.pulsePhase);
+        this.ghostMat.opacity = this.isLocalTeam ? ghostPulse : 0.55;
+        this.ghostMat.color.set(this.isLocalTeam ? '#00e5ff' : '#ff004d');
+      }
+    }
   }
 
   /** Split into independent boxes and fling them. Returns a Ragdoll that owns the pieces. */

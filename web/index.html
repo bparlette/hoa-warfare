@@ -115,7 +115,13 @@
     <!-- MAIN LOBBY: 2 ROWS X 3 COLUMNS SQUARES -->
     <main class="lobby-center">
       <div class="faction-header">
-        <h2>CHOOSE YOUR FACTION</h2>
+        <div class="faction-header-left">
+          <h2>CHOOSE YOUR FACTION</h2>
+          <div class="weapon-view-toggle" title="Compare 2D stylized vector drawings vs 3D in-game weapon models">
+            <button type="button" id="toggleWpn2D" class="btn-toggle-wpn active" aria-label="Show 2D Stylized Drawings">📐 2D ART</button>
+            <button type="button" id="toggleWpn3D" class="btn-toggle-wpn" aria-label="Show 3D In-Game Weapons">🎮 3D WEAPONS</button>
+          </div>
+        </div>
         <div id="factionPagination" class="faction-pagination"></div>
       </div>
       <div id="factions" class="factions-grid-2x3"></div>

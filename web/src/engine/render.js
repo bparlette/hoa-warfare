@@ -745,11 +745,21 @@ export class Renderer {
 
   ensureCharacter(actor, localTeam) {
     let c = this.characters.get(actor.id);
+    const isLocalTeam = actor.team === localTeam;
     if (!c) {
       const f = this.factions[actor.faction];
-      c = new CharacterView({ faction: actor.faction, look: f.look, seed: actor.name, team: actor.team, isLocalTeam: actor.team === localTeam });
+      c = new CharacterView({
+        faction: actor.faction,
+        look: f.look,
+        seed: actor.name,
+        team: actor.team,
+        isLocalTeam,
+        name: actor.name,
+      });
       this.characters.set(actor.id, c);
       this.scene.add(c.root);
+    } else if (c.isLocalTeam !== isLocalTeam) {
+      c.setLocalTeam(isLocalTeam);
     }
     return c;
   }
@@ -761,7 +771,13 @@ export class Renderer {
       const c = this.characters.get(s.id);
       if (!c) continue;
       const a = sim?.byId.get(s.id);
-      c.update(s, dt, { firing: s.firing, revealed: a ? a.revealedUntil > now : false, meleeAgo: a ? now - a.meleeAt : 9 });
+      c.update(s, dt, {
+        firing: s.firing,
+        revealed: a ? a.revealedUntil > now : false,
+        meleeAgo: a ? now - a.meleeAt : 9,
+        hitAgo: s.hitAgo,
+        hitDir: s.hitDir,
+      });
       if (c.head?.scale) c.head.scale.setScalar(bigHead ? 2.1 : 1);
       if (s.id === hideId) c.root.visible = false;
     }

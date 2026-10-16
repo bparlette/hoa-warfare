@@ -117,6 +117,7 @@ const state = {
   difficulty: initialDifficulty,
   map: !isDemo && MAPS[initialMapParam] ? initialMapParam : 'culdesac',
   goldSkin: !isDemo && params.get('gold') === '1',
+  wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
     bigHead: params.get('bighead') === '1',
     shotgunsOnly: !isDemo && params.get('shotguns') === '1',
@@ -174,27 +175,96 @@ export function hideDemoModal() {
 
 // ------------------------------------------------------------------ menu
 
+export const WEAPON_DEFINITIONS = {
+  ar: {
+    weaponId: 'allowance',
+    name: 'The Allowance',
+    class: 'AR',
+    role: 'TACTICAL ASSAULT',
+    asset: 'assets/weapons/allowance.svg',
+    asset3d: 'assets/weapons/allowance_3d.png',
+    angle: -26,
+    scale: 1.15,
+    icon: 'assets/weapons/allowance.svg'
+  },
+  smg: {
+    weaponId: 'sideHustle',
+    name: 'The Side Hustle',
+    class: 'SMG',
+    role: 'RAPID CQB',
+    asset: 'assets/weapons/sideHustle.svg',
+    asset3d: 'assets/weapons/sideHustle_3d.png',
+    angle: -28,
+    scale: 1.1,
+    icon: 'assets/weapons/sideHustle.svg'
+  },
+  shotgun: {
+    weaponId: 'divorceSettlement',
+    name: 'The Divorce Settlement',
+    class: 'SHOTGUN',
+    role: 'HEAVY BREACH',
+    asset: 'assets/weapons/divorceSettlement.svg',
+    asset3d: 'assets/weapons/divorceSettlement_3d.png',
+    angle: -28,
+    scale: 1.2,
+    icon: 'assets/weapons/divorceSettlement.svg'
+  },
+  sniper: {
+    weaponId: 'trustFund',
+    name: 'The Trust Fund',
+    class: 'SNIPER',
+    role: 'PRECISION MARKSMAN',
+    asset: 'assets/weapons/trustFund.svg',
+    asset3d: 'assets/weapons/trustFund_3d.png',
+    angle: -30,
+    scale: 1.28,
+    icon: 'assets/weapons/trustFund.svg'
+  },
+  lmg: {
+    weaponId: 'subdivision',
+    name: 'The Subdivision',
+    class: 'LMG',
+    role: 'AREA SUPPRESSION',
+    asset: 'assets/weapons/subdivision.svg',
+    asset3d: 'assets/weapons/subdivision_3d.png',
+    angle: -28,
+    scale: 1.22,
+    icon: 'assets/weapons/subdivision.svg'
+  },
+  pistol: {
+    weaponId: 'permit',
+    name: 'The Building Permit',
+    class: 'PISTOL',
+    role: 'TACTICAL SIDEARM',
+    asset: 'assets/weapons/permit.svg',
+    asset3d: 'assets/weapons/permit_3d.png',
+    angle: -24,
+    scale: 1.05,
+    icon: 'assets/weapons/permit.svg'
+  }
+};
+
 export const FACTION_LOADOUTS = {
-  karens: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
-  hoaDads: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
-  tradwives: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
-  rednecks: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
-  gymRats: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' },
-  furries: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  brainRot: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  valleyGirls: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  cloutStreamers: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  fratHouse: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  trumpers: { loadout: 'lmg', name: 'The Subdivision', class: 'LMG', icon: '🏘️' },
-  oldMoney: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
-  vcBros: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
-  theGays: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
-  pickleballRetirees: { loadout: 'pistol', name: 'The Building Permit', class: 'PISTOL', icon: '📄' },
-  wokeLibs: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
-  mlmHuns: { loadout: 'smg', name: 'The Side Hustle', class: 'SMG', icon: '⚡' },
-  animeWeebs: { loadout: 'default', name: 'The Allowance', class: 'AR', icon: '🔫' },
-  theaterKids: { loadout: 'sniper', name: 'The Trust Fund', class: 'SNIPER', icon: '🎯' },
-  emoKids: { loadout: 'shotgun', name: 'The Divorce Settlement', class: 'SHOTGUN', icon: '💥' }
+  karens: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
+  hoaDads: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
+  tradwives: { loadout: 'shotgun', ...WEAPON_DEFINITIONS.shotgun },
+  rednecks: { loadout: 'shotgun', ...WEAPON_DEFINITIONS.shotgun },
+  gymRats: { loadout: 'shotgun', ...WEAPON_DEFINITIONS.shotgun },
+  furries: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  brainRot: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  valleyGirls: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  cloutStreamers: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  fratHouse: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  trumpers: { loadout: 'lmg', ...WEAPON_DEFINITIONS.lmg },
+  oldMoney: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  vcBros: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  theGays: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  pickleballRetirees: { loadout: 'pistol', ...WEAPON_DEFINITIONS.pistol },
+  wokeLibs: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
+  mlmHuns: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
+  animeWeebs: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
+  theaterKids: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  emoKids: { loadout: 'shotgun', ...WEAPON_DEFINITIONS.shotgun }
 };
 
 export const FEATURED_RIVALRIES = [
@@ -226,6 +296,8 @@ export const FACTIONS_PER_PAGE = 6;
 export function buildMenu() {
   const box = $('factions');
   const pag = $('factionPagination');
+  const btn2D = $('toggleWpn2D');
+  const btn3D = $('toggleWpn3D');
   if (!box) return;
 
   const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
@@ -241,6 +313,25 @@ export function buildMenu() {
   }
   menuPage = Math.max(0, Math.min(totalPages - 1, menuPage));
 
+  if (btn2D && btn3D) {
+    btn2D.classList.toggle('active', state.wpnVisual !== '3d');
+    btn3D.classList.toggle('active', state.wpnVisual === '3d');
+    btn2D.onclick = () => {
+      state.wpnVisual = '2d';
+      try { if (typeof localStorage?.setItem === 'function') localStorage.setItem('hoa_wpn_visual', '2d'); } catch {}
+      renderPage();
+      btn2D.classList.add('active');
+      btn3D.classList.remove('active');
+    };
+    btn3D.onclick = () => {
+      state.wpnVisual = '3d';
+      try { if (typeof localStorage?.setItem === 'function') localStorage.setItem('hoa_wpn_visual', '3d'); } catch {}
+      renderPage();
+      btn2D.classList.remove('active');
+      btn3D.classList.add('active');
+    };
+  }
+
   function renderPage() {
     box.innerHTML = '';
     const startIdx = menuPage * FACTIONS_PER_PAGE;
@@ -250,19 +341,37 @@ export function buildMenu() {
       const el = document.createElement('div');
       const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
       const isSel = id === state.faction;
-      const wpn = FACTION_LOADOUTS[id] || { name: 'The Allowance', class: 'AR', icon: '🔫' };
+      const wpn = FACTION_LOADOUTS[id] || { ...WEAPON_DEFINITIONS.ar, loadout: 'default' };
+      const fMeta = FACTION_METADATA[id] || {};
+      const fRole = fMeta.role || 'HOA OPERATIVE';
+      const wpnSrc = state.wpnVisual === '3d' ? wpn.asset3d : wpn.asset;
 
       if (isLocked) {
         el.className = 'fc fc-card locked';
         el.innerHTML = `
-          <div class="fc-char-wrap" style="background: radial-gradient(circle, ${f.look.accent}22 0%, rgba(10,16,30,0.85) 75%);">
-            <span class="fc-wpn-badge" title="${wpn.name}">${wpn.icon} ${wpn.class}</span>
+          <div class="fc-char-wrap" style="background: radial-gradient(circle at 40% 45%, ${f.look.accent}25 0%, rgba(10,16,30,0.92) 80%);">
+            <div class="fc-top-badges">
+              <span class="fc-wpn-badge" title="${wpn.name} (${wpn.class})">
+                <img class="fc-wpn-icon-svg" src="${wpn.asset}" alt="" loading="lazy">
+                <span class="fc-badge-class">${wpn.class}</span>
+              </span>
+              <span class="demo-lock">🔒 STEAM ONLY</span>
+            </div>
             <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
-            <span class="demo-lock">🔒 STEAM ONLY</span>
+            <div class="fc-wpn-display" title="${wpn.name}">
+              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="${wpn.name}" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
+            </div>
+            <div class="fc-wpn-bar">
+              <span class="fc-wpn-name">${wpn.name}</span>
+              <span class="fc-wpn-class-tag">${wpn.role}</span>
+            </div>
           </div>
           <div class="fc-label">
-            <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-            <b class="fc-name">${f.name}</b>
+            <div class="fc-label-main">
+              <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+              <b class="fc-name">${f.name}</b>
+            </div>
+            <span class="fc-faction-role">${fRole}</span>
           </div>
         `;
         el.onclick = () => showDemoModal(f.name, f.tagline);
@@ -270,13 +379,29 @@ export function buildMenu() {
         el.className = 'fc fc-card' + (isSel ? ' sel' : '');
         el.style.borderColor = isSel ? '#ffec27' : f.look.accent;
         el.innerHTML = `
-          <div class="fc-char-wrap" style="background: radial-gradient(circle, ${f.look.accent}33 0%, rgba(10,16,30,0.85) 75%);">
-            <span class="fc-wpn-badge" title="${wpn.name}">${wpn.icon} ${wpn.class}</span>
+          <div class="fc-char-wrap" style="background: radial-gradient(circle at 40% 45%, ${f.look.accent}35 0%, rgba(10,16,30,0.92) 80%);">
+            <div class="fc-top-badges">
+              <span class="fc-wpn-badge" title="${wpn.name} (${wpn.class})">
+                <img class="fc-wpn-icon-svg" src="${wpn.asset}" alt="" loading="lazy">
+                <span class="fc-badge-class">${wpn.class}</span>
+              </span>
+              <span class="fc-combat-role-badge">${wpn.role}</span>
+            </div>
             <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
+            <div class="fc-wpn-display" title="${wpn.name}">
+              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="${wpn.name}" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
+            </div>
+            <div class="fc-wpn-bar">
+              <span class="fc-wpn-name">${wpn.name}</span>
+              <span class="fc-wpn-class-tag">${wpn.class}</span>
+            </div>
           </div>
           <div class="fc-label">
-            <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-            <b class="fc-name">${f.name}</b>
+            <div class="fc-label-main">
+              <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
+              <b class="fc-name">${f.name}</b>
+            </div>
+            <span class="fc-faction-role">${fRole}</span>
           </div>
         `;
         el.onclick = () => { state.faction = id; buildMenu(); };

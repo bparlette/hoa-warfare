@@ -190,3 +190,120 @@ test('character: all signature props instantiate and attach correctly', () => {
     }
   }
 });
+
+test('character: team overhead chevron floats at y = 2.25m, pulses friendly cyan #00e5ff with depthTest: false', () => {
+  const cFriendly = new CharacterView({
+    faction: 'hoaDads',
+    look: { accent: '#29adff', hat: 'trucker', shirt: '#ffffff', pants: '#333333' },
+    seed: 'friendly-marker',
+    team: 0,
+    isLocalTeam: true,
+    name: 'DAD_BOB',
+  });
+
+  // Floating at y = 2.25m
+  assert.equal(cFriendly.marker.position.y, 2.25, 'marker must float at y = 2.25m');
+  assert.equal(cFriendly.marker.visible, true, 'friendly marker must be visible by default');
+
+  // Friendly cyan color #00e5ff
+  assert.equal(cFriendly.markerMat.color.getHexString().toLowerCase(), '00e5ff', 'friendly marker must be vibrant cyan #00e5ff');
+  assert.equal(cFriendly.markerMat.depthTest, false, 'marker must have depthTest: false to stay readable at distance');
+
+  // Downward chevron pip mesh exists
+  assert.ok(cFriendly.markerMesh, 'marker downward chevron/diamond mesh exists');
+  assert.equal(cFriendly.markerMesh.rotation.x, Math.PI, 'chevron points downwards (▼)');
+
+  // Tactical pulse in update
+  const initialOpacity = cFriendly.markerMat.opacity;
+  const initialPhase = cFriendly.pulsePhase;
+  cFriendly.update({ alive: true, x: 0, y: 0, z: 0, yaw: 0, pitch: 0, speed: 2, onGround: true }, 0.1);
+  assert.ok(cFriendly.pulsePhase > initialPhase, 'pulse phase advances with dt');
+  assert.ok(cFriendly.marker.rotation.y > 0, 'marker rotates over time');
+
+  // Enemy marker behavior
+  const cEnemy = new CharacterView({
+    faction: 'karens',
+    look: { accent: '#ff004d', hat: 'bob', shirt: '#ff004d', pants: '#111111' },
+    seed: 'enemy-marker',
+    team: 1,
+    isLocalTeam: false,
+    name: 'KAREN_BOSS',
+  });
+
+  assert.equal(cEnemy.marker.visible, false, 'enemy marker hidden when unspotted');
+  // When revealed / snitched, enemy marker appears in warning red #ff004d
+  cEnemy.update({ alive: true, x: 0, y: 0, z: 0, yaw: 0, pitch: 0, speed: 0, onGround: true }, 0.05, { revealed: true });
+  assert.equal(cEnemy.marker.visible, true, 'enemy marker visible when revealed');
+  assert.equal(cEnemy.markerMat.color.getHexString().toLowerCase(), 'ff004d', 'enemy marker warning red #ff004d');
+});
+
+test('character: distinct team sash and armband visual distinctions on character bodies', () => {
+  const cFriendly = new CharacterView({
+    faction: 'wokeLibs',
+    look: { accent: '#00e5ff', hat: 'beanieTote', shirt: '#2b2b2b', pants: '#4a4a4a' },
+    seed: 'sash-ally',
+    team: 0,
+    isLocalTeam: true,
+  });
+
+  // Friendly sash attached to torso, armband attached to right arm
+  assert.ok(cFriendly.teamSash, 'team sash mesh attached to torso');
+  assert.equal(cFriendly.teamSash.parent, cFriendly.torso, 'sash is child of torso');
+  assert.ok(cFriendly.teamArmband, 'team armband mesh attached to right arm');
+  assert.equal(cFriendly.teamArmband.parent, cFriendly.arms[1], 'armband is child of right arm');
+
+  // Friendly team colors
+  assert.equal(cFriendly.teamSashMat.color.getHexString().toLowerCase(), '00e5ff', 'friendly sash color is cyan #00e5ff');
+  assert.equal(cFriendly.teamArmbandMat.color.getHexString().toLowerCase(), '00e5ff', 'friendly armband color is cyan #00e5ff');
+  assert.ok(cFriendly.teamSashMat.emissiveIntensity >= 0.5, 'friendly sash has distinct emissive glow');
+
+  // Enemy players start with dark warning accents and flare into alarm red when revealed
+  const cEnemy = new CharacterView({
+    faction: 'tradwives',
+    look: { accent: '#ff8800', hat: 'headscarfBraid', shirt: '#ffffff', pants: '#e0c090' },
+    seed: 'sash-enemy',
+    team: 1,
+    isLocalTeam: false,
+  });
+
+  assert.ok(cEnemy.teamSashMat.emissiveIntensity <= 0.3, 'unspotted enemy has low ambient emissive');
+  cEnemy.update({ alive: true, x: 0, y: 0, z: 0, yaw: 0, pitch: 0, speed: 0, onGround: true }, 0.05, { revealed: true });
+  assert.ok(cEnemy.teamSashMat.emissiveIntensity >= 1.0, 'spotted enemy flares with bright warning emissive pulse');
+  assert.equal(cEnemy.teamSashMat.color.getHexString().toLowerCase(), 'ff004d', 'spotted enemy sash turns bright danger red');
+
+  // setLocalTeam updates team accents dynamically
+  cEnemy.setLocalTeam(true);
+  assert.equal(cEnemy.isLocalTeam, true, 'cEnemy switched to local team');
+  assert.equal(cEnemy.teamSashMat.color.getHexString().toLowerCase(), '00e5ff', 'switched team sash to cyan');
+  assert.equal(cEnemy.marker.visible, true, 'marker is now visible');
+});
+
+test('character: friendly ghosted outline renders through walls via GreaterDepth and tracks rig', () => {
+  const c = new CharacterView({
+    faction: 'hoaDads',
+    look: { accent: '#29adff', hat: 'whiteCap', shirt: '#ffffff', pants: '#222222' },
+    seed: 'ghost-test',
+    team: 0,
+    isLocalTeam: true,
+  });
+
+  // Ghost silhouette group configuration
+  assert.ok(c.ghostGroup, 'ghost silhouette group exists');
+  assert.equal(c.ghostGroup.visible, true, 'friendly ghost silhouette visible');
+  assert.equal(c.ghostGroup.renderOrder, 999, 'renders late after scene depth is written');
+  assert.equal(c.ghostMat.depthTest, true, 'depth test is active');
+  assert.equal(c.ghostMat.depthWrite, false, 'does not overwrite depth buffer');
+  assert.equal(c.ghostMat.depthFunc, THREE.GreaterDepth, 'uses GreaterDepth to render through occluders');
+  assert.equal(c.ghostMat.color.getHexString().toLowerCase(), '00e5ff', 'ghost color is friendly cyan');
+
+  // Animation synchronization: moving character updates ghost limbs
+  const snap = { alive: true, x: 10, y: 0, z: -5, yaw: 1.2, pitch: 0.3, speed: 5, onGround: true };
+  c.update(snap, 0.05);
+
+  assert.equal(c.ghostTorso.rotation.x, c.torso.rotation.x, 'ghost torso rotation matches torso');
+  assert.equal(c.ghostHead.rotation.x, c.head.rotation.x, 'ghost head rotation matches head');
+  assert.equal(c.ghostLegs[0].rotation.x, c.legs[0].rotation.x, 'ghost left leg tracks left leg stride');
+  assert.equal(c.ghostLegs[1].rotation.x, c.legs[1].rotation.x, 'ghost right leg tracks right leg stride');
+  assert.equal(c.ghostArms[1].rotation.x, c.arms[1].rotation.x, 'ghost right arm tracks aim angle');
+});
+

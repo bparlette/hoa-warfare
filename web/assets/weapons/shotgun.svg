@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="shWood" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9e4738"/>
+      <stop offset="45%" stop-color="#742f29"/>
+      <stop offset="100%" stop-color="#4d1b17"/>
+    </linearGradient>
+    <linearGradient id="shReceiver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5a2e4a"/>
+      <stop offset="50%" stop-color="#422136"/>
+      <stop offset="100%" stop-color="#26121f"/>
+    </linearGradient>
+    <linearGradient id="shBarrel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7a726a"/>
+      <stop offset="40%" stop-color="#5f574f"/>
+      <stop offset="80%" stop-color="#3d3732"/>
+      <stop offset="100%" stop-color="#292522"/>
+    </linearGradient>
+    <filter id="shShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shShadow)">
+    <!-- Walnut Wooden Buttstock -->
+    <path d="M 40,70 Q 76,66 128,76 Q 166,88 188,110 L 176,140 Q 146,142 110,136 Q 64,152 40,152 Z" fill="url(#shWood)" stroke="#381310" stroke-width="2.5"/>
+    <!-- Recoil Buttpad -->
+    <path d="M 32,68 L 44,70 L 44,152 L 32,154 Z" fill="#1b1b1b" stroke="#000" stroke-width="2"/>
+    <line x1="38" y1="84" x2="38" y2="138" stroke="#333" stroke-width="2" stroke-dasharray="4 4"/>
+
+    <!-- Wood grain accent lines -->
+    <path d="M 70,88 Q 110,92 144,112" fill="none" stroke="#ab5236" stroke-width="1.8" opacity="0.6"/>
+    <path d="M 64,110 Q 100,118 134,130" fill="none" stroke="#ab5236" stroke-width="1.8" opacity="0.6"/>
+
+    <!-- Pistol wrist grip wrap checkering -->
+    <path d="M 160,102 L 180,112 L 172,136 L 152,126 Z" fill="#582420" stroke="#381310" stroke-width="1.5"/>
+
+    <!-- Steel Receiver with Engravings -->
+    <rect x="184" y="68" width="116" height="58" rx="4" fill="url(#shReceiver)" stroke="#1a0b15" stroke-width="2.5"/>
+    
+    <!-- Top break / cocking lever -->
+    <path d="M 194,68 L 194,56 L 208,58 L 204,68 Z" fill="#c2c3c7" stroke="#5f574f" stroke-width="1.5"/>
+
+    <!-- Receiver pins & scrollwork -->
+    <circle cx="204" cy="98" r="4" fill="#c2c3c7" stroke="#1a0b15"/>
+    <circle cx="236" cy="102" r="3.5" fill="#c2c3c7" stroke="#1a0b15"/>
+    <circle cx="270" cy="88" r="5" fill="#ffec27" stroke="#ffa300" stroke-width="1.5"/>
+    <rect x="220" y="76" width="56" height="12" rx="2" fill="#26121f"/>
+
+    <!-- Trigger Guard & Double Triggers -->
+    <path d="M 188,126 C 188,148 230,148 234,126" fill="none" stroke="#5f574f" stroke-width="3"/>
+    <path d="M 204,128 Q 200,138 196,142" fill="none" stroke="#ffec27" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 218,128 Q 214,138 210,142" fill="none" stroke="#ffec27" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Heavy Double Barrels (Twin Side-by-Side) -->
+    <!-- Top Barrel / Tube 1 -->
+    <rect x="300" y="70" width="310" height="18" rx="2" fill="url(#shBarrel)" stroke="#1f1c19" stroke-width="2"/>
+    <!-- Bottom Barrel / Tube 2 -->
+    <rect x="300" y="88" width="310" height="18" rx="2" fill="url(#shBarrel)" stroke="#1f1c19" stroke-width="2"/>
+    <!-- Center connecting rib -->
+    <line x1="300" y1="88" x2="610" y2="88" stroke="#1f1c19" stroke-width="2.5"/>
+
+    <!-- Top Ventilated Sight Rib -->
+    <rect x="300" y="66" width="308" height="5" fill="#49333b"/>
+    <line x1="320" y1="66" x2="320" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="360" y1="66" x2="360" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="400" y1="66" x2="400" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="440" y1="66" x2="440" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="480" y1="66" x2="480" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="520" y1="66" x2="520" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+    <line x1="560" y1="66" x2="560" y2="71" stroke="#ffec27" stroke-width="1.5"/>
+
+    <!-- Brass Bead Sight at Muzzle -->
+    <circle cx="604" cy="62" r="3.5" fill="#ffec27" stroke="#ffa300" stroke-width="1.5"/>
+
+    <!-- Twin Muzzle Crowns -->
+    <rect x="608" y="68" width="12" height="40" rx="3" fill="#422136" stroke="#26121f" stroke-width="2"/>
+    <!-- Barrel bores -->
+    <ellipse cx="616" cy="79" rx="3" ry="6" fill="#000"/>
+    <ellipse cx="616" cy="97" rx="3" ry="6" fill="#000"/>
+
+    <!-- Ribbed Walnut Wooden Forend Pump -->
+    <rect x="312" y="98" width="134" height="26" rx="6" fill="url(#shWood)" stroke="#381310" stroke-width="2.5"/>
+    <!-- Deep traction ribs -->
+    <line x1="328" y1="102" x2="328" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="342" y1="102" x2="342" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="356" y1="102" x2="356" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="370" y1="102" x2="370" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="384" y1="102" x2="384" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="398" y1="102" x2="398" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="412" y1="102" x2="412" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+    <line x1="426" y1="102" x2="426" y2="120" stroke="#ab5236" stroke-width="2.5"/>
+  </g>
+</svg>
