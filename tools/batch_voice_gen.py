@@ -80,6 +80,10 @@ async def main():
                         continue
                     all_lines.append((fname, text, voice, rate, pitch))
 
+    # Prioritize demo factions first
+    DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees']
+    all_lines.sort(key=lambda x: (0 if x[0].split('_')[0] in DEMO_FACTIONS else 1, x[0]))
+
     print(f"Total lines needing generation: {len(all_lines)}")
 
     # Slice batch
