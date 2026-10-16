@@ -15,7 +15,7 @@ export function haptic(pattern) {
 import { BarkSystem } from './barks.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
-import { buildCulDeSac } from './map.js';
+import { buildCulDeSac, buildMap, MAPS } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
 import { Controls, aimAssist } from './controls.js';
@@ -25,6 +25,7 @@ import { Hud } from './hud.js';
 import { NetClient } from './net.js';
 import { Funnel } from './funnel.js';
 import { OnlineSession } from './online.js';
+import { CareerProfile } from './progression.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
@@ -35,6 +36,12 @@ const params = typeof location !== 'undefined' ? new URLSearchParams(location.se
 export const isDemo = params.get('demo') === '1' || (typeof window !== 'undefined' && window.__HOA_DEMO__ === true);
 const FIXED = 1 / 60;
 const KILLCAM_SEC = 3.2;
+
+export const career = new CareerProfile({
+  isDemo,
+  onAchievement: ach => game?.hud?.showAchievementToast?.(ach),
+  onRankUp: rank => game?.showBanner?.(`🎖️ PROMOTED: ${rank.title.toUpperCase()}`, `HOA Career Rank ${rank.rank} Reached!`),
+});
 
 async function loadJson(path) {
   if (typeof window === 'undefined') {
@@ -91,6 +98,7 @@ export const FACTION_METADATA = {
 const initialFaction = params.get('faction') && factions[params.get('faction')] ? params.get('faction') : 'karens';
 const initialDiffParam = params.get('difficulty') || params.get('bots') || 'medium';
 const initialDifficulty = ['easy', 'medium', 'hard'].includes(initialDiffParam) ? initialDiffParam : (initialDiffParam === 'normal' ? 'medium' : 'medium');
+const initialMapParam = params.get('map') || 'culdesac';
 const state = {
   faction: isDemo && !DEMO_FACTIONS.includes(initialFaction) ? 'karens' : initialFaction,
   script: params.get('script') === 'steam' ? 'steam' : 'clean',
@@ -103,6 +111,14 @@ const state = {
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
   difficulty: initialDifficulty,
+  map: !isDemo && MAPS[initialMapParam] ? initialMapParam : 'culdesac',
+  goldSkin: !isDemo && params.get('gold') === '1',
+  mutators: {
+    bigHead: params.get('bighead') === '1',
+    shotgunsOnly: !isDemo && params.get('shotguns') === '1',
+    lowGrav: !isDemo && params.get('lowgrav') === '1',
+    turbo: !isDemo && params.get('turbo') === '1',
+  },
 };
 
 const viewCanvas = typeof document !== 'undefined' ? $('view') : null;
@@ -270,6 +286,11 @@ export function buildMenu() {
   }
 
   syncOnlineButtons(demoActive && !DEMO_FACTIONS.includes(state.faction));
+  if ($('careerRankBadge')) {
+    const rInfo = career.getRankInfo();
+    const capNote = rInfo.cappedInDemo ? ' 🔒 (MAX IN DEMO)' : rInfo.nextRank ? ` (${rInfo.xp}/${rInfo.nextRank.xpRequired} XP)` : ' (MAX)';
+    $('careerRankBadge').textContent = `${rInfo.current.badge} RANK ${rInfo.current.rank}: ${rInfo.current.title.toUpperCase()}${capNote}`;
+  }
   if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
   if ($('optLegal')) $('optLegal').checked = state.legalSafe;
   if ($('optRetro')) $('optRetro').checked = state.retro;
@@ -277,10 +298,62 @@ export function buildMenu() {
   if ($('opt007')) $('opt007').checked = state.style === '007';
   if ($('optVoice')) $('optVoice').checked = state.voice;
   if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
+  if ($('optMap')) $('optMap').value = state.map;
+  if ($('mutBigHead')) $('mutBigHead').checked = !!state.mutators.bigHead;
+  if ($('mutShotguns')) $('mutShotguns').checked = !!state.mutators.shotgunsOnly;
+  if ($('mutLowGrav')) $('mutLowGrav').checked = !!state.mutators.lowGrav;
+  if ($('mutTurbo')) $('mutTurbo').checked = !!state.mutators.turbo;
+  if ($('optGoldSkin')) $('optGoldSkin').checked = !!state.goldSkin;
   if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
 }
 if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; };
 if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; };
+if ($('optMap')) {
+  $('optMap').onchange = e => {
+    const val = e.target.value;
+    const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+    const mDef = MAPS[val];
+    if (demoActive && mDef && !mDef.freeInDemo) {
+      e.target.value = 'culdesac';
+      state.map = 'culdesac';
+      showDemoModal(mDef.name, mDef.tagline);
+      return;
+    }
+    state.map = val;
+  };
+}
+if ($('mutBigHead')) $('mutBigHead').onchange = e => { state.mutators.bigHead = e.target.checked; };
+for (const [elId, mutKey, label, tagline] of [
+  ['mutShotguns', 'shotgunsOnly', 'Shotguns Only Mutator', 'Divorce Settlements only — pure close-quarters chaos!'],
+  ['mutLowGrav', 'lowGrav', 'Low-Gravity Moon Shoes', 'Bounce over roofs and air-strafe the cul-de-sac!'],
+  ['mutTurbo', 'turbo', '2x Turbo Speed', 'Double movement speed for high-octane suburban arena action!'],
+]) {
+  if ($(elId)) {
+    $(elId).onchange = e => {
+      const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+      if (demoActive && e.target.checked) {
+        e.target.checked = false;
+        state.mutators[mutKey] = false;
+        showDemoModal(label, tagline);
+        return;
+      }
+      state.mutators[mutKey] = e.target.checked;
+    };
+  }
+}
+if ($('optGoldSkin')) {
+  $('optGoldSkin').onchange = e => {
+    const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
+    if (demoActive && e.target.checked) {
+      e.target.checked = false;
+      state.goldSkin = false;
+      showDemoModal('24K Gold Weapon Skins', 'Flex on the HOA Board with solid 24-karat gold viewmodels!');
+      return;
+    }
+    state.goldSkin = e.target.checked;
+    renderer?.setGoldSkin?.(state.goldSkin);
+  };
+}
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
 if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 if ($('optLegal')) $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };
@@ -476,10 +549,23 @@ class Game {
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
-    this.sim = new Sim({ rules: content.rules, weapons: weaponsData, rng: this.rng, map: renderer.map, mode: state.mode, difficulty: state.difficulty, botDifficulty: params.get('bots') || undefined });
+    const activeMap = buildMap(state.map);
+    if (renderer) renderer.map = activeMap;
+    this.sim = new Sim({
+      rules: content.rules,
+      weapons: weaponsData,
+      rng: this.rng,
+      map: activeMap,
+      mode: state.mode,
+      difficulty: state.difficulty,
+      botDifficulty: params.get('bots') || undefined,
+      mutators: state.mutators,
+      isDemo,
+    });
     this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
     this.limiter = new AudioLimiter(content.rules.audioLimiter);
     this.hud = new Hud({ $, factions, weaponsData });
+    if (viewCanvas && !state.spectate) this.hud.startClipRecorder?.(viewCanvas);
     voice.enabled = state.voice;
 
     const names = [...content.playerNames].sort(() => this.rng() - 0.5);
@@ -510,6 +596,7 @@ class Game {
       renderer.setWeapon(initW.viewmodel);
       renderer.weaponSwitchT = 0; // no switch animation on initial spawn
     }
+    renderer?.setGoldSkin?.(state.goldSkin);
 
     this.frames = [];
     this.hearing = { priority: -1, until: 0 };
@@ -534,6 +621,7 @@ class Game {
   showBanner(text, small = '') { this.hud.showBanner(text, small); }
 
   dispose() {
+    this.hud.stopClipRecorder?.();
     if (this.session) {
       this.session.close();
       this.session = null;
@@ -555,6 +643,7 @@ class Game {
     }
     renderer.updateGrenades([]);
     renderer.updateObjects([], 0);
+    renderer.updateMowers?.([], 0);
     $('bubbles').innerHTML = ''; $('feed').innerHTML = ''; $('subs').innerHTML = '';
     voice.stop();
   }
@@ -773,16 +862,55 @@ class Game {
         case 'kill': {
           if (live) renderer.spawnRagdoll(e.victimId, e);
           else renderer.splat(e.victimPos, '#ff004d', 1.1);
-          if (e.killerId === me.id) {
+          if (e.victimId === me.id && !me.isBot) {
+            career.recordDeath();
+          }
+          if (e.killerId === me.id && !me.isBot) {
             sfx.kill();
             haptic([40, 20, 60]);
             const streak = me.streak || 1;
-            const label = e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : streak >= 5 ? '🚁 HELICOPTER UNLOCKED!' : '+1 EVICTION';
+            const label = e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : streak === 7 ? '🚜 MOWER STAMPEDE!' : streak === 5 ? '🚁 HELICOPTER UNLOCKED!' : streak === 3 ? '🔔 RING CAM UAV!' : '+1 EVICTION';
             this.showBanner(label, streak >= 3 ? `${streak}x CITATION STREAK` : '');
             this.hud.popScore?.(e.headshot ? '★ +150 HEADSHOT FINE!' : e.melee ? '🏆 +150 TROPHY BONK!' : '+100 EVICTED!', !!(e.headshot || e.melee || streak >= 3));
+            career.recordKill({
+              headshot: !!e.headshot,
+              melee: !!e.melee,
+              explosive: !!e.explosive,
+              streak,
+            });
           }
           break;
         }
+        case 'carAlarm': {
+          const dist = Math.hypot((e.pos?.x || 0) - me.pos.x, (e.pos?.z || 0) - me.pos.z);
+          if (dist < 48) sfx.carAlarm?.();
+          if (e.attackerId === me.id) {
+            this.hud.popScore?.('🚨 SUBURBAN NOISE VIOLATION!', false);
+          }
+          break;
+        }
+        case 'uavSweep':
+          if (e.ownerId === me.id) {
+            this.showBanner('🔔 RING CAM UAV ONLINE', 'All enemy neighbors revealed on radar for 15s!');
+          }
+          break;
+        case 'mowerStampede':
+          if (e.ownerId === me.id) {
+            this.showBanner('🚜 LAWN MOWER STAMPEDE', '7-Killstreak autonomous riding mowers deployed!');
+          }
+          break;
+        case 'streakLocked':
+          if (e.ownerId === me.id) {
+            this.showBanner('🔒 7-STREAK: MOWER STAMPEDE', 'Unlock the Autonomous Lawn Mower Stampede in the $4.99 Full Game!');
+          }
+          break;
+        case 'streakDestroyed':
+          if (e.killerId === me.id && !me.isBot) {
+            this.showBanner('💥 HELICOPTER GROUNDED!', '+250 HOA AIRSPACE ENFORCEMENT');
+            this.hud.popScore?.('🚁 +250 HELO DOWN!', true);
+            career.unlockAchievement('ACH_HELO_DOWN');
+          }
+          break;
         case 'explosion': if (live) renderer.explosion(e.pos); sfx.boom(); break;
         case 'boing': if (a === me || Math.hypot(a.pos.x - me.pos.x, a.pos.z - me.pos.z) < 20) sfx.boing(); break;
         case 'reload': if (a === me) sfx.reload(); break;
@@ -794,11 +922,18 @@ class Game {
             if (w?.viewmodel && renderer.setWeapon) renderer.setWeapon(w.viewmodel);
           }
           break;
-        case 'campingSnitch': this.showBanner(a === me ? 'YOU SNITCHED ON YOURSELF' : `${a.name} snitched on themselves`, a === me ? 'Enemies can see you for 6s. Move!' : ''); break;
+        case 'campingSnitch':
+          this.showBanner(a === me ? 'YOU SNITCHED ON YOURSELF' : `${a.name} snitched on themselves`, a === me ? 'Enemies can see you for 6s. Move!' : '');
+          if (a === me && !me.isBot) career.unlockAchievement('ACH_CAMP_SNITCH');
+          break;
         case 'receiptConfirmed': if (a === me) { sfx.kill(); this.showBanner('RECEIPT CONFIRMED', `${e.victimName} has been processed`); this.hud.popScore?.('🧾 +100 RECEIPT!', true); } break;
         case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
         case 'hardpointRotated': this.showBanner('NEW LAWN ACTIVE', e.name); break;
         case 'matchEnd':
+          if (!me.isBot) {
+            this.hud.stopClipRecorder?.();
+            career.recordMatchEnd({ won: e.winner === me.team, mode: state.mode });
+          }
           setTimeout(() => {
             if (game !== this) return;
             this.hud.showEnd({

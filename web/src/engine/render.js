@@ -685,6 +685,64 @@ export class Renderer {
     return this.vmMeshes?.[key]?.muzzlePos || this.muzzleOffsets?.[weaponOrClass] || this.muzzleOffsets?.[key] || { x: 0, y: 0.02, z: -0.33 };
   }
 
+  setGoldSkin(enabled) {
+    this.goldSkin = !!enabled;
+    if (!this.vmMeshes) return;
+    for (const grp of Object.values(this.vmMeshes)) {
+      grp.traverse(obj => {
+        if (!obj.isMesh || !obj.material) return;
+        if (!obj.userData.origColor && obj.material.color) {
+          obj.userData.origColor = obj.material.color.getHex();
+          obj.userData.origEmissive = obj.material.emissive ? obj.material.emissive.getHex() : 0;
+        }
+        if (this.goldSkin) {
+          obj.material.color?.setHex(0xffd700);
+          if (obj.material.emissive) {
+            obj.material.emissive.setHex(0x805a00);
+            obj.material.emissiveIntensity = 0.35;
+          }
+        } else if (obj.userData.origColor !== undefined) {
+          obj.material.color?.setHex(obj.userData.origColor);
+          if (obj.material.emissive) {
+            obj.material.emissive.setHex(obj.userData.origEmissive || 0);
+          }
+        }
+      });
+    }
+  }
+
+  updateMowers(mowers = [], dt = 0.016) {
+    this.mowerMeshes ??= new Map();
+    const activeIds = new Set();
+    for (const m of mowers) {
+      if (!m.alive) continue;
+      activeIds.add(m.id);
+      let mesh = this.mowerMeshes.get(m.id);
+      if (!mesh) {
+        mesh = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.55, 1.3), new THREE.MeshLambertMaterial({ color: '#d93829' }));
+        body.position.y = 0.42;
+        const deck = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.65, 0.16, 12), new THREE.MeshLambertMaterial({ color: '#ffec27' }));
+        deck.position.y = 0.16;
+        const seat = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, 0.45), new THREE.MeshLambertMaterial({ color: '#1b1b1b' }));
+        seat.position.set(0, 0.8, 0.25);
+        mesh.add(body, deck, seat);
+        this.scene.add(mesh);
+        this.mowerMeshes.set(m.id, mesh);
+      }
+      const px = m.x ?? m.pos?.x ?? 0;
+      const pz = m.z ?? m.pos?.z ?? 0;
+      mesh.position.set(px, 0, pz);
+      mesh.rotation.y = -(m.angle || 0);
+    }
+    for (const [id, mesh] of this.mowerMeshes.entries()) {
+      if (!activeIds.has(id)) {
+        this.scene.remove(mesh);
+        this.mowerMeshes.delete(id);
+      }
+    }
+  }
+
   ensureCharacter(actor, localTeam) {
     let c = this.characters.get(actor.id);
     if (!c) {
@@ -698,14 +756,17 @@ export class Renderer {
 
   /** Apply a snapshot (live or killcam) to character views. */
   applySnapshot(snap, dt, { hideId = null, sim = null, now = 0 } = {}) {
+    const bigHead = !!sim?.mutators?.bigHead;
     for (const s of snap) {
       const c = this.characters.get(s.id);
       if (!c) continue;
       const a = sim?.byId.get(s.id);
       c.update(s, dt, { firing: s.firing, revealed: a ? a.revealedUntil > now : false, meleeAgo: a ? now - a.meleeAt : 9 });
+      if (c.head?.scale) c.head.scale.setScalar(bigHead ? 2.1 : 1);
       if (s.id === hideId) c.root.visible = false;
     }
     if (snap.helicopters) this.updateHelicopters(snap.helicopters, dt);
+    if (snap.mowers) this.updateMowers(snap.mowers, dt);
   }
 
   spawnRagdoll(id, ev) {

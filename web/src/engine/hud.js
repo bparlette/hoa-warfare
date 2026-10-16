@@ -459,6 +459,7 @@ export class Hud {
         <button id="endMenu" style="margin-top:0">MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
         <button id="btnShareCard" class="btn-share" style="margin-top:0">📸 SAVE / SHARE CARD</button>
+        <button id="btnSaveClip" class="btn-share" style="margin-top:0">🎥 SAVE CLIP</button>
         ${!isDemoMode ? '<a data-steam="end_row" href="#" onclick="return false" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
@@ -517,7 +518,71 @@ export class Hud {
         setTimeout(() => { if (btnShareCard) btnShareCard.textContent = '📸 SAVE / SHARE CARD'; }, 2500);
       };
     }
+    const btnSaveClip = $('btnSaveClip');
+    if (btnSaveClip) {
+      btnSaveClip.onclick = async () => {
+        btnSaveClip.textContent = '⏳ EXPORTING CLIP...';
+        const ok = await this.exportHighlightClip({ sim, me, won, draw, mvpLine, funnel });
+        btnSaveClip.textContent = ok ? '✓ CLIP SAVED!' : '✓ SCORECARD SAVED!';
+        setTimeout(() => { if (btnSaveClip) btnSaveClip.textContent = '🎥 SAVE CLIP'; }, 2500);
+      };
+    }
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
+  }
+
+  startClipRecorder(canvas) {
+    try {
+      if (!canvas?.captureStream || typeof MediaRecorder === 'undefined') return;
+      this.stopClipRecorder();
+      this._clipChunks = [];
+      const stream = canvas.captureStream(30);
+      const mime = MediaRecorder.isTypeSupported?.('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : MediaRecorder.isTypeSupported?.('video/webm')
+          ? 'video/webm'
+          : '';
+      this._recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      this._recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          this._clipChunks.push(e.data);
+          if (this._clipChunks.length > 8) this._clipChunks.shift();
+        }
+      };
+      this._recorder.start(1000);
+    } catch {}
+  }
+
+  stopClipRecorder() {
+    try {
+      if (this._recorder && this._recorder.state !== 'inactive') {
+        this._recorder.stop();
+      }
+    } catch {}
+    this._recorder = null;
+  }
+
+  async exportHighlightClip({ sim, me, won, draw, mvpLine, funnel }) {
+    this.stopClipRecorder();
+    if (this._clipChunks && this._clipChunks.length > 0 && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+      try {
+        const blob = new Blob(this._clipChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `hoa-warfare-highlight-${me?.faction || 'clip'}.webm`;
+        a.click?.();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        return true;
+      } catch {}
+    }
+    await this.shareScoreCard({ sim, me, won, draw, mvpLine, funnel });
+    return false;
+  }
+
+  showAchievementToast(ach) {
+    if (!ach) return;
+    this.showBanner(`${ach.icon || '🏆'} ACHIEVEMENT: ${ach.name.toUpperCase()}`, ach.desc || '');
+    this.popScore(`+100 XP · ${ach.name.toUpperCase()}`, true);
   }
 
   async renderScoreCardCanvas({ sim, me, won, draw, mvpLine }) {

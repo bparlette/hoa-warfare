@@ -86,6 +86,14 @@
           <select id="optMode"></select>
         </div>
         <div class="lobby-mode-select">
+          <label for="optMap">MAP:</label>
+          <select id="optMap">
+            <option value="culdesac" selected>Oakridge Cul-de-Sac</option>
+            <option value="pickleball">Shady Pines Pickleball Club</option>
+            <option value="stripmall">Sunset Strip Mall</option>
+          </select>
+        </div>
+        <div class="lobby-mode-select">
           <label for="optDifficulty">DIFF:</label>
           <select id="optDifficulty">
             <option value="easy">Easy (Lock-On · 3x HP)</option>
@@ -101,6 +109,7 @@
         <a id="btnWishlist" data-steam="menu" href="#" onclick="return false" class="btn-wishlist btn-wishlist-compact">★ WISHLIST ON STEAM ($4.99)</a>
       </div>
       <div id="onlineNote" class="online-note"></div>
+      <div id="careerRankBadge" style="font-size:11px;color:#ffec27;font-weight:800;letter-spacing:0.6px;margin-top:2px;">RANK 1 · PROBATIONARY RENTER (0 XP)</div>
     </header>
 
     <!-- MAIN LOBBY: 2 ROWS X 3 COLUMNS SQUARES -->
@@ -117,7 +126,7 @@
 
       <!-- COLLAPSED SETTINGS & CONTROLS ACCORDION -->
       <details id="menuSettings" class="menu-settings">
-        <summary class="settings-summary">⚙️ Settings, Visual Styles & Controls Reference</summary>
+        <summary class="settings-summary">⚙️ Settings, Party Mutators, Visual Styles & Controls</summary>
         <div class="settings-drawer">
           <div class="settings-grid">
             <div class="settings-block">
@@ -139,6 +148,16 @@
                 <label><input type="checkbox" id="optRetro"> 16-bit pixel filter (off = HD 3D)</label>
                 <label style="display:none;"><input type="checkbox" id="opt007"></label>
                 <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
+              </div>
+            </div>
+            <div class="settings-block">
+              <h3>Party Mutators & Mastery</h3>
+              <div class="toggles">
+                <label><input type="checkbox" id="mutBigHead"> 🎈 Big Head Mode</label>
+                <label><input type="checkbox" id="mutShotguns"> 💥 Shotguns Only ($4.99 Full)</label>
+                <label><input type="checkbox" id="mutLowGrav"> 🌙 Low-Gravity Block ($4.99 Full)</label>
+                <label><input type="checkbox" id="mutTurbo"> ⚡ Turbo Speed 1.5x ($4.99 Full)</label>
+                <label><input type="checkbox" id="optGoldSkin"> ✨ 24K Gold Weapons ($4.99 Full)</label>
               </div>
             </div>
           </div>
