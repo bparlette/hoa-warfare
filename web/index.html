@@ -61,7 +61,7 @@
   <div id="bubbles"></div>
   <div id="vignette"></div>
   <div id="dmgIndicator"></div>
-  <div id="killcam" class="hidden"><div class="tag">KILLCAM</div><button id="btnExportShort" class="btn-share btn-short-kc" type="button">📱 9:16 TIKTOK / REEL</button><div id="kcWho"></div><div id="kcLine"></div></div>
+  <div id="killcam" class="hidden"><div class="tag">KILLCAM</div><div id="kcWho"></div><div id="kcLine"></div></div>
   <div id="board" class="hidden"></div>
 </div>
 
@@ -158,10 +158,6 @@
           <b>Keyboard + mouse:</b> WASD move · Mouse aim · Click fire · Space jump · Shift sprint · R reload · F trophy melee · G throw Lawsuit · Q/1/2 swap sidearm · Tab scores · Esc pause<br>
           <b>Controller:</b> L stick move (click sprint) · R stick aim · RT fire · LT sprint · A jump · X reload · B/RB melee · LB Lawsuit · Y swap · START pause · menu: LB/RB faction, A deploy<br>
           O/0 visual style · [ Clean/Steam · ] legal-safe · P 16-bit filter · M mute</p>
-          <div style="margin-top:12px;display:flex;gap:16px;font-size:12px;flex-wrap:wrap;">
-            <a href="soundboard.html" target="_blank" style="color:#00e436;font-weight:700;text-decoration:none;">🎙️ Streamer Soundboard (1,618 Voice Lines)</a>
-            <a href="weapons_showcase.html" target="_blank" style="color:#ffec27;font-weight:700;text-decoration:none;">🔫 3D Weapons Showcase & Renders</a>
-          </div>
         </div>
       </details>
     </main>
@@ -223,16 +219,6 @@
         </select>
         <small class="field-desc">Tweak damage scaling and aim-assist lock-on.</small>
       </div>
-      <div class="settings-field">
-        <label for="optScoreLimit">MATCH LENGTH</label>
-        <select id="optScoreLimit">
-          <option value="30">Quick (30 Kills · ~2 min)</option>
-          <option value="60" selected>Standard (60 Kills · ~5 min)</option>
-          <option value="100">Long (100 Kills · ~8-10 min)</option>
-          <option value="200">Marathon (200 Kills · ~15 min)</option>
-        </select>
-        <small class="field-desc">Set kill threshold before match completes.</small>
-      </div>
     </div>
     <div class="modal-footer">
       <button type="button" id="saveMatchSettings" class="btn-deploy btn-primary-settings">CONFIRM SETTINGS</button>
@@ -258,7 +244,7 @@
   <div class="panel demo-panel">
     <h2 id="demoModalTitle">🔒 LOCKED IN FREE WEB DEMO</h2>
     <div id="demoModalSub" class="demo-modal-sub"></div>
-    <p id="demoModalBody" class="demo-modal-body">Unlock <strong>this faction</strong> and all 20 fully voiced factions, every weapon and mode in the full $4.99 release on Steam!</p>
+    <p id="demoModalBody" class="demo-modal-body">Unlock <strong>this faction</strong> and all 16 fully voiced factions, every weapon and mode in the full $4.99 release on Steam!</p>
     <div class="demo-modal-actions">
       <a data-steam="locked_faction" href="#" onclick="return false" class="btn-wishlist">★ WISHLIST ON STEAM ($4.99)</a>
       <button id="closeDemoModal" type="button">CLOSE</button>
