@@ -2077,8 +2077,8 @@
     }
    }
   },
-  "vcBros": {
-   "name": "VC / Finance Bros",
+  "wallstreetBets": {
+   "name": "WallStreet Bets",
    "phase0": false,
    "tagline": "Fleece vest, rug-pulls.",
    "look": {
@@ -2739,8 +2739,8 @@
     }
    }
   },
-  "theGays": {
-   "name": "The Gays",
+  "fabulous": {
+   "name": "The Fabulous",
    "phase0": false,
    "tagline": "Architectural Digest or death.",
    "look": {
@@ -3446,7 +3446,7 @@
     "rivalsFirst": [
      "karens",
      "tradwives",
-     "vcBros",
+     "wallstreetBets",
      "wokeLibs"
     ],
     "avoid": [
@@ -4406,7 +4406,7 @@
     "rivalsFirst": [
      "wokeLibs",
      "valleyGirls",
-     "theGays"
+     "fabulous"
     ],
     "avoid": [
      "religion itself (mock the aesthetic, not faith)",
@@ -5031,13 +5031,13 @@
   },
   {
    "killer": "gymRats",
-   "victim": "vcBros",
+   "victim": "wallstreetBets",
    "clean": [
     "Your standing desk can't save you!"
    ]
   },
   {
-   "killer": "vcBros",
+   "killer": "wallstreetBets",
    "victim": "gymRats",
    "clean": [
     "Automated your job. It's dying."
@@ -5120,7 +5120,7 @@
    ]
   },
   {
-   "killer": "theGays",
+   "killer": "fabulous",
    "victim": "karens",
    "clean": [
     "That haircut? An emergency!"
@@ -5128,13 +5128,13 @@
   },
   {
    "killer": "karens",
-   "victim": "theGays",
+   "victim": "fabulous",
    "clean": [
     "Your pride flag violates bylaws!"
    ]
   },
   {
-   "killer": "theGays",
+   "killer": "fabulous",
    "victim": "trumpers",
    "clean": [
     "Forty-seven flags is a visual tragedy!"
@@ -5142,14 +5142,14 @@
   },
   {
    "killer": "trumpers",
-   "victim": "theGays",
+   "victim": "fabulous",
    "clean": [
     "Too fabulous for this block!"
    ]
   },
   {
    "killer": "trumpers",
-   "victim": "vcBros",
+   "victim": "wallstreetBets",
    "clean": [
     {
      "t": "Globalist down!",
@@ -5159,7 +5159,7 @@
    ]
   },
   {
-   "killer": "vcBros",
+   "killer": "wallstreetBets",
    "victim": "trumpers",
    "clean": [
     "Tariff this, buddy!"
@@ -5311,7 +5311,7 @@
   },
   {
    "killer": "mlmHuns",
-   "victim": "vcBros",
+   "victim": "wallstreetBets",
    "clean": [
     "My ROI beats your portfolio.",
     "I disrupt. You just brunch."
@@ -5321,7 +5321,7 @@
    ]
   },
   {
-   "killer": "vcBros",
+   "killer": "wallstreetBets",
    "victim": "mlmHuns",
    "clean": [
     "Your cap table is a group chat.",
