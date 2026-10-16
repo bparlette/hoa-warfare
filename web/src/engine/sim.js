@@ -91,10 +91,17 @@ export class Sim {
    * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number, difficulty?:string}} o
    * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json
    */
-  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty, difficulty = null }) {
+  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty, difficulty = null, mutators = {}, isDemo = false }) {
     if (!weapons) throw new Error('Sim needs weapons (data/weapons.json)');
     this.rules = rules;
     this.weapons = weapons;
+    this.isDemo = !!isDemo;
+    this.mutators = {
+      bigHead: !!mutators?.bigHead,
+      shotgunsOnly: !!mutators?.shotgunsOnly,
+      lowGrav: !!mutators?.lowGrav,
+      turbo: !!mutators?.turbo,
+    };
     const normDiff = difficulty === 'normal' ? 'medium' : difficulty;
     this.difficulty = DIFFICULTY_PROFILES[normDiff] ? normDiff : null;
     this.difficultyProfile = this.difficulty ? DIFFICULTY_PROFILES[this.difficulty] : null;
@@ -116,6 +123,7 @@ export class Sim {
     this.started = false;
     this.nextObjectId = 0;
     this.helicopters = [];
+    this.mowers = [];
     this.mode = createMode(mode, this);
   }
 
@@ -124,7 +132,9 @@ export class Sim {
   }
 
   addActor({ id, name, team, faction, isBot = true, loadout = 'default', damageTakenMult, easyLockOn }) {
-    if (loadout === 'default' && faction && FACTION_DEFAULT_LOADOUTS[faction]) {
+    if (this.mutators?.shotgunsOnly) {
+      loadout = 'divorceSettlement';
+    } else if (loadout === 'default' && faction && FACTION_DEFAULT_LOADOUTS[faction]) {
       loadout = FACTION_DEFAULT_LOADOUTS[faction];
     }
     const weapons = resolveLoadout(this.weapons, loadout);
@@ -292,13 +302,16 @@ export class Sim {
     const len = Math.hypot(mx, mz);
     if (len > 1) { mx /= len; mz /= len; }
     const sprinting = inp.sprint && inp.forward > 0.1 && !inp.fire;
-    const speed = sprinting ? SPRINT : WALK;
+    const baseSpeed = sprinting ? SPRINT : WALK;
+    const speed = this.mutators?.turbo ? baseSpeed * 1.55 : baseSpeed;
     const accel = a.onGround ? 40 : 8;
     const k = Math.min(1, accel * dt);
     a.vel.x += (mx * speed - a.vel.x) * k;
     a.vel.z += (mz * speed - a.vel.z) * k;
-    if (inp.jump && a.onGround) { a.vel.y = JUMP_V; a.onGround = false; }
-    a.vel.y -= GRAVITY * dt;
+    const jumpV = this.mutators?.lowGrav ? JUMP_V * 1.45 : JUMP_V;
+    const grav = this.mutators?.lowGrav ? GRAVITY * 0.35 : GRAVITY;
+    if (inp.jump && a.onGround) { a.vel.y = jumpV; a.onGround = false; }
+    a.vel.y -= grav * dt;
 
     const nx = a.pos.x + a.vel.x * dt;
     if (!this.blocked(nx, a.pos.z, a.pos.y)) a.pos.x = nx; else a.vel.x = 0;
@@ -341,9 +354,10 @@ export class Sim {
       const t = rayBox(o, dir, b, best.t);
       if (t < best.t) best = { t, kind: 'world', actor: null, helicopter: null, head: false, box: b };
     }
+    const headR = this.mutators?.bigHead ? BODY.headR * 2.2 : BODY.headR;
     for (const a of this.actors) {
       if (!a.alive || a.id === ignoreId) continue;
-      const hit = rayActor(o, dir, a.pos, best.t);
+      const hit = rayActor(o, dir, a.pos, best.t, headR);
       if (hit) best = { t: hit.t, kind: 'actor', actor: a, helicopter: null, head: hit.head };
     }
     for (const h of this.helicopters) {
@@ -434,6 +448,9 @@ export class Sim {
         let dmg = w.damage.body;
         if (w.falloff && hit.t > w.falloff.startM) dmg *= w.falloff.mult;
         this.damageHelicopter(hit.helicopter, dmg, a, { dir, weaponId: w.id });
+      } else if (hit.box?.isCar && now >= (hit.box.alarmUntil || 0)) {
+        hit.box.alarmUntil = now + 8;
+        this.emit({ type: 'carAlarm', id: a.id, pos: { ...hit.point } });
       }
     }
     if (a.ammo === 0) this.startReload(a);
@@ -562,8 +579,12 @@ export class Sim {
     if (killer) {
       killer.kills++;
       killer.streak++;
-      if (killer.streak === 5) {
+      if (!killer.isBot && killer.streak === 3) {
+        this.triggerRingUav(killer);
+      } else if (killer.streak === 5) {
         this.spawnHelicopter(killer);
+      } else if (!killer.isBot && killer.streak === 7) {
+        this.spawnMowerStampede(killer);
       }
     }
     const ev = {
@@ -572,6 +593,64 @@ export class Sim {
     };
     this.emit(ev);
     this.mode.onKill(ev, killer, target);
+  }
+
+  /** 3-Killstreak (Demo & Full Game): Ring Doorbell UAV Sweep reveals all enemies on radar for 15 seconds. */
+  triggerRingUav(ownerActor) {
+    const until = this.time + 15;
+    for (const a of this.actors) {
+      if (a.team !== ownerActor.team) {
+        a.revealedUntil = Math.max(a.revealedUntil || 0, until);
+      }
+    }
+    this.emit({ type: 'uavSweep', ownerId: ownerActor.id, team: ownerActor.team, until });
+    return until;
+  }
+
+  /** 7-Killstreak ($4.99 Full Game Exclusive): Autonomous Riding Lawn Mower Stampede. */
+  spawnMowerStampede(ownerActor) {
+    if (this.isDemo) {
+      this.emit({ type: 'streakLocked', streakType: 'mowerStampede', ownerId: ownerActor.id, team: ownerActor.team });
+      return [];
+    }
+    const spawned = [];
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * 2 * Math.PI) / 3;
+      const m = {
+        id: 'mower_' + (++this.nextObjectId),
+        team: ownerActor.team,
+        ownerId: ownerActor.id,
+        alive: true,
+        pos: { x: Math.cos(angle) * 8, y: 0, z: Math.sin(angle) * 8 },
+        angle,
+        radius: 10 + i * 3,
+        speed: 1.4,
+        expiresAt: this.time + 22,
+      };
+      this.mowers.push(m);
+      spawned.push(m);
+    }
+    this.emit({ type: 'mowerStampede', ownerId: ownerActor.id, team: ownerActor.team, count: spawned.length });
+    return spawned;
+  }
+
+  updateMowers(dt) {
+    const now = this.time;
+    for (const m of this.mowers) {
+      if (!m.alive) continue;
+      if (now >= m.expiresAt) { m.alive = false; continue; }
+      m.angle += m.speed * dt;
+      m.pos.x = Math.cos(m.angle) * m.radius;
+      m.pos.z = Math.sin(m.angle) * m.radius;
+      const owner = this.byId.get(m.ownerId);
+      for (const e of this.actors) {
+        if (!e.alive || e.team === m.team || now < e.spawnProtectUntil) continue;
+        if (Math.hypot(e.pos.x - m.pos.x, e.pos.z - m.pos.z) < 1.8) {
+          this.damage(e, 120, owner || { id: m.ownerId, team: m.team }, { explosive: true, weaponId: 'lawnMower' });
+        }
+      }
+    }
+    this.mowers = this.mowers.filter(m => m.alive);
   }
 
   spawnHelicopter(ownerActor) {
@@ -725,6 +804,7 @@ export class Sim {
     }
     this.stepGrenades(dt);
     this.updateHelicopters(dt);
+    this.updateMowers(dt);
     this.mode.update(dt);
     if (now >= this.timeLimit) this.end(this.score[0] === this.score[1] ? null : this.score[0] > this.score[1] ? 0 : 1);
   }
@@ -748,6 +828,16 @@ export class Sim {
       y: h.pos.y,
       z: h.pos.z,
       angle: h.angle,
+    }));
+    snap.mowers = this.mowers.map(m => ({
+      id: m.id,
+      team: m.team,
+      ownerId: m.ownerId,
+      alive: m.alive,
+      x: m.pos.x,
+      y: m.pos.y,
+      z: m.pos.z,
+      angle: m.angle,
     }));
     return snap;
   }
@@ -918,12 +1008,12 @@ function resetBrain(b) {
 }
 
 /** Ray vs a combatant: vertical body cylinder + head sphere. Returns {t, head} or null. */
-export function rayActor(o, d, p, maxT) {
+export function rayActor(o, d, p, maxT, headR = BODY.headR) {
   let best = null;
   // head sphere
   const hx = o.x - p.x, hy = o.y - (p.y + BODY.headY), hz = o.z - p.z;
   const hb = hx * d.x + hy * d.y + hz * d.z;
-  const hc = hx * hx + hy * hy + hz * hz - BODY.headR * BODY.headR;
+  const hc = hx * hx + hy * hy + hz * hz - headR * headR;
   const hdisc = hb * hb - hc;
   if (hdisc >= 0) {
     const t = -hb - Math.sqrt(hdisc);

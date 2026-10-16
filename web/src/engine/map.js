@@ -218,3 +218,43 @@ export const SPRINKLER_NODES = [
   [13, 20], [13, 28],     // House 5 lawn (southeast)
 ];
 
+export function buildPickleballClub() {
+  const base = buildCulDeSac();
+  // Customize cover with Pickleball nets & golf carts
+  for (const b of base.boxes) {
+    if (b.kind === 'house') b.color = '#f0f5e8';
+    if (b.kind === 'car') b.color = '#e6f2ff';
+    if (b.kind === 'fence') b.color = '#1e7cb8';
+  }
+  base.id = 'pickleball';
+  base.name = 'Shady Pines Pickleball Club';
+  return base;
+}
+
+export function buildStripMall() {
+  const base = buildCulDeSac();
+  // Customize cover with Strip Mall stucco & luxury SUVs
+  for (const b of base.boxes) {
+    if (b.kind === 'house') b.color = '#e6ccb2';
+    if (b.kind === 'car') b.color = '#2b2d42';
+  }
+  base.id = 'stripmall';
+  base.name = 'Sunset Strip Mall & Whole Foods Lot';
+  return base;
+}
+
+export const MAPS = {
+  culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                demoAllowed: true,  build: buildCulDeSac },
+  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        demoAllowed: false, build: buildPickleballClub },
+  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, build: buildStripMall },
+};
+
+export function buildMap(mapId = 'culdesac') {
+  const entry = MAPS[mapId] || MAPS.culdesac;
+  const m = entry.build();
+  m.id = entry.id;
+  m.label = entry.label;
+  return m;
+}
+
+
