@@ -58,6 +58,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 .panel { background: #1d2b53; border: 4px solid #fff1e8; padding: 22px 30px; max-width: 900px; width: 92vw; box-shadow: 8px 8px 0 #000; max-height: 94vh; overflow: auto; }
 .panel.small { max-width: 420px; text-align: center; }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ----------------- Modern Tactical Lobby Screen ----------------- */
 .lobby-container {
   max-width: 1140px;
@@ -81,16 +93,16 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   border-bottom: 2px solid #5f574f;
   padding-bottom: 6px;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px 10px;
 }
 .lobby-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .lobby-brand .main-logo {
-  height: 38px;
-  max-height: 42px;
+  height: 36px;
+  max-height: 38px;
   width: auto;
   margin: 0;
   image-rendering: pixelated;
@@ -98,22 +110,22 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 }
 .lobby-brand .tag {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   color: #ffec27;
   font-weight: bold;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 .lobby-quick-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .lobby-mode-select {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 5px;
+  font-size: 11px;
   font-weight: bold;
   color: #29adff;
 }
@@ -122,15 +134,22 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   border: 2px solid #29adff;
   color: #fff1e8;
   padding: 4px 8px;
+  min-height: 34px;
+  height: 34px;
+  width: auto;
   font-size: 12px;
   font-weight: bold;
   border-radius: 4px;
   box-shadow: 2px 2px 0 #000;
 }
-.btn-wishlist-compact {
-  padding: 5px 12px;
+.btn-wishlist.btn-wishlist-compact {
+  padding: 4px 10px;
+  min-height: 34px;
+  height: 34px;
   font-size: 12px;
   letter-spacing: 0.5px;
+  border-width: 2px;
+  box-shadow: 2px 2px 0 #000;
 }
 
 .lobby-main {
@@ -1023,132 +1042,18 @@ body.touch-mode #subs { bottom: 54px; left: 50%; transform: translateX(-50%); wi
   }
 }
 
-/* Mobile Landscape Compact Lobby */
-@media (max-height: 480px) {
-  .lobby-container {
-    padding: 6px 12px;
-    gap: 4px;
-    max-height: 98vh;
-  }
-  .lobby-header {
-    padding-bottom: 4px;
-    gap: 6px;
-  }
-  .lobby-brand .main-logo {
-    height: 28px;
-    max-height: 28px;
-  }
-  .lobby-brand .tag {
-    font-size: 10px;
-  }
-  .lobby-quick-bar {
-    gap: 6px;
-  }
-  .btn-wishlist-compact {
-    padding: 3px 8px;
-    font-size: 10px;
-  }
-  .lobby-mode-select {
-    font-size: 10px;
-  }
-  .lobby-mode-select select {
-    padding: 2px 6px;
-    font-size: 10px;
-  }
-  .lobby-main {
-    grid-template-columns: 1fr 290px;
-    gap: 8px;
-  }
-  .faction-header h2 {
-    font-size: 13px;
-  }
-  .fc {
-    min-height: 42px;
-    padding: 3px 6px;
-    gap: 6px;
-  }
-  .fc-badge {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-  }
-  .fc-icon {
-    font-size: 16px;
-  }
-  .fc-name {
-    font-size: 12px;
-  }
-  .fc-role {
-    font-size: 8px;
-  }
-  .fc-gear {
-    font-size: 9px;
-  }
-  .dossier-card {
-    padding: 6px 8px;
-    gap: 4px;
-  }
-  .dossier-avatar {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-  }
-  .dossier-big-icon {
-    font-size: 22px;
-  }
-  .dossier-title {
-    font-size: 16px;
-  }
-  .dossier-tagline {
-    font-size: 10px;
-  }
-  .dossier-balloon {
-    padding: 4px 6px;
-  }
-  .balloon-lbl {
-    font-size: 7px;
-  }
-  .balloon-text {
-    font-size: 10px;
-    margin-bottom: 2px;
-  }
-  .btn-battle-cry {
-    min-height: 22px;
-    font-size: 9px;
-    padding: 2px 6px;
-  }
-  .dossier-stats-grid {
-    padding: 4px 6px;
-    gap: 2px;
-  }
-  .cell-label {
-    font-size: 7px;
-  }
-  .cell-val {
-    font-size: 9px;
-  }
-  .dossier-action .btn-deploy {
-    min-height: 34px;
-    font-size: 14px;
-    padding: 4px 8px;
-  }
-  .menu-settings {
-    display: none;
-  }
-}
-
 /* ---------------------------------------------------------------- online play */
-.lobby-online { display: flex; gap: 8px; }
+.lobby-online { display: flex; gap: 6px; }
 .btn-online {
-  margin: 0; min-height: 40px; font-size: 14px; padding: 6px 12px; white-space: nowrap;
-  background: #0b3d5c; border-color: #29adff; color: #e8f6ff;
+  margin: 0; min-height: 34px; height: 34px; font-size: 12px; padding: 4px 10px; white-space: nowrap;
+  background: #0b3d5c; border: 2px solid #29adff; color: #e8f6ff; box-shadow: 2px 2px 0 #000;
 }
 .btn-online:hover:not(:disabled) { background: #14608f; }
 .btn-online-alt { background: #2b1f4d; border-color: #b39cff; }
 .btn-online:disabled { opacity: .45; cursor: not-allowed; }
-.online-note { flex-basis: 100%; font-size: 12px; color: #9fb3d9; }
+.online-note { flex-basis: 100%; font-size: 11px; color: #9fb3d9; margin-top: -2px; }
 .online-note-warn { color: #ffcf5c; }
-.lobby-mode-select input { font: inherit; background: #111d35; color: #fff1e8; border: 2px solid #5f574f; padding: 4px 8px; width: 140px; }
+.lobby-mode-select input { font: inherit; font-size: 12px; background: #111d35; color: #fff1e8; border: 2px solid #5f574f; border-radius: 4px; padding: 4px 8px; height: 34px; width: 110px; }
 .room-panel { max-width: 420px; text-align: center; }
 .room-panel .btn-deploy { width: 100%; margin: 10px 0; }
 .room-or { font-size: 12px; color: #9fb3d9; margin: 4px 0 8px; }
@@ -1160,3 +1065,138 @@ body.touch-mode #subs { bottom: 54px; left: 50%; transform: translateX(-50%); wi
 #netInfo.net-good { color: #00e436; } #netInfo.net-ok { color: #ffec27; } #netInfo.net-bad { color: #ff004d; }
 #nextMatch { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); font-family: Impact, "Arial Black", sans-serif; font-size: 28px; color: #ffec27; -webkit-text-stroke: 1px #000; z-index: 6; }
 body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; }
+
+/* Mobile Landscape Compact Lobby */
+@media (max-height: 480px) {
+  .lobby-container {
+    padding: 5px 10px;
+    gap: 3px;
+    max-height: 98vh;
+  }
+  .lobby-header {
+    padding-bottom: 3px;
+    gap: 3px 6px;
+  }
+  .lobby-brand .main-logo {
+    height: 24px;
+    max-height: 24px;
+  }
+  .lobby-brand .tag {
+    font-size: 9px;
+  }
+  .lobby-quick-bar {
+    gap: 4px;
+  }
+  .btn-wishlist.btn-wishlist-compact {
+    padding: 2px 6px;
+    min-height: 24px;
+    height: 24px;
+    font-size: 9px;
+  }
+  .lobby-mode-select {
+    font-size: 9px;
+    gap: 3px;
+  }
+  .lobby-mode-select select {
+    padding: 1px 4px;
+    min-height: 24px;
+    height: 24px;
+    font-size: 9px;
+  }
+  .lobby-mode-select input {
+    padding: 1px 5px;
+    height: 24px;
+    width: 78px;
+    font-size: 9px;
+  }
+  .btn-online {
+    min-height: 24px;
+    height: 24px;
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+  .online-note {
+    font-size: 9px;
+    margin-top: -2px;
+  }
+  .lobby-main {
+    grid-template-columns: 1fr 270px;
+    gap: 6px;
+  }
+  .faction-header h2 {
+    font-size: 12px;
+  }
+  .fc {
+    min-height: 38px;
+    padding: 2px 5px;
+    gap: 5px;
+  }
+  .fc-badge {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+  .fc-icon {
+    font-size: 15px;
+  }
+  .fc-name {
+    font-size: 11px;
+  }
+  .fc-role {
+    font-size: 7.5px;
+  }
+  .fc-gear {
+    font-size: 8.5px;
+  }
+  .dossier-card {
+    padding: 5px 7px;
+    gap: 3px;
+  }
+  .dossier-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+  .dossier-big-icon {
+    font-size: 20px;
+  }
+  .dossier-title {
+    font-size: 15px;
+  }
+  .dossier-tagline {
+    font-size: 9px;
+  }
+  .dossier-balloon {
+    padding: 3px 5px;
+  }
+  .balloon-lbl {
+    font-size: 7px;
+  }
+  .balloon-text {
+    font-size: 9.5px;
+    margin-bottom: 2px;
+  }
+  .btn-battle-cry {
+    min-height: 20px;
+    font-size: 8.5px;
+    padding: 1px 5px;
+  }
+  .dossier-stats-grid {
+    padding: 3px 5px;
+    gap: 2px;
+  }
+  .cell-label {
+    font-size: 6.5px;
+  }
+  .cell-val {
+    font-size: 8.5px;
+  }
+  .dossier-action .btn-deploy {
+    min-height: 30px;
+    font-size: 13px;
+    padding: 3px 6px;
+  }
+  .menu-settings {
+    display: none;
+  }
+}
