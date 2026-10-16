@@ -112,7 +112,7 @@ const state = {
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
   difficulty: initialDifficulty,
-  map: !isDemo && MAPS[initialMapParam] ? initialMapParam : 'culdesac',
+  map: !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
   goldSkin: !isDemo && params.get('gold') === '1',
   wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
@@ -444,6 +444,7 @@ if ($('optMap')) {
     const val = e.target.value;
     const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
     const mDef = MAPS[val];
+    if (mDef?.wip) { e.target.value = state.map; return; } // not built yet (see map.js)
     if (demoActive && mDef && !mDef.freeInDemo) {
       e.target.value = 'culdesac';
       state.map = 'culdesac';

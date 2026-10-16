@@ -300,12 +300,15 @@ export function buildStripMall() {
 
 export const MAPS = {
   culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                name: 'Oakridge Cul-de-Sac',                demoAllowed: true,  freeInDemo: true,  build: buildCulDeSac },
-  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
-  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
+  // wip: true = not playable yet. These two are still recolours of the cul-de-sac (same geometry, and the
+  // renderer never rebuilds the world on a map change), so they must not be offered or sold. Clear `wip`
+  // only when the map has its own layout; web/tests/integrity.test.mjs enforces that.
+  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, wip: true, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
+  stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, wip: true, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
 };
 
 export function buildMap(mapId = 'culdesac') {
-  const entry = MAPS[mapId] || MAPS.culdesac;
+  const entry = MAPS[mapId] && !MAPS[mapId].wip ? MAPS[mapId] : MAPS.culdesac;
   const m = entry.build();
   m.id = entry.id;
   m.label = entry.label;

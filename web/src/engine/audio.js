@@ -91,11 +91,24 @@ export class Voice {
     if (o.lineId && this.manifest.has(o.lineId)) {
       const audio = new Audio(voFileFor(o.lineId));
       audio.volume = o.volume ?? 1;
-      audio.play().catch(() => {});
+      // A missing/broken file used to leave the channel "busy" in silence (and block the next bark).
+      // Fall back to TTS for this line instead, and stop listing the file as recorded.
+      const fallback = () => {
+        if (this.current?.audio !== audio) return;
+        this.manifest.delete(o.lineId);
+        this.current = null;
+        this.speakTts(o, text, est, performance.now() / 1000);
+      };
+      audio.onerror = fallback;
+      audio.play().catch(err => { if (err?.name !== 'NotAllowedError') fallback(); });
       const dur = this.durations.get(o.lineId) ?? est;
       this.current = { priority: o.priority, until: now + VOICE_STARTUP_PAD + dur + VOICE_END_PAD, audio };
       return true;
     }
+    return this.speakTts(o, text, est, now);
+  }
+
+  speakTts(o, text, est, now) {
     if (!this.synth) return false;
     const u = new SpeechSynthesisUtterance(text);
     const fv = o.announcer ? { pitch: 0.7, rate: 1.0 } : this.factions[o.faction]?.voice || {};

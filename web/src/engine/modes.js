@@ -355,9 +355,12 @@ export class StealTheCasserole extends Mode {
   static label = 'Steal the Casserole';
   static parent = 'CTF';
   static defaults = { scoreLimit: 3, timeLimit: 360 };
+  // Each kitchen sits on its own team's side (team 0 spawns south, team 1 north; see Sim spawns).
+  // They used to be swapped, so you "stole" the casserole at your own spawn and had to run it into the
+  // enemy spawn to score: bot matches always ended 0-0.
   static BASES = [
-    { team: 0, pos: { x: 0, y: 0, z: -35 }, name: 'North Kitchen' },
-    { team: 1, pos: { x: 0, y: 0, z: 35 }, name: 'South Kitchen' },
+    { team: 0, pos: { x: 0, y: 0, z: 35 }, name: 'South Kitchen' },
+    { team: 1, pos: { x: 0, y: 0, z: -35 }, name: 'North Kitchen' },
   ];
   static PICKUP_R = 1.6;
   static CAPTURE_R = 2.4;
@@ -427,6 +430,12 @@ export class StealTheCasserole extends Mode {
 
     if (enemyCasserole?.carrierId === actor.id) {
       return myBase?.pos || null;
+    }
+    // A teammate has their casserole: escort the carrier. (Returning enemyCasserole.pos here meant chasing
+    // an object recreated every frame, so bots re-planned their path constantly and never helped.)
+    if (enemyCasserole?.state === 'carried' && enemyCasserole.carrierId) {
+      const carrier = this.sim.byId.get(enemyCasserole.carrierId);
+      if (carrier && carrier.alive) return carrier.pos;
     }
     if (myCasserole?.state === 'carried' && myCasserole.carrierId) {
       const carrier = this.sim.byId.get(myCasserole.carrierId);
