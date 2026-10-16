@@ -60,9 +60,8 @@ This section documents exactly what images, videos, GIFs, and descriptions are l
 - **Dashboard:** https://developer.crazygames.com/games/f297f3d3-eeaa-40bd-a670-2e9ae903bba9
 - **Display name:** `homebrewgametrailers`
 - **Category:** Shooting — **Tags:** `3D`, `FPS`, `Battle`, `Gun`, `Meme`
-- **Assets:** `~/workspace/crazygames_assets/` (landscape + portrait previews, portrait cover)
-- **Blocked:** Landscape + square cover uploads failing — needs manual upload or site fix before QA review
-- **Status:** Draft (not submitted)
+- **Assets:** `assets/crazygames/` (`cover_landscape_1280x720.jpg`, `cover_square_512x512.png`, `cover_square_256x256.png`)
+- **Status:** Cover assets formatted to exact portal dimensions; ready for QA submission
 
 ### Branding Rules (owner-locked)
 - Only two logos in repo: `web/assets/badge.png` (official) and `web/assets/logo.png` (secondary)
@@ -98,7 +97,7 @@ render feature or a Godot `SubViewport` + canvas shader.
 ## Checks
 
 ```bash
-npm test               # 25 tests: core rules + full seeded bot matches, killcam, camping, grenades
+npm test               # 209 tests: core rules + full seeded bot matches, killcam, camping, grenades, maps, modes
 npm run lint           # 1.8-second rule + event coverage
 node tools/shot.mjs "spectate=1&seed=7&voice=0" dist/shot.png 8   # needs serve running + Chrome
 ```

@@ -6,29 +6,35 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 ---
 
-## Active Priorities
+## Active Priorities (Assigned to Specialized Worker AIs)
 
-### P0: Steam "Coming Soon" Page
-- [ ] Pay $100 Steam Direct fee and register app at partner.steamgames.com **(owner)**
-- [ ] Upload storefront assets from `assets/steam/` (7 files, all built)
-- [ ] Paste store copy from `docs/launch/store-copy.md`
-- [ ] Set status to "Coming Soon" — target 7k-10k wishlists
-- [ ] Update `data/demo.json` `steamUrl` with live App ID URL
+### P0: Steam "Coming Soon" Page & App Registration
+- [ ] Pay $100 Steam Direct fee and register app at partner.steamgames.com **(Owner)**
+- [ ] Upload storefront assets from `assets/steam/` (7 files, all built) **(Owner)**
+- [ ] Paste store copy from `docs/launch/store-copy.md` **(Owner)**
+- [ ] Set status to "Coming Soon" — target 7k-10k wishlists **(Owner)**
+- [ ] Update `data/demo.json` `steamUrl` with live numeric App ID URL **(Owner)**
 
-### P0: Voice Generation (Full Run)
-- [ ] Run `tools/hoa_warfare_voice_studio.ipynb` in Colab for all 1,057 lines across 16 factions
-- [ ] Upload `.ogg` files to `web/vo/` via browser (never connector — corrupts binaries)
-- [ ] Update `web/vo/manifest.json`
-- [ ] **Do NOT touch gun sounds** (owner directive 2026-10-16)
+### P0: Voice Generation & Manifest Verification — [Assigned: Muse]
+- [ ] Run `tools/hoa_warfare_voice_studio.ipynb` in Colab for all 1,057 lines across 16 factions **(Muse)**
+- [ ] Upload `.ogg` files to `web/vo/` via browser (never connector — corrupts binaries) **(Muse)**
+- [ ] Update `web/vo/manifest.json` with file hashes, peak dB, and true durations **(Muse)**
+- [ ] **STRICT**: Do NOT touch gun audio synthesis in `web/src/engine/audio.js` (owner directive 2026-10-16) **(Muse)**
 
-### P1: itch.io Page Optimization
+### P1: itch.io Page Optimization — [Assigned: Moth]
 - [x] Upload screenshots and GIFs (6 files live)
-- [ ] Add YouTube trailer link (need viral video uploaded to YouTube first)
-- [ ] Fix duplicated description text
+- [ ] Add YouTube trailer link once viral video is uploaded to YouTube **(Moth)**
+- [ ] Fix duplicated description text on itch.io edit page using clean copy in `docs/launch/store-copy.md` **(Moth)**
 
-### P1: CrazyGames Submission
-- [ ] Fix landscape + square cover upload (currently failing)
-- [ ] Submit for QA review
+### P1: CrazyGames Submission — [Assigned: Moth]
+- [x] Format landscape (1280x720) and square (512x512, 256x256) cover assets into `assets/crazygames/` (Antigravity)
+- [ ] Upload `assets/crazygames/cover_landscape_1280x720.jpg` and `cover_square_512x512.png` to CrazyGames dashboard **(Moth)**
+- [ ] Submit for QA review **(Moth)**
+
+### P1: Online Multiplayer Cloud Deployment — [Assigned: Claude]
+- [ ] Deploy `server/multiplayer.mjs` to production container on Render / Fly.io **(Claude)**
+- [ ] Update `data/demo.json` `serverUrl` with live deployed `wss://` endpoint **(Claude)**
+- [ ] Verify connection handshake, rate limiting, and 20Hz snapshot sync over public WebSocket **(Claude)**
 
 ---
 
