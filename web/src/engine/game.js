@@ -296,8 +296,6 @@ export const FACTIONS_PER_PAGE = 6;
 export function buildMenu() {
   const box = $('factions');
   const pag = $('factionPagination');
-  const btn2D = $('toggleWpn2D');
-  const btn3D = $('toggleWpn3D');
   if (!box) return;
 
   const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
@@ -313,25 +311,6 @@ export function buildMenu() {
   }
   menuPage = Math.max(0, Math.min(totalPages - 1, menuPage));
 
-  if (btn2D && btn3D) {
-    btn2D.classList.toggle('active', state.wpnVisual !== '3d');
-    btn3D.classList.toggle('active', state.wpnVisual === '3d');
-    btn2D.onclick = () => {
-      state.wpnVisual = '2d';
-      try { if (typeof localStorage?.setItem === 'function') localStorage.setItem('hoa_wpn_visual', '2d'); } catch {}
-      renderPage();
-      btn2D.classList.add('active');
-      btn3D.classList.remove('active');
-    };
-    btn3D.onclick = () => {
-      state.wpnVisual = '3d';
-      try { if (typeof localStorage?.setItem === 'function') localStorage.setItem('hoa_wpn_visual', '3d'); } catch {}
-      renderPage();
-      btn2D.classList.remove('active');
-      btn3D.classList.add('active');
-    };
-  }
-
   function renderPage() {
     box.innerHTML = '';
     const startIdx = menuPage * FACTIONS_PER_PAGE;
@@ -342,23 +321,18 @@ export function buildMenu() {
       const isLocked = demoActive && !DEMO_FACTIONS.includes(id);
       const isSel = id === state.faction;
       const wpn = FACTION_LOADOUTS[id] || { ...WEAPON_DEFINITIONS.ar, loadout: 'default' };
-      const fMeta = FACTION_METADATA[id] || {};
-      const fRole = fMeta.role || 'HOA OPERATIVE';
-      const wpnSrc = state.wpnVisual === '3d' ? wpn.asset3d : wpn.asset;
+      const wpnSrc = wpn.asset; // Always 2D vector art
       const cryRaw = f.lines?.roundStart?.clean?.[0] || f.lines?.kill?.clean?.[0] || '';
       const cry = typeof cryRaw === 'object' ? (cryRaw.t || cryRaw.alt || '') : cryRaw;
       const tagline = f.tagline || 'Defend the cul-de-sac at all costs.';
 
       const cardInner = `
         <div class="fc-stage" style="background: radial-gradient(circle at 50% 35%, ${f.look.accent}30 0%, rgba(9,14,26,0.96) 85%);">
-          <div class="fc-stage-badges">
-            <span class="fc-class-badge" style="border-color:${f.look.accent}; color:${f.look.accent};">${wpn.class}</span>
-            ${isLocked ? '<span class="demo-lock">🔒 STEAM</span>' : `<span class="fc-role-badge">${wpn.role}</span>`}
-          </div>
+          ${isLocked ? '<div class="fc-stage-badges"><span class="demo-lock">🔒 STEAM ONLY</span></div>' : ''}
 
           <div class="fc-visuals">
-            <div class="fc-wpn-hero-wrap" title="${wpn.name}">
-              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="${wpn.name}" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
+            <div class="fc-wpn-hero-wrap">
+              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
             </div>
             <div class="fc-char-hero-wrap">
               <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
@@ -372,7 +346,6 @@ export function buildMenu() {
               <span class="fc-dot" style="background:${f.look.accent};"></span>
               <b class="fc-name">${f.name}</b>
             </div>
-            <span class="fc-wpn-name-tag">${wpn.name}</span>
           </div>
           <div class="fc-tagline" title="${tagline}">“${tagline}”</div>
           <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>

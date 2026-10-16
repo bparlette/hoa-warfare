@@ -282,35 +282,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   letter-spacing: 1.5px;
   color: #ffec27;
 }
-.weapon-view-toggle {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(10, 16, 30, 0.9);
-  border: 1.5px solid #29adff;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 2px 2px 0 #000;
-}
-.btn-toggle-wpn {
-  background: transparent;
-  color: #83769c;
-  border: none;
-  font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(8px, 1.3vh, 10px);
-  letter-spacing: 0.5px;
-  padding: 2px 8px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.btn-toggle-wpn:hover {
-  color: #fff;
-  background: rgba(41, 173, 255, 0.2);
-}
-.btn-toggle-wpn.active {
-  background: #29adff;
-  color: #0c1426;
-  font-weight: 900;
-}
+
 .faction-pagination {
   display: flex;
   align-items: center;
@@ -695,10 +667,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   }
   .faction-header h2 {
     font-size: 12px !important;
-  }
-  .weapon-view-toggle {
-    transform: scale(0.85);
-    transform-origin: right center;
   }
   .fc-char-hero-wrap {
     width: 58% !important;
