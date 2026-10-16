@@ -1,0 +1,14 @@
+# Render blueprint: one free web service running the multiplayer server from the Dockerfile.
+# Dashboard: New + > Blueprint > pick this repo. Render gives you https://<name>.onrender.com ;
+# the game connects to wss://<name>.onrender.com/ws (put that in data/demo.json "serverUrl").
+services:
+  - type: web
+    name: hoa-warfare-online
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: HOA_DEMO
+        value: "1"
+      - key: HOA_TRUST_PROXY
+        value: "1"

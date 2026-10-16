@@ -3,9 +3,11 @@
     "Web demo funnel settings (itch.io / CrazyGames / Newgrounds / GitHub Pages). Read by web/src/engine/funnel.js.",
     "steamUrl: set to https://store.steampowered.com/app/<numeric app id>/ once the Coming Soon page is live. Until then every Steam button says COMING SOON and links to fallbackUrl.",
     "Every outbound Steam link gets ?utm_source=<portal>&utm_medium=web_demo&utm_campaign=<placement> so wishlists can be traced to the portal and the button.",
-    "ctaLockSec: how long the end-of-match Steam card is shown before RUN IT BACK / MENU unlock (the 'unskippable' CTA)."
+    "ctaLockSec: how long the end-of-match Steam card is shown before RUN IT BACK / MENU unlock (the 'unskippable' CTA).",
+    "serverUrl: wss:// address of the deployed multiplayer server (see docs/ONLINE.md), e.g. wss://hoa-warfare.onrender.com/ws. While null, the online buttons are disabled in the public demo (they still work on localhost via npm run online)."
   ],
   "steamUrl": null,
+  "serverUrl": null,
   "fallbackUrl": "https://bparlette.github.io/hoa-warfare/",
   "shareUrl": "https://bparlette.github.io/hoa-warfare/web/?demo=1",
   "priceLabel": "$4.99",

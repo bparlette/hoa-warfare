@@ -1137,3 +1137,26 @@ body.touch-mode #subs { bottom: 54px; left: 50%; transform: translateX(-50%); wi
   }
 }
 
+/* ---------------------------------------------------------------- online play */
+.lobby-online { display: flex; gap: 8px; }
+.btn-online {
+  margin: 0; min-height: 40px; font-size: 14px; padding: 6px 12px; white-space: nowrap;
+  background: #0b3d5c; border-color: #29adff; color: #e8f6ff;
+}
+.btn-online:hover:not(:disabled) { background: #14608f; }
+.btn-online-alt { background: #2b1f4d; border-color: #b39cff; }
+.btn-online:disabled { opacity: .45; cursor: not-allowed; }
+.online-note { flex-basis: 100%; font-size: 12px; color: #9fb3d9; }
+.online-note-warn { color: #ffcf5c; }
+.lobby-mode-select input { font: inherit; background: #111d35; color: #fff1e8; border: 2px solid #5f574f; padding: 4px 8px; width: 140px; }
+.room-panel { max-width: 420px; text-align: center; }
+.room-panel .btn-deploy { width: 100%; margin: 10px 0; }
+.room-or { font-size: 12px; color: #9fb3d9; margin: 4px 0 8px; }
+.room-join { display: flex; gap: 8px; justify-content: center; }
+.room-join input { font: bold 22px monospace; text-transform: uppercase; letter-spacing: 4px; width: 150px; text-align: center; background: #111d35; color: #ffec27; border: 3px solid #fff1e8; padding: 6px; }
+.room-join button { margin: 0; }
+.btn-plain { background: transparent; border: 2px solid #5f574f; box-shadow: none; font-size: 14px; margin-top: 14px; }
+#netInfo { position: absolute; left: 50%; top: 52px; transform: translateX(-50%); font-size: 12px; padding: 2px 10px; background: #000a; border: 2px solid #5f574f; }
+#netInfo.net-good { color: #00e436; } #netInfo.net-ok { color: #ffec27; } #netInfo.net-bad { color: #ff004d; }
+#nextMatch { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); font-family: Impact, "Arial Black", sans-serif; font-size: 28px; color: #ffec27; -webkit-text-stroke: 1px #000; z-index: 6; }
+body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; }

@@ -28,6 +28,8 @@
 
 <div id="hud" class="hidden">
   <canvas id="radar" width="130" height="130"></canvas>
+  <div id="netInfo" class="hidden"></div>
+  <div id="nextMatch" class="hidden"></div>
   <div id="score"><span class="t0">BLOCK <b id="s0">0</b></span><span id="clock">5:00</span><span class="t1"><b id="s1">0</b> BOARD</span></div>
   <div id="feed"></div>
   <div id="crosshair">+</div>
@@ -70,11 +72,20 @@
       </div>
       <div class="lobby-quick-bar">
         <div class="lobby-mode-select">
+          <label for="optName">NAME:</label>
+          <input id="optName" type="text" maxlength="16" placeholder="Your name" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="lobby-mode-select">
           <label for="optMode">MODE:</label>
           <select id="optMode"></select>
         </div>
+        <div class="lobby-online">
+          <button type="button" id="btnQuickMatch" class="btn-online" disabled>🌐 QUICK MATCH</button>
+          <button type="button" id="btnFriends" class="btn-online btn-online-alt" disabled>👥 FRIENDS</button>
+        </div>
         <a id="btnWishlist" data-steam="menu" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist btn-wishlist-compact">★ WISHLIST ON STEAM ($4.99)</a>
       </div>
+      <div id="onlineNote" class="online-note"></div>
     </header>
 
     <!-- MAIN LOBBY SPLIT -->
@@ -135,12 +146,35 @@
     <h2>Paused</h2>
     <p id="pauseHint">Click to keep fighting for the block.</p>
     <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap">
+      <button id="btnInvite" type="button" class="hidden">🔗 COPY INVITE LINK</button>
       <button id="toMenu">Quit to menu</button>
       <a data-steam="pause" href="https://bparlette.github.io/hoa-warfare/" target="_blank" rel="noopener" class="btn-wishlist-small">★ Wishlist on Steam</a>
     </div>
   </div>
 </div>
 <div id="end" class="overlay hidden"><div class="panel" id="endPanel"></div></div>
+
+<div id="connecting" class="overlay hidden">
+  <div class="panel small">
+    <h2>🌐 Connecting…</h2>
+    <p id="connectingMsg">Finding a match…</p>
+    <button id="cancelConnect" type="button">Cancel</button>
+  </div>
+</div>
+
+<div id="roomModal" class="overlay hidden">
+  <div class="panel small room-panel">
+    <h2>👥 PLAY WITH FRIENDS</h2>
+    <p id="roomInvite">Make a private room and send friends the link, or join one with a code.</p>
+    <button id="btnCreateRoom" type="button" class="btn-deploy">＋ CREATE A ROOM</button>
+    <div class="room-or">or join with a code</div>
+    <div class="room-join">
+      <input id="joinCode" type="text" maxlength="12" placeholder="ABCD" autocomplete="off" spellcheck="false">
+      <button id="btnJoinRoom" type="button">JOIN</button>
+    </div>
+    <button id="closeRoomModal" type="button" class="btn-plain">Close</button>
+  </div>
+</div>
 
 <div id="demoModal" class="overlay hidden">
   <div class="panel demo-panel">

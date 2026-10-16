@@ -24,8 +24,9 @@ export class OnlineSession {
    * Connect and join a room. `room` is a code, or 'auto' for Quick Match.
    * @throws Error with .message 'room_full' | 'timeout' | 'closed' when joining fails
    */
-  static async join({ url, name = 'Player', faction = 'karens', timeoutMs = 6000, NetClientClass = NetClient } = {}) {
+  static async join({ url, name = 'Player', faction = 'karens', timeoutMs = 6000, NetClientClass = NetClient, knownFactions = null } = {}) {
     const session = new OnlineSession(new NetClientClass());
+    session.knownFactions = knownFactions; // ids this build can draw; anything else falls back to karens instead of crashing
     const res = await session.net.connect(url, {
       name, faction, timeoutMs,
       onRoster: msg => session.onRoster(msg),
@@ -57,6 +58,7 @@ export class OnlineSession {
     this.nextLocalShot = 0;
     this.wasAlive = false;
     this.lastError = null;
+    this.knownFactions = null;
     this.over = false;
     this.restartIn = null;
     net.onInputSent = seq => {
@@ -98,7 +100,8 @@ export class OnlineSession {
 
   addMirrorActor(p) {
     if (this.sim.byId.has(p.id)) return this.sim.byId.get(p.id);
-    const a = this.sim.addActor({ id: p.id, name: cleanName(p.name), team: p.team === 1 ? 1 : 0, faction: p.faction, isBot: false });
+    const faction = !this.knownFactions || this.knownFactions.includes(p.faction) ? p.faction : 'karens';
+    const a = this.sim.addActor({ id: p.id, name: cleanName(p.name), team: p.team === 1 ? 1 : 0, faction, isBot: false });
     a.alive = false;
     return a;
   }
@@ -210,17 +213,18 @@ export class OnlineSession {
     sim.over = !!latest.over;
     sim.winner = latest.winner ?? null;
 
-    const stats = new Map((latest.stats || []).map(s => [s.id, s]));
+    const stats = this.net.statsById;
     const lastById = new Map(latest.actors.map(a => [a.id, a]));
     const viewById = new Map((sample?.actors || latest.actors).map(a => [a.id, a]));
 
     for (const a of sim.actors) {
       const st = stats.get(a.id);
       if (st) {
-        a.hp = st.hp; a.ammo = st.ammo; a.grenades = st.gr; a.kills = st.k; a.deaths = st.d; a.streak = st.st;
-        if (st.slot && a.weapons?.[st.slot]) a.activeSlot = st.slot;
+        a.hp = st.hp; a.ammo = st.ammo; a.grenades = st.gr; a.kills = st.k; a.deaths = st.d; a.streak = st.st ?? 0;
+        const slot = st.slot ?? 'primary';
+        if (a.weapons?.[slot]) a.activeSlot = slot;
         a.reloadUntil = st.rl ? sim.time + 1 : 0;
-        a.campState = { state: st.cs, secondsLeft: st.csl, dwell: 0 };
+        a.campState = { state: st.cs ?? 'ok', secondsLeft: st.csl ?? 0, dwell: 0 };
         a.revealedUntil = st.rv > 0 ? sim.time + st.rv : 0;
       }
       if (a === me) { this.reconcile(latest, lastById.get(a.id), st); continue; }

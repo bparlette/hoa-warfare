@@ -34,6 +34,7 @@ export class NetClient {
     this.once = {};            // one-shot actions (reload, melee, grenade) sent in exactly one packet
     this.serverOffsets = [];   // recent (client seconds - server seconds) samples; the minimum is the clock offset
     this.serverOffset = null;
+    this.statsById = new Map(); // newest known stats per actor (others arrive at 4 Hz, you at 20 Hz)
   }
 
   /**
@@ -130,7 +131,7 @@ export class NetClient {
       this.onConnect?.(msg);
     } else if (msg.type === 'roster') {
       this.players = msg.players || [];
-      if (msg.newMatch) { this.snapshotBuffer.length = 0; this.latest = null; }
+      if (msg.newMatch) { this.snapshotBuffer.length = 0; this.latest = null; this.statsById.clear(); }
       this.onRoster?.(msg);
     } else if (msg.type === 'error') {
       this.onError?.(msg);
@@ -144,6 +145,7 @@ export class NetClient {
         this.snapshotBuffer.shift();
       }
       this.latest = entry;
+      for (const st of msg.stats || []) this.statsById.set(st.id, st);
       if (typeof msg.time === 'number') {
         this.serverOffsets.push(entry.receivedAt / 1000 - msg.time);
         if (this.serverOffsets.length > 60) this.serverOffsets.shift();

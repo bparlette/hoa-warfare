@@ -328,3 +328,10 @@ test('a background tab (no inputs for 0.5 s) stops walking and firing', () => {
   assert.equal(c.actor.input.fire, false);
   room.close();
 });
+
+test('config: online stays off until a server is configured, and a configured server must be wss:// (portals are https)', async () => {
+  const { onlineServerUrl } = await import('../src/engine/game.js');
+  const demo = JSON.parse(readFileSync(new URL('../../data/demo.json', import.meta.url)));
+  assert.ok(demo.serverUrl === null || /^wss:\/\/[^/]+\/ws$/.test(demo.serverUrl), `data/demo.json serverUrl must be null or wss://host/ws, got ${demo.serverUrl}`);
+  if (demo.serverUrl === null) assert.equal(onlineServerUrl(), null, 'no server configured -> online buttons disabled');
+});

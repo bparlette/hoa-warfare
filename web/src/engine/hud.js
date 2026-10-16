@@ -432,7 +432,7 @@ export class Hud {
       `<tr class="t${a.team}${a === me ? ' me' : ''}"><td>${a.name}</td><td>${this.factions[a.faction].name}</td><td>${a.kills}</td><td>${a.deaths}</td></tr>`).join('')}</table>`;
   }
 
-  showEnd({ sim, me, library, rng, onAgain, onMenu, voice, isDemo, funnel = null }) {
+  showEnd({ sim, me, library, rng, onAgain, onMenu, voice, isDemo, funnel = null, againLabel = 'RUN IT BACK' }) {
     const $ = this.$;
     if (typeof document !== 'undefined') document.exitPointerLock?.();
     const sorted = [...sim.actors].sort((a, b) => b.kills - a.kills || a.deaths - b.deaths);
@@ -455,7 +455,7 @@ export class Hud {
       </div>
       <div id="endBoard" style="margin-top:12px"></div>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px">
-        <button id="again" style="margin-top:0">RUN IT BACK</button>
+        <button id="again" style="margin-top:0">${againLabel}</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
         ${!isDemoMode ? '<a data-steam="end_row" href="https://bparlette.github.io/hoa-warfare/" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}

@@ -32,6 +32,7 @@ The optimal distribution engine is a **Free Web Demo Funnel powering a Steam Pai
 * `npm run pack` writes `dist/demo/` and `dist/hoa-warfare-web-demo.zip` (~9 MB): a static, relative-path build with `index.html` at the root (the layout itch.io, CrazyGames and Newgrounds all expect). It ships only the demo factions' voice lines and no marketing video, and fails if the zip passes 40 MB.
 * Demo settings live in `data/demo.json`: which factions are playable, the Steam URL and UTM tag per portal, CTA copy, and the unskippable delay. Until the Steam page exists the CTA points at a wishlist placeholder; set `steamUrl` once the app ID is live.
 * Match end shows the Steam CTA (unskippable for a few seconds) plus **Clip & Share**: copies a stats summary + demo link, or opens the phone's share sheet.
+* **Online multiplayer** is built into the demo (Quick Match + play with friends). Portals only host static files, so the server runs separately; see [`docs/ONLINE.md`](docs/ONLINE.md) for deployment (Render blueprint included), cost and safety. Set `serverUrl` in `data/demo.json` once it is live.
 * Archetype count in the CTA is read from the content file so it stays true as factions ship (currently 20 after the merges, not 24).
 
 ---

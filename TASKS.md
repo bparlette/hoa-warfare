@@ -23,7 +23,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### 👑 Steam $4.99 Full Game Priorities (Roadmap to Launch)
 1. **P0: Online Multiplayer Prototype (Claude - C2)**: **done** — Authoritative Node WebSocket server running deterministic `sim.js`, client-side prediction, room codes/lobbies, and bot backfilling.
 2. **P0: Native Desktop Wrapper & Steamworks Integration**: **done** — Electron/Node wrapper script (`desktop/main.mjs`, `desktop/preload.cjs`), 1280x720 min up to 1920x1080/borderless fullscreen, zero-CORS loopback HTTP server, 10 launch Steam Achievements bridge (`desktop/steamworks.js`), packaging tool (`tools/build_desktop.mjs`), and comprehensive documentation (`docs/steam/steamworks.md`).
-3. **P0: Online Multiplayer Menu Integration (Tomorrow)**: Wire up `server/multiplayer.mjs` to a clean "PLAY ONLINE" lobby menu for 8-player room creation, join codes, and matchmaking.
+3. **P0: Online Multiplayer Menu Integration**: **done (Sonnet, owner request: demo multiplayer)** — Quick Match, private rooms with codes and invite links, connecting/failure screens, match-end flow, phone + controller support; see `docs/ONLINE.md`. **Remaining (owner):** deploy the server and set `serverUrl` in `data/demo.json` (Render blueprint and Dockerfile are in the repo), then `npm run pack` and re-upload. Until then the public demo shows the online buttons disabled ("launching soon").
 4. **P0: Steam Store Assets & Capsules (Tomorrow)**: Export official pixel title logo and Tactical Bob badge into required Steam Direct dimensions (Header 460x215, Small 231x87, Main 616x353, Community Icon 32x32).
 5. **P0: Native Desktop Distribution Pipeline (Tomorrow)**: Automated `npm run desktop:dist` to package Electron + Steamworks standalone binaries for Windows/Mac/Linux.
 6. **P1: Map Variety (Opus - O4 & T16)**: Map 2: **The HOA Clubhouse & Pool** and Map 3: **Gated Roundabout**.
@@ -95,7 +95,8 @@ While editing the shared working copy, Opus accidentally **emptied `web/src/engi
 - A5: Round-based clock hook — **done** (Antigravity): added `Mode.clock()` hook across modes and `EvictTheBlock`, wired into `hud.js` to display round/fuse clock over match time limit.
 - A6: Mobile Touch Ergonomics & Auto-Reload — **done** (Antigravity): Increased `.t-pause` to 48px; streamlined touch HUD by removing manual reload button; implemented 1.0s idle auto-reload in `sim.js`; 117 tests passing.
 - A7: Pause Menu Resume Button & Score Bar Leaderboard — **open** (Antigravity): Add prominent "RESUME" button to pause overlay; attach `data-t="board"` to `#score` so mobile players can check live match scoreboard with 0 extra screen buttons; add sound mute toggle in settings.
-- A8: Online Multiplayer Menu Integration — **open** (Antigravity / Claude): Add "PLAY ONLINE" lobby view to `index.html` and connect to authoritative WebSocket room server (`server/multiplayer.mjs`).
+- A8: Online Multiplayer Menu Integration — **done (Sonnet)**: lobby buttons + room modal in `index.html`/`game.js`, `online.js` client session (mirror sim, prediction, reconciliation). Antigravity: the lobby dossier now has an `.online-row`; keep it when restyling.
+- A9 (new): online polish: a proper in-game text-free emote/ping wheel, a lobby list of public rooms, spectate-after-death for teammates. Server changes go through `web/tests/online.test.mjs`.
 
 **Opus (systems, bots, balance)**
 - O0: **T19 step 6**: rivalry-of-the-week bias in bot faction selection, with a test.

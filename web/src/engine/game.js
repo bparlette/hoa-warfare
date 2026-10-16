@@ -24,6 +24,7 @@ import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
 import { NetClient } from './net.js';
 import { Funnel } from './funnel.js';
+import { OnlineSession } from './online.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
@@ -298,6 +299,7 @@ export function buildMenu() {
     }
   }
 
+  syncOnlineButtons(demoActive && !DEMO_FACTIONS.includes(state.faction));
   if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
   if ($('optLegal')) $('optLegal').checked = state.legalSafe;
   if ($('optRetro')) $('optRetro').checked = state.retro;
@@ -322,11 +324,125 @@ if ($('demoModal')) {
   });
 }
 
+// ------------------------------------------------------------------ online lobby
+
+const isLocalHost = h => /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|.*\.local$)/.test(h || '');
+
+/** wss:// URL of the multiplayer server, or null when there isn't one (online buttons stay disabled). */
+export function onlineServerUrl() {
+  const host = typeof location !== 'undefined' ? location.hostname : '';
+  let url = (isLocalHost(host) && params.get('server')) || demoConfig?.serverUrl || null; // ?server= only for local testing
+  if (!url && isLocalHost(host)) url = `ws://${host}:8080/ws`; // npm run online
+  return url ? String(url).replace(/^http/, 'ws') : null;
+}
+
+/** Online buttons live in the top bar (always visible). Disabled until a server exists; locked demo factions can't queue. */
+function syncOnlineButtons(factionLocked) {
+  const available = !!onlineServerUrl();
+  for (const id of ['btnQuickMatch', 'btnFriends']) {
+    const b = $(id);
+    if (b) b.disabled = !available || factionLocked;
+  }
+  const n = $('onlineNote');
+  if (n && !n.classList.contains('online-note-warn')) {
+    n.textContent = !available ? 'Online play is launching soon. Bots for now!'
+      : factionLocked ? 'Pick an unlocked faction to play online.'
+      : 'Online: 8 players per room, bots fill empty seats.';
+  }
+}
+if ($('btnQuickMatch')) $('btnQuickMatch').onclick = () => startOnline('auto');
+if ($('btnFriends')) $('btnFriends').onclick = () => openRoomModal();
+
+/** Free hosts put idle servers to sleep. Poke it while the player is still picking a faction. */
+function prewarmServer() {
+  const base = onlineServerUrl();
+  if (!base || isLocalHost(location.hostname)) return;
+  try { fetch(base.replace(/^ws/, 'http').replace(/\/ws.*$/, '/'), { mode: 'no-cors', cache: 'no-store' }).catch(() => {}); } catch {}
+}
+prewarmServer();
+
+const NAME_KEY = 'hoa.name';
+function playerName() {
+  const raw = ($('optName')?.value || params.get('name') || '').trim();
+  const name = raw.normalize('NFKC').replace(/[^\p{L}\p{N} _.-]/gu, '').slice(0, 16) || `Karen${100 + Math.floor(Math.random() * 900)}`;
+  try { localStorage.setItem(NAME_KEY, name); } catch {}
+  return name;
+}
+
+function setOnlineNote(text) {
+  const n = $('onlineNote');
+  if (n) { n.textContent = text; n.classList.add('online-note-warn'); }
+}
+
+const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I / O
+const newRoomCode = () => Array.from({ length: 4 }, () => ROOM_ALPHABET[Math.floor(Math.random() * ROOM_ALPHABET.length)]).join('');
+
+let connectToken = 0;
+async function startOnline(room = 'auto') {
+  const base = onlineServerUrl();
+  if (!base) return;
+  const token = ++connectToken;
+  $('onlineNote')?.classList.remove('online-note-warn');
+  $('roomModal')?.classList.add('hidden');
+  hideDemoModal();
+  $('menu').classList.add('hidden');
+  $('connecting').classList.remove('hidden');
+  $('connectingMsg').textContent = room === 'auto' ? 'Finding a match…' : `Joining room ${room}…`;
+  sfx.unlock();
+  const wakeNote = setTimeout(() => { if (token === connectToken) $('connectingMsg').textContent = 'Waking the server up… the first player of the day can wait up to a minute.'; }, 4000);
+  try {
+    const u = new URL(base, location.href);
+    u.searchParams.set('room', room);
+    const session = await OnlineSession.join({ url: u.toString(), name: playerName(), faction: state.faction, timeoutMs: 60000, knownFactions: Object.keys(factions) });
+    clearTimeout(wakeNote);
+    if (token !== connectToken) { session.close(); return; }
+    $('connecting').classList.add('hidden');
+    startGame(session);
+  } catch (err) {
+    clearTimeout(wakeNote);
+    if (token !== connectToken) return;
+    $('connecting').classList.add('hidden');
+    $('menu').classList.remove('hidden');
+    buildMenu();
+    setOnlineNote(err?.message === 'room_full'
+      ? 'That room is full. Try Quick Match, or make your own room.'
+      : "Couldn't reach the online server. Try again, or deploy against bots.");
+  }
+}
+
+function openRoomModal(prefill = '') {
+  const m = $('roomModal');
+  if (!m) return;
+  m.classList.remove('hidden');
+  if ($('joinCode')) { $('joinCode').value = prefill; }
+  $('roomInvite').textContent = prefill ? `You were invited to room ${prefill}. Pick a name and join!` : 'Make a private room and send friends the link, or join one with a code.';
+}
+if ($('btnCreateRoom')) $('btnCreateRoom').onclick = () => startOnline(newRoomCode());
+if ($('btnJoinRoom')) $('btnJoinRoom').onclick = () => {
+  const code = ($('joinCode').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+  if (code) startOnline(code);
+};
+if ($('joinCode')) $('joinCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnJoinRoom').click(); });
+if ($('closeRoomModal')) $('closeRoomModal').onclick = () => $('roomModal').classList.add('hidden');
+if ($('cancelConnect')) $('cancelConnect').onclick = () => { connectToken++; $('connecting').classList.add('hidden'); $('menu').classList.remove('hidden'); };
+if ($('btnInvite')) $('btnInvite').onclick = async () => {
+  const link = game?.session?.inviteLink(funnel.shareLink());
+  if (!link) return;
+  try {
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) await navigator.share({ title: 'Join my Call of Karen room', url: link });
+    else { await navigator.clipboard.writeText(link); $('btnInvite').textContent = '✓ LINK COPIED'; setTimeout(() => { $('btnInvite').textContent = '🔗 COPY INVITE LINK'; }, 2000); }
+  } catch { window.prompt('Send this link to your friends:', link); }
+};
+if ($('optName')) {
+  try { $('optName').value = localStorage.getItem(NAME_KEY) || params.get('name') || ''; } catch { $('optName').value = params.get('name') || ''; }
+}
+
 function toMenu() {
+  connectToken++;
   if (game) game.dispose();
   game = null;
   document.exitPointerLock?.();
-  for (const id of ['hud', 'pause', 'end']) $(id).classList.add('hidden');
+  for (const id of ['hud', 'pause', 'end', 'connecting']) $(id).classList.add('hidden');
   $('menu').classList.remove('hidden');
   buildMenu();
 }
@@ -334,7 +450,9 @@ function toMenu() {
 // ------------------------------------------------------------------ game
 
 class Game {
-  constructor() {
+  /** @param {OnlineSession|null} session an online match; null = offline vs bots */
+  constructor(session = null) {
+    this.session = session;
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
@@ -350,12 +468,17 @@ class Game {
       const pool = demoActive ? DEMO_FACTIONS : shippingFactions;
       return pool[Math.floor(this.rng() * pool.length)];
     };
-    this.me = this.sim.addActor({ id: 'you', name: 'You', team: 0, faction: state.faction, isBot: state.spectate });
-    for (let i = 0; i < 11; i++) {
-      const team = i < 5 ? 0 : 1;
-      this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: pickFaction(), isBot: true });
+    if (session) {
+      // Online: the server runs the match; this Sim is a mirror that is only written into (see online.js).
+      this.me = session.buildMirror(this.sim);
+    } else {
+      this.me = this.sim.addActor({ id: 'you', name: 'You', team: 0, faction: state.faction, isBot: state.spectate });
+      for (let i = 0; i < 11; i++) {
+        const team = i < 5 ? 0 : 1;
+        this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: pickFaction(), isBot: true });
+      }
     }
-    for (const a of this.sim.actors) renderer.ensureCharacter(a, 0);
+    for (const a of this.sim.actors) renderer.ensureCharacter(a, this.me.team);
 
     this.frames = [];
     this.hearing = { priority: -1, until: 0 };
@@ -368,30 +491,22 @@ class Game {
     this.realTime = 0;
     this.radar = $('radar') ? new Radar($('radar')) : null;
     this.meFiredThisStep = false;
-    this.online = params.get('online') === '1' || !!params.get('room');
-    if (this.online && typeof location !== 'undefined') {
-      const room = params.get('room') || 'culdesac1';
-      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const netUrl = `${proto}//${location.host}/ws?room=${encodeURIComponent(room)}`;
-      this.net = new NetClient();
-      this.net.connect(netUrl, {
-        name: 'You',
-        faction: state.faction,
-      }).catch(err => {
-        console.warn('Multiplayer connection failed; running local simulation', err);
-      });
-    }
+    this.netInfoAt = 0;
+    this.disconnected = false;
 
-    this.sim.start();
-    this.handle(this.sim.drainEvents());
+    if (!session) {
+      this.sim.start();
+      this.handle(this.sim.drainEvents());
+    }
   }
 
   showBanner(text, small = '') { this.hud.showBanner(text, small); }
 
   dispose() {
-    if (this.net) {
-      this.net.disconnect();
-      this.net = null;
+    if (this.session) {
+      this.session.close();
+      this.session = null;
+      for (const id of ['nextMatch', 'netInfo']) $(id)?.classList.add('hidden');
     }
     this.hud.reset();
     for (const c of renderer.characters.values()) renderer.scene.remove(c.root);
@@ -423,7 +538,9 @@ class Game {
     $('pause').classList.toggle('hidden', !showPause);
     if (showPause) $('pauseHint').textContent = PAUSE_HINT[input.device];
     document.body.classList.toggle('touch-mode', input.device === 'touch');
-    if (!paused) {
+    if (this.session) {
+      this.updateOnline(dt, paused);
+    } else if (!paused) {
       if (!this.me.isBot) {
         const assist = input.device === 'mouse' ? { slow: 1, onTarget: false } : aimAssist(sim, this.me);
         input.assist = assist.slow;
@@ -472,6 +589,62 @@ class Game {
     this.hud.update({ sim, me: this.me, state, renderer, input, voice, sfx, library: this.library, radar: this.radar, realTime: this.realTime });
   }
 
+  /** One frame of an online match: send input, predict, apply server state, feed events to the usual handler. */
+  updateOnline(dt, paused) {
+    const s = this.session, sim = this.sim;
+    const change = s.syncRoster();
+    if (change) this.onRosterChange(change);
+    const me = this.me;
+    if (!paused) {
+      const assist = input.device === 'mouse' ? { slow: 1, onTarget: false } : aimAssist(sim, me);
+      input.assist = assist.slow;
+      input.onTarget = assist.onTarget;
+      input.apply(me, dt);
+    }
+    s.step(dt, !paused);
+    const evs = s.takeEvents();
+    this.frames.push({ t: sim.time, snap: sim.snapshot(), shots: evs.filter(e => e.type === 'shot') });
+    while (this.frames.length && this.frames[0].t < sim.time - KILLCAM_SEC - 1) this.frames.shift();
+    if (evs.length) this.handle(evs);
+
+    // connection info + countdown to the next match
+    const next = $('nextMatch');
+    if (next) {
+      const wait = s.over && s.restartIn != null;
+      next.classList.toggle('hidden', !wait);
+      if (wait) next.textContent = `NEXT MATCH IN ${Math.ceil(s.restartIn)}s`;
+    }
+    if (this.realTime >= this.netInfoAt && $('netInfo')) {
+      this.netInfoAt = this.realTime + 0.5;
+      const ni = $('netInfo');
+      ni.classList.remove('hidden');
+      ni.textContent = `🌐 ${s.roomCode} · ${s.latency} ms · ${s.players.filter(p => !p.bot).length} online`;
+      ni.className = s.latency > 160 ? 'net-bad' : s.latency > 90 ? 'net-ok' : 'net-good';
+    }
+    if (!s.connected && !this.disconnected) {
+      this.disconnected = true;
+      this.showBanner('DISCONNECTED', 'Lost connection to the server');
+      setTimeout(() => { if (game === this) { toMenu(); setOnlineNote('Lost connection to the server. Try again, or play vs bots.'); } }, 2500);
+    }
+  }
+
+  /** Players joined/left (bots swap seats) or a new match started: keep characters and bark state in step. */
+  onRosterChange({ added, removed, reset }) {
+    for (const id of removed) {
+      const c = renderer.characters.get(id);
+      if (c) { renderer.scene.remove(c.root); renderer.characters.delete(id); }
+    }
+    this.me = this.session.me;
+    for (const a of added) renderer.ensureCharacter(a, this.me.team);
+    if (reset) {
+      this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
+      this.frames = [];
+      this.hud.reset();
+      $('end')?.classList.add('hidden');
+      this.showBanner('NEW MATCH', 'Fight for the block!');
+    }
+  }
+
   handle(evs) {
     const sim = this.sim, me = this.me, now = sim.time;
     const out = this.barks.process(evs, now, me.id);
@@ -508,8 +681,7 @@ class Game {
             haptic(15);
           };
           if (a === me) {
-            playShot();
-            this.meFiredThisStep = true;
+            if (!e.echo) { playShot(); this.meFiredThisStep = true; } // online: played instantly as 'localShot'
           } else if (d < 40) sfx.shot(0.6 * (1 - d / 40));
           if (a === me && e.hitId && sim.byId.get(e.hitId).team !== me.team) {
             this.hud.hitmark(e.head ? '★' : '✕', !!e.head);
@@ -517,6 +689,14 @@ class Game {
             haptic(e.head ? [25, 15, 35] : 25);
             if (e.head) sfx.headshot();
           }
+          break;
+        }
+        case 'localShot': { // online: our own trigger pull, before the server's 'shot' comes back
+          const wc = weaponsData.weapons[e.weaponId]?.class;
+          if (wc === 'shotgun') sfx.shotgun(); else if (wc === 'sniper') sfx.sniper(); else if (wc === 'smg') sfx.smg();
+          else if (wc === 'lmg') sfx.lmg(); else if (wc === 'pistol') sfx.pistol(); else sfx.shot(1);
+          haptic(15);
+          this.meFiredThisStep = true;
           break;
         }
         case 'hurt':
@@ -558,11 +738,16 @@ class Game {
         case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
         case 'hardpointRotated': this.showBanner('NEW LAWN ACTIVE', e.name); break;
         case 'matchEnd':
-          setTimeout(() => this.hud.showEnd({
-            sim, me, library: this.library, rng: this.rng,
-            onAgain: () => startGame(), onMenu: () => toMenu(), voice,
-            isDemo, funnel,
-          }), 2500);
+          setTimeout(() => {
+            if (game !== this) return;
+            this.hud.showEnd({
+              sim, me: this.me, library: this.library, rng: this.rng,
+              onAgain: this.session ? () => $('end').classList.add('hidden') : () => startGame(),
+              againLabel: this.session ? 'STAY FOR NEXT MATCH' : undefined,
+              onMenu: () => toMenu(), voice,
+              isDemo, funnel,
+            });
+          }, 2500);
           break;
       }
     }
@@ -941,7 +1126,7 @@ function setupShortRecorder() {
   }
 }
 
-function startGame() {
+function startGame(session = null) {
   if (game) game.dispose();
   $('menu').classList.add('hidden');
   $('end').classList.add('hidden');
@@ -949,7 +1134,9 @@ function startGame() {
   input.resetLook(0);
   input.userPaused = false;
   if (input.device === 'touch') { document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape')).catch(() => {}); }
-  game = new Game();
+  game = new Game(session);
+  if (session) input.resetLook(game.me.team === 0 ? 0 : Math.PI); // team 1 spawns at the far end, facing the court
+  $('btnInvite')?.classList.toggle('hidden', !session);
   if (params.get('short') === '1' && !window.__shortStarted) {
     window.__shortStarted = true;
     setupShortRecorder();
@@ -1001,6 +1188,10 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined' && $('view'
   buildMenu();
   if (params.get('lineup') === '1') showLineup();
   else if (params.get('autostart') === '1' || state.spectate) startGame();
+  // Invite link (?room=CODE): open the join prompt with the code filled in. Joining needs a click anyway
+  // (audio, fullscreen and pointer lock all require a user gesture).
+  const invited = (params.get('room') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 16);
+  if (invited && onlineServerUrl() && params.get('lineup') !== '1' && params.get('autostart') !== '1') openRoomModal(invited.toUpperCase());
   requestAnimationFrame(frame);
   window.__hoa = { get game() { return game; }, renderer, state, input };
 }

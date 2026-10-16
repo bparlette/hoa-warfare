@@ -1,0 +1,17 @@
+.git
+.github
+node_modules
+dist
+docs
+unity
+desktop
+tools
+assets
+web/vo
+web/clips
+web/shorts
+web/assets
+web/vendor
+web/tests
+web/*.html
+web/*.css

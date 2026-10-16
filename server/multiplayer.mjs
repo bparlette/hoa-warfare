@@ -67,6 +67,9 @@ export function sanitizeName(raw) {
 export function sanitizeRoomCode(raw) {
   return String(raw ?? '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 16);
 }
+/** JSON.stringify replacer: floats to millimetre precision. Positions, angles and shot coordinates were
+ *  17-digit doubles, which made snapshots ~3x larger than they need to be (bandwidth matters on phones). */
+const roundNumbers = (_k, v) => (typeof v === 'number' && !Number.isInteger(v) ? Math.round(v * 1000) / 1000 : v);
 const wrapAngle = a => Math.atan2(Math.sin(a), Math.cos(a));
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const finite = v => typeof v === 'number' && Number.isFinite(v);
@@ -377,27 +380,30 @@ export class Room {
     sendWebSocketFrame(s, json, 0x1);
   }
 
-  /** Compact per-actor state the client needs for its HUD and scoreboard. */
-  statsFor(a) {
-    const w = this.sim.activeWeapon(a);
-    const client = this.clientByActor.get(a.id);
+  /**
+   * Per-actor state for the HUD and scoreboard. Fields at their default value are left out (the client
+   * fills them in): rl false, st 0, cs 'ok', csl 0, rv 0, slot 'primary', ack 0.
+   */
+  statsFor(a, withAck = false) {
     const rv = a.revealedUntil - this.sim.time;
-    return {
-      id: a.id,
-      hp: Math.round(a.hp),
-      ammo: a.ammo,
-      mag: w?.mag ?? 0,
-      gr: a.grenades,
-      slot: a.activeSlot,
-      rl: a.reloadUntil > 0,
-      k: a.kills,
-      d: a.deaths,
-      st: a.streak,
-      cs: a.campState?.state ?? 'ok',
-      csl: a.campState?.secondsLeft ?? 0,
-      rv: rv > 0 ? +rv.toFixed(1) : 0,
-      ack: client ? client.actor.lastInputSeq ?? 0 : 0,
-    };
+    const o = { id: a.id, hp: Math.round(a.hp), ammo: a.ammo, gr: a.grenades, k: a.kills, d: a.deaths };
+    if (a.activeSlot && a.activeSlot !== 'primary') o.slot = a.activeSlot;
+    if (a.reloadUntil > 0) o.rl = 1;
+    if (a.streak) o.st = a.streak;
+    const cs = a.campState?.state;
+    if (cs && cs !== 'ok') { o.cs = cs; o.csl = a.campState.secondsLeft ?? 0; }
+    if (rv > 0) o.rv = +rv.toFixed(1);
+    if (withAck) o.ack = a.lastInputSeq ?? 0;
+    return o;
+  }
+
+  /** Actors as sent on the wire: the hit-direction fields are only present for ~2 s after being hit. */
+  actorsPacket() {
+    return this.sim.snapshot().map(a => {
+      const o = { id: a.id, x: a.x, y: a.y, z: a.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive, speed: a.speed, firing: a.firing, onGround: a.onGround };
+      if (Number.isFinite(a.hitAgo) && a.hitAgo < 2) { o.hitAgo = a.hitAgo; o.hitDir = a.hitDir; }
+      return o;
+    });
   }
 
   broadcastSnapshot() {
@@ -406,12 +412,11 @@ export class Room {
       return;
     }
     const sim = this.sim;
-    const packet = {
+    const common = JSON.stringify({
       type: 'snapshot',
       seq: this.tickSeq,
       time: sim.time,
-      actors: sim.snapshot(),
-      stats: sim.actors.map(a => this.statsFor(a)),
+      actors: this.actorsPacket(),
       projectiles: sim.grenades.map(g => ({
         ownerId: g.ownerId,
         team: g.team,
@@ -425,10 +430,18 @@ export class Room {
       winner: sim.winner,
       restartIn: this.restartAt === null ? null : Math.max(0, +((this.restartAt - performance.now()) / 1000).toFixed(1)),
       helicopters: [],
-    };
+    }, roundNumbers);
     this.bufferedEvents = [];
-    const json = JSON.stringify(packet);
-    for (const client of this.clients.values()) this.send(client, json);
+
+    // Everyone's full stats go out at 4 Hz (scoreboard, kill streaks); your own go out every snapshot because
+    // they drive your HUD and the input acknowledgement used for prediction.
+    const everyone = this.tickSeq % 15 === 0;
+    const all = everyone ? sim.actors.map(a => this.statsFor(a)) : null;
+    for (const client of this.clients.values()) {
+      const own = this.statsFor(client.actor, true);
+      const stats = all ? all.map(st => (st.id === own.id ? own : st)) : [own];
+      this.send(client, `${common.slice(0, -1)},"stats":${JSON.stringify(stats, roundNumbers)}}`);
+    }
   }
 
   /** Fill empty seats with bots (they are removed again as humans join). */
