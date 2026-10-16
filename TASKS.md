@@ -2,7 +2,7 @@
 
 Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task at a time in this file.
 
-**Current state (2026-10-16):** 16 factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids). 159 tests passing. Demo on itch.io live with 6 factions.
+**Current state (2026-10-16):** 16 factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids). 209 tests passing (0 failures). Demo on itch.io live with 6 factions.
 
 ---
 
