@@ -275,7 +275,9 @@ export class Controls {
     if (this.device === 'touch') {
       fwd += t.move.forward; right += t.move.right;
       sprint ||= t.move.sprint; jump ||= t.jump;
-      fire ||= t.fire || (this.autoFire && this.onTarget);
+      const w = a.weapons?.[a.activeSlot || 'primary'];
+      const wantFire = t.fire || (this.autoFire && this.onTarget);
+      fire ||= (wantFire && w && !w.auto && a.triggerHeld) ? false : wantFire;
     }
 
     inp.forward = Math.max(-1, Math.min(1, fwd));

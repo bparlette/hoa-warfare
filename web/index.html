@@ -21,7 +21,8 @@
 <meta name="twitter:image" content="https://bparlette.github.io/hoa-warfare/web/assets/logo.png">
 
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <div id="loader">
@@ -35,7 +36,7 @@
   <canvas id="radar" width="130" height="130"></canvas>
   <div id="netInfo" class="hidden"></div>
   <div id="nextMatch" class="hidden"></div>
-  <div id="score"><span class="t0">BLOCK <b id="s0">0</b></span><span id="clock">5:00</span><span class="t1"><b id="s1">0</b> BOARD</span></div>
+  <div id="score"><span class="t0">BLOCK <b id="s0">0</b></span><span class="t1"><b id="clock">5:00</b></span><span class="t1"><b id="s1">0</b> BOARD</span></div>
   <div id="feed"></div>
   <div id="crosshair">+</div>
   <div id="hitmark"></div>
@@ -127,7 +128,7 @@
               <div class="toggles">
                 <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
                 <label><input type="checkbox" id="optLegal" checked> Legal-safe mode</label>
-                <label><input type="checkbox" id="optRetro" checked> 16-bit render (off = Roblox look)</label>
+                <label><input type="checkbox" id="optRetro"> 16-bit pixel filter (off = HD 3D)</label>
                 <label style="display:none;"><input type="checkbox" id="opt007"></label>
                 <label><input type="checkbox" id="optVoice" checked> Character VO Barks</label>
               </div>
@@ -200,8 +201,17 @@
   <button data-t="jump" class="t-btn t-jump" aria-label="Jump">⤒</button>
   <button data-t="swap" class="t-btn t-swap" aria-label="Swap weapon">⇄</button>
 </div>
-<div id="rotate">Turn your phone sideways to defend the block.</div>
+<div id="rotate">
+  <div class="rotate-card">
+    <img src="assets/logo.png" alt="CALL OF KAREN: HOA WARFARE" class="rotate-logo">
+    <div class="rotate-title">📱 MOBILE PLAY OPTIONS</div>
+    <p class="rotate-sub">Turn your phone sideways or tap below to hide browser bars &amp; play edge-to-edge:</p>
+    <button type="button" id="btnRotateFullscreen" class="btn-deploy rotate-btn-main">⛶ FULLSCREEN LANDSCAPE</button>
+    <button type="button" id="btnPlayPortrait" class="btn-online rotate-btn-sub">📱 PLAY IN PORTRAIT ANYWAY</button>
+    <div class="rotate-tip">Tip: On iPhone Safari, tap <b>aA / Hide Toolbar</b> or <b>Share → Add to Home Screen</b> for 100% zero-browser fullscreen!</div>
+  </div>
+</div>
 
-<script type="module" src="src/engine/game.js?v=3"></script>
+<script type="module" src="src/engine/game.js?v=4"></script>
 </body>
 </html>

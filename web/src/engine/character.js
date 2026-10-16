@@ -5,9 +5,42 @@ import { shirtTex, pantsTex, faceTex, shade } from './textures.js';
 
 const SKINS = ['#f1c7a5', '#d9a47e', '#a8714a', '#6e4a32', '#f6d8c0'];
 const boxGeo = new Map();
+
+/**
+ * Generates a softly beveled/rounded 3D box geometry so characters and props look
+ * sculpted and organic rather than sharp 90-degree cubes, while preserving the 6
+ * material groups required for multi-material head faces.
+ */
 function geo(w, h, d) {
   const k = `${w}|${h}|${d}`;
-  if (!boxGeo.has(k)) boxGeo.set(k, new THREE.BoxGeometry(w, h, d));
+  if (!boxGeo.has(k)) {
+    const segs = (w > 0.12 && h > 0.12 && d > 0.12) ? 3 : 1;
+    const g = new THREE.BoxGeometry(w, h, d, segs, segs, segs);
+    if (segs > 1) {
+      const pos = g.attributes.position;
+      const hw = w / 2, hh = h / 2, hd = d / 2;
+      const rx = Math.min(w, h, d) * 0.22;
+      const ix = Math.max(0.001, hw - rx);
+      const iy = Math.max(0.001, hh - rx);
+      const iz = Math.max(0.001, hd - rx);
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i), vy = pos.getY(i), vz = pos.getZ(i);
+        const cx = Math.max(-ix, Math.min(ix, vx));
+        const cy = Math.max(-iy, Math.min(iy, vy));
+        const cz = Math.max(-iz, Math.min(iz, vz));
+        let dx = vx - cx, dy = vy - cy, dz = vz - cz;
+        const len = Math.hypot(dx, dy, dz);
+        if (len > 1e-5) {
+          dx = (dx / len) * rx;
+          dy = (dy / len) * rx;
+          dz = (dz / len) * rx;
+          pos.setXYZ(i, cx + dx, cy + dy, cz + dz);
+        }
+      }
+      g.computeVertexNormals();
+    }
+    boxGeo.set(k, g);
+  }
   return boxGeo.get(k);
 }
 const mat = (o) => new THREE.MeshLambertMaterial(o);
@@ -18,6 +51,29 @@ function part(w, h, d, material, y = 0) {
   m.castShadow = true;
   return m;
 }
+
+const FACTION_GUN_TYPE = {
+  karens: 'shotgun',
+  rednecks: 'shotgun',
+  trumpers: 'shotgun',
+  tradwives: 'shotgun',
+  vcBros: 'sniper',
+  oldMoney: 'sniper',
+  theGays: 'sniper',
+  pickleballRetirees: 'sniper',
+  gymRats: 'lmg',
+  fratHouse: 'lmg',
+  furries: 'lmg',
+  animeWeebs: 'lmg',
+  brainRot: 'smg',
+  cloutStreamers: 'smg',
+  valleyGirls: 'smg',
+  emoKids: 'smg',
+  mlmHuns: 'smg',
+  hoaDads: 'ar',
+  theaterKids: 'ar',
+  wokeLibs: 'ar',
+};
 
 // ---------------------------------------------------------------------------------------------
 // RIG (the "prefab"). Every faction shares this hierarchy; only data below changes per faction.
@@ -296,18 +352,38 @@ export class CharacterView {
       hip.position.set(s * 0.13, 0.8, 0);
       const leg = part(0.2, 0.72, 0.24, pantsM, -0.38);
       const shoe = part(0.22, 0.1, 0.3, shoeM, -0.75); shoe.position.z = -0.03;
-      hip.add(leg, shoe);
+      const toeCap = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 6), shoeM);
+      toeCap.scale.set(1, 0.5, 1.1);
+      toeCap.position.set(0, -0.76, -0.15);
+      hip.add(leg, shoe, toeCap);
       this.body.add(hip);
       return hip;
     });
     this.torso = part(0.56, 0.62, 0.3, shirtM, 1.1);
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.105, 0.14, 10), skinM);
+    neck.position.set(0, 0.34, 0);
+    this.torso.add(neck);
     this.body.add(this.torso);
+
     this.head = new THREE.Group();
     this.head.position.y = 1.62;
     const headMats = [skinM, skinM, skinM, skinM, skinM, faceM];
     const headMesh = new THREE.Mesh(geo(0.38, 0.4, 0.38), headMats);
     headMesh.castShadow = true;
     this.head.add(headMesh);
+    if (look.hat !== 'fursuitHead') {
+      const earGeo = new THREE.SphereGeometry(0.048, 6, 6);
+      for (const sx of [-1, 1]) {
+        const ear = new THREE.Mesh(earGeo, skinM);
+        ear.scale.set(0.55, 1.1, 0.85);
+        ear.position.set(sx * 0.195, -0.01, 0.01);
+        this.head.add(ear);
+      }
+      const nose = new THREE.Mesh(new THREE.SphereGeometry(0.034, 6, 6), mat({ color: shade(skin, -0.06) }));
+      nose.scale.set(0.85, 1.0, 1.25);
+      nose.position.set(0, -0.01, -0.195);
+      this.head.add(nose);
+    }
     this.headwear = new THREE.Group();
     this.headwear.name = 'headwear';
     buildParts(this.headwear, HEADWEAR[look.hat] || HEADWEAR.default, look);
@@ -318,17 +394,52 @@ export class CharacterView {
       const sh = new THREE.Group();
       sh.position.set(s * 0.37, 1.36, 0);
       sh.add(part(0.16, 0.56, 0.18, shirtM, -0.24));
-      const hand = part(0.15, 0.13, 0.15, skinM, -0.56);
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.085, 8, 8), skinM);
+      hand.position.y = -0.56;
       sh.add(hand);
       this.body.add(sh);
       return sh;
     });
 
-    // Toy blaster: orange tip so nobody confuses it with a real gun
+    // Faction-distinct 3D third-person weapon model
     this.gun = new THREE.Group();
-    this.gun.add(part(0.1, 0.14, 0.55, mat({ color: shade(look.accent, -0.2) })));
-    const tip = part(0.11, 0.11, 0.08, mat({ color: '#ff6c24' })); tip.position.z = -0.3; this.gun.add(tip);
-    const grip = part(0.07, 0.15, 0.08, mat({ color: '#333' }), -0.12); grip.position.z = 0.12; this.gun.add(grip);
+    const gunType = FACTION_GUN_TYPE[faction] || 'ar';
+    if (gunType === 'shotgun') {
+      const stock = part(0.08, 0.14, 0.28, mat({ color: '#742f29' })); stock.position.z = 0.16;
+      const pump = part(0.09, 0.08, 0.22, mat({ color: '#ab5236' })); pump.position.set(0, -0.03, -0.14);
+      const bL = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.52, 8), mat({ color: '#5f574f' }));
+      bL.rotation.x = Math.PI / 2; bL.position.set(-0.025, 0.03, -0.14);
+      const bR = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.52, 8), mat({ color: '#5f574f' }));
+      bR.rotation.x = Math.PI / 2; bR.position.set(0.025, 0.03, -0.14);
+      this.gun.add(stock, pump, bL, bR);
+    } else if (gunType === 'sniper') {
+      const body = part(0.08, 0.11, 0.48, mat({ color: '#fff1e8' }));
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.68, 8), mat({ color: '#1d2b53' }));
+      barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.02, -0.28);
+      const scope = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.3, 8), mat({ color: '#1d2b53' }));
+      scope.rotation.x = Math.PI / 2; scope.position.set(0, 0.1, -0.02);
+      const trim = part(0.085, 0.025, 0.36, mat({ color: '#ffa300' })); trim.position.y = 0.02;
+      this.gun.add(body, barrel, scope, trim);
+    } else if (gunType === 'lmg') {
+      const body = part(0.13, 0.15, 0.52, mat({ color: '#4a7e5a' }));
+      const drum = part(0.12, 0.16, 0.18, mat({ color: '#2f6b3a' })); drum.position.set(-0.11, -0.06, -0.02);
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.42, 8), mat({ color: '#5f574f' }));
+      barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.02, -0.32);
+      this.gun.add(body, drum, barrel);
+    } else if (gunType === 'smg') {
+      const body = part(0.08, 0.1, 0.34, mat({ color: '#008751' }));
+      const mag = part(0.04, 0.22, 0.06, mat({ color: '#ab5236' })); mag.position.set(0, -0.12, -0.04); mag.rotation.x = 0.22;
+      const comp = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.1, 8), mat({ color: '#00e436' }));
+      comp.rotation.x = Math.PI / 2; comp.position.set(0, 0.01, -0.22);
+      this.gun.add(body, mag, comp);
+    } else {
+      this.gun.add(part(0.09, 0.13, 0.5, mat({ color: shade(look.accent, -0.15) })));
+      const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.1, 10), mat({ color: '#1d2b53' }));
+      drum.rotation.z = Math.PI / 2; drum.position.set(0, -0.06, -0.04);
+      const tip = part(0.09, 0.09, 0.08, mat({ color: '#ff6c24' })); tip.position.z = -0.28;
+      this.gun.add(drum, tip);
+    }
+    const grip = part(0.06, 0.14, 0.07, mat({ color: '#222' }), -0.11); grip.position.z = 0.12; this.gun.add(grip);
     this.gun.rotation.x = -Math.PI / 2; // barrel (-z) along the arm (-y)
     this.gun.position.set(0, -0.66, 0.02);
     this.arms[1].add(this.gun);

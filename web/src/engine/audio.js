@@ -243,11 +243,11 @@ export class Sfx {
     }
   }
   shot(vol = 1) { this.tone({ f0: 900, f1: 180, dur: 0.07, vol: 0.18 * vol, slapback: true }); }
-  shotgun() { this.noise(0.18, 0.45); this.tone({ f0: 320, f1: 60, dur: 0.14, vol: 0.35, slapback: true }); }
-  sniper() { this.tone({ type: 'sawtooth', f0: 1600, f1: 240, dur: 0.22, vol: 0.35, slapback: true }); this.noise(0.25, 0.3); }
-  smg() { this.tone({ f0: 1100, f1: 260, dur: 0.05, vol: 0.16, slapback: true }); }
-  lmg() { this.tone({ type: 'sawtooth', f0: 550, f1: 110, dur: 0.11, vol: 0.24, slapback: true }); }
-  pistol() { this.tone({ f0: 950, f1: 280, dur: 0.06, vol: 0.19, slapback: true }); }
+  shotgun(vol = 1) { this.noise(0.18, 0.45 * vol); this.tone({ f0: 320, f1: 60, dur: 0.14, vol: 0.35 * vol, slapback: true }); }
+  sniper(vol = 1) { this.tone({ type: 'sawtooth', f0: 1600, f1: 240, dur: 0.22, vol: 0.35 * vol, slapback: true }); this.noise(0.25, 0.3 * vol); }
+  smg(vol = 1) { this.tone({ f0: 1100, f1: 260, dur: 0.05, vol: 0.16 * vol, slapback: true }); }
+  lmg(vol = 1) { this.tone({ type: 'sawtooth', f0: 550, f1: 110, dur: 0.11, vol: 0.24 * vol, slapback: true }); }
+  pistol(vol = 1) { this.tone({ f0: 950, f1: 280, dur: 0.06, vol: 0.19 * vol, slapback: true }); }
   hitmarker() { this.tone({ type: 'square', f0: 2400, f1: 2400, dur: 0.03, vol: 0.18 }); }
   hit() { this.tone({ type: 'triangle', f0: 1200, f1: 900, dur: 0.05, vol: 0.25 }); }
   headshot() { this.tone({ type: 'square', f0: 300, f1: 1400, dur: 0.12, vol: 0.25 }); }

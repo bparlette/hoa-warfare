@@ -506,10 +506,21 @@ export class Hud {
     voice.say({ text: `MVP: ${mvp.name}. ${mvpLine}`, priority: 9, force: true, announcer: true });
   }
 
+  popScore(text, isGold = false) {
+    const hud = this.$('hud');
+    if (!hud || typeof document === 'undefined' || !document.createElement) return;
+    const el = document.createElement('div');
+    el.className = 'score-popup' + (isGold ? ' gold' : '');
+    el.textContent = text;
+    hud.appendChild(el);
+    setTimeout(() => el.remove?.(), 950);
+  }
+
   update({ sim, me, state, renderer, input, voice, sfx, library, radar, realTime }) {
     const $ = this.$;
     $('hud').classList.remove('hidden');
     $('s0').textContent = sim.score[0];
+    if ($('s1')) $('s1').textContent = sim.score[1];
     const modeClock = sim.mode?.clock?.();
     const left = Math.max(0, modeClock != null ? modeClock : sim.timeLimit - sim.time);
     $('clock').textContent = `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;

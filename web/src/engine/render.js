@@ -58,7 +58,7 @@ export class Renderer {
     const capture = typeof location !== 'undefined' && /[?&](short|capture)=1/.test(location?.search || '');
     this.quality = detectQuality();
     try {
-      this.gl = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
+      this.gl = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
       this.gl.info.autoReset = false; // count draws for the whole frame (scene + post pass); reset in render()
       this.gl.outputColorSpace = THREE.LinearSRGBColorSpace;
       this.gl.shadowMap.enabled = true;
@@ -74,7 +74,7 @@ export class Renderer {
         clear() {},
       };
     }
-    this.retro = true;
+    this.retro = false;
     this.lowHeight = 216;
 
     this.scene = new THREE.Scene();
@@ -119,6 +119,8 @@ export class Renderer {
     this.gl.setPixelRatio(this.retro ? 1 : Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, this.quality.maxRatio) * this.quality.scale);
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
+    // Widen vertical FOV on portrait mobile screens so horizontal field-of-view stays comfortable
+    this.camera.fov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
     this.camera.updateProjectionMatrix();
     const lh = this.lowHeight, lw = Math.round(lh * w / h);
     this.rt.setSize(lw, lh);
@@ -161,7 +163,6 @@ export class Renderer {
     const before = new Set(S.children);
     const add = (m, { cast = true, receive = true } = {}) => { m.castShadow = cast; m.receiveShadow = receive; S.add(m); return m; };
     const lam = (o) => new THREE.MeshLambertMaterial(o);
-    const { minX, maxX, minZ, maxZ } = map.bounds;
 
     const ground = add(new THREE.Mesh(new THREE.PlaneGeometry(240, 240), lam({ map: T.grass([60, 60]) })), { cast: false });
     ground.rotation.x = -Math.PI / 2;
@@ -173,10 +174,21 @@ export class Renderer {
       const roof = new THREE.Mesh(new THREE.ConeGeometry(8.5, 3, 4), lam({ color: '#7e4a3a' }));
       roof.position.set(h.position.x, 7.5, h.position.z); roof.rotation.y = -a + Math.PI / 4; S.add(roof);
     }
+    // Puffy 3D sky clouds
+    const cloudMat = lam({ color: '#ffffff' });
+    for (let i = 0; i < 14; i++) {
+      const a = (i / 14) * Math.PI * 2 + 0.3, r = 45 + (i % 3) * 22, cy = 28 + (i % 4) * 4;
+      const cx = Math.cos(a) * r, cz = Math.sin(a) * r;
+      for (const [ox, oy, oz, rad] of [[0, 0, 0, 3.8], [2.8, -0.4, 0.6, 2.8], [-2.6, -0.5, -0.4, 2.6]]) {
+        const puff = add(new THREE.Mesh(new THREE.IcosahedronGeometry(rad, 1), cloudMat), { cast: false, receive: false });
+        puff.scale.set(1.3, 0.55, 1.0);
+        puff.position.set(cx + ox, cy + oy, cz + oz);
+      }
+    }
 
-    const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 20), lam({ map: T.asphalt([6, 6]) })), { cast: false });
+    const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 36), lam({ map: T.asphalt([6, 6]) })), { cast: false });
     court.rotation.x = -Math.PI / 2; court.position.y = 0.02;
-    const curb = add(new THREE.Mesh(new THREE.RingGeometry(map.court.r, map.court.r + 1.6, 20), lam({ map: T.concrete([8, 1]) })), { cast: false });
+    const curb = add(new THREE.Mesh(new THREE.RingGeometry(map.court.r, map.court.r + 1.6, 36), lam({ map: T.concrete([8, 1]) })), { cast: false });
     curb.rotation.x = -Math.PI / 2; curb.position.y = 0.025;
     const st = map.street;
     const street = add(new THREE.Mesh(new THREE.PlaneGeometry(st.maxX - st.minX, st.maxZ - st.minZ), lam({ map: T.asphalt([2, 9]) })), { cast: false });
@@ -192,9 +204,13 @@ export class Renderer {
 
     for (const b of map.boxes) this.buildBox(b, lam, add);
     for (const [x, z] of map.trees) {
-      const c = new THREE.Mesh(new THREE.IcosahedronGeometry(2.2, 0), lam({ map: T.leaves(['#3f8f3a', '#5aa03c', '#2f7a35'][Math.abs(Math.round(x + z)) % 3]), flatShading: true }));
-      c.position.set(x, 4.6, z);
-      add(c);
+      const leafMat = lam({ map: T.leaves(['#3f8f3a', '#5aa03c', '#2f7a35'][Math.abs(Math.round(x + z)) % 3]), flatShading: true });
+      const mainCrown = add(new THREE.Mesh(new THREE.IcosahedronGeometry(2.1, 1), leafMat));
+      mainCrown.position.set(x, 4.7, z);
+      for (const [ox, oy, oz, r] of [[1.1, -0.5, 0.6, 1.35], [-1.0, -0.4, -0.7, 1.4], [0.2, 0.9, -0.8, 1.25]]) {
+        const sub = add(new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), leafMat));
+        sub.position.set(x + ox, 4.7 + oy, z + oz);
+      }
     }
     this.worldDraws = mergeStatic(S, S.children.filter(o => !before.has(o)));
   }
@@ -219,6 +235,9 @@ export class Renderer {
         const roof = add(new THREE.Mesh(g, lam({ map: T.roof(['#7e4a3a', '#4a5a7e', '#5a5a5a', '#8a3a3a', '#3a5a4a', '#6a5a3a'][b.id % 6], [0.3, 0.3]), flatShading: true })));
         roof.position.set(cx, b.maxY, cz);
         if (along === 'x') roof.rotation.y = Math.PI / 2;
+        // 3D brick chimney on roof
+        const chim = add(new THREE.Mesh(new THREE.BoxGeometry(0.85, 2.4, 0.85), lam({ color: '#8a3a3a' })));
+        chim.position.set(cx + (along === 'x' ? w * 0.25 : 0.8), b.maxY + 1.8, cz + (along === 'z' ? d * 0.25 : 0.8));
         // facade on the face side: door, garage, windows
         const n = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] }[b.face];
         const faceW = n[0] ? d : w;
@@ -231,6 +250,9 @@ export class Renderer {
         };
         plate(T.garage(), 3.4, 2.4, -faceW / 2 + 2.3, 1.2);
         plate(T.door(['#a8323a', '#2b3f66', '#3a5a4a'][b.id % 3]), 1.1, 2.1, 0.8, 1.05);
+        // 3D porch overhang above front door
+        const awning = add(new THREE.Mesh(new THREE.BoxGeometry(n[0] ? 0.7 : 1.6, 0.16, n[0] ? 1.6 : 0.7), lam({ color: '#f4f1ea' })));
+        awning.position.set(fx + tang[0] * 0.8 + n[0] * 0.32, 2.25, fz + tang[1] * 0.8 + n[1] * 0.32);
         plate(T.window(), 1.3, 1.3, faceW / 2 - 1.8, 1.7);
         plate(T.window(), 1.3, 1.3, -faceW / 2 + 1.6, 3.8);
         plate(T.window(), 1.3, 1.3, faceW / 2 - 1.8, 3.8);
@@ -246,19 +268,43 @@ export class Renderer {
       case 'hedge': box(lam({ map: T.hedge([Math.max(w, d) / 2, 1]) })); break;
       case 'car': {
         const c = b.color, long = d > w;
-        box(lam({ map: T.car(c) }), w, 0.8, d, 0.55);
-        box(lam({ color: shade(c, -0.1) }), long ? w * 0.9 : w * 0.55, 0.6, long ? d * 0.55 : d * 0.9, 1.2);
-        box(lam({ color: '#9fd0ef' }), long ? w * 0.92 : w * 0.4, 0.4, long ? d * 0.4 : d * 0.92, 1.2);
+        // Lower chassis + bumpers
+        box(lam({ map: T.car(c) }), w, 0.76, d, 0.56);
+        box(lam({ color: '#2b2b33' }), long ? w * 1.02 : w + 0.12, 0.18, long ? d + 0.12 : d * 1.02, 0.28);
+        // Rounded upper cabin & tinted wrap-around glass
+        box(lam({ color: shade(c, -0.08) }), long ? w * 0.86 : w * 0.54, 0.56, long ? d * 0.54 : d * 0.86, 1.18);
+        box(lam({ color: '#87c5eb' }), long ? w * 0.89 : w * 0.44, 0.38, long ? d * 0.44 : d * 0.89, 1.18);
+        // Headlights & taillights
+        const hlMat = lam({ color: '#fff9c4', emissive: '#ffec27', emissiveIntensity: 0.4 });
+        const tlMat = lam({ color: '#ff004d', emissive: '#ff004d', emissiveIntensity: 0.35 });
+        for (const s of [-0.32, 0.32]) {
+          if (long) {
+            box(hlMat, 0.28, 0.16, 0.06, 0.62, cx + s * w, cz - d / 2 - 0.02);
+            box(tlMat, 0.28, 0.16, 0.06, 0.62, cx + s * w, cz + d / 2 + 0.02);
+          } else {
+            box(hlMat, 0.06, 0.16, 0.28, 0.62, cx - w / 2 - 0.02, cz + s * d);
+            box(tlMat, 0.06, 0.16, 0.28, 0.62, cx + w / 2 + 0.02, cz + s * d);
+          }
+        }
+        // Cylindrical 3D tires + alloy hubcaps instead of square boxes
+        const tireMat = lam({ color: '#1b1b1b' });
+        const rimMat = lam({ color: '#d4d8de' });
         for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-          const ox = long ? sx * w / 2 : sx * (w / 2 - 0.7), oz = long ? sz * (d / 2 - 0.7) : sz * d / 2;
-          box(lam({ color: '#1b1b1b' }), long ? 0.25 : 0.6, 0.6, long ? 0.6 : 0.25, 0.3, cx + ox, cz + oz);
+          const ox = long ? sx * (w / 2 - 0.05) : sx * (w / 2 - 0.72);
+          const oz = long ? sz * (d / 2 - 0.72) : sz * (d / 2 - 0.05);
+          const wheel = add(new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.24, 14), tireMat));
+          wheel.position.set(cx + ox, 0.32, cz + oz);
+          if (long) wheel.rotation.z = Math.PI / 2; else wheel.rotation.x = Math.PI / 2;
+          const rim = add(new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.26, 10), rimMat));
+          rim.position.copy(wheel.position);
+          rim.rotation.copy(wheel.rotation);
         }
         break;
       }
       case 'trampoline': {
-        const top = add(new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, 0.08, 12), lam({ color: '#1b1b1b' })));
+        const top = add(new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, 0.08, 18), lam({ color: '#1b1b1b' })));
         top.position.set(cx, b.maxY, cz);
-        const rim = add(new THREE.Mesh(new THREE.TorusGeometry(w / 2, 0.1, 4, 12), lam({ color: '#29adff' })));
+        const rim = add(new THREE.Mesh(new THREE.TorusGeometry(w / 2, 0.1, 6, 18), lam({ color: '#29adff' })));
         rim.rotation.x = Math.PI / 2; rim.position.set(cx, b.maxY, cz);
         for (let i = 0; i < 4; i++) {
           const a = i * Math.PI / 2 + Math.PI / 4;
@@ -267,7 +313,7 @@ export class Renderer {
         break;
       }
       case 'trash': {
-        const m = add(new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2 * 0.9, h, 8), lam({ color: '#2f6b3a' })));
+        const m = add(new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2 * 0.88, h, 12), lam({ color: '#2f6b3a' })));
         m.position.set(cx, cy, cz);
         break;
       }
@@ -277,12 +323,16 @@ export class Renderer {
         break;
       case 'post': box(lam({ color: '#f6f4ee' })); break;
       case 'gazeboRoof': {
-        const r = add(new THREE.Mesh(new THREE.ConeGeometry(w * 0.75, 1.6, 4), lam({ map: T.roof('#4a7e5a', [0.3, 0.3]), flatShading: true })));
-        r.position.set(cx, b.maxY + 0.6, cz); r.rotation.y = Math.PI / 4;
+        const r = add(new THREE.Mesh(new THREE.ConeGeometry(w * 0.75, 1.6, 8), lam({ map: T.roof('#4a7e5a', [0.3, 0.3]), flatShading: true })));
+        r.position.set(cx, b.maxY + 0.6, cz); r.rotation.y = Math.PI / 8;
         box(lam({ color: '#f6f4ee' }));
         break;
       }
-      case 'tree': box(lam({ map: T.bark() })); break;
+      case 'tree': {
+        const trunk = add(new THREE.Mesh(new THREE.CylinderGeometry(w * 0.36, w * 0.52, h, 10), lam({ map: T.bark() })));
+        trunk.position.set(cx, cy, cz);
+        break;
+      }
       default: box(lam({ color: '#ff00ff' }));
     }
   }

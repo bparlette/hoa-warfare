@@ -1,0 +1,17 @@
+{
+  "name": "Call of Karen: HOA Warfare",
+  "short_name": "HOA Warfare",
+  "description": "The Satirical Suburban FPS · 6v6 Cul-de-Sac Combat",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#111d35",
+  "theme_color": "#111d35",
+  "icons": [
+    {
+      "src": "assets/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

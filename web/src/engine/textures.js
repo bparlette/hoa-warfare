@@ -38,108 +38,198 @@ const noise = (base, amt) => (px, w, h, r) => {
 };
 
 export const T = {
-  grass: rep => pixelTex('grass', 16, 16, (px, w, h, r) => {
+  grass: rep => pixelTex('grass', 32, 32, (px, w, h, r) => {
     // Alternating lawn mower mowing stripes (lighter #48873f and darker #3f7b37 green)
     for (let y = 0; y < h; y++) {
-      const stripe = Math.floor(y / 4) % 2 === 0;
+      const stripe = Math.floor(y / 8) % 2 === 0;
       const base = stripe ? '#48873f' : '#3f7b37';
       for (let x = 0; x < w; x++) {
-        px(x, y, shade(base, (r() - 0.5) * 0.16));
+        px(x, y, shade(base, (r() - 0.5) * 0.14));
       }
     }
     // Manicured turf blade flecks & highlights
-    for (let i = 0; i < 12; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#63a84e');
-    for (let i = 0; i < 6; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#336329');
+    for (let i = 0; i < 40; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#63a84e', 1, 2);
+    for (let i = 0; i < 24; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#336329', 1, 2);
   }, rep),
-  asphalt: rep => pixelTex('asphalt', 16, 16, (px, w, h, r) => {
-    noise('#4b4d54', 0.16)(px, w, h, r);
+  asphalt: rep => pixelTex('asphalt', 32, 32, (px, w, h, r) => {
+    noise('#4b4d54', 0.14)(px, w, h, r);
     // Subtle aggregate gravel & tar road noise
-    for (let i = 0; i < 10; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#62656d');
-    for (let i = 0; i < 8; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#323439');
-    for (let i = 0; i < 4; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#797c85');
+    for (let i = 0; i < 36; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#62656d');
+    for (let i = 0; i < 28; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#323439');
+    for (let i = 0; i < 14; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#797c85');
     // Subtle curb edge markings and asphalt seams
     for (let x = 0; x < w; x++) {
       if (r() > 0.45) px(x, 0, shade('#585a62', 0.1));
       if (r() > 0.75) px(x, h - 1, '#2c2e33');
     }
   }, rep),
-  concrete: rep => pixelTex('concrete', 16, 16, (px, w, h, r) => {
-    noise('#c9c4b8', 0.1)(px, w, h, r);
+  concrete: rep => pixelTex('concrete', 32, 32, (px, w, h, r) => {
+    noise('#c9c4b8', 0.08)(px, w, h, r);
     px(0, 0, '#a8a397', w, 1); px(0, 0, '#a8a397', 1, h);
+    px(0, 1, '#dfdace', w, 1);
   }, rep),
-  siding: (color, rep) => pixelTex('siding' + color, 16, 16, (px, w, h, r) => {
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) px(x, y, shade(color, y % 4 === 3 ? -0.18 : (r() - 0.5) * 0.05));
-  }, rep),
-  roof: (color, rep) => pixelTex('roof' + color, 16, 16, (px, w, h, r) => {
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const off = Math.floor(y / 4) % 2 ? 2 : 0;
-      px(x, y, shade(color, y % 4 === 3 || (x + off) % 4 === 0 ? -0.25 : (r() - 0.5) * 0.1));
+  siding: (color, rep) => pixelTex('siding' + color, 32, 32, (px, w, h, r) => {
+    for (let y = 0; y < h; y++) {
+      const boardShadow = y % 8 === 7 ? -0.22 : (y % 8 === 0 ? 0.08 : 0);
+      for (let x = 0; x < w; x++) px(x, y, shade(color, boardShadow + (r() - 0.5) * 0.04));
     }
   }, rep),
-  window: () => pixelTex('window', 8, 8, (px) => {
-    px(0, 0, '#f4f1ea', 8, 8); px(1, 1, '#7fb6e0', 6, 6); px(1, 1, '#b9dcf5', 2, 2); px(4, 1, '#f4f1ea', 1, 6); px(1, 4, '#f4f1ea', 6, 1);
-  }),
-  garage: () => pixelTex('garage', 16, 16, (px, w, h) => {
-    for (let y = 0; y < h; y++) px(0, y, y % 3 === 2 ? '#c8c3b6' : '#ece7da', w, 1);
-    px(3, 2, '#7fb6e0', 2, 1); px(7, 2, '#7fb6e0', 2, 1); px(11, 2, '#7fb6e0', 2, 1);
-  }),
-  door: color => pixelTex('door' + color, 8, 16, (px) => {
-    px(0, 0, color, 8, 16); px(1, 1, shade(color, -0.2), 6, 6); px(1, 9, shade(color, -0.2), 6, 6); px(6, 8, '#e8c547', 1, 1);
-  }),
-  picket: rep => pixelTex('picket', 8, 8, (px) => {
-    px(0, 0, '#f6f4ee', 8, 8); px(3, 0, '#c9c6bd', 1, 8); px(7, 0, '#c9c6bd', 1, 8); px(0, 0, '#ffffff', 8, 1);
+  roof: (color, rep) => pixelTex('roof' + color, 32, 32, (px, w, h, r) => {
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const off = Math.floor(y / 8) % 2 ? 4 : 0;
+      px(x, y, shade(color, y % 8 === 7 || (x + off) % 8 === 0 ? -0.25 : (r() - 0.5) * 0.08));
+    }
   }, rep),
-  privacy: rep => pixelTex('privacy', 16, 16, (px, w, h, r) => {
-    for (let x = 0; x < w; x++) { const c = shade('#9b6b43', (r() - 0.5) * 0.15 + (x % 4 === 3 ? -0.25 : 0)); px(x, 0, c, 1, h); }
-    px(0, 5, '#6e4a2c', w, 1);
+  window: () => pixelTex('window', 32, 32, (px) => {
+    px(0, 0, '#f4f1ea', 32, 32);
+    px(2, 2, '#d8d2c5', 28, 28);
+    px(4, 4, '#5a94c4', 24, 24);
+    // Warm interior curtains & sky reflection
+    px(4, 4, '#8fc5ed', 24, 10);
+    px(5, 5, '#cce8fa', 8, 8);
+    px(4, 4, '#f7f3e8', 4, 24);
+    px(24, 4, '#f7f3e8', 4, 24);
+    // Colonial window muntin bars
+    px(15, 3, '#f4f1ea', 2, 26);
+    px(3, 15, '#f4f1ea', 26, 2);
+    px(0, 29, '#c9c4b8', 32, 3);
+  }),
+  garage: () => pixelTex('garage', 32, 32, (px, w, h) => {
+    for (let y = 0; y < h; y++) px(0, y, y % 6 === 5 ? '#c8c3b6' : '#ece7da', w, 1);
+    for (let p = 0; p < 4; p++) {
+      const x0 = 2 + p * 7;
+      px(x0, 3, '#5a94c4', 5, 4);
+      px(x0, 3, '#a8d8f8', 2, 2);
+      for (const y0 of [10, 17, 24]) {
+        px(x0, y0, '#d8d3c6', 5, 4);
+        px(x0 + 1, y0 + 1, '#f4f1ea', 3, 2);
+      }
+    }
+  }),
+  door: color => pixelTex('door' + color, 16, 32, (px) => {
+    px(0, 0, '#f4f1ea', 16, 32);
+    px(1, 1, color, 14, 30);
+    // Upper fanlight glass & recessed panels
+    px(3, 3, '#8fc5ed', 10, 6);
+    px(7, 3, '#f4f1ea', 2, 6);
+    px(3, 11, shade(color, -0.22), 4, 8);
+    px(9, 11, shade(color, -0.22), 4, 8);
+    px(3, 21, shade(color, -0.22), 4, 8);
+    px(9, 21, shade(color, -0.22), 4, 8);
+    // Brass handle & kickplate
+    px(12, 16, '#ffec27', 2, 3);
+    px(2, 29, '#d4af37', 12, 2);
+  }),
+  picket: rep => pixelTex('picket', 16, 16, (px) => {
+    px(0, 0, '#f6f4ee', 16, 16);
+    px(6, 0, '#c9c6bd', 2, 16);
+    px(14, 0, '#c9c6bd', 2, 16);
+    px(0, 0, '#ffffff', 16, 2);
+    px(0, 4, '#e6e2d8', 16, 2);
+    px(0, 12, '#e6e2d8', 16, 2);
   }, rep),
-  hedge: rep => pixelTex('hedge', 16, 16, (px, w, h, r) => {
-    noise('#2f7a35', 0.35)(px, w, h, r);
-    for (let i = 0; i < 10; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#4fa047');
+  privacy: rep => pixelTex('privacy', 32, 32, (px, w, h, r) => {
+    for (let x = 0; x < w; x++) {
+      const c = shade('#9b6b43', (r() - 0.5) * 0.12 + (x % 8 === 7 ? -0.28 : 0));
+      px(x, 0, c, 1, h);
+    }
+    px(0, 8, '#6e4a2c', w, 2);
+    px(0, 24, '#6e4a2c', w, 2);
   }, rep),
-  leaves: color => pixelTex('leaves' + color, 16, 16, (px, w, h, r) => {
-    noise(color, 0.35)(px, w, h, r);
+  hedge: rep => pixelTex('hedge', 32, 32, (px, w, h, r) => {
+    noise('#2f7a35', 0.32)(px, w, h, r);
+    for (let i = 0; i < 35; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#4fa047', 2, 2);
+    for (let i = 0; i < 20; i++) px(Math.floor(r() * w), Math.floor(r() * h), '#1e5222', 2, 2);
+  }, rep),
+  leaves: color => pixelTex('leaves' + color, 32, 32, (px, w, h, r) => {
+    noise(color, 0.3)(px, w, h, r);
+    for (let i = 0; i < 28; i++) px(Math.floor(r() * w), Math.floor(r() * h), shade(color, 0.22), 2, 2);
   }),
-  bark: () => pixelTex('bark', 8, 16, (px, w, h, r) => {
-    for (let x = 0; x < w; x++) px(x, 0, shade('#6b4a2e', (r() - 0.5) * 0.3 + (x % 3 === 0 ? -0.2 : 0)), 1, h);
+  bark: () => pixelTex('bark', 16, 32, (px, w, h, r) => {
+    for (let x = 0; x < w; x++) px(x, 0, shade('#6b4a2e', (r() - 0.5) * 0.25 + (x % 4 === 0 ? -0.22 : 0)), 1, h);
   }),
-  car: color => pixelTex('car' + color, 16, 16, (px, w, h, r) => {
-    noise(color, 0.06)(px, w, h, r);
-    px(0, 0, shade(color, 0.25), w, 2);
-    px(0, 10, '#2b2b2b', w, 1);
+  car: color => pixelTex('car' + color, 32, 32, (px, w, h, r) => {
+    noise(color, 0.05)(px, w, h, r);
+    px(0, 0, shade(color, 0.28), w, 4);
+    px(0, 18, shade(color, -0.18), w, 2);
+    px(0, 20, '#2b2b2b', w, 3);
   }),
-  receipt: () => pixelTex('receipt', 8, 12, (px) => {
-    px(0, 0, '#fff1e8', 8, 12);
-    for (let y = 2; y < 10; y += 2) px(1, y, '#5f574f', 3 + (y % 4 ? 3 : 1), 1);
-    px(1, 10, '#ff004d', 6, 1);
-    px(0, 11, '#c2c3c7', 1, 1); px(2, 11, '#c2c3c7', 1, 1); px(4, 11, '#c2c3c7', 1, 1); px(6, 11, '#c2c3c7', 1, 1);
+  receipt: () => pixelTex('receipt', 16, 24, (px) => {
+    px(0, 0, '#fff1e8', 16, 24);
+    for (let y = 4; y < 20; y += 3) px(2, y, '#5f574f', 6 + (y % 6 ? 5 : 2), 2);
+    px(2, 20, '#ff004d', 12, 2);
   }),
-  stripe: () => pixelTex('stripe', 4, 16, (px) => { px(0, 0, '#55575e', 4, 16); px(1, 0, '#e8c547', 2, 8); }),
+  stripe: () => pixelTex('stripe', 8, 32, (px) => { px(0, 0, '#55575e', 8, 32); px(2, 0, '#e8c547', 4, 16); }),
 };
 
-/** Shirt texture: base colour, accent trim, a little dithered shading. */
+/** 32x32 Shirt texture: base colour, collar, buttons/seam, pocket, and faction trim. */
 export function shirtTex(look, seed) {
-  return pixelTex('shirt' + look.shirt + look.accent + seed, 8, 8, (px, w, h, r) => {
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) px(x, y, shade(look.shirt, (y > 5 ? -0.12 : 0) + ((x + y) % 2 && y > 4 ? -0.05 : 0)));
-    px(0, 0, look.accent, w, 1);
-    if (look.hat === 'vest') { px(0, 0, look.accent, 2, h); px(6, 0, look.accent, 2, h); }
-    if (look.hat === 'sweaterCane') px(0, 1, look.accent, w, 1);
-    if (look.hat === 'stringer') { px(2, 0, shade(look.shirt, 0.3), 1, h); px(5, 0, shade(look.shirt, 0.3), 1, h); }
+  return pixelTex('shirt' + look.shirt + look.accent + seed, 32, 32, (px, w, h) => {
+    for (let y = 0; y < h; y++) {
+      const grad = y > 22 ? -0.12 : (y < 6 ? 0.05 : 0);
+      for (let x = 0; x < w; x++) {
+        px(x, y, shade(look.shirt, grad + ((x + y) % 2 && y > 18 ? -0.03 : 0)));
+      }
+    }
+    // Collar & neckline trim
+    px(0, 0, look.accent, w, 3);
+    px(11, 2, shade(look.accent, -0.15), 10, 4);
+    px(14, 3, '#fff1e8', 4, 5);
+    // Subtle vertical placket & chest pocket
+    px(15, 6, shade(look.shirt, -0.14), 2, 22);
+    px(19, 10, shade(look.shirt, -0.16), 6, 6);
+    px(19, 10, look.accent, 6, 2);
+    // Belt at waist
+    px(0, 29, '#222228', w, 3);
+    px(14, 29, '#e8c547', 4, 3);
+    if (look.hat === 'vest') {
+      px(0, 0, look.accent, 9, h - 3);
+      px(23, 0, look.accent, 9, h - 3);
+      px(15, 0, '#c2c3c7', 2, h - 3);
+    }
+    if (look.hat === 'sweaterCane') {
+      px(0, 3, look.accent, w, 5);
+      px(10, 8, look.accent, 4, 8);
+      px(18, 8, look.accent, 4, 8);
+    }
+    if (look.hat === 'stringer') {
+      px(7, 0, shade(look.shirt, 0.3), 4, h - 3);
+      px(21, 0, shade(look.shirt, 0.3), 4, h - 3);
+    }
   });
 }
 
 export function pantsTex(look) {
-  return pixelTex('pants' + look.pants, 4, 8, (px, w, h) => {
-    for (let y = 0; y < h; y++) px(0, y, shade(look.pants, y === h - 1 ? -0.4 : (y % 3 === 0 ? -0.06 : 0)), w, 1);
+  return pixelTex('pants' + look.pants, 16, 32, (px, w, h) => {
+    for (let y = 0; y < h; y++) {
+      const cuff = y >= h - 3 ? -0.35 : (y % 8 === 0 ? -0.05 : 0);
+      px(0, y, shade(look.pants, cuff), w, 1);
+    }
+    // Side seam & knee crease detail
+    px(0, 0, shade(look.pants, -0.16), 2, h);
+    px(w - 2, 0, shade(look.pants, -0.16), 2, h);
+    px(3, 15, shade(look.pants, 0.08), w - 6, 2);
   });
 }
 
-/** 8x8 faces. Each faction gets one readable feature at 16-bit resolution. */
+/** 32x32 high-detail expressive faces with sclera, pupils, eye catchlights, brows, and mouths. */
 export function faceTex(faction, skin) {
-  return pixelTex('face' + faction + skin, 8, 8, (px) => {
-    px(0, 0, skin, 8, 8);
-    const eye = '#1d1d24';
-    const eyes = () => { px(2, 3, eye); px(5, 3, eye); };
+  return pixelTex('face' + faction + skin, 32, 32, (pxRaw) => {
+    const px = (x, y, c, ww = 1, hh = 1) => pxRaw(x * 4, y * 4, c, ww * 4, hh * 4);
+    pxRaw(0, 0, skin, 32, 32);
+    // Subtle cheek & forehead shading
+    pxRaw(0, 0, shade(skin, 0.05), 32, 6);
+    pxRaw(0, 26, shade(skin, -0.08), 32, 6);
+    const eye = '#181820';
+    const eyes = () => {
+      // Crisp 32x32 eyes with white sclera, dark iris, and bright catchlight
+      pxRaw(6, 11, '#ffffff', 6, 5);
+      pxRaw(20, 11, '#ffffff', 6, 5);
+      pxRaw(8, 11, eye, 4, 5);
+      pxRaw(20, 11, eye, 4, 5);
+      pxRaw(9, 12, '#ffffff', 1, 1);
+      pxRaw(21, 12, '#ffffff', 1, 1);
+    };
     switch (faction) {
       case 'karens': eyes(); px(1, 2, '#3a2a20', 2, 1); px(5, 2, '#3a2a20', 2, 1); px(3, 6, '#c2185b', 2, 1); px(1, 4, '#e8a0a0'); px(6, 4, '#e8a0a0'); break;
       case 'brainRot': px(2, 3, '#7ff7ff'); px(5, 3, '#7ff7ff'); px(3, 6, eye, 2, 1); px(0, 7, '#5b6ee1', 8, 1); break;
