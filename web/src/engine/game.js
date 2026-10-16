@@ -349,76 +349,44 @@ export function buildMenu() {
       const cry = typeof cryRaw === 'object' ? (cryRaw.t || cryRaw.alt || '') : cryRaw;
       const tagline = f.tagline || 'Defend the cul-de-sac at all costs.';
 
-      if (isLocked) {
-        el.className = 'fc fc-card locked';
-        el.innerHTML = `
-          <div class="fc-char-wrap" style="background: radial-gradient(circle at 40% 45%, ${f.look.accent}25 0%, rgba(10,16,30,0.92) 80%);">
-            <div class="fc-top-badges">
-              <span class="fc-wpn-badge" title="${wpn.name} (${wpn.class})">
-                <img class="fc-wpn-icon-svg" src="${wpn.asset}" alt="" loading="lazy">
-                <span class="fc-badge-class">${wpn.class}</span>
-              </span>
-              <span class="demo-lock">🔒 STEAM ONLY</span>
-            </div>
-            <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
-            <div class="fc-wpn-display" title="${wpn.name}">
+      const cardInner = `
+        <div class="fc-stage" style="background: radial-gradient(circle at 50% 35%, ${f.look.accent}30 0%, rgba(9,14,26,0.96) 85%);">
+          <div class="fc-stage-badges">
+            <span class="fc-class-badge" style="border-color:${f.look.accent}; color:${f.look.accent};">${wpn.class}</span>
+            ${isLocked ? '<span class="demo-lock">🔒 STEAM</span>' : `<span class="fc-role-badge">${wpn.role}</span>`}
+          </div>
+
+          <div class="fc-visuals">
+            <div class="fc-wpn-hero-wrap" title="${wpn.name}">
               <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="${wpn.name}" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
             </div>
-            <div class="fc-wpn-bar">
-              <span class="fc-wpn-name">${wpn.name}</span>
-              <span class="fc-wpn-class-tag">${wpn.role}</span>
+            <div class="fc-char-hero-wrap">
+              <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
             </div>
           </div>
-          <div class="fc-label">
-            <div class="fc-label-top">
-              <div class="fc-label-main">
-                <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-                <b class="fc-name">${f.name}</b>
-              </div>
-              <span class="fc-faction-role">${fRole}</span>
+        </div>
+
+        <div class="fc-info">
+          <div class="fc-info-header">
+            <div class="fc-name-group">
+              <span class="fc-dot" style="background:${f.look.accent};"></span>
+              <b class="fc-name">${f.name}</b>
             </div>
-            <div class="fc-humor-wrap">
-              <p class="fc-tagline" title="${tagline}">“${tagline}”</p>
-              <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
-            </div>
+            <span class="fc-wpn-name-tag">${wpn.name}</span>
           </div>
-        `;
+          <div class="fc-tagline" title="${tagline}">“${tagline}”</div>
+          <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
+        </div>
+      `;
+
+      if (isLocked) {
+        el.className = 'fc fc-card locked';
+        el.innerHTML = cardInner;
         el.onclick = () => showDemoModal(f.name, f.tagline);
       } else {
         el.className = 'fc fc-card' + (isSel ? ' sel' : '');
         el.style.borderColor = isSel ? '#ffec27' : f.look.accent;
-        el.innerHTML = `
-          <div class="fc-char-wrap" style="background: radial-gradient(circle at 40% 45%, ${f.look.accent}35 0%, rgba(10,16,30,0.92) 80%);">
-            <div class="fc-top-badges">
-              <span class="fc-wpn-badge" title="${wpn.name} (${wpn.class})">
-                <img class="fc-wpn-icon-svg" src="${wpn.asset}" alt="" loading="lazy">
-                <span class="fc-badge-class">${wpn.class}</span>
-              </span>
-              <span class="fc-combat-role-badge">${wpn.role}</span>
-            </div>
-            <img class="fc-char-img" src="assets/characters/${id}.png" alt="${f.name}" loading="lazy">
-            <div class="fc-wpn-display" title="${wpn.name}">
-              <img class="fc-wpn-hero-img" src="${wpnSrc}" alt="${wpn.name}" style="--wpn-angle:${wpn.angle}deg; --wpn-scale:${wpn.scale};" loading="lazy">
-            </div>
-            <div class="fc-wpn-bar">
-              <span class="fc-wpn-name">${wpn.name}</span>
-              <span class="fc-wpn-class-tag">${wpn.class}</span>
-            </div>
-          </div>
-          <div class="fc-label">
-            <div class="fc-label-top">
-              <div class="fc-label-main">
-                <span class="fc-pip-dot" style="background:${f.look.accent};"></span>
-                <b class="fc-name">${f.name}</b>
-              </div>
-              <span class="fc-faction-role">${fRole}</span>
-            </div>
-            <div class="fc-humor-wrap">
-              <p class="fc-tagline" title="${tagline}">“${tagline}”</p>
-              <div class="fc-cry" title="${cry}">🗣️ “${cry}”</div>
-            </div>
-          </div>
-        `;
+        el.innerHTML = cardInner;
         el.onclick = () => { state.faction = id; buildMenu(); };
       }
       box.appendChild(el);

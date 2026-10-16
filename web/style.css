@@ -384,60 +384,45 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   border-color: #ffec27;
 }
 
-.fc-char-wrap {
+.fc-stage {
   flex: 1;
   min-height: 0;
-  width: 100%;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
 }
 
-.fc-top-badges {
+.fc-stage-badges {
   position: absolute;
   top: 5px;
-  left: 5px;
-  right: 5px;
+  left: 6px;
+  right: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 4;
+  z-index: 5;
   pointer-events: none;
 }
-.fc-wpn-badge {
-  background: rgba(14, 24, 46, 0.94);
-  color: #ffec27;
+.fc-class-badge {
+  background: rgba(10, 16, 30, 0.92);
   border: 1.5px solid #29adff;
-  font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(8px, 1.3vh, 10px);
-  letter-spacing: 0.6px;
-  padding: 1px 6px;
   border-radius: 4px;
-  box-shadow: 2px 2px 0 #000;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(8px, 1.3vh, 10.5px);
+  padding: 1px 6px;
+  box-shadow: 1px 1px 0 #000;
+  letter-spacing: 0.5px;
 }
-.fc-wpn-icon-svg {
-  width: 16px;
-  height: 11px;
-  object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
-}
-.fc-badge-class {
-  line-height: 1;
-}
-.fc-combat-role-badge {
+.fc-role-badge {
   background: rgba(10, 18, 34, 0.88);
   color: #c2c3c7;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
   font-size: clamp(6.5px, 1.1vh, 8.5px);
   font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  letter-spacing: 0.4px;
+  padding: 1px 6px;
   text-transform: uppercase;
   box-shadow: 1px 1px 0 #000;
 }
@@ -448,122 +433,109 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   font-weight: 900;
   font-size: clamp(7px, 1.2vh, 9px);
   letter-spacing: 0.6px;
-  padding: 2px 6px;
+  padding: 1px 6px;
   border-radius: 3px;
-  box-shadow: 2px 2px 0 #000;
+  box-shadow: 1px 1px 0 #000;
 }
 
-.fc-char-img {
+.fc-visuals {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.fc-char-hero-wrap {
   position: absolute;
-  left: 2%;
-  bottom: 22px;
-  height: 82%;
-  max-width: 58%;
+  left: 3%;
+  bottom: 0;
+  width: 55%;
+  height: 96%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+}
+.fc-char-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.85));
-  transition: transform .2s ease-out, filter .2s;
-  z-index: 1;
+  object-position: bottom center;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.92));
+  transition: transform .2s ease-out;
 }
 .fc-card:hover .fc-char-img {
-  transform: scale(1.05) translateX(2px);
+  transform: scale(1.06) translateY(-2px);
 }
 
-.fc-wpn-display {
+.fc-wpn-hero-wrap {
   position: absolute;
-  right: -2%;
-  bottom: 16px;
-  width: 82%;
-  height: 80%;
+  right: 2%;
+  top: 4%;
+  bottom: 4%;
+  width: 62%;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
   z-index: 2;
+  pointer-events: none;
 }
 .fc-wpn-hero-img {
-  width: 100%;
+  max-width: 110%;
+  max-height: 90%;
+  width: auto;
   height: auto;
-  max-height: 94%;
   object-fit: contain;
-  transform: rotate(var(--wpn-angle, -28deg)) scale(var(--wpn-scale, 1.15));
-  transform-origin: 65% 55%;
-  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.92)) drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-  transition: transform .22s cubic-bezier(0.2, 0.8, 0.2, 1), filter .22s;
+  transform: rotate(var(--wpn-angle, -28deg)) scale(calc(var(--wpn-scale, 1.15) * 1.22));
+  transform-origin: center center;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.95)) drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  transition: transform .22s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .fc-card:hover .fc-wpn-hero-img {
-  transform: rotate(calc(var(--wpn-angle, -28deg) - 3.5deg)) scale(calc(var(--wpn-scale, 1.15) * 1.08));
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.95)) drop-shadow(0 0 10px rgba(255, 236, 39, 0.5));
+  transform: rotate(calc(var(--wpn-angle, -28deg) - 3deg)) scale(calc(var(--wpn-scale, 1.15) * 1.3));
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.98)) drop-shadow(0 0 12px rgba(255, 236, 39, 0.6));
 }
 .fc-card.sel .fc-wpn-hero-img {
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.95)) drop-shadow(0 0 12px rgba(255, 236, 39, 0.65));
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.98)) drop-shadow(0 0 14px rgba(255, 236, 39, 0.7));
 }
 
-.fc-wpn-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 3px 8px;
-  background: rgba(9, 15, 28, 0.94);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-  z-index: 3;
-}
-.fc-wpn-name {
-  font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(8px, 1.3vh, 10.5px);
-  letter-spacing: 0.6px;
-  color: #ffec27;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-shadow: 1px 1px 0 #000;
-}
-.fc-wpn-class-tag {
-  font-size: clamp(6.5px, 1.1vh, 8.5px);
-  font-weight: 800;
-  color: #29adff;
-  letter-spacing: 0.5px;
-  background: rgba(41, 173, 255, 0.16);
-  padding: 1px 5px;
-  border-radius: 2px;
-  border: 1px solid rgba(41, 173, 255, 0.4);
-  flex-shrink: 0;
-}
-
-.fc-label {
+.fc-info {
+  background: rgba(10, 16, 30, 0.98);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: clamp(3px, 0.7vh, 6px) 8px;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: clamp(3px, 0.7vh, 6px) 8px;
-  background: rgba(12, 20, 38, 0.98);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  z-index: 4;
 }
-.fc-label-top {
+.fc-info-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
   min-width: 0;
 }
-.fc-label-main {
+.fc-name-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
+  flex: 1;
 }
-.fc-pip-dot {
-  width: 8px;
-  height: 8px;
+.fc-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  border: 1px solid #000;
   flex-shrink: 0;
+  border: 1px solid #000;
 }
-.fc-label .fc-name {
+.fc-info .fc-name {
   font-family: Impact, "Arial Black", sans-serif;
-  font-size: clamp(10px, 1.8vh, 14px);
+  font-size: clamp(10px, 1.7vh, 13.5px);
   letter-spacing: 0.5px;
   color: #fff1e8;
   white-space: nowrap;
@@ -571,46 +543,38 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   text-overflow: ellipsis;
   text-transform: uppercase;
 }
-.fc-faction-role {
-  font-size: clamp(6.5px, 1.1vh, 8.5px);
-  font-weight: 700;
-  color: #83769c;
+.fc-wpn-name-tag {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(8px, 1.2vh, 10px);
+  color: #ffec27;
   letter-spacing: 0.4px;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 44%;
-}
-.fc-humor-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  padding-top: 2px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  max-width: 50%;
 }
 .fc-tagline {
   margin: 0;
-  font-size: clamp(7.5px, 1.15vh, 10px);
-  color: #ffec27;
+  font-size: clamp(7.5px, 1.1vh, 9.5px);
+  color: #ffa300;
   font-style: italic;
   font-weight: 600;
-  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 .fc-cry {
   margin: 0;
-  font-size: clamp(7px, 1.05vh, 9.5px);
+  font-size: clamp(7px, 1.05vh, 9px);
   color: #29adff;
   font-weight: 700;
   letter-spacing: 0.3px;
-  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .lobby-action-bar {
@@ -697,6 +661,60 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
   }
   .lobby-center {
     padding-bottom: 60px;
+  }
+}
+
+@media (max-width: 600px) {
+  #factions.factions-grid-2x3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+  .lobby-container {
+    padding: 4px 6px 64px 6px !important;
+    gap: 4px !important;
+  }
+  .lobby-header {
+    padding-bottom: 2px !important;
+    gap: 4px !important;
+  }
+  .lobby-brand .main-logo {
+    height: 32px !important;
+  }
+  .pitch-badge {
+    font-size: 8.5px !important;
+  }
+  .lobby-brand .tag {
+    display: none !important;
+  }
+  #careerRankBadge {
+    display: none !important;
+  }
+  .faction-header {
+    margin-bottom: 2px !important;
+  }
+  .faction-header h2 {
+    font-size: 12px !important;
+  }
+  .weapon-view-toggle {
+    transform: scale(0.85);
+    transform-origin: right center;
+  }
+  .fc-char-hero-wrap {
+    width: 58% !important;
+    height: 96% !important;
+  }
+  .fc-wpn-hero-wrap {
+    width: 65% !important;
+  }
+  .fc-tagline {
+    display: block !important;
+  }
+  .fc-cry {
+    display: none !important;
+  }
+  .fc-info {
+    padding: 3px 6px !important;
   }
 }
 
