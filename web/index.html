@@ -107,7 +107,11 @@
         </div>
         <div id="factionPagination" class="faction-pagination"></div>
       </div>
-      <div id="factions" class="factions-grid-2x3"></div>
+      <div class="factions-slider-wrapper">
+        <button type="button" class="slider-arrow slider-arrow-prev" id="sliderPrev" aria-label="Previous faction" title="Previous Faction">‹</button>
+        <div id="factions" class="factions-slider"></div>
+        <button type="button" class="slider-arrow slider-arrow-next" id="sliderNext" aria-label="Next faction" title="Next Faction">›</button>
+      </div>
       <div class="lobby-action-bar">
         <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY NOW</button>
         <button type="button" id="btnQuickMatch" class="btn-online btn-quickmatch-main" disabled>🌐 QUICK MATCH</button>
