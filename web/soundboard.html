@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call of Karen: HOA Warfare — Streamer Soundboard & Voice Vault</title>
+  <link rel="icon" href="assets/characters/karens.png">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(21, 28, 44, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00ff88;
+      --accent-pink: #ff0055;
+      --accent-gold: #ffcc00;
+      --text: #f0f4f8;
+      --text-dim: #8b9bb4;
+      --font-display: 'Impact', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #17243c 0%, var(--bg) 80%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+    header {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 0%, #a8c0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* Sidebar: Factions */
+    .factions-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      height: fit-content;
+      backdrop-filter: blur(12px);
+    }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge-count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: rgba(0, 255, 136, 0.15);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .faction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: calc(100vh - 220px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .faction-list::-webkit-scrollbar { width: 4px; }
+    .faction-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+    .faction-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .faction-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .faction-btn.active {
+      background: rgba(0, 255, 136, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .faction-btn img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #000;
+    }
+    .faction-btn .name {
+      font-size: 0.85rem;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Area */
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .controls-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      backdrop-filter: blur(12px);
+    }
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px 8px 34px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: var(--accent); }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s;
+    }
+    .pill:hover { color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+    .pill.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* Voice Line Cards */
+    .lines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .line-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .line-card:hover {
+      background: rgba(28, 38, 60, 0.95);
+      border-color: rgba(0, 255, 136, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+    .line-card.playing {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(0, 255, 136, 0.4);
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .event-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #9eb1cf;
+    }
+    .event-badge.kill { color: #ff5555; background: rgba(255, 85, 85, 0.15); }
+    .event-badge.headshot { color: var(--accent-gold); background: rgba(255, 204, 0, 0.15); }
+    .event-badge.streak { color: var(--accent); background: rgba(0, 255, 136, 0.15); }
+    .event-badge.snitch { color: var(--accent-pink); background: rgba(255, 0, 85, 0.15); }
+    .duration-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .quote-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #fff;
+    }
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .btn-play {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: opacity 0.15s;
+    }
+    .btn-play:hover { opacity: 0.9; }
+    .btn-copy {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+    }
+    .btn-copy:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="assets/characters/karens.png" alt="Karen Icon">
+    <div>
+      <h1>Call of Karen: Voice Vault</h1>
+      <div class="subtitle">Streamer Soundboard & 1,618 Suburban Voice Lines Explorer</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="btn-nav">▶ LAUNCH GAME</a>
+    <a href="weapons_showcase.html" class="btn-nav">🔫 WEAPONS</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Left Column: Faction Picker -->
+  <aside class="factions-panel">
+    <div class="panel-title">
+      <span>Suburban Factions</span>
+      <span class="badge-count" id="factionCount">20</span>
+    </div>
+    <div class="faction-list" id="factionList">
+      <!-- Injected by script -->
+    </div>
+  </aside>
+
+  <!-- Right Column: Soundboard Lines -->
+  <main class="main-panel">
+    <div class="controls-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search voice lines (e.g. boundaries, manager, chug, sigma)...">
+      </div>
+      <div class="filter-pills" id="eventFilters">
+        <button class="pill active" data-event="all">All</button>
+        <button class="pill" data-event="kill">Kill</button>
+        <button class="pill" data-event="headshot">Headshot</button>
+        <button class="pill" data-event="revenge">Revenge</button>
+        <button class="pill" data-event="multikill">Multikill</button>
+        <button class="pill" data-event="streak">Killstreaks</button>
+        <button class="pill" data-event="camp">Snitch</button>
+        <button class="pill" data-event="roundStart">Round Start</button>
+        <button class="pill" data-event="podium">Podium</button>
+      </div>
+    </div>
+
+    <div class="lines-grid" id="linesGrid">
+      <!-- Voice line cards injected here -->
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  let manifest = null;
+  let content = null;
+  let activeFaction = 'karens';
+  let activeEvent = 'all';
+  let searchTerm = '';
+  let currentAudio = null;
+
+  async function init() {
+    try {
+      const [resManifest, resContent] = await Promise.all([
+        fetch('vo/manifest.json').then(r => r.json()),
+        fetch('../data/hoa_content.json').then(r => r.json()),
+      ]);
+      manifest = resManifest;
+      content = resContent;
+
+      renderFactions();
+      renderLines();
+    } catch (err) {
+      console.error('Failed to load voice vault assets:', err);
+      document.getElementById('linesGrid').innerHTML = `
+        <div class="empty-state">
+          <h3>Failed to load voice manifest</h3>
+          <p>Make sure web/vo/manifest.json is available.</p>
+        </div>`;
+    }
+  }
+
+  function renderFactions() {
+    const list = document.getElementById('factionList');
+    list.innerHTML = '';
+    const factions = Object.entries(content.factions || {});
+    document.getElementById('factionCount').textContent = factions.length;
+
+    factions.forEach(([id, f]) => {
+      const btn = document.createElement('button');
+      btn.className = `faction-btn ${id === activeFaction ? 'active' : ''}`;
+      btn.onclick = () => {
+        activeFaction = id;
+        document.querySelectorAll('.faction-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderLines();
+      };
+      btn.innerHTML = `
+        <img src="assets/characters/${id}.png" onerror="this.src='assets/characters/karens.png'" alt="${f.name}">
+        <div class="name">${f.name}</div>
+      `;
+      list.appendChild(btn);
+    });
+  }
+
+  function renderLines() {
+    const grid = document.getElementById('linesGrid');
+    grid.innerHTML = '';
+
+    if (!manifest || !manifest.lines) return;
+
+    // Filter lines by faction, category, and search query
+    const entries = Object.entries(manifest.lines).filter(([key, data]) => {
+      if (data.faction !== activeFaction) return false;
+      if (activeEvent !== 'all') {
+        const ev = String(data.event || '').toLowerCase();
+        if (activeEvent === 'streak' && !ev.includes('streak')) return false;
+        else if (activeEvent === 'camp' && !ev.includes('camp')) return false;
+        else if (activeEvent === 'multikill' && !['double', 'triple', 'rampage'].includes(ev)) return false;
+        else if (!['streak', 'camp', 'multikill'].includes(activeEvent) && ev !== activeEvent.toLowerCase()) return false;
+      }
+      if (searchTerm) {
+        const text = String(data.text || '').toLowerCase();
+        const id = key.toLowerCase();
+        if (!text.includes(searchTerm) && !id.includes(searchTerm)) return false;
+      }
+      return true;
+    });
+
+    if (entries.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><h3>No voice lines match filters</h3><p>Try clearing your search or switching categories.</p></div>`;
+      return;
+    }
+
+    entries.forEach(([key, data]) => {
+      const card = document.createElement('div');
+      card.className = 'line-card';
+      const ev = data.event || 'generic';
+      let evClass = '';
+      if (ev.includes('kill') || ev.includes('shutdown')) evClass = 'kill';
+      else if (ev.includes('headshot')) evClass = 'headshot';
+      else if (ev.includes('streak')) evClass = 'streak';
+      else if (ev.includes('camp')) evClass = 'snitch';
+
+      const durStr = data.duration ? `${data.duration.toFixed(1)}s` : '';
+
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="event-badge ${evClass}">${ev}</span>
+          <span class="duration-badge">${durStr}</span>
+        </div>
+        <div class="quote-text">"${data.text}"</div>
+        <div class="card-actions">
+          <button class="btn-play">▶ PLAY</button>
+          <button class="btn-copy" title="Copy Quote">📋 COPY</button>
+        </div>
+      `;
+
+      card.querySelector('.btn-play').onclick = (e) => {
+        e.stopPropagation();
+        playVoiceLine(card, data);
+      };
+
+      card.onclick = () => playVoiceLine(card, data);
+
+      card.querySelector('.btn-copy').onclick = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(`"${data.text}" — ${content.factions[activeFaction]?.name || 'Call of Karen'}`);
+        const btn = card.querySelector('.btn-copy');
+        btn.textContent = '✓ COPIED';
+        setTimeout(() => { btn.textContent = '📋 COPY'; }, 1500);
+      };
+
+      grid.appendChild(card);
+    });
+  }
+
+  function playVoiceLine(card, data) {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+      document.querySelectorAll('.line-card').forEach(c => c.classList.remove('playing'));
+    }
+
+    card.classList.add('playing');
+
+    if (data.file) {
+      const audio = new Audio(`vo/${data.file}`);
+      currentAudio = audio;
+      audio.onended = () => { card.classList.remove('playing'); };
+      audio.onerror = () => {
+        // Fallback to speech synthesis
+        fallbackSpeech(card, data.text);
+      };
+      audio.play().catch(() => fallbackSpeech(card, data.text));
+    } else {
+      fallbackSpeech(card, data.text);
+    }
+  }
+
+  function fallbackSpeech(card, text) {
+    if (!('speechSynthesis' in window)) {
+      card.classList.remove('playing');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 1.15;
+    utt.onend = () => { card.classList.remove('playing'); };
+    utt.onerror = () => { card.classList.remove('playing'); };
+    window.speechSynthesis.speak(utt);
+  }
+
+  // Event Listeners
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchTerm = e.target.value.toLowerCase().trim();
+    renderLines();
+  });
+
+  document.querySelectorAll('#eventFilters .pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#eventFilters .pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeEvent = pill.dataset.event;
+      renderLines();
+    });
+  });
+
+  init();
+</script>
+
+</body>
+</html>

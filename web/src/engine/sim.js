@@ -8,7 +8,7 @@
 
 import { CampingMonitor } from '../core/campingMonitor.js';
 import { buildCulDeSac, rayBox, rayGround, findPath, nearestNode } from './map.js';
-import { createMode, MODES } from './modes.js';
+import { createMode, MODES, resolveModeId } from './modes.js';
 
 /** Resolve a named loadout from weapons.json into {primary, equipment, melee} definitions (with ids). */
 export function resolveLoadout(weapons, loadout = 'default') {
@@ -109,7 +109,8 @@ export class Sim {
     this.botDifficulty = BOT_DIFFICULTY[resolvedBotDiff] ? resolvedBotDiff : 'normal';
     this.rng = rng;
     this.map = map;
-    const defaults = MODES[mode]?.defaults || {};
+    const canonicalMode = resolveModeId(mode);
+    const defaults = MODES[canonicalMode]?.defaults || {};
     this.scoreLimit = scoreLimit ?? defaults.scoreLimit ?? 40;
     this.timeLimit = timeLimit ?? defaults.timeLimit ?? 300;
     this.time = 0;

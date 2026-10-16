@@ -696,9 +696,23 @@ export const MODES = {
   stealTheCasserole: StealTheCasserole,
 };
 
+export const MODE_ALIASES = {
+  patrol: 'hoaPatrol',
+  casserole: 'stealTheCasserole',
+  kotl: 'kingOfTheLawn',
+  receipt: 'receiptCheck',
+  evict: 'evictTheBlock',
+};
+
+export function resolveModeId(id) {
+  return MODE_ALIASES[id] || id;
+}
+
 export function createMode(id, sim) {
-  const M = MODES[id];
+  const canonical = resolveModeId(id);
+  const M = MODES[canonical];
   if (!M) throw new Error(`unknown mode ${id}`);
   return new M(sim);
 }
+
 

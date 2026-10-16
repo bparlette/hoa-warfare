@@ -638,6 +638,7 @@ async function startOnline(room = 'auto') {
   try {
     const u = new URL(base, location.href);
     u.searchParams.set('room', room);
+    if (state.mode && state.mode !== 'clash') u.searchParams.set('mode', state.mode);
     const session = await OnlineSession.join({ url: u.toString(), name: playerName(), faction: state.faction, timeoutMs: 60000, knownFactions: Object.keys(factions) });
     clearTimeout(wakeNote);
     if (token !== connectToken) { session.close(); return; }

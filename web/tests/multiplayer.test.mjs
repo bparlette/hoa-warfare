@@ -169,3 +169,44 @@ test('multiplayer: Clean shutdown and disconnect handling', async () => {
 
   assert.equal(server.listening, false, 'Server closed cleanly');
 });
+
+test('multiplayer: room initializes with requested game mode and broadcasts mode objectives', async () => {
+  const { server, roomManager, close } = await createMultiplayerServer(0);
+  const port = server.address().port;
+
+  const client = new NetClient();
+  let receivedSnapshot = null;
+
+  const initData = await client.connect(`ws://localhost:${port}/ws?room=patrol_test&name=OfficerKaren&faction=karens&mode=patrol`, {
+    onSnapshot: (snap) => {
+      if (snap.objects && snap.objects.length > 0 && !receivedSnapshot) {
+        receivedSnapshot = snap;
+      }
+    },
+  });
+
+  assert.equal(initData.init?.mode, 'patrol', 'init packet should specify requested mode');
+  const room = roomManager.getRoom('patrol_test');
+  assert.ok(room, 'Room patrol_test should exist');
+  assert.equal(room.mode, 'patrol', 'Room simulation should be configured with patrol mode');
+
+  // Wait for snapshot broadcast containing mode objectives
+  await new Promise(resolve => {
+    const check = setInterval(() => {
+      if (receivedSnapshot) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 20);
+    setTimeout(() => { clearInterval(check); resolve(); }, 1000);
+  });
+
+  assert.ok(receivedSnapshot, 'Client should receive a snapshot with mode objectives');
+  assert.ok(receivedSnapshot.objects.length >= 3, 'Patrol mode should have 3 patrol zones');
+  const zoneKinds = receivedSnapshot.objects.map(o => o.kind);
+  assert.ok(zoneKinds.includes('patrolZone'), 'Snapshot objects should include patrolZone');
+
+  client.disconnect();
+  await close();
+});
+

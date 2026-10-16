@@ -31,3 +31,7 @@ jobs:
 
       - name: Run weapon balance checks (TTK)
         run: node tools/ttk.mjs
+
+      - name: Package web demo zip
+        run: node tools/package_demo.mjs
+
