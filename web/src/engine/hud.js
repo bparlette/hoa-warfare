@@ -445,7 +445,7 @@ export class Hud {
       <div class="demo-end-card">
         <h3>THANKS FOR PLAYING THE CALL OF KAREN WEB DEMO!</h3>
         <p>The full game unlocks ${funnel ? funnel.pitch(Object.keys(this.factions).length) : 'every faction, weapon and mode'}.</p>
-        <a data-steam="end_card" href="https://bparlette.github.io/hoa-warfare/" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
+        <a data-steam="end_card" href="#" onclick="return false" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
       </div>` : '';
     $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[0]} - ${sim.score[1]}</small></h1>
       ${demoCard}
@@ -458,7 +458,7 @@ export class Hud {
         <button id="again" style="margin-top:0">${againLabel}</button>
         <button id="endMenu" style="margin-top:0">MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
-        ${!isDemoMode ? '<a data-steam="end_row" href="https://bparlette.github.io/hoa-warfare/" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
+        ${!isDemoMode ? '<a data-steam="end_row" href="#" onclick="return false" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
     this.renderBoard($('endBoard'), sim, me);
     $('end').classList.remove('hidden');
@@ -485,8 +485,8 @@ export class Hud {
         const factionName = this.factions[me?.faction]?.name || 'a Karen';
         const text = funnel
           ? funnel.shareText({ kills: me?.kills || 0, deaths: me?.deaths || 0, factionName, won: sim.winner === me?.team, modeLabel: sim.mode?.constructor?.label })
-          : `I went ${me?.kills || 0}-${me?.deaths || 0} as ${factionName} in Call of Karen: HOA Warfare! Play free: https://bparlette.github.io/hoa-warfare/web/?demo=1`;
-        const url = funnel ? funnel.shareLink() : 'https://bparlette.github.io/hoa-warfare/web/?demo=1';
+          : `I went ${me?.kills || 0}-${me?.deaths || 0} as ${factionName} in Call of Karen: HOA Warfare! Play free: https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare`;
+        const url = funnel ? funnel.shareLink() : 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare';
         const touch = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
         // phones: the share sheet (TikTok, Messages, X) is the viral path; desktop: clipboard
         if (touch && typeof navigator !== 'undefined' && navigator.share) {

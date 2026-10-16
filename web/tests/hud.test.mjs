@@ -375,7 +375,7 @@ test('hud: showEnd renders btnShareScore and handles copying score', async () =>
 
     assert.ok(/\b14-\d+/.test(copiedText), 'Share text must include the K-D line');
     assert.ok(copiedText.includes('Call of Karen: HOA Warfare'), 'Share text must include game title');
-    assert.ok(copiedText.includes('https://bparlette.github.io/hoa-warfare/web/?demo=1'), 'Share text must include demo link');
+    assert.ok(copiedText.includes('https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare'), 'Share text must include demo link');
     assert.equal(btnShare.textContent, '✓ COPIED!', 'Button label updates to confirmed status');
   } finally {
     Object.defineProperty(globalThis.navigator, 'clipboard', { value: originalClipboard, configurable: true });

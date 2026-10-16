@@ -8,8 +8,8 @@
   ],
   "steamUrl": null,
   "serverUrl": "wss://hoa-warfare-online.onrender.com/ws",
-  "fallbackUrl": "https://bparlette.github.io/hoa-warfare/",
-  "shareUrl": "https://bparlette.github.io/hoa-warfare/web/?demo=1",
+  "fallbackUrl": "https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare",
+  "shareUrl": "https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare",
   "priceLabel": "$4.99",
   "ctaLockSec": 4
 }

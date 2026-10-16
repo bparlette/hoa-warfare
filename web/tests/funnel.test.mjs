@@ -11,9 +11,9 @@ test('portal detection: itch, CrazyGames, Newgrounds, GitHub Pages, override', (
   assert.equal(detectPortal(loc('html-classic.itch.zone')), 'itch');
   assert.equal(detectPortal(loc('www.crazygames.com')), 'crazygames');
   assert.equal(detectPortal(loc('uploads.ungrounded.net')), 'newgrounds');
-  assert.equal(detectPortal(loc('bparlette.github.io')), 'github');
+  assert.equal(detectPortal(loc('example.github.io')), 'github');
   assert.equal(detectPortal(loc('localhost')), 'local');
-  assert.equal(detectPortal(loc('bparlette.github.io', '?portal=TikTok<script>')), 'tiktokscript', 'override is sanitised');
+  assert.equal(detectPortal(loc('example.github.io', '?portal=TikTok<script>')), 'tiktokscript', 'override is sanitised');
 });
 
 test('Steam link: never the invalid placeholder; tagged with portal and placement; fallback until the app exists', () => {
