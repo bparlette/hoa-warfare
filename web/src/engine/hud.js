@@ -3,18 +3,6 @@
 const KILLCAM_SEC = 3.2;
 const KILLCAM_HOLD = 1.6;
 
-export const SUBURBAN_SHORTS_MEMES = [
-  "POV: YOU DIDN'T MOW AT 7:00 AM ON SATURDAY 💀",
-  "WHEN YOU DON'T MOW ON SATURDAY AT 7AM",
-  "POV: YOU PARKED ON THE STREET AFTER 9PM",
-  "HOA PRESIDENT SPOTTED A 3-INCH WEED",
-  "WHEN THE TRADWIFE CATCHES YOU WITH STORE-BOUGHT BREAD",
-  "POV: YOU DIDN'T SEPARATE THE RECYCLING",
-  "WHEN THE LAWN IS 2.6 INCHES INSTEAD OF 2.5",
-  "POV: YOUR TRASH CAN WAS OUT 10 MINUTES PAST DAWN",
-  "WHEN SOMEONE USES STORE-BOUGHT POTATO SALAD AT THE BLOCK PARTY",
-];
-
 export function wrapCanvasText(ctx, text, maxWidth) {
   if (!text) return [];
   const words = String(text).split(' ');
@@ -55,199 +43,6 @@ export function calculatePodium(actors) {
   const mvp = sortedMvp[0];
   const bottomFragger = sortedBottom[0];
   return { mvp, bottomFragger, worst: bottomFragger };
-}
-
-export function exportShortsCanvas(victim, killer, barkLine, options = {}) {
-  const canvas = (typeof document !== 'undefined' && document.createElement)
-    ? document.createElement('canvas')
-    : { width: 720, height: 1280 };
-  canvas.width = 720;
-  canvas.height = 1280;
-  const ctx = canvas.getContext?.('2d');
-  if (!ctx) return canvas;
-
-  const vName = victim?.name || 'Offending Neighbor';
-  const vFaction = options?.factions?.[victim?.faction]?.name || victim?.faction || 'The Karens';
-  const kName = killer?.name || 'HOA President';
-  const kFaction = options?.factions?.[killer?.faction]?.name || killer?.faction || 'The HOA Dads';
-  const weapon = killer?.weapons?.primary?.name || options?.weaponName || 'The Allowance';
-  const line = (typeof barkLine === 'string' ? barkLine : barkLine?.text) || "I WANT TO SPEAK TO YOUR MANAGER!";
-
-  // 1. 9:16 Vertical background gradient
-  const grad = ctx.createLinearGradient?.(0, 0, 720, 1280) || '#0b1222';
-  if (typeof grad === 'object' && grad.addColorStop) {
-    grad.addColorStop(0, '#090d19');
-    grad.addColorStop(0.25, '#131e36');
-    grad.addColorStop(0.75, '#1a2849');
-    grad.addColorStop(1, '#080c16');
-  }
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 720, 1280);
-
-  // Outer framing / yellow TikTok hazard accents
-  ctx.strokeStyle = '#ffec27';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(12, 12, 696, 1256);
-
-  // 2. Top meme banner in bold Impact font
-  const headline = options?.headline || SUBURBAN_SHORTS_MEMES[Math.floor(Math.random() * SUBURBAN_SHORTS_MEMES.length)];
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(36, 40, 648, 170);
-  ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(36, 40, 648, 170);
-
-  // Red tag above headline
-  ctx.fillStyle = '#ff004d';
-  ctx.fillRect(50, 48, 240, 26);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 12px monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText('🚨 SUBURBAN CODE VIOLATION', 58, 66);
-
-  // Headline in Impact
-  ctx.fillStyle = '#000000';
-  ctx.font = 'bold 34px Impact, "Arial Black", sans-serif';
-  ctx.textAlign = 'center';
-  const headlineLines = wrapCanvasText(ctx, headline, 610);
-  const startHdrY = 110 + (headlineLines.length > 1 ? 0 : 15);
-  for (let i = 0; i < headlineLines.length; i++) {
-    ctx.fillText(headlineLines[i], 360, startHdrY + i * 40);
-  }
-
-  // 3. Center frame: High-impact crop of match/killcam action with player badges and weapon icon
-  const frameX = 36, frameY = 240, frameW = 648, frameH = 648;
-  ctx.fillStyle = '#0e172a';
-  ctx.fillRect(frameX, frameY, frameW, frameH);
-
-  const srcCanvas = options?.sourceCanvas || (typeof document !== 'undefined' ? document.querySelector('canvas:not([id="gunbarrel"])') : null);
-  if (srcCanvas && srcCanvas !== canvas && srcCanvas.width > 0 && srcCanvas.height > 0 && ctx.drawImage) {
-    try {
-      const minDim = Math.min(srcCanvas.width, srcCanvas.height);
-      const sx = (srcCanvas.width - minDim) / 2;
-      const sy = (srcCanvas.height - minDim) / 2;
-      ctx.drawImage(srcCanvas, sx, sy, minDim, minDim, frameX, frameY, frameW, frameH);
-    } catch {}
-  } else {
-    // High-impact tactical arena background
-    ctx.strokeStyle = 'rgba(255, 236, 39, 0.2)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(frameX + 30, frameY + 30, frameW - 60, frameH - 60);
-    // Crosshair target
-    ctx.strokeStyle = 'rgba(255, 0, 77, 0.45)';
-    ctx.lineWidth = 3;
-    if (ctx.beginPath && ctx.arc && ctx.stroke) {
-      ctx.beginPath();
-      ctx.arc(360, frameY + frameH / 2, 140, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(360, frameY + frameH / 2, 70, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.fillStyle = 'rgba(255, 0, 77, 0.7)';
-    ctx.font = 'bold 36px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('⊕', 360, frameY + frameH / 2 + 12);
-  }
-
-  // Center frame heavy border
-  ctx.strokeStyle = '#ff004d';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(frameX, frameY, frameW, frameH);
-
-  // Live Killcam badge at top of center frame
-  ctx.fillStyle = '#ff004d';
-  ctx.fillRect(frameX + 16, frameY + 16, 210, 32);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '900 14px monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText('🔴 LIVE KILLCAM FEED', frameX + 26, frameY + 38);
-
-  // Badges: Eliminator & Target
-  // Killer badge (bottom left of frame)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
-  ctx.fillRect(frameX + 16, frameY + frameH - 120, 280, 52);
-  ctx.strokeStyle = '#00e436';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(frameX + 16, frameY + frameH - 120, 280, 52);
-
-  ctx.fillStyle = '#00e436';
-  ctx.font = 'bold 11px monospace';
-  ctx.fillText('👑 ELIMINATOR', frameX + 26, frameY + frameH - 104);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 15px "Arial Black", sans-serif';
-  ctx.fillText(`${kName} (${kFaction})`, frameX + 26, frameY + frameH - 84);
-
-  // Victim badge (bottom right of frame)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
-  ctx.fillRect(frameX + frameW - 296, frameY + frameH - 120, 280, 52);
-  ctx.strokeStyle = '#ff004d';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(frameX + frameW - 296, frameY + frameH - 120, 280, 52);
-
-  ctx.fillStyle = '#ff004d';
-  ctx.font = 'bold 11px monospace';
-  ctx.fillText('💀 CITATION TARGET', frameX + frameW - 286, frameY + frameH - 104);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 15px "Arial Black", sans-serif';
-  ctx.fillText(`${vName} (${vFaction})`, frameX + frameW - 286, frameY + frameH - 84);
-
-  // Weapon Badge & Icon (centered bottom of frame)
-  ctx.fillStyle = 'rgba(17, 29, 53, 0.92)';
-  ctx.fillRect(frameX + 130, frameY + frameH - 58, 388, 44);
-  ctx.strokeStyle = '#ffec27';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(frameX + 130, frameY + frameH - 58, 388, 44);
-
-  ctx.fillStyle = '#ffec27';
-  ctx.font = 'bold 15px "Arial Black", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(`🎯 WEAPON: ${weapon.toUpperCase()}`, 360, frameY + frameH - 30);
-
-  // 4. Bottom subtitle box: Killer's savage voice line in large bold yellow text with heavy black stroke
-  const subBoxX = 36, subBoxY = 918, subBoxW = 648, subBoxH = 220;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
-  ctx.fillRect(subBoxX, subBoxY, subBoxW, subBoxH);
-  ctx.strokeStyle = '#ffec27';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(subBoxX, subBoxY, subBoxW, subBoxH);
-
-  // Speaker tag
-  ctx.fillStyle = '#29adff';
-  ctx.font = 'bold 14px monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText(`SAVAGE BARK · ${kName.toUpperCase()}:`, subBoxX + 20, subBoxY + 32);
-
-  // Killer line in large bold yellow text with heavy black stroke
-  ctx.font = '900 38px Impact, "Arial Black", sans-serif';
-  ctx.textAlign = 'center';
-  const subtitleLines = wrapCanvasText(ctx, `"${line}"`, 590);
-  const startSubY = subBoxY + 84 + (subtitleLines.length > 2 ? -10 : subtitleLines.length === 1 ? 25 : 0);
-  for (let i = 0; i < subtitleLines.length; i++) {
-    const textY = startSubY + i * 46;
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 10;
-    ctx.lineJoin = 'round';
-    ctx.miterLimit = 2;
-    if (ctx.strokeText) ctx.strokeText(subtitleLines[i], 360, textY);
-    ctx.fillStyle = '#ffec27';
-    ctx.fillText(subtitleLines[i], 360, textY);
-  }
-
-  // 5. Watermark badge: "CALL OF KAREN: HOA WARFARE - WISHLIST ON STEAM ($4.99)"
-  const wmX = 36, wmY = 1170, wmW = 648, wmH = 64;
-  ctx.fillStyle = '#171a21';
-  ctx.fillRect(wmX, wmY, wmW, wmH);
-  ctx.strokeStyle = '#66c0f4';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(wmX, wmY, wmW, wmH);
-
-  ctx.fillStyle = '#66c0f4';
-  ctx.font = '900 18px Impact, "Arial Black", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('CALL OF KAREN: HOA WARFARE - WISHLIST ON STEAM ($4.99)', 360, wmY + 40);
-
-  return canvas;
 }
 
 export const HOA_DEFAULT_VIOLATIONS = [
@@ -1124,21 +919,6 @@ export class Hud {
     $('kcWho').textContent = `${killer.name} · ${this.factions[killer.faction]?.name || killer.faction}${kc.headshot ? ' · HEADSHOT' : kc.melee ? ' · PARTICIPATION TROPHY' : ''}`;
     $('kcLine').textContent = '';
 
-    const btnShort = this.$('killcam')?.querySelector?.('#btnExportShort') || $('btnExportShort') || $('btnExportShortKc');
-    if (btnShort) {
-      btnShort.onclick = async (e) => {
-        e?.stopPropagation?.();
-        btnShort.textContent = '⏳ GENERATING...';
-        try {
-          await this.shareShort({ victim, killer, barkLine: kc.line?.text || kc.line });
-          btnShort.textContent = '✓ SHORT SAVED!';
-        } catch {
-          btnShort.textContent = '📱 9:16 TIKTOK / REEL';
-        }
-        setTimeout(() => { if (btnShort) btnShort.textContent = '📱 9:16 TIKTOK / REEL'; }, 2500);
-      };
-    }
-
     let btnCitation = this.$('killcam')?.querySelector?.('#btnExportCitation') || $('btnExportCitation') || $('btnExportCitationKc');
     if (!btnCitation && $('killcam')) {
       const kcEl = $('killcam');
@@ -1277,7 +1057,6 @@ export class Hud {
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
         <button id="btnShareCard" class="btn-share" style="margin-top:0">📸 SAVE / SHARE CARD</button>
         <button id="btnSaveClip" class="btn-share" style="margin-top:0">🎥 SAVE CLIP</button>
-        <button id="btnExportShort" class="btn-share" style="margin-top:0">📱 9:16 TIKTOK / REEL</button>
         <button id="btnExportCitation" class="btn-share" style="margin-top:0">📜 HOA CITATION</button>
         ${!isDemoMode ? '<a data-steam="end_row" href="#" onclick="return false" class="btn-wishlist" style="margin-top:0">★ WISHLIST ON STEAM ($4.99)</a>' : ''}
       </div>`;
@@ -1344,23 +1123,6 @@ export class Hud {
         const ok = await this.exportHighlightClip({ sim, me, won, draw, mvpLine, funnel });
         btnSaveClip.textContent = ok ? '✓ CLIP SAVED!' : '✓ SCORECARD SAVED!';
         setTimeout(() => { if (btnSaveClip) btnSaveClip.textContent = '🎥 SAVE CLIP'; }, 2500);
-      };
-    }
-    const btnShareShort = this.$('endPanel')?.querySelector?.('#btnExportShort') || $('btnExportShort');
-    if (btnShareShort) {
-      btnShareShort.onclick = async () => {
-        btnShareShort.textContent = '⏳ GENERATING...';
-        try {
-          await this.shareShort({
-            victim: bottomFragger || me,
-            killer: mvp || me,
-            barkLine: mvpLine || 'I WANT TO SPEAK TO YOUR MANAGER!'
-          });
-          btnShareShort.textContent = '✓ SHORT SAVED!';
-        } catch {
-          btnShareShort.textContent = '📱 9:16 TIKTOK / REEL';
-        }
-        setTimeout(() => { if (btnShareShort) btnShareShort.textContent = '📱 9:16 TIKTOK / REEL'; }, 2500);
       };
     }
     const btnShareCitation = this.$('endPanel')?.querySelector?.('#btnExportCitation') || $('btnExportCitation');
@@ -1592,10 +1354,6 @@ export class Hud {
     return calculatePodium(actors).bottomFragger;
   }
 
-  exportShortsCanvas(victim, killer, barkLine, options = {}) {
-    return exportShortsCanvas(victim, killer, barkLine, { factions: this.factions, ...options });
-  }
-
   exportHoaCitationCanvas(victim, killer, stats, options = {}) {
     return exportHoaCitationCanvas(victim, killer, stats, { factions: this.factions, ...options });
   }
@@ -1631,12 +1389,6 @@ export class Hud {
       return true;
     }
     return false;
-  }
-
-  async shareShort({ victim, killer, barkLine, options } = {}) {
-    const canvas = await this.exportShortsCanvas(victim, killer, barkLine, options);
-    if (!canvas) return false;
-    return this.shareOrDownloadCanvas(canvas, 'hoa-warfare-short.png', 'Call of Karen: HOA Warfare - 9:16 Short');
   }
 
   async shareScoreCard({ sim, me, won, draw, mvpLine, funnel }) {

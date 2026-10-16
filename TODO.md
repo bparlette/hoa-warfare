@@ -5,11 +5,11 @@
 - [x] **Eliminate Portrait Phone Blocker (`#rotate`)**: Disabled the blocking `"Turn your phone sideways to defend the block"` overlay in `web/style.css` so mobile players can play immediately in either portrait or landscape.
 - [x] **Full-Bleed Lobby & Unclipped `▶ DEPLOY NOW` Button**: Updated `.lobby-container`, `.lobby-center`, and `#factions.factions-grid-2x3` in `web/style.css` to flex dynamically inside any mobile screen or itch.io iframe height without cutting off the bottom action bar.
 - [x] **iOS Itch.io Iframe Breakout Fullscreen**: Enhanced `tryEnterFullscreen` in `web/src/engine/game.js` so tapping `⛶ FULLSCREEN` on iPhone inside an itch.io iframe breaks out to the full browser viewport.
-- [x] **20-Faction Weapons, Distinct Audio & 3D World/Character Detail**:
-  - [x] Assigned unique primary weapons across all 20 factions in `data/hoa_content.json` and displayed weapon badges on all character cards.
+- [x] **16-Faction Weapons, Distinct Audio & 3D World/Character Detail**:
+  - [x] Assigned unique primary weapons across all 16 shipping factions in `data/hoa_content.json` (4 factions cut: `emoKids`, `theaterKids`, `oldMoney`, `mlmHuns`) and displayed weapon badges on all character cards.
   - [x] Synthesized caliber-accurate weapon audio in `web/src/engine/audio.js`.
   - [x] Upgraded 3D character meshes (rounded limbs/caps, ears, nose, neck, hands, 3rd-person faction weapons) in `web/src/engine/character.js` and suburban world props (cylindrical wheels, multi-sphere trees, chimneys, clouds) in `web/src/engine/render.js`.
-- [x] **Item 4 — Root Promo Page (`index.html`) 20-Faction Lineup Update**: Updated `index.html` to showcase `web/assets/faction_lineup_20.jpg` and all 20 playable factions with portraits and signature weapons.
+- [x] **Item 4 — Root Promo Page (`index.html`) 16-Faction Lineup Update**: Updated `index.html` to showcase shipping playable factions with portraits and signature weapons.
 - [x] **Item 5 — 1-Click Shareable Match Citation Score Card (`📸 SAVE / SHARE CARD`)**: Added `renderScoreCardCanvas` and `shareScoreCard` to `web/src/engine/hud.js` to export/share an 800×450 PNG score card with portrait, K/D stats, and MVP quote.
 
 ---
@@ -64,7 +64,7 @@
   - [x] Steamworks bridge with 10 launch achievements documented in `docs/steam/steamworks.md`.
 - [x] **Dual-Tier Itch.io & Steam Store Release**:
   - [x] Free Web Demo packaged via `node tools/package_demo.mjs` into `dist/hoa-warfare-web-demo.zip` with 6 playable factions, Cul-de-Sac map, Easy/Medium/Hard difficulty, Ranks 1–5, and Big Head mutator.
-  - [x] Full $4.99 Purchase features (14 additional factions, Maps 2 & 3, 7-killstreak Mower Stampede, Ranks 6–10, 24K Gold Skins, Party Mutators) wired with Demo gating modal and Steam CTA upsell.
+  - [x] Full $4.99 Purchase features (10 additional factions [16 total shipping factions], Maps 2 & 3, 7-killstreak Mower Stampede, Ranks 6–10, 24K Gold Skins, Party Mutators) wired with Demo gating modal and Steam CTA upsell.
 
 ---
 

@@ -5,9 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   Hud,
-  exportShortsCanvas,
   calculatePodium,
-  SUBURBAN_SHORTS_MEMES,
 } from '../src/engine/hud.js';
 
 const content = JSON.parse(readFileSync(new URL('../../data/hoa_content.json', import.meta.url)));
@@ -145,99 +143,26 @@ function createMockDom() {
 }
 
 // ---------------------------------------------------------------------------
-// 1. Task 1.1: Instant 9:16 TikTok/Shorts Exporter with Meme Captions
+// 1. Standing Rule: Viral Shorts Exporter is EXTERNAL tooling only (tools/make_short.mjs)
 // ---------------------------------------------------------------------------
 
-test('Shorts Exporter: exportShortsCanvas generates valid 9:16 dimensions (720x1280)', async () => {
-  const originalDoc = globalThis.document;
-  try {
-    globalThis.document = {
-      createElement: (tag) => {
-        if (tag === 'canvas') return createMockCanvas(720, 1280);
-        return { style: {} };
-      },
-      querySelector: () => null,
-    };
+test('Shorts Exporter: viral YouTube short pipeline is external and configured in tools/make_short.mjs', async () => {
+  const shortScript = readFileSync(new URL('../../tools/make_short.mjs', import.meta.url), 'utf8');
 
-    const victim = { name: 'Karen Jenkins', faction: 'karens' };
-    const killer = {
-      name: 'Dave Henderson',
-      faction: 'hoaDads',
-      weapons: { primary: { name: 'The Edger 9000' } },
-    };
-    const barkLine = 'I WANT TO SPEAK TO YOUR MANAGER!';
-
-    const canvas = exportShortsCanvas(victim, killer, barkLine);
-
-    assert.ok(canvas, 'Canvas must be returned');
-    assert.equal(canvas.width, 720, 'Short canvas width must be 720');
-    assert.equal(canvas.height, 1280, 'Short canvas height must be 1280');
-    assert.equal(canvas.width / canvas.height, 9 / 16, 'Aspect ratio must be exactly 9:16');
-
-    const ctx = canvas.getContext('2d');
-    const textCalls = ctx.calls.filter(c => c.type === 'fillText');
-    const strokeCalls = ctx.calls.filter(c => c.type === 'strokeText');
-
-    // 1. Top meme banner verification
-    const hasTopBanner = textCalls.some(c =>
-      c.text.includes('SUBURBAN CODE VIOLATION') ||
-      SUBURBAN_SHORTS_MEMES.some(m => c.text.includes(m.slice(0, 15)))
-    );
-    assert.ok(hasTopBanner, 'Canvas must render suburban meme banner headline');
-
-    // 2. Center frame action crop badges verification
-    const hasEliminator = textCalls.some(c => c.text.includes('Dave Henderson') || c.text.includes('ELIMINATOR'));
-    assert.ok(hasEliminator, 'Canvas must render killer / eliminator badge');
-    const hasVictim = textCalls.some(c => c.text.includes('Karen Jenkins') || c.text.includes('CITATION TARGET'));
-    assert.ok(hasVictim, 'Canvas must render victim / citation target badge');
-    const hasWeapon = textCalls.some(c => c.text.includes('THE EDGER 9000'));
-    assert.ok(hasWeapon, 'Canvas must render weapon icon & name badge');
-
-    // 3. Bottom subtitle box verification (large bold yellow text with heavy black stroke)
-    const hasSubtitleStroke = strokeCalls.some(c => c.text.includes('I WANT TO SPEAK TO YOUR MANAGER!'));
-    assert.ok(hasSubtitleStroke, 'Subtitle must have heavy black strokeText');
-    const hasSubtitleFill = textCalls.some(c => c.text.includes('I WANT TO SPEAK TO YOUR MANAGER!') && c.fillStyle === '#ffec27');
-    assert.ok(hasSubtitleFill, 'Subtitle must have bold yellow fillText (#ffec27)');
-
-    // 4. Watermark badge verification
-    const hasWatermark = textCalls.some(c => c.text.includes('CALL OF KAREN: HOA WARFARE - WISHLIST ON STEAM ($4.99)'));
-    assert.ok(hasWatermark, 'Canvas must include the official Steam wishlist watermark badge');
-  } finally {
-    globalThis.document = originalDoc;
-  }
+  // Verify external script exists and defines 9:16 vertical parameters
+  assert.ok(shortScript.includes('720x1280') || shortScript.includes('720,1280'), 'External short script must target 9:16 (720x1280)');
+  assert.ok(shortScript.includes('ffmpeg') || shortScript.includes('FFMPEG'), 'External short script must use ffmpeg for encoding');
+  assert.ok(shortScript.includes('dist/shorts'), 'External short script must output to dist/shorts/');
+  assert.ok(shortScript.includes('POV:') || shortScript.includes('SATURDAY'), 'External short script must include suburban meme headlines');
 });
 
-test('Shorts Exporter: hud.exportShortsCanvas instance method works and accepts custom headline', async () => {
-  const originalDoc = globalThis.document;
-  try {
-    globalThis.document = {
-      createElement: (tag) => {
-        if (tag === 'canvas') return createMockCanvas(720, 1280);
-        return { style: {} };
-      },
-      querySelector: () => null,
-    };
+test('Shorts Exporter: client HUD does NOT ship in-game 9:16 TikTok exporter button or methods', () => {
+  const { $ } = createMockDom();
+  const hud = new Hud({ $, factions: content.factions, weaponsData });
 
-    const { $ } = createMockDom();
-    const hud = new Hud({ $, factions: content.factions, weaponsData });
-
-    const customHeadline = 'POV: YOU PARKED ON THE STREET AFTER 9PM';
-    const canvas = hud.exportShortsCanvas(
-      { name: 'Chad', faction: 'vcBros' },
-      { name: 'Barb', faction: 'karens', weapons: { primary: { name: 'The Citation' } } },
-      'THAT IS AN ORDINANCE VIOLATION!',
-      { headline: customHeadline }
-    );
-
-    assert.equal(canvas.width, 720);
-    assert.equal(canvas.height, 1280);
-
-    const ctx = canvas.getContext('2d');
-    const hasCustomHeadline = ctx.calls.some(c => c.type === 'fillText' && c.text.includes('POV: YOU PARKED ON THE STREET AFTER 9PM'));
-    assert.ok(hasCustomHeadline, 'Custom headline must be rendered in meme banner');
-  } finally {
-    globalThis.document = originalDoc;
-  }
+  // Verify client hud does not expose exportShortsCanvas or shareShort
+  assert.equal(typeof hud.exportShortsCanvas, 'undefined', 'Hud should not expose in-game exportShortsCanvas method');
+  assert.equal(typeof hud.shareShort, 'undefined', 'Hud should not expose in-game shareShort method');
 });
 
 // ---------------------------------------------------------------------------
@@ -308,9 +233,10 @@ test('Shame Podium: showEnd renders Golden Riding Mower MVP and Suburban Stockad
   assert.ok(panelHtml.includes('0 KILLS · 12 DEATHS'), 'Bottom fragger kill & citation stats must appear');
   assert.ok(panelHtml.includes('FORMAL HOA EVICTION NOTICE ISSUED TO BOTTOM FRAGGER'), 'Roast eviction notice must appear');
 
-  // 3. Export short button present
-  assert.ok(panelHtml.includes('btnExportShort'), '#btnExportShort button must be rendered on podium');
-  assert.ok(panelHtml.includes('📱 9:16 TIKTOK / REEL'), 'Must display 9:16 TikTok / Reel button label');
+  // 3. Export short button NOT present on client, citation button IS present
+  assert.ok(!panelHtml.includes('btnExportShort'), '#btnExportShort button must not be rendered on client podium');
+  assert.ok(panelHtml.includes('btnExportCitation'), '#btnExportCitation button must be rendered on podium');
+  assert.ok(panelHtml.includes('📜 HOA CITATION'), 'Must display HOA Citation button label');
 });
 
 // ---------------------------------------------------------------------------
@@ -364,15 +290,15 @@ test('Scorecard: renderScoreCardCanvas renders Suburban Stockades shame badge an
 });
 
 // ---------------------------------------------------------------------------
-// 4. Killcam HUD: 9:16 Short Button
+// 4. Killcam HUD: HOA Citation Button Wired & No In-Game Shorts Bloat
 // ---------------------------------------------------------------------------
 
-test('Killcam: startKillcam wires up #btnExportShort button', async () => {
+test('Killcam: startKillcam wires up #btnExportCitation button and omits #btnExportShort', async () => {
   const originalDoc = globalThis.document;
   try {
     globalThis.document = {
       createElement: (tag) => {
-        if (tag === 'canvas') return createMockCanvas(720, 1280);
+        if (tag === 'canvas') return createMockCanvas(800, 1000);
         return { style: {} };
       },
       querySelector: () => null,
@@ -381,11 +307,9 @@ test('Killcam: startKillcam wires up #btnExportShort button', async () => {
     const { $ } = createMockDom();
     const hud = new Hud({ $, factions: content.factions, weaponsData });
 
-    let shareCalled = false;
-    hud.shareShort = async (data) => {
-      shareCalled = true;
-      assert.equal(data.killer.name, 'KillerBob');
-      assert.equal(data.victim.name, 'VictimDan');
+    let citationShared = false;
+    hud.shareCitation = async () => {
+      citationShared = true;
       return true;
     };
 
@@ -413,12 +337,12 @@ test('Killcam: startKillcam wires up #btnExportShort button', async () => {
       voice
     );
 
-    const btnShort = $('btnExportShort');
-    assert.ok(btnShort, '#btnExportShort must exist in DOM');
-    assert.ok(typeof btnShort.onclick === 'function', '#btnExportShort must have click handler wired');
+    const btnCitation = $('btnExportCitation');
+    assert.ok(btnCitation, '#btnExportCitation must exist in DOM');
+    assert.ok(typeof btnCitation.onclick === 'function', '#btnExportCitation must have click handler wired');
 
-    await btnShort.onclick();
-    assert.ok(shareCalled, 'Clicking #btnExportShort in killcam must trigger shareShort');
+    await btnCitation.onclick();
+    assert.ok(citationShared, 'Clicking #btnExportCitation in killcam must trigger shareCitation');
   } finally {
     globalThis.document = originalDoc;
   }

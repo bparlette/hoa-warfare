@@ -1,13 +1,13 @@
 # Call of Karen: HOA Warfare — Store Copy
 
-Updated 2026-10-15. 20 factions shipped. Tune before going live.
+Updated 2026-10-16. 16 factions shipped and recorded (1,589 .ogg voice files).
 
 ## Steam — Short Description (~300 chars)
 
 The HOA has gone too far. Grab your Allowance AR and settle it the suburban
 way: a 6v6 tactical FPS where Karens, HOA Dads, VC Bros, Tradwives, Furries,
-and 15 other neighborhood archetypes battle for cul-de-sac dominance.
-1,600+ voice lines. Zero mercy. Fines incoming.
+and 11 other neighborhood archetypes battle for cul-de-sac dominance.
+1,580+ voice lines. Zero mercy. Fines incoming.
 
 ## Steam — About This Game
 
@@ -17,31 +17,36 @@ CALL OF KAREN: HOA WARFARE is a satirical 6v6 suburban tactical first-person
 shooter. Pick your faction — from the Karens (the manager is already on line
 two) to the HOA Dads (measuring your grass with a ruler), the VC Bros, the
 Woke Libs, the Tradwives (raw milk, no toxins), the Furries, the Weeb Mods,
-and 13 more neighborhood archetypes — and fight for control of the cul-de-sac.
+and 9 more neighborhood archetypes — and fight for control of the cul-de-sac.
 
-**Every faction is fully voiced.** Over 1,600 hand-written voice lines cover
-spawns, kills, headshots, streaks, victories, defeats, and faction-vs-faction
-rivalries. The Karens do NOT get along with the Woke Libs. The Pickleball
-Retirees have annexed the tennis courts. The Tradwives are filming everything.
-You will hear about it.
+**Every faction is fully voiced.** Over 1,580 hand-written, studio-rendered
+voice lines cover spawns, kills, headshots, streaks, victories, defeats, and
+faction-vs-faction rivalries. The Karens do NOT get along with the Woke Libs.
+The Pickleball Retirees have annexed the tennis courts. The Tradwives are
+filming everything. You will hear about it.
 
 **Key Features**
 
-- **20 playable suburban factions**, each with a distinct voice, personality,
+- **16 playable suburban factions**, each with a distinct voice, personality,
   and full voice-line set — no silent protagonists here
+- **3 suburban battlegrounds**: Oakridge Cul-de-Sac, Shady Pines Pickleball
+  Club, and Sunset Strip Mall Parking Lot
 - **5 game modes**: Cul-de-Sac Clash (team deathmatch), Receipt Check
   (kill-confirmed), Evict the Block (Search & Destroy), HOA Patrol
   (domination), and Steal the Casserole (capture the flag)
+- **Driveable vehicles & killstreaks**: mount the suburban riding lawn mower,
+  trigger the 3-streak Ring Doorbell UAV, and call in Dad's RC Patrol
+  Helicopter or a 7-streak Lawn Mower Stampede
 - **Suburban arsenal**: the Allowance AR, Lawsuit Grenades, the Participation
   Trophy (melee), the Ban Hammer, and more
 - **Rivalry system**: matched factions trash-talk each other with bespoke
   kill lines — 60+ directional rivalries and counting
 - **Camping snitch**: hide too long and your own team rats you out
-- **Killcams with custom taunts**, kill streaks, Dad's Helicopter killstreak
-  reward, headshot bonuses, and full match flow
+- **Killcams with custom taunts**, HOA Violation Citations, headshot bonuses,
+  and Suburban Stockades post-match shame podium
 
 **Try the free web demo** — 6 factions, right in your browser. Love it?
-Unlock all 20 factions here on Steam for $4.99.
+Unlock all 16 factions and full battlegrounds on Steam for $4.99.
 
 ---
 
@@ -56,31 +61,35 @@ Go viral. We insist.
 FPS, Satire, Comedy, Multiplayer, 6v6, Tactical, Indie, Single-player bots,
 Funny, Parody, First-Person Shooter, Casual
 
-## Steam — Capsule art needed (not yet made)
+## Steam — Capsule Art (Generated & Verified)
 
-- Header capsule: 616×353
-- Small capsule: 231×87
-- Hero capsule: 3840×1240 (library)
-- 5+ screenshots (in-engine captures)
+Located in `assets/steam/`:
+- Header capsule: 460×215 (`assets/steam/header_capsule.jpg`)
+- Small capsule: 231×87 (`assets/steam/small_capsule.jpg`)
+- Main capsule: 616×353 (`assets/steam/main_capsule.jpg`)
+- Library Hero: 1920×620 (`assets/steam/library_hero.jpg`)
+- Library Logo: 1280×720 (`assets/steam/library_logo.png`)
+- Community Icon: 32×32 (`assets/steam/community_icon.png`)
+- Client Icon: 256×256 (`assets/steam/client_icon.png`)
 
-## itch.io — Page copy (shorter, punchier)
+## itch.io — Page Copy (Shorter, Punchier)
 
 **CALL OF KAREN: HOA WARFARE — free web demo**
 
 The HOA has gone too far. 6v6 suburban tactical FPS in your browser:
-Karens vs. HOA Dads vs. Tradwives vs. Furries vs. 16 more neighborhood
-archetypes. 1,600+ voice lines. Fines incoming.
+Karens vs. HOA Dads vs. Tradwives vs. Furries vs. 12 more neighborhood
+archetypes. 1,580+ voice lines. Fines incoming.
 
 🎮 Play the free demo right here in your browser — no download. 6 factions.
-💥 Like it? Unlock all 20 factions on Steam for $4.99.
+💥 Like it? Unlock all 16 factions and custom maps on Steam for $4.99.
 
 Streamers: record and monetize everything. Go viral. We insist.
 
 Controls: WASD + mouse. Click to lock in.
 
-## CrazyGames — Developer notes
+## CrazyGames — Developer Notes
 
-- Upload the same web demo zip as itch.io
+- Upload the web demo zip (`dist/hoa-warfare-web-demo.zip`)
 - Category: Shooting / .io-style
 - Keep in DRAFT until the QA pass is clean
 - Ad revenue share activates after approval
@@ -92,9 +101,11 @@ Controls: WASD + mouse. Click to lock in.
 - Newgrounds audience loves edgy parody — lean into the rivalry lines in
   the description
 
-## Demo gating (still to build)
+## Demo Gating Architecture (Implemented)
 
-Per the funnel strategy, the public web demo should ship with 4–6 factions
-only, ending on a Steam CTA screen ("Unlock all 20 factions for $4.99").
-The current web build is the FULL game — the faction gate + end-screen CTA
-are open repo tasks, not yet implemented.
+Per the funnel strategy (`data/demo.json`), the public web demo ships with:
+- 6 unlocked demo factions: `karens`, `tradwives`, `hoaDads`, `furries`, `trumpers`, `pickleballRetirees`
+- 10 gated factions (`vcBros`, `wokeLibs`, `rednecks`, `fratHouse`, `brainRot`, `valleyGirls`, `gymRats`, `cloutStreamers`, `theGays`, `animeWeebs`) with in-game Steam modal upsell
+- Flagship map: Oakridge Cul-de-Sac (Pickleball Club & Strip Mall gated to $4.99 full release)
+- Gated Career progression (Ranks 1–5 in demo, Ranks 6–10 in full release)
+- Post-match Steam CTA card with configurable unskippable timer (`ctaLockSec: 4`)

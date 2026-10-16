@@ -321,9 +321,19 @@ export class Sim {
       mower.driverId = null;
       const rx = Math.cos(mower.yaw);
       const rz = -Math.sin(mower.yaw);
-      a.pos.x = mower.pos.x + rx * 1.5;
+      let exitX = mower.pos.x + rx * 1.5;
+      let exitZ = mower.pos.z + rz * 1.5;
+      if (this.blocked(exitX, exitZ, mower.pos.y)) {
+        exitX = mower.pos.x - rx * 1.5;
+        exitZ = mower.pos.z - rz * 1.5;
+        if (this.blocked(exitX, exitZ, mower.pos.y)) {
+          exitX = mower.pos.x;
+          exitZ = mower.pos.z;
+        }
+      }
+      a.pos.x = exitX;
       a.pos.y = mower.pos.y;
-      a.pos.z = mower.pos.z + rz * 1.5;
+      a.pos.z = exitZ;
       a.vel.x = 0;
       a.vel.y = 0;
       a.vel.z = 0;
@@ -356,7 +366,7 @@ export class Sim {
     const cx = Math.max(b.minX, Math.min(x, b.maxX)), cz = Math.max(b.minZ, Math.min(z, b.maxZ));
     return (cx - x) ** 2 + (cz - z) ** 2 < r * r;
   }
-  blocked(x, z, y) { return this.map.boxes.some(b => this.overlaps(b, x, z, y)); }
+  blocked(x, z, y, r = BODY.radius) { return this.map.boxes.some(b => this.overlaps(b, x, z, y, r)); }
 
   groundUnder(x, z, y) {
     let g = 0, box = null;
@@ -930,7 +940,7 @@ export class Sim {
         } else {
           this.enterVehicle(a);
         }
-        if (!a.isBot) inp.interact = false;
+        inp.interact = false;
       }
       if (inp.switchSlot) {
         this.switchWeapon(a, inp.switchSlot);
@@ -996,8 +1006,18 @@ export class Sim {
 
         const fx = -Math.sin(v.yaw);
         const fz = -Math.cos(v.yaw);
-        v.pos.x += fx * v.speed * dt;
-        v.pos.z += fz * v.speed * dt;
+        const nx = v.pos.x + fx * v.speed * dt;
+        if (!this.blocked(nx, v.pos.z, v.pos.y, 0.8)) {
+          v.pos.x = nx;
+        } else {
+          v.speed = 0;
+        }
+        const nz = v.pos.z + fz * v.speed * dt;
+        if (!this.blocked(v.pos.x, nz, v.pos.y, 0.8)) {
+          v.pos.z = nz;
+        } else {
+          v.speed = 0;
+        }
 
         if (this.map?.bounds) {
           const { minX, maxX, minZ, maxZ } = this.map.bounds;

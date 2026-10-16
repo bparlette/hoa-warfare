@@ -199,8 +199,13 @@ export class Renderer {
     if (this._worldCreatedObjects) {
       for (const obj of this._worldCreatedObjects) {
         this.scene.remove(obj);
-        if (obj.geometry?.dispose) obj.geometry.dispose();
-        if (obj.material?.dispose) obj.material.dispose();
+        obj.traverse?.(child => {
+          if (child.geometry?.dispose) child.geometry.dispose();
+          if (child.material) {
+            if (Array.isArray(child.material)) child.material.forEach(m => m?.dispose?.());
+            else child.material.dispose?.();
+          }
+        });
       }
       this._worldCreatedObjects = null;
     }
