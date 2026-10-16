@@ -5,16 +5,17 @@ Each batch generates 50 lines, converts MP3->OGG, saves to /tmp/batch_N/.
 After each batch, upload the .ogg files to GitHub web/vo/ via browser.
 """
 import asyncio, edge_tts, json, os, subprocess, sys, requests
+import xml.sax.saxutils as saxutils
 
 CAST = {
     'karens': ('en-US-AvaNeural', '+25%', '+15Hz'),
     'valleyGirls': ('en-US-JennyNeural', '+20%', '+10Hz'),
-    'tradwives': ('en-US-SaraNeural', '+10%', '+5Hz'),
+    'tradwives': ('en-US-AriaNeural', '+10%', '+5Hz'),  # SaraNeural removed by MS
     'fratHouse': ('en-US-AndrewNeural', '+25%', '+0Hz'),
-    'brainRot': ('en-US-JasonNeural', '+30%', '+5Hz'),
+    'brainRot': ('en-US-AndrewNeural', '+30%', '+5Hz'),  # JasonNeural removed by MS
     'rednecks': ('en-US-DavisNeural', '+15%', '-5Hz'),
     'gymRats': ('en-US-GuyNeural', '+20%', '-5Hz'),
-    'cloutStreamers': ('en-US-BrandonNeural', '+25%', '+5Hz'),
+    'cloutStreamers': ('en-US-AndrewNeural', '+25%', '+5Hz'),  # BrandonNeural removed by MS
     'wallstreetBets': ('en-US-ChristopherNeural', '+15%', '+0Hz'),
     'hoaDads': ('en-US-RogerNeural', '+10%', '-10Hz'),
     'fabulous': ('en-AU-WilliamNeural', '+15%', '+5Hz'),
@@ -25,9 +26,21 @@ CAST = {
     'wokeLibs': ('en-US-MichelleNeural', '+15%', '+10Hz'),
 }
 
+def sanitize_text(text):
+    """Escape XML special chars and strip emojis that break edge-tts SSML."""
+    # Escape &, <, > for SSML
+    text = saxutils.escape(text)
+    # Remove emojis and other non-BMP characters that break the TTS service
+    text = ''.join(c for c in text if ord(c) < 0x10000)
+    return text.strip()
+
 async def gen_line(text, voice, rate, pitch, out_mp3):
     try:
-        await edge_tts.Communicate(text, voice, rate=rate, pitch=pitch).save(out_mp3)
+        clean_text = sanitize_text(text)
+        if not clean_text:
+            print(f"  SKIP: empty after sanitization")
+            return False
+        await edge_tts.Communicate(clean_text, voice, rate=rate, pitch=pitch).save(out_mp3)
         return True
     except Exception as e:
         print(f"  FAIL: {e}")
