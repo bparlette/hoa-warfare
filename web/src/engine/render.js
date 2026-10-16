@@ -188,6 +188,25 @@ export class Renderer {
     this.sun = sun;
   }
 
+  setMap(map) {
+    if (!map) return;
+    if (this.map && this.map.id === map.id && this._worldBuilt) return;
+    this.map = map;
+    this.rebuildWorld();
+  }
+
+  rebuildWorld() {
+    if (this._worldCreatedObjects) {
+      for (const obj of this._worldCreatedObjects) {
+        this.scene.remove(obj);
+        if (obj.geometry?.dispose) obj.geometry.dispose();
+        if (obj.material?.dispose) obj.material.dispose();
+      }
+      this._worldCreatedObjects = null;
+    }
+    this.buildWorld();
+  }
+
   buildWorld() {
     const S = this.scene, map = this.map;
     const before = new Set(S.children);
@@ -216,20 +235,63 @@ export class Renderer {
       }
     }
 
-    const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 36), lam({ map: T.asphalt([6, 6]) })), { cast: false });
-    court.rotation.x = -Math.PI / 2; court.position.y = 0.02;
-    const curb = add(new THREE.Mesh(new THREE.RingGeometry(map.court.r, map.court.r + 1.6, 36), lam({ map: T.concrete([8, 1]) })), { cast: false });
-    curb.rotation.x = -Math.PI / 2; curb.position.y = 0.025;
-    const st = map.street;
-    const street = add(new THREE.Mesh(new THREE.PlaneGeometry(st.maxX - st.minX, st.maxZ - st.minZ), lam({ map: T.asphalt([2, 9]) })), { cast: false });
-    street.rotation.x = -Math.PI / 2; street.position.set(0, 0.021, (st.minZ + st.maxZ) / 2);
-    for (let z = 16; z < 48; z += 4) {
-      const dash = add(new THREE.Mesh(new THREE.PlaneGeometry(0.2, 1.6), lam({ color: '#e8c547' })), { cast: false });
-      dash.rotation.x = -Math.PI / 2; dash.position.set(0, 0.03, z);
-    }
-    for (const sx of [-1, 1]) {
-      const walk = add(new THREE.Mesh(new THREE.PlaneGeometry(1.8, 34), lam({ map: T.concrete([1, 17]) })), { cast: false });
-      walk.rotation.x = -Math.PI / 2; walk.position.set(sx * 6, 0.022, 31);
+    if (map.id === 'pickleball') {
+      // Shady Pines Pickleball Club Ground
+      // Central walking asphalt promenade
+      const promenade = add(new THREE.Mesh(new THREE.PlaneGeometry(16, 80), lam({ map: T.asphalt([4, 20]) })), { cast: false });
+      promenade.rotation.x = -Math.PI / 2; promenade.position.set(0, 0.02, 0);
+
+      // 4 Neon Acrylic Tournament Courts
+      // Courts: West 1 & 2 (cx = -16, cz = -9 and 9), East 3 & 4 (cx = 16, cz = -9 and 9)
+      const courtMat = lam({ color: '#007a87' }); // Tournament Cyan Blue
+      const kitchenMat = lam({ color: '#7cb342' }); // Neon Lime Kitchen
+      const lineMat = lam({ color: '#ffffff' });
+
+      for (const [cx, cz] of [[-16, -9], [-16, 9], [16, -9], [16, 9]]) {
+        // Outer court surface (10m x 16m)
+        const cMesh = add(new THREE.Mesh(new THREE.PlaneGeometry(10, 16), courtMat), { cast: false });
+        cMesh.rotation.x = -Math.PI / 2; cMesh.position.set(cx, 0.022, cz);
+
+        // Non-Volley Zone ("The Kitchen", 10m x 4.4m center zone across the net)
+        const kMesh = add(new THREE.Mesh(new THREE.PlaneGeometry(9.6, 4.4), kitchenMat), { cast: false });
+        kMesh.rotation.x = -Math.PI / 2; kMesh.position.set(cx, 0.024, cz);
+
+        // Crisp white court boundary lines
+        const blL = add(new THREE.Mesh(new THREE.PlaneGeometry(0.12, 16), lineMat), { cast: false });
+        blL.rotation.x = -Math.PI / 2; blL.position.set(cx - 4.8, 0.026, cz);
+        const blR = add(new THREE.Mesh(new THREE.PlaneGeometry(0.12, 16), lineMat), { cast: false });
+        blR.rotation.x = -Math.PI / 2; blR.position.set(cx + 4.8, 0.026, cz);
+        const blT = add(new THREE.Mesh(new THREE.PlaneGeometry(9.6, 0.12), lineMat), { cast: false });
+        blT.rotation.x = -Math.PI / 2; blT.position.set(cx, 0.026, cz - 8);
+        const blB = add(new THREE.Mesh(new THREE.PlaneGeometry(9.6, 0.12), lineMat), { cast: false });
+        blB.rotation.x = -Math.PI / 2; blB.position.set(cx, 0.026, cz + 8);
+        // Kitchen lines
+        const klT = add(new THREE.Mesh(new THREE.PlaneGeometry(9.6, 0.1), lineMat), { cast: false });
+        klT.rotation.x = -Math.PI / 2; klT.position.set(cx, 0.026, cz - 2.2);
+        const klB = add(new THREE.Mesh(new THREE.PlaneGeometry(9.6, 0.1), lineMat), { cast: false });
+        klB.rotation.x = -Math.PI / 2; klB.position.set(cx, 0.026, cz + 2.2);
+      }
+
+      // South Golf Cart parking bay paving
+      const cartBay = add(new THREE.Mesh(new THREE.PlaneGeometry(36, 20), lam({ map: T.concrete([9, 5]) })), { cast: false });
+      cartBay.rotation.x = -Math.PI / 2; cartBay.position.set(0, 0.021, 35);
+    } else {
+      // Default Cul-de-Sac Ground
+      const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 36), lam({ map: T.asphalt([6, 6]) })), { cast: false });
+      court.rotation.x = -Math.PI / 2; court.position.y = 0.02;
+      const curb = add(new THREE.Mesh(new THREE.RingGeometry(map.court.r, map.court.r + 1.6, 36), lam({ map: T.concrete([8, 1]) })), { cast: false });
+      curb.rotation.x = -Math.PI / 2; curb.position.y = 0.025;
+      const st = map.street;
+      const street = add(new THREE.Mesh(new THREE.PlaneGeometry(st.maxX - st.minX, st.maxZ - st.minZ), lam({ map: T.asphalt([2, 9]) })), { cast: false });
+      street.rotation.x = -Math.PI / 2; street.position.set(0, 0.021, (st.minZ + st.maxZ) / 2);
+      for (let z = 16; z < 48; z += 4) {
+        const dash = add(new THREE.Mesh(new THREE.PlaneGeometry(0.2, 1.6), lam({ color: '#e8c547' })), { cast: false });
+        dash.rotation.x = -Math.PI / 2; dash.position.set(0, 0.03, z);
+      }
+      for (const sx of [-1, 1]) {
+        const walk = add(new THREE.Mesh(new THREE.PlaneGeometry(1.8, 34), lam({ map: T.concrete([1, 17]) })), { cast: false });
+        walk.rotation.x = -Math.PI / 2; walk.position.set(sx * 6, 0.022, 31);
+      }
     }
 
     for (const b of map.boxes) this.buildBox(b, lam, add);
@@ -242,7 +304,10 @@ export class Renderer {
         sub.position.set(x + ox, 4.7 + oy, z + oz);
       }
     }
-    this.worldDraws = mergeStatic(S, S.children.filter(o => !before.has(o)));
+    const created = S.children.filter(o => !before.has(o));
+    this.worldDraws = mergeStatic(S, created);
+    this._worldCreatedObjects = S.children.filter(o => !before.has(o));
+    this._worldBuilt = true;
   }
 
   buildBox(b, lam, add) {
@@ -297,6 +362,36 @@ export class Renderer {
       case 'fence': box(lam({ map: T.picket([Math.max(w, d) / 0.8, 1]) })); break;
       case 'hedge': box(lam({ map: T.hedge([Math.max(w, d) / 2, 1]) })); break;
       case 'car': {
+        if (b.isGolfCart) {
+          const c = b.color || '#ffffff', long = d > w;
+          // Golf cart lower chassis
+          box(lam({ color: c }), w, 0.45, d, 0.35);
+          box(lam({ color: '#2b2b33' }), w * 0.95, 0.15, d * 0.95, 0.2);
+          // 4 slender canopy roof struts
+          const strutMat = lam({ color: '#e0e0e0' });
+          for (const sx of [-0.38, 0.38]) for (const sz of [-0.38, 0.38]) {
+            box(strutMat, 0.08, 1.2, 0.08, 1.05, cx + sx * w, cz + sz * d);
+          }
+          // White golf cart canopy
+          box(lam({ color: '#f8f9fa' }), w * 1.06, 0.1, d * 0.96, 1.7);
+          // Bench seats (tan / beige vinyl)
+          box(lam({ color: '#d4b483' }), w * 0.8, 0.24, d * 0.38, 0.65, cx, cz - 0.12 * d);
+          // Steering column
+          box(strutMat, 0.06, 0.5, 0.06, 0.75, cx - 0.2 * w, cz + 0.2 * d);
+          // Tires
+          const tireMat = lam({ color: '#1b1b1b' }), rimMat = lam({ color: '#ffffff' });
+          for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+            const ox = long ? sx * (w / 2 - 0.06) : sx * (w / 2 - 0.55);
+            const oz = long ? sz * (d / 2 - 0.55) : sz * (d / 2 - 0.06);
+            const wheel = add(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.2, 12), tireMat));
+            wheel.position.set(cx + ox, 0.24, cz + oz);
+            if (long) wheel.rotation.z = Math.PI / 2; else wheel.rotation.x = Math.PI / 2;
+            const rim = add(new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.22, 8), rimMat));
+            rim.position.copy(wheel.position);
+            rim.rotation.copy(wheel.rotation);
+          }
+          break;
+        }
         const c = b.color, long = d > w;
         // Lower chassis + bumpers
         box(lam({ map: T.car(c) }), w, 0.76, d, 0.56);
@@ -329,6 +424,56 @@ export class Renderer {
           rim.position.copy(wheel.position);
           rim.rotation.copy(wheel.rotation);
         }
+        break;
+      }
+      case 'pickleNet': {
+        // Tournament mesh net (white crossweave with yellow vinyl top tape)
+        box(lam({ color: '#f0f0f0', transparent: true, opacity: 0.88 }), w, h * 0.85, 0.08, h * 0.45);
+        box(lam({ color: '#ffec27' }), w + 0.1, 0.12, 0.12, h);
+        box(lam({ color: '#ffffff' }), 0.14, h, 0.14, h / 2);
+        break;
+      }
+      case 'courtFence': {
+        // Tournament green chain-link windscreen fence
+        box(lam({ color: '#1b4332' }), w, h, d);
+        break;
+      }
+      case 'bleachers': {
+        // Multi-tier spectator aluminum bleachers
+        const tiers = 3;
+        for (let ti = 0; ti < tiers; ti++) {
+          const tw = w * (1 - ti * 0.22);
+          box(lam({ color: '#d3d3d3' }), tw, 0.12, d, (ti + 1) * (h / tiers));
+        }
+        break;
+      }
+      case 'umpireStand': {
+        // Elevated referee high chair with shade
+        box(lam({ color: '#2d6a4f' }), w, 0.1, d, h * 0.75);
+        box(lam({ color: '#1b4332' }), w * 0.6, 0.5, d * 0.6, h * 0.75 + 0.25);
+        for (let i = 0; i < 4; i++) {
+          const a = i * Math.PI / 2 + Math.PI / 4;
+          box(lam({ color: '#c2c3c7' }), 0.08, h, 0.08, h / 2, cx + Math.cos(a) * w * 0.42, cz + Math.sin(a) * d * 0.42);
+        }
+        break;
+      }
+      case 'verandaRoof': {
+        // Terracotta tile roof over the terrace
+        box(lam({ map: T.roof('#a0442c', [0.3, 0.3]), flatShading: true }), w, h, d);
+        break;
+      }
+      case 'clubhouse': {
+        // Grand Clubhouse two-story building
+        box(lam({ map: T.siding('#f7f4ea', [w / 3, h / 3]) }), w, h, d);
+        // Terracotta tile gable roof
+        const along = w >= d ? 'x' : 'z';
+        const span = along === 'x' ? d : w, len = (along === 'x' ? w : d) + 1.2;
+        const shape = new THREE.Shape([new THREE.Vector2(-span / 2 - 0.6, 0), new THREE.Vector2(span / 2 + 0.6, 0), new THREE.Vector2(0, 3.2)]);
+        const g = new THREE.ExtrudeGeometry(shape, { depth: len, bevelEnabled: false });
+        g.translate(0, 0, -len / 2);
+        const roof = add(new THREE.Mesh(g, lam({ map: T.roof('#a0442c', [0.3, 0.3]), flatShading: true })));
+        roof.position.set(cx, b.maxY, cz);
+        if (along === 'x') roof.rotation.y = Math.PI / 2;
         break;
       }
       case 'trampoline': {

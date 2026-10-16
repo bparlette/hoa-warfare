@@ -274,16 +274,243 @@ export function nearestNode(nodes, boxes, x, z) {
 }
 
 export function buildPickleballClub() {
-  const base = buildCulDeSac();
-  // Customize cover with Pickleball nets & golf carts
-  for (const b of base.boxes) {
-    if (b.kind === 'house') b.color = '#f0f5e8';
-    if (b.kind === 'car') b.color = '#e6f2ff';
-    if (b.kind === 'fence') b.color = '#1e7cb8';
+  const boxes = [];
+  const box = (x, z, w, d, h, kind, extra = {}) => {
+    const minY = extra.minY ?? 0;
+    const isCar = kind === 'car' || extra.isCar ? true : undefined;
+    const b = {
+      minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2, minY, maxY: minY + h,
+      kind,
+      ...(isCar ? { isCar: true } : {}),
+      ...extra,
+    };
+    boxes.push(b);
+    return b;
+  };
+
+  const { minX, maxX, minZ, maxZ } = BOUNDS;
+
+  // 1. Club Perimeter Privacy Hedges & Enclosure Wall
+  box(0, minZ - 0.5, maxX - minX + 2, 1, 2.8, 'wall');
+  box(0, maxZ + 0.5, maxX - minX + 2, 1, 2.8, 'wall');
+  box(minX - 0.5, 0, 1, maxZ - minZ, 2.8, 'wall');
+  box(maxX + 0.5, 0, 1, maxZ - minZ, 2.8, 'wall');
+
+  // Outer privacy hedges
+  box(-36, 0, 1.2, 54, 2.2, 'hedge');
+  box(36, 0, 1.2, 54, 2.2, 'hedge');
+
+  // 2. The Grand Clubhouse & Viewing Terrace (North)
+  box(0, -38, 28, 10, 6.2, 'clubhouse', { face: 's', color: '#f7f4ea', id: 0 });
+  box(-21, -37, 10, 8, 4.6, 'house', { face: 's', color: '#ede7d8', id: 1 });
+  box(21, -37, 10, 8, 4.6, 'house', { face: 's', color: '#ede7d8', id: 2 });
+
+  // Covered Veranda / Terrace with pillars
+  box(0, -28, 26, 6, 0.35, 'verandaRoof', { minY: 3.2 });
+  for (const px of [-11, -4, 4, 11]) {
+    box(px, -28, 0.4, 0.4, 3.2, 'post');
   }
-  base.id = 'pickleball';
-  base.name = 'Shady Pines Pickleball Club';
-  return base;
+
+  // Veranda dining & spectator props
+  const glassTables = [
+    { id: 'pb_table_1', kind: 'glassTable', pos: { x: -8, y: 0, z: -27 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'pb_table_2', kind: 'glassTable', pos: { x: 8, y: 0, z: -27 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'pb_table_3', kind: 'glassTable', pos: { x: 0, y: 0, z: -27 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'pb_table_4', kind: 'glassTable', pos: { x: -28, y: 0, z: 24 }, hp: 20, maxHp: 20, destroyed: false },
+    { id: 'pb_table_5', kind: 'glassTable', pos: { x: 28, y: 0, z: 24 }, hp: 20, maxHp: 20, destroyed: false },
+  ];
+  for (const t of glassTables) {
+    box(t.pos.x, t.pos.z, 1.8, 1.8, 0.85, 'glassTable', { id: t.id, hp: t.hp, maxHp: t.maxHp, destroyed: t.destroyed });
+  }
+
+  const rocketPropane = [
+    { id: 'pb_propane_1', kind: 'rocketPropane', pos: { x: -14, y: 0.5, z: -27 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+    { id: 'pb_propane_2', kind: 'rocketPropane', pos: { x: 14, y: 0.5, z: -27 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+    { id: 'pb_propane_3', kind: 'rocketPropane', pos: { x: 0, y: 0.5, z: 20 }, hp: 30, maxHp: 30, triggered: false, destroyed: false },
+  ];
+  for (const p of rocketPropane) {
+    box(p.pos.x, p.pos.z, 0.6, 0.6, 1.1, 'rocketPropane', { id: p.id, hp: p.hp, maxHp: p.maxHp, triggered: false, destroyed: false });
+  }
+
+  // 3. 4 Regulation Pickleball Courts (Center Arena)
+  // West Courts: Court 1 (NW: z = -9), Court 2 (SW: z = 9), Center X = -16
+  // East Courts: Court 3 (NE: z = -9), Court 4 (SE: z = 9), Center X = 16
+  const courts = [
+    { id: 1, cx: -16, cz: -9 },
+    { id: 2, cx: -16, cz: 9 },
+    { id: 3, cx: 16, cz: -9 },
+    { id: 4, cx: 16, cz: 9 },
+  ];
+
+  for (const c of courts) {
+    // Jumpable regulation net across court width (0.9m high)
+    box(c.cx, c.cz, 9.4, 0.25, 0.9, 'pickleNet');
+    // Net support side posts
+    box(c.cx - 4.8, c.cz, 0.2, 0.2, 1.05, 'post');
+    box(c.cx + 4.8, c.cz, 0.2, 0.2, 1.05, 'post');
+  }
+
+  // Court Windscreens & Dividing Wire Fences (with wide gateways for fluid traversal)
+  // Horizontal dividing fence between North and South courts (leaves wide center/outer gaps)
+  box(-16, 0, 7.2, 0.2, 1.1, 'courtFence');
+  box(16, 0, 7.2, 0.2, 1.1, 'courtFence');
+
+  // Outer sideline windscreens
+  box(-22, -9, 0.2, 11, 1.1, 'courtFence');
+  box(-22, 9, 0.2, 11, 1.1, 'courtFence');
+  box(22, -9, 0.2, 11, 1.1, 'courtFence');
+  box(22, 9, 0.2, 11, 1.1, 'courtFence');
+
+  // Inner promenade windscreens (leaves wide open entrances at center and ends)
+  box(-10.5, -9, 0.2, 10, 1.1, 'courtFence');
+  box(-10.5, 9, 0.2, 10, 1.1, 'courtFence');
+  box(10.5, -9, 0.2, 10, 1.1, 'courtFence');
+  box(10.5, 9, 0.2, 10, 1.1, 'courtFence');
+
+  // Spectator Bleachers on outer sidelines
+  box(-26, -8, 2.2, 6, 1.4, 'bleachers');
+  box(-26, 8, 2.2, 6, 1.4, 'bleachers');
+  box(26, -8, 2.2, 6, 1.4, 'bleachers');
+  box(26, 8, 2.2, 6, 1.4, 'bleachers');
+
+  // Umpire High Chairs in court gaps
+  box(-6, 0, 1.2, 1.2, 2.1, 'umpireStand');
+  box(6, 0, 1.2, 1.2, 2.1, 'umpireStand');
+
+  // 4. Golf Cart Stalls & Pro Shop Plaza (South: z = 22 to 46)
+  // Pro Shop & Equipment Shed (South-West)
+  box(-22, 34, 12, 10, 4.4, 'house', { face: 'e', color: '#f5ebe0', id: 3 });
+
+  // Electric Golf Carts (Crouch/Stand Tactical Cover)
+  const golfCarts = [
+    { x: -8, z: 26, w: 2.0, d: 3.6, color: '#ffffff' },
+    { x: 8, z: 28, w: 2.0, d: 3.6, color: '#2a6f47' },
+    { x: -12, z: 36, w: 3.6, d: 2.0, color: '#e8f4f8' },
+    { x: 12, z: 36, w: 2.0, d: 3.6, color: '#3f7b37' },
+    { x: 0, z: 32, w: 3.6, d: 2.0, color: '#1e3d59' },
+    { x: -28, z: -18, w: 2.0, d: 3.6, color: '#ffffff' },
+    { x: 28, z: -18, w: 2.0, d: 3.6, color: '#2a6f47' },
+  ];
+  for (const gc of golfCarts) {
+    box(gc.x, gc.z, gc.w, gc.d, 1.75, 'car', { color: gc.color, isCar: true, isGolfCart: true });
+  }
+
+  // Tennis/pickleball ball recycling bins & towel hampers
+  box(-4, 24, 0.7, 0.7, 1.1, 'trash');
+  box(4, 24, 0.7, 0.7, 1.1, 'trash');
+  box(-3, -22, 0.7, 0.7, 1.1, 'trash');
+  box(3, -22, 0.7, 0.7, 1.1, 'trash');
+
+  // Mailbox & HOA Rules board at entrance
+  const mailboxes = [
+    { id: 'pb_board_1', kind: 'mailbox', pos: { x: -4, y: 0, z: 42 }, hp: 25, maxHp: 25, destroyed: false },
+    { id: 'pb_board_2', kind: 'mailbox', pos: { x: 4, y: 0, z: 42 }, hp: 25, maxHp: 25, destroyed: false },
+  ];
+  for (const mb of mailboxes) {
+    box(mb.pos.x, mb.pos.z, 0.4, 0.4, 1.3, 'mailbox', { id: mb.id, hp: mb.hp, maxHp: mb.maxHp, destroyed: mb.destroyed });
+  }
+
+  // Trampoline in family lawn corner
+  box(28, 35, 3.2, 3.2, 0.9, 'trampoline');
+
+  // Palm trees and decorative landscape trees
+  const trees = [
+    [-32, -38], [32, -38], [-32, 40], [32, 40],
+    [-4, -14], [4, -14], [-4, 14], [4, 14],
+    [-34, -20], [34, -20], [-34, 20], [34, 20],
+  ];
+  trees.forEach(([x, z]) => box(x, z, 0.6, 0.6, 3.4, 'tree'));
+
+  // Lawn sprinklers around putting green fringe
+  const pbSprinklerNodes = [
+    [-28, -26], [28, -26], [-28, 26], [28, 26],
+    [-10, 22], [10, 22], [0, 44], [0, -22],
+  ];
+  const sprinklers = pbSprinklerNodes.map(([x, z], id) => Object.assign([x, z], {
+    id: `pb_sprinkler_${id + 1}`,
+    index: id,
+    kind: 'sprinkler',
+    pos: { x, y: 0, z },
+    x,
+    y: 0,
+    z,
+    radius: 2.6,
+    arc: Math.PI,
+    active: true,
+    isSprinkler: true,
+  }));
+
+  const destructibles = [...mailboxes, ...glassTables, ...rocketPropane];
+
+  // Spawns: Team 0 = South Cart Plaza, Team 1 = North Clubhouse Terrace
+  const spawns = {
+    0: [[-6, 42], [-2, 43], [2, 43], [6, 42], [-10, 40], [10, 40], [-16, 44], [16, 44]],
+    1: [[-6, -24], [-2, -24], [2, -24], [6, -24], [-10, -23], [10, -23], [-18, -25], [18, -25]],
+  };
+
+  // Nav nodes covering the courts, promenades, bleacher flanks, and plazas
+  const nodeCoords = [
+    // North Terrace & Clubhouse Overlook
+    [0, -24], [-6, -24], [6, -24], [-12, -24], [12, -24], [-18, -24], [18, -24],
+    // Central Spine Walkway
+    [0, -18], [0, -9], [0, 0], [0, 9], [0, 18], [0, 24],
+    // West Court 1 (NW: [-16, -9]) & Gateways
+    [-16, -18], [-16, -14], [-16, -9], [-16, -4], [-16, -1], [-9, -9], [-23, -9],
+    // West Court 2 (SW: [-16, 9]) & Gateways
+    [-16, 1], [-16, 4], [-16, 9], [-16, 14], [-16, 18], [-9, 9], [-23, 9],
+    // West Sideline Flank & Bleachers
+    [-28, -18], [-28, -9], [-28, 0], [-28, 9], [-28, 18],
+    // East Court 3 (NE: [16, -9]) & Gateways
+    [16, -18], [16, -14], [16, -9], [16, -4], [16, -1], [9, -9], [23, -9],
+    // East Court 4 (SE: [16, 9]) & Gateways
+    [16, 1], [16, 4], [16, 9], [16, 14], [16, 18], [9, 9], [23, 9],
+    // East Sideline Flank & Bleachers
+    [28, -18], [28, -9], [28, 0], [28, 9], [28, 18],
+    // South Cart Plaza & Pro Shop
+    [0, 28], [-8, 28], [8, 28], [0, 36], [-8, 36], [8, 36], [-16, 36], [16, 36],
+    [-8, 42], [8, 42], [0, 44],
+  ];
+
+  const nodes = [];
+  const seen = new Set();
+  for (const [x, z] of nodeCoords) {
+    const k = `${x},${z}`;
+    if (!seen.has(k)) {
+      seen.add(k);
+      nodes.push({ x, z, links: [] });
+    }
+  }
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const d = Math.hypot(a.x - b.x, a.z - b.z);
+      if (d <= 22 && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, 1.15)) {
+        a.links.push({ to: j, d });
+        b.links.push({ to: i, d });
+      }
+    }
+  }
+
+  return {
+    id: 'pickleball',
+    name: 'Shady Pines Pickleball Club',
+    label: 'Shady Pines Pickleball Club',
+    boxes,
+    spawns,
+    nodes,
+    bounds: BOUNDS,
+    court: { x: 0, z: 0, r: 16 },
+    street: { minX: -8, maxX: 8, minZ: 22, maxZ: 48 },
+    trees,
+    sprinklers,
+    sprinklerNodes: sprinklers,
+    mailboxes,
+    glassTables,
+    rocketPropane,
+    rocketPropanes: rocketPropane,
+    destructibles,
+  };
 }
 
 export function buildStripMall() {
@@ -300,10 +527,8 @@ export function buildStripMall() {
 
 export const MAPS = {
   culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                name: 'Oakridge Cul-de-Sac',                demoAllowed: true,  freeInDemo: true,  build: buildCulDeSac },
-  // wip: true = not playable yet. These two are still recolours of the cul-de-sac (same geometry, and the
-  // renderer never rebuilds the world on a map change), so they must not be offered or sold. Clear `wip`
-  // only when the map has its own layout; web/tests/integrity.test.mjs enforces that.
-  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, wip: true, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
+  // Shady Pines Pickleball Club: Full custom layout with 4 tournament courts, nets, clubhouse, golf carts, bleachers!
+  pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, wip: false, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
   stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, wip: true, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
 };
 

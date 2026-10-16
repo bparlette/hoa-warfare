@@ -720,7 +720,7 @@ class Game {
     this.rng = mulberry32(seed);
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
     const activeMap = buildMap(state.map);
-    if (renderer) renderer.map = activeMap;
+    if (renderer) renderer.setMap(activeMap);
     this.sim = new Sim({
       rules: content.rules,
       weapons: weaponsData,
