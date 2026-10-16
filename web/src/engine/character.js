@@ -57,9 +57,9 @@ const FACTION_GUN_TYPE = {
   rednecks: 'shotgun',
   trumpers: 'shotgun',
   tradwives: 'shotgun',
-  vcBros: 'sniper',
+  wallstreetBets: 'sniper',
   oldMoney: 'sniper',
-  theGays: 'sniper',
+  fabulous: 'sniper',
   pickleballRetirees: 'sniper',
   gymRats: 'lmg',
   fratHouse: 'lmg',
@@ -290,7 +290,7 @@ export const PROPS = {
     { hand: 'L', s: 'box', size: [0.03, 0.04, 0.03], at: [0, -0.38, -0.06], c: '#1e293b' },
     { hand: 'L', s: 'torus', size: [0.035, 0.012, 4, 8], at: [0, -0.56, -0.08], c: '#94a3b8' },
   ],
-  vcBros: [
+  wallstreetBets: [
     { hand: 'L', s: 'box', size: [0.04, 0.32, 0.24], at: [0, -0.52, -0.06], rot: [0, 0, 0.1], c: '#1e293b' },
     { hand: 'L', s: 'box', size: [0.045, 0.08, 0.1], at: [-0.01, -0.52, -0.06], c: 'accent' },
     { hand: 'L', s: 'box', size: [0.015, 0.14, 0.08], at: [-0.025, -0.44, -0.04], c: '#0f172a', glow: '#38bdf8', glowI: 0.5 },

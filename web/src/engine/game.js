@@ -83,7 +83,7 @@ export const FACTION_METADATA = {
   furries: { icon: '🦊', role: 'MASCOT BRAWLER', gear: 'Oversized Fluffy Tail', nemesis: 'HOA Dads', quote: '"OwO what\'s this? A tactical engagement?!"', voLine: 'furries.roundStart.c.0' },
   pickleballRetirees: { icon: '🏓', role: 'KITCHEN SNIPER', gear: 'Graphite Paddle & Visor', nemesis: 'Frat House', quote: '"Dink it into the kitchen, boys!"', voLine: 'pickleballRetirees.roundStart.c.0' },
   trumpers: { icon: '🧢', role: 'RALLY CAPTAIN', gear: 'Golden Megaphone', nemesis: 'The Woke Libs', quote: '"Nobody defends a cul-de-sac like me, folks."', voLine: 'trumpers.roundStart.c.0' },
-  vcBros: { icon: '📈', role: 'DISRUPTOR', gear: 'Patagonia Fleece & AirPods', nemesis: 'The Karens', quote: '"Pre-revenue, pre-product, post-up on the cul-de-sac."', voLine: 'vcBros.roundStart.c.0' },
+  wallstreetBets: { icon: '📈', role: 'DISRUPTOR', gear: 'Patagonia Fleece & AirPods', nemesis: 'The Karens', quote: '"Pre-revenue, pre-product, post-up on the cul-de-sac."', voLine: 'wallstreetBets.roundStart.c.0' },
   wokeLibs: { icon: '☕', role: 'ORGANIZER', gear: 'Organic Canvas Tote Bag', nemesis: 'The Trumpers', quote: '"Your lawn violates three city carbon ordinances!"', voLine: 'wokeLibs.roundStart.c.0' },
   rednecks: { icon: '🚚', role: 'FRONT-YARD GUNNER', gear: 'Fringe Trucker Cap', nemesis: 'The Woke Libs', quote: '"I do not create joinder with this HOA!"', voLine: 'rednecks.roundStart.c.0' },
   fratHouse: { icon: '🍺', role: 'RUSHER', gear: 'Red Solo Cup & Zyn', nemesis: 'Pickleball Retirees', quote: '"Rush week is OVER for you!"', voLine: 'fratHouse.roundStart.c.0' },
@@ -93,7 +93,7 @@ export const FACTION_METADATA = {
   cloutStreamers: { icon: '📱', role: 'CONTENT SNIPER', gear: 'LED Ring Light & Tripod', nemesis: 'Old Money', quote: '"Chat, are we clipping this 360 citation?!"', voLine: 'cloutStreamers.roundStart.c.0' },
   oldMoney: { icon: '🏛️', role: 'ESTATE OVERSEER', gear: 'Cashmere Wrap & Cane', nemesis: 'Clout Streamers', quote: '"Our family founded this cul-de-sac in 1842."', voLine: 'oldMoney.roundStart.c.0' },
   valleyGirls: { icon: '🛍️', role: 'SOCIALITE ASSAULT', gear: 'Iced Oat Latte & Scrunchie', nemesis: 'Emo Kids', quote: '"Like, literally get evicted right now."', voLine: 'valleyGirls.roundStart.c.0' },
-  theGays: { icon: '💅', role: 'AESTHETIC VANGUARD', gear: 'Designer Shades & Pastels', nemesis: 'The Trumpers', quote: '"Your property values are simply unlivable, darling."', voLine: 'theGays.roundStart.c.0' },
+  fabulous: { icon: '💅', role: 'AESTHETIC VANGUARD', gear: 'Designer Shades & Pastels', nemesis: 'The Trumpers', quote: '"Your property values are simply unlivable, darling."', voLine: 'fabulous.roundStart.c.0' },
   brainRot: { icon: '💀', role: 'SKIBIDI CHAOS', gear: 'Noise-Canceling Cans', nemesis: 'HOA Dads', quote: '"Zero fanum tax on this cul-de-sac, unc."', voLine: 'brainRot.roundStart.c.0' },
   theaterKids: { icon: '🎭', role: 'DRAMA BOMBARDIER', gear: 'Black Beret & Masks', nemesis: 'Valley Girls', quote: '"This whole neighborhood is my opening act!"', voLine: 'theaterKids.roundStart.c.0' },
   emoKids: { icon: '🖤', role: 'ANGST SHADOW', gear: 'Studded Belt & Eyeliner', nemesis: 'Valley Girls', quote: '"Nobody understands the pain of this cul-de-sac."', voLine: 'emoKids.roundStart.c.0' },
@@ -257,8 +257,8 @@ export const FACTION_LOADOUTS = {
   fratHouse: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
   trumpers: { loadout: 'lmg', ...WEAPON_DEFINITIONS.lmg },
   oldMoney: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
-  vcBros: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
-  theGays: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  wallstreetBets: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
+  fabulous: { loadout: 'sniper', ...WEAPON_DEFINITIONS.sniper },
   pickleballRetirees: { loadout: 'pistol', ...WEAPON_DEFINITIONS.pistol },
   wokeLibs: { loadout: 'default', ...WEAPON_DEFINITIONS.ar },
   mlmHuns: { loadout: 'smg', ...WEAPON_DEFINITIONS.smg },
@@ -268,11 +268,11 @@ export const FACTION_LOADOUTS = {
 };
 
 export const FEATURED_RIVALRIES = [
-  ['karens', 'vcBros'],
+  ['karens', 'wallstreetBets'],
   ['tradwives', 'wokeLibs'],
   ['hoaDads', 'furries'],
   ['pickleballRetirees', 'fratHouse'],
-  ['trumpers', 'theGays'],
+  ['trumpers', 'fabulous'],
   ['gymRats', 'animeWeebs'],
   ['mlmHuns', 'valleyGirls']
 ];
