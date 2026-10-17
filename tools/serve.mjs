@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Zero-dependency static server for the web slice & local assets.
-// node tools/serve.mjs [port] -> reachable on localhost and Wi-Fi LAN
+// node tools/serve.mjs [port]         -> this machine only (http://localhost:8642/)
+// node tools/serve.mjs [port] --lan   -> also on the Wi-Fi LAN, for testing on a phone. Anyone on that
+//                                         network can then load the repo's files, so only on trusted Wi-Fi.
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
@@ -8,7 +10,25 @@ import { extname, join, normalize } from 'node:path';
 import { networkInterfaces } from 'node:os';
 
 const root = new URL('..', import.meta.url).pathname;
-const port = Number(process.argv[2]) || 8642;
+const port = Number(process.argv.slice(2).find(a => /^\d+$/.test(a))) || 8642;
+const lan = process.argv.includes('--lan') || process.env.HOST === '0.0.0.0';
+const MAX_UPLOAD = 300 * 1024 * 1024; // a 15 s 8 Mbps clip is ~15 MB
+const isLoopback = req => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
+
+/** Read a POST body, refusing anything larger than MAX_UPLOAD. Resolves null if refused. */
+function readBody(req, res) {
+  return new Promise(resolve => {
+    const chunks = [];
+    let size = 0;
+    req.on('data', c => {
+      size += c.length;
+      if (size > MAX_UPLOAD) { res.writeHead(413).end('Too large'); req.destroy(); resolve(null); return; }
+      chunks.push(c);
+    });
+    req.on('end', () => resolve(size > MAX_UPLOAD ? null : Buffer.concat(chunks)));
+    req.on('error', () => resolve(null));
+  });
+}
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
@@ -111,44 +131,30 @@ function renderPortalHtml(lanIp) {
 }
 
 createServer(async (req, res) => {
-  // CORS headers for all requests
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
-
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204).end();
-    return;
-  }
-
-  if (req.method === 'POST' && req.url === '/api/save_clip') {
-    const chunks = [];
-    req.on('data', c => chunks.push(c));
-    req.on('end', async () => {
-      const buf = Buffer.concat(chunks);
+  // No CORS headers: the game posts clips same-origin, and a wildcard let any website read the repo.
+  // Uploads (shorts tooling) are accepted from this machine only, even in --lan mode.
+  const uploads = { '/api/save_clip': 'raw_clip.webm', '/api/save_overlay': 'overlay.png' };
+  if (req.method === 'POST' && uploads[req.url]) {
+    if (!isLoopback(req)) { res.writeHead(403).end('Uploads only from this machine'); return; }
+    const buf = await readBody(req, res);
+    if (!buf) return;
+    try {
       await mkdir(join(root, 'dist/shorts'), { recursive: true });
-      await writeFile(join(root, 'dist/shorts/raw_clip.webm'), buf);
-      console.log('Saved raw clip:', buf.length, 'bytes');
+      await writeFile(join(root, 'dist/shorts', uploads[req.url]), buf);
+      console.log(`Saved ${uploads[req.url]}:`, buf.length, 'bytes');
       res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ ok: true, bytes: buf.length }));
-    });
+    } catch (err) {
+      res.writeHead(500).end(String(err.message));
+    }
     return;
   }
+  if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405).end(); return; }
 
-  if (req.method === 'POST' && req.url === '/api/save_overlay') {
-    const chunks = [];
-    req.on('data', c => chunks.push(c));
-    req.on('end', async () => {
-      const buf = Buffer.concat(chunks);
-      await mkdir(join(root, 'dist/shorts'), { recursive: true });
-      await writeFile(join(root, 'dist/shorts/overlay.png'), buf);
-      console.log('Saved overlay image:', buf.length, 'bytes');
-      res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ ok: true, bytes: buf.length }));
-    });
-    return;
-  }
-
-  let reqPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  let reqPath;
+  try { reqPath = decodeURIComponent(new URL(req.url, 'http://x').pathname); }
+  catch { res.writeHead(400).end('Bad request'); return; }
   if (reqPath === '/' || reqPath === '') {
-    const lanIp = getLanIp();
+    const lanIp = lan ? getLanIp() : 'localhost';
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(renderPortalHtml(lanIp));
     return;
   }
@@ -156,7 +162,8 @@ createServer(async (req, res) => {
   let normalized = normalize(reqPath);
   if (normalized.endsWith('/')) normalized += 'index.html';
   const file = join(root, normalized);
-  if (!file.startsWith(root)) {
+  // never serve dotfiles (.git, .env, .claude...)
+  if (!file.startsWith(root) || normalized.split(/[\\/]/).some(seg => seg.startsWith('.') && seg.length > 1)) {
     res.writeHead(403).end('Forbidden');
     return;
   }
@@ -173,11 +180,18 @@ createServer(async (req, res) => {
 
     // HTTP Range streaming for video playback (crucial for iOS Safari / Mobile browsers)
     if (range && (extname(file) === '.mp4' || extname(file) === '.webm')) {
-      const parts = range.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : fileStat.size - 1;
+      const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+      const size = fileStat.size;
+      let start = m && m[1] !== '' ? Number(m[1]) : NaN;
+      let end = m && m[2] !== '' ? Math.min(Number(m[2]), size - 1) : size - 1;
+      if (m && m[1] === '' && m[2] !== '') { start = Math.max(0, size - Number(m[2])); end = size - 1; } // bytes=-N: last N
+      if (!m || !(start >= 0) || start > end || start >= size) {
+        res.writeHead(416, { 'Content-Range': `bytes */${size}` }).end();
+        return;
+      }
       const chunkSize = (end - start) + 1;
       const stream = createReadStream(file, { start, end });
+      stream.on('error', () => res.destroy());
       res.writeHead(206, {
         'Content-Range': `bytes ${start}-${end}/${fileStat.size}`,
         'Accept-Ranges': 'bytes',
@@ -198,12 +212,16 @@ createServer(async (req, res) => {
   } catch (err) {
     res.writeHead(404, { 'Content-Type': 'text/plain' }).end('404 Not Found: ' + reqPath);
   }
-}).listen(port, '0.0.0.0', () => {
+}).listen(port, lan ? '0.0.0.0' : '127.0.0.1', () => {
   const lanIp = getLanIp();
   console.log(`\n==================================================`);
-  console.log(`HOA Warfare server listening on 0.0.0.0:${port}`);
+  console.log(`HOA Warfare server listening on ${lan ? '0.0.0.0' : '127.0.0.1'}:${port}`);
   console.log(`  Local:        http://localhost:${port}/`);
-  console.log(`  Wi-Fi / LAN:  http://${lanIp}:${port}/`);
-  console.log(`  Game:         http://${lanIp}:${port}/web/`);
+  if (lan) {
+    console.log(`  Wi-Fi / LAN:  http://${lanIp}:${port}/`);
+    console.log(`  Game:         http://${lanIp}:${port}/web/`);
+  } else {
+    console.log(`  Phone on the same Wi-Fi: restart with --lan (trusted networks only)`);
+  }
   console.log(`==================================================\n`);
 });
