@@ -38,6 +38,8 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 ---
 
+> **Tooling for videos, store assets, demos and hosting:** the `gamepress` repo (github.com/bparlette/gamepress), at `~/.gemini/antigravity/scratch/gamepress` on the owner's Mac. Start at its `AGENTS.md`.
+
 ## Next-stage worker prompts (from the 2026-10-16 audit)
 
 Each task below is a self-contained prompt: paste it to the named worker. Every task ends with
