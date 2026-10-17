@@ -812,7 +812,7 @@ export class SuburbanWipeout extends Mode {
  * 30-Second Suburban Firing Range & Tutorial Mode:
  * Safe HOA practice zone with infinite ammo, 4 progressive suburban drill objectives:
  * 1. Movement Drill: Walk across the manicured lawn to inspect the grass height meter.
- * 2. Target Practice: Shoot 3 cardboard cutout HOA violators (wooden target dummies: Karen with haircut, Dad with clipboard, VC Bro with vest).
+ * 2. Target Practice: Shoot 3 cardboard cutout HOA violators (wooden target dummies: Karen with haircut, Dad with clipboard, WallStreetBets bro with vest).
  * 3. Suburban Ordinance: Throw a Lawsuit Grenade (key Q) to bounce it off the driveway.
  * 4. Heavy Machinery: Mount the riding lawn mower (key E) and run over a row of weeds!
  * Upon completion: triggers "HOA BOARD CERTIFICATION PASSED" banner, awards bonus XP, and invites player to Cul-de-Sac Clash!
@@ -844,8 +844,9 @@ export class SuburbanTutorial extends Mode {
 
     this.targets = [
       { id: 'dummy_karen', name: 'Karen with haircut', faction: 'karens', pos: { x: -6, y: 0, z: -5 }, hit: false },
-      { id: 'dummy_dad', name: 'Dad with clipboard', faction: 'hoaDads', pos: { x: 0, y: 0, z: -7 }, hit: false },
-      { id: 'dummy_vcbro', name: 'VC Bro with vest', faction: 'wallstreetBets', pos: { x: 6, y: 0, z: -5 }, hit: false },
+      // clear of the trampoline (0,-7) and the parked car (6,-5), where they used to stand inside the props
+      { id: 'dummy_dad', name: 'Dad with clipboard', faction: 'hoaDads', pos: { x: 0, y: 0, z: -3 }, hit: false },
+      { id: 'dummy_vcbro', name: 'WallStreetBets bro with vest', faction: 'wallstreetBets', pos: { x: 5, y: 0, z: -2 }, hit: false },
     ];
 
     this.weeds = [

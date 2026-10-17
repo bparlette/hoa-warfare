@@ -50,7 +50,7 @@ test('SuburbanTutorial mode: initializes safe practice zone, infinite ammo, and 
   assert.equal(mode.targets.length, 3);
   assert.ok(mode.targets.some(t => t.name.includes('Karen')));
   assert.ok(mode.targets.some(t => t.name.includes('Dad')));
-  assert.ok(mode.targets.some(t => t.name.includes('VC Bro')));
+  assert.ok(mode.targets.some(t => t.name.includes('WallStreetBets')));
 
   // Weeds row initialized
   assert.equal(mode.weeds.length, 3);
