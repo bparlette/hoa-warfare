@@ -210,3 +210,35 @@ test('multiplayer: room initializes with requested game mode and broadcasts mode
   await close();
 });
 
+
+test('multiplayer: an unknown ?mode= falls back to clash instead of crashing the server', async () => {
+  const { server, close } = await createMultiplayerServer(0);
+  const port = server.address().port;
+  for (const mode of ['bogus', 'constructor', '__proto__']) {
+    const client = new NetClient();
+    const initData = await client.connect(`ws://localhost:${port}/ws?room=bad_${mode.replace(/_/g, '')}&name=A&faction=karens&mode=${mode}`, {});
+    assert.equal(initData.init?.mode, 'clash', `${mode} -> clash`);
+    client.disconnect();
+  }
+  assert.equal(server.listening, true, 'server still up');
+  await close();
+});
+
+test('multiplayer: snapshots carry every plain field of mode objects (Evict sites need radius/letter/active)', async () => {
+  const { server, close } = await createMultiplayerServer(0);
+  const port = server.address().port;
+  const client = new NetClient();
+  let snap = null;
+  await client.connect(`ws://localhost:${port}/ws?room=evict_fields&name=A&faction=karens&mode=evict`, {
+    onSnapshot: s => { if (!snap && s.objects?.some(o => o.kind === 'evictSite')) snap = s; },
+  });
+  for (let i = 0; i < 50 && !snap; i++) await new Promise(r => setTimeout(r, 20));
+  assert.ok(snap, 'got a snapshot with evict sites');
+  for (const site of snap.objects.filter(o => o.kind === 'evictSite')) {
+    assert.ok(Number.isFinite(site.radius) && site.radius > 0, 'radius');
+    assert.match(site.letter, /^[AB]$/);
+    assert.equal(typeof site.active, 'boolean');
+  }
+  client.disconnect();
+  await close();
+});

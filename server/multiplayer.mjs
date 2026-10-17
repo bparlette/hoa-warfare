@@ -23,6 +23,7 @@ import http from 'node:http';
 import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Sim } from '../web/src/engine/sim.js';
+import { isModeId } from '../web/src/engine/modes.js';
 import { mulberry32 } from '../web/src/core/rng.js';
 
 export const LIMITS = {
@@ -211,6 +212,19 @@ export function attachWebSocketParser(socket, { onMessage, onClose, onError, max
  * A multiplayer room: one headless Sim, up to 8 seats (humans, the rest bots), fixed 60 Hz physics,
  * 20 Hz snapshots, lag-compensated shooting, automatic match restart.
  */
+
+/**
+ * Mode objects are plain data (see modes.js), so send every primitive field plus positions. A fixed
+ * whitelist dropped radius/letter/active, which broke Evict the Block sites for online players.
+ */
+function snapObject(o) {
+  const out = {};
+  for (const [k, v] of Object.entries(o)) {
+    if (v === null || ['string', 'number', 'boolean'].includes(typeof v)) out[k] = v;
+    else if (v && typeof v === 'object' && Number.isFinite(v.x) && Number.isFinite(v.z)) out[k] = { x: v.x, y: v.y ?? 0, z: v.z };
+  }
+  return out;
+}
 export class Room {
   constructor(roomCode, { contentData = content, weaponsData = weapons, mode = 'clash', seed, botFactions, quick = false, restartMs = LIMITS.matchRestartMs } = {}) {
     this.roomCode = roomCode;
@@ -433,11 +447,7 @@ export class Room {
         id: h.id, team: h.team, ownerId: h.ownerId, hp: h.hp, maxHp: h.maxHp, alive: h.alive,
         pos: { x: h.pos.x, y: h.pos.y, z: h.pos.z }, angle: h.angle, radius: h.radius,
       })),
-      objects: (sim.mode?.objects || []).map(o => ({
-        id: o.id, kind: o.kind, team: o.team, pos: { x: o.pos.x, y: o.pos.y, z: o.pos.z },
-        state: o.state, ownerTeam: o.ownerTeam, captureProgress: o.captureProgress,
-        label: o.label, carrierId: o.carrierId,
-      })),
+      objects: (sim.mode?.objects || []).map(snapObject),
     }, roundNumbers);
     this.bufferedEvents = [];
 
@@ -691,7 +701,9 @@ export function createMultiplayerServer(port = 8080, options = {}) {
     try { url = new URL(req.url, 'http://localhost'); } catch { return refuse(socket, 400, 'Bad Request'); }
     const requested = sanitizeRoomCode(url.searchParams.get('room'));
     const isQuick = !requested || requested.toLowerCase() === 'auto';
-    const reqMode = url.searchParams.get('mode');
+    // only real mode ids or aliases: an unknown ?mode= used to throw inside room creation and take the
+    // whole server down for everyone
+    const reqMode = isModeId(url.searchParams.get('mode')) ? url.searchParams.get('mode') : null;
     const room = isQuick ? roomManager.quickMatchRoom() : roomManager.getOrCreateRoom(requested, reqMode ? { mode: reqMode } : {});
     if (!room) return refuse(socket, 503, 'Service Unavailable');
 

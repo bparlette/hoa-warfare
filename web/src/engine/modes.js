@@ -1149,12 +1149,17 @@ export const MODE_ALIASES = {
 };
 
 export function resolveModeId(id) {
-  return MODE_ALIASES[id] || id;
+  return Object.hasOwn(MODE_ALIASES, id) ? MODE_ALIASES[id] : id;
+}
+
+/** True for a mode id or alias (own keys only: 'constructor' or '__proto__' are not modes). */
+export function isModeId(id) {
+  return typeof id === 'string' && (Object.hasOwn(MODES, resolveModeId(id)) || Object.hasOwn(MODES, id));
 }
 
 export function createMode(id, sim) {
   const canonical = resolveModeId(id);
-  const M = MODES[canonical] || MODES[id];
+  const M = Object.hasOwn(MODES, canonical) ? MODES[canonical] : Object.hasOwn(MODES, id) ? MODES[id] : null;
   if (!M) throw new Error(`unknown mode ${id}`);
   return new M(sim);
 }
