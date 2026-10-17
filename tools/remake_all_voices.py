@@ -13,7 +13,7 @@ CAST = {
     'tradwives': ('en-US-AriaNeural', '+10%', '+5Hz'),
     'fratHouse': ('en-US-AndrewNeural', '+25%', '+0Hz'),
     'brainRot': ('en-US-AndrewNeural', '+30%', '+5Hz'),
-    'rednecks': ('en-US-DavisNeural', '+15%', '-5Hz'),
+    'rednecks': ('en-US-GuyNeural', '+15%', '-5Hz'),
     'gymRats': ('en-US-GuyNeural', '+20%', '-5Hz'),
     'cloutStreamers': ('en-US-AndrewNeural', '+25%', '+5Hz'),
     'wallstreetBets': ('en-US-ChristopherNeural', '+15%', '+0Hz'),
