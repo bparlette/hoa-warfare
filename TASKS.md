@@ -89,7 +89,7 @@ another agent's uncommitted work, no personal data (public repo).
 > factions): delete them with `git rm` after checking each prefix against `data/hoa_content.json`.
 > **Done when:** audio and integrity tests pass with the raised floor and `web/vo` has no unlisted files.
 
-### W6 — Viral-video director tool [Claude] — open
+### W6 — Viral-video director tool [Claude] — done (ba5a090; see `tools/director/README.md`)
 > The owner asked for a script-driven tool (not shipped in the game) that controls movement, aim, gunshots and voice
 > lines by line ID, plus camera and captions, so viral clips show real, timed kills. `tools/viral-director/` is
 > named under "Removed" below but does not exist. Build `tools/director/`: a JSON/JS shot script (actors, waypoints, aim
