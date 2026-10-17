@@ -153,24 +153,7 @@ export function buildCulDeSac() {
     [-27, -12], [-27, 12], [-36, -18], [-37, -6], [-37, 6], [-36, 18],
     [-32, -30], [-20, -38], [-32, 30], [-20, 40], [-10, 26], [-10, -19],
   ];
-  const nodes = [];
-  const seen = new Set();
-  for (const [x, z] of half) {
-    for (const p of x === 0 ? [[x, z]] : [[x, z], [-x, z]]) {
-      const k = p.join(',');
-      if (!seen.has(k)) { seen.add(k); nodes.push({ x: p[0], z: p[1], links: [] }); }
-    }
-  }
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      const d = Math.hypot(a.x - b.x, a.z - b.z);
-      if (d <= 20 && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, 0.45)) {
-        a.links.push({ to: j, d });
-        b.links.push({ to: i, d });
-      }
-    }
-  }
+  const nodes = buildNavGraph(boxes, half.flatMap(([x, z]) => x === 0 ? [[x, z]] : [[x, z], [-x, z]]), { maxLink: 20, stepH: 0.45 });
   return {
     boxes,
     spawns,
@@ -190,6 +173,45 @@ export function buildCulDeSac() {
 }
 
 /** True if a disc of `radius` can slide from (ax,az) to (bx,bz) without hitting a box taller than `stepH`. */
+/**
+ * Bot nav graph from hand-placed points: dedupes them, pushes any point that sits inside a solid box
+ * (car, net, mailbox... anything taller than a walkable step) out to the nearest free spot, links
+ * every pair within maxLink metres that has a clear, body-wide line (stepH: tallest thing a link may
+ * cross, bots jump it), and drops points that end up unfreeable or unlinked.
+ */
+export function buildNavGraph(boxes, coords, { maxLink = 20, stepH = 0.45, clearance = 0.6 } = {}) {
+  const solid = boxes.filter(b => b.maxY > 0.45 && b.minY <= 1.8);
+  const hit = (x, z) => solid.find(b => x > b.minX - clearance && x < b.maxX + clearance && z > b.minZ - clearance && z < b.maxZ + clearance);
+  let nodes = [];
+  const seen = new Set();
+  for (let [x, z] of coords) {
+    for (let tries = 0, b; (b = hit(x, z)) && tries < 4; tries++) {
+      const exits = [[b.minX - clearance - 0.05, z], [b.maxX + clearance + 0.05, z], [x, b.minZ - clearance - 0.05], [x, b.maxZ + clearance + 0.05]]
+        .sort((p, q) => Math.hypot(p[0] - x, p[1] - z) - Math.hypot(q[0] - x, q[1] - z));
+      [x, z] = exits.find(([ex, ez]) => !hit(ex, ez)) || exits[0];
+    }
+    if (hit(x, z)) continue;
+    const k = `${x.toFixed(2)},${z.toFixed(2)}`;
+    if (!seen.has(k)) { seen.add(k); nodes.push({ x, z, links: [] }); }
+  }
+  const link = () => {
+    for (const n of nodes) n.links = [];
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const d = Math.hypot(a.x - b.x, a.z - b.z);
+        if (d <= maxLink && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, stepH)) {
+          a.links.push({ to: j, d });
+          b.links.push({ to: i, d });
+        }
+      }
+    }
+  };
+  link();
+  if (nodes.some(n => !n.links.length)) { nodes = nodes.filter(n => n.links.length); link(); }
+  return nodes;
+}
+
 export function segmentClear(boxes, ax, az, bx, bz, radius = 0, stepH = 0.45) {
   const dx = bx - ax, dz = bz - az;
   for (const b of boxes) {
@@ -471,26 +493,7 @@ export function buildPickleballClub() {
     [-8, 42], [8, 42], [0, 44],
   ];
 
-  const nodes = [];
-  const seen = new Set();
-  for (const [x, z] of nodeCoords) {
-    const k = `${x},${z}`;
-    if (!seen.has(k)) {
-      seen.add(k);
-      nodes.push({ x, z, links: [] });
-    }
-  }
-
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      const d = Math.hypot(a.x - b.x, a.z - b.z);
-      if (d <= 22 && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, 1.15)) {
-        a.links.push({ to: j, d });
-        b.links.push({ to: i, d });
-      }
-    }
-  }
+  const nodes = buildNavGraph(boxes, nodeCoords, { maxLink: 22, stepH: 1.15 });
 
   return {
     id: 'pickleball',
@@ -707,26 +710,7 @@ export function buildStripMall() {
     [-8, 42], [-4, 43], [4, 43], [8, 42], [0, 44],
   ];
 
-  const nodes = [];
-  const seen = new Set();
-  for (const [x, z] of nodeCoords) {
-    const k = `${x},${z}`;
-    if (!seen.has(k)) {
-      seen.add(k);
-      nodes.push({ x, z, links: [] });
-    }
-  }
-
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      const d = Math.hypot(a.x - b.x, a.z - b.z);
-      if (d <= 22 && segmentClear(boxes, a.x, a.z, b.x, b.z, 0.55, 1.15)) {
-        a.links.push({ to: j, d });
-        b.links.push({ to: i, d });
-      }
-    }
-  }
+  const nodes = buildNavGraph(boxes, nodeCoords, { maxLink: 22, stepH: 1.15 });
 
   return {
     id: 'stripmall',

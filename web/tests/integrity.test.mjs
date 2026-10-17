@@ -42,3 +42,16 @@ test('every map offered to players has its own layout (not a recolour of the cul
   const html = readFileSync(new URL('web/index.html', root), 'utf8');
   for (const [id, def] of Object.entries(MAPS)) if (def.wip) assert.match(html, new RegExp(`<option value="${id}" disabled`), `${id} must be disabled in the picker`);
 });
+
+test('every map: bot nav nodes stand on open ground and form one connected graph (bots walked into carts and nets)', async () => {
+  const { MAPS, buildMap } = await import('../src/engine/map.js');
+  for (const id of Object.keys(MAPS)) {
+    const m = buildMap(id);
+    const inside = m.nodes.filter(n => m.boxes.some(b => b.maxY > 0.45 && b.minY <= 1.8 && n.x > b.minX - 0.4 && n.x < b.maxX + 0.4 && n.z > b.minZ - 0.4 && n.z < b.maxZ + 0.4));
+    assert.deepEqual(inside.map(n => [n.x, n.z]), [], `${id}: nav nodes inside solid props`);
+    const seen = new Set([0]), q = [0];
+    while (q.length) for (const { to } of m.nodes[q.pop()].links) if (!seen.has(to)) { seen.add(to); q.push(to); }
+    assert.equal(seen.size, m.nodes.length, `${id}: nav graph is split`);
+    for (const pts of Object.values(m.spawns)) for (const [x, z] of pts) assert.ok(!m.boxes.some(b => b.maxY > 0.45 && x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), `${id}: spawn ${x},${z} inside a prop`);
+  }
+});
