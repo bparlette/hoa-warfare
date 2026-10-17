@@ -362,7 +362,7 @@ export class StealTheCasserole extends Mode {
   // Each kitchen sits on its own team's side, KITCHEN_T of the way from the map centre to that team's
   // spawns, snapped to a walkable nav node so it works on every map. Kitchens right next to the spawns
   // (and, before that, swapped onto the enemy side) meant every carrier died at the enemy spawn: 0-0.
-  static KITCHEN_T = 0.6;
+  static KITCHEN_T = 0.45;
   static PICKUP_R = 1.6;
   static CAPTURE_R = 2.4;
   static RETURN_TIMEOUT = 30;
