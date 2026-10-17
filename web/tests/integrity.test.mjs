@@ -55,3 +55,25 @@ test('every map: bot nav nodes stand on open ground and form one connected graph
     for (const pts of Object.values(m.spawns)) for (const [x, z] of pts) assert.ok(!m.boxes.some(b => b.maxY > 0.45 && x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ), `${id}: spawn ${x},${z} inside a prop`);
   }
 });
+
+test('every map x mode: objectives (zones, lawns, kitchens, weeds) sit on open ground, not inside props', async () => {
+  const { Sim } = await import('../src/engine/sim.js');
+  const { MAPS, buildMap } = await import('../src/engine/map.js');
+  const { MODES } = await import('../src/engine/modes.js');
+  const { mulberry32 } = await import('../src/core/rng.js');
+  const weapons = JSON.parse(readFileSync(new URL('data/weapons.json', root)));
+  const bad = [];
+  for (const id of Object.keys(MAPS)) for (const mode of Object.keys(MODES)) {
+    const m = buildMap(id);
+    const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(1), mode, map: m });
+    for (let i = 0; i < 4; i++) sim.addActor({ id: 'p' + i, name: 'p', team: i % 2, faction: 'karens' });
+    sim.start();
+    for (let k = 0; k < 5; k++) {
+      for (const o of [...(sim.mode.objects || []), ...(sim.mode.weeds || [])]) {
+        if (o.pos && m.boxes.some(b => b.maxY > 0.45 && b.minY <= 1.8 && o.pos.x > b.minX - 0.3 && o.pos.x < b.maxX + 0.3 && o.pos.z > b.minZ - 0.3 && o.pos.z < b.maxZ + 0.3)) bad.push(`${id}/${mode}/${o.kind}@${o.pos.x},${o.pos.z}`);
+      }
+      if (sim.mode.setZone) sim.mode.setZone(k + 1); else break;
+    }
+  }
+  assert.deepEqual([...new Set(bad)], []);
+});

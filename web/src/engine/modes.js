@@ -18,6 +18,18 @@ export class Mode {
   }
   /** Defaults the sim uses unless the caller overrides them. */
   static defaults = { scoreLimit: 40, timeLimit: 300 };
+  /**
+   * Objective positions are authored on the cul-de-sac; on other maps one can land inside a building
+   * or car. Returns the position unchanged when it is open ground, else the nearest bot nav node.
+   */
+  openSpot(pos) {
+    const { boxes = [], nodes = [] } = this.sim.map || {};
+    const r = 0.6;
+    const blocked = boxes.some(b => b.maxY > 0.45 && b.minY <= 1.8 && pos.x > b.minX - r && pos.x < b.maxX + r && pos.z > b.minZ - r && pos.z < b.maxZ + r);
+    if (!blocked || !nodes.length) return { x: pos.x, y: pos.y ?? 0, z: pos.z };
+    const n = nodes[nearestNode(nodes, boxes, pos.x, pos.z)];
+    return { x: n.x, y: 0, z: n.z };
+  }
   onStart() {}
   /** Called after the kill event is emitted. killer is null for self-kills. */
   onKill(ev, killer, victim) {}
@@ -140,16 +152,17 @@ export class KingOfTheLawn extends Mode {
     this.zoneIndex = idx % KingOfTheLawn.ZONES.length;
     this.rotateAt = this.sim.time + KingOfTheLawn.ROTATE_SEC;
     const def = KingOfTheLawn.ZONES[this.zoneIndex];
+    const pos = this.openSpot(def.pos);
     this.objects = [{
       id: this.nextObjectId++, kind: 'lawnZone',
-      pos: { ...def.pos }, radius: KingOfTheLawn.ZONE_RADIUS,
+      pos, radius: KingOfTheLawn.ZONE_RADIUS,
       name: def.name, ownerTeam: null, contested: false,
     }];
     // stable object (bots compare goals by identity); radius lets objective bots stop at the edge
-    this.goal = { x: def.pos.x, z: def.pos.z, radius: KingOfTheLawn.ZONE_RADIUS };
+    this.goal = { x: pos.x, z: pos.z, radius: KingOfTheLawn.ZONE_RADIUS };
     this.ownerTeam = null;
     this.contested = false;
-    this.sim.emit({ type: 'hardpointRotated', name: def.name, pos: { ...def.pos } });
+    this.sim.emit({ type: 'hardpointRotated', name: def.name, pos: { ...pos } });
   }
 
   get zoneObj() { return this.objects[0]; }
@@ -249,7 +262,7 @@ export class HoaPatrol extends Mode {
       kind: 'patrolZone',
       letter: def.letter,
       name: def.name,
-      pos: { ...def.pos },
+      pos: this.openSpot(def.pos),
       radius: def.radius,
       ownerTeam: null,
       contested: false,
@@ -858,6 +871,7 @@ export class SuburbanTutorial extends Mode {
 
   onStart() {
     const sim = this.sim;
+    for (const w of this.weeds) w.pos = this.openSpot(w.pos);
     // Spawn player in safe practice zone
     const player = sim.actors.find(a => !a.isBot || a.team === 0);
     if (player) {
