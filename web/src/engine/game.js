@@ -6,12 +6,6 @@ import { AudioLimiter } from '../core/audioLimiter.js';
 import { mulberry32 } from '../core/rng.js';
 import { Sim, yawTo } from './sim.js';
 import { MODES } from './modes.js';
-
-export function haptic(pattern) {
-  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-    try { navigator.vibrate(pattern); } catch {}
-  }
-}
 import { BarkSystem } from './barks.js';
 import { ChatterDirector } from '../core/chatter.js';
 import { Renderer } from './render.js';
@@ -19,7 +13,7 @@ import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac, buildMap, MAPS } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
-import { Controls, aimAssist } from './controls.js';
+import { Controls, aimAssist, triggerHaptic as haptic } from './controls.js';
 import { PerfOverlay } from './perf.js';
 import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';

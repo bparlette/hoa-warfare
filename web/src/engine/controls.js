@@ -375,6 +375,9 @@ export function triggerHaptic(type) {
   if (typeof navigator === 'undefined' || typeof navigator?.vibrate !== 'function') {
     return false;
   }
+  // browsers block (and log an error for) vibrate before the first tap: spectating or the attract
+  // screen would spam the console
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return false;
   const pattern = HAPTIC_PATTERNS[type] ?? (Array.isArray(type) || typeof type === 'number' ? type : null);
   if (pattern === null || pattern === undefined) return false;
   try {
