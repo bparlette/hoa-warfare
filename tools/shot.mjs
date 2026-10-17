@@ -3,18 +3,30 @@
 //   node tools/shot.mjs "<url query>" out.png [seconds] [extra js to eval before shooting]
 // Needs Google Chrome installed and `node tools/serve.mjs` running. Uses CDP over Node's WebSocket.
 import { spawn } from 'node:child_process';
-import { writeFileSync, mkdtempSync } from 'node:fs';
+import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const [query = 'spectate=1&seed=7', out = 'dist/shot.png', secs = '6', evalJs = ''] = process.argv.slice(2);
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const port = 9330 + Math.floor(Math.random() * 500);
+const profile = mkdtempSync(join(tmpdir(), 'hoa-'));
 const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${port}`, '--window-size=1280,720', '--use-angle=metal',
-  '--autoplay-policy=no-user-gesture-required', '--mute-audio', `--user-data-dir=${mkdtempSync(join(tmpdir(), 'hoa-'))}`, 'about:blank'], { stdio: 'ignore' });
+  '--autoplay-policy=no-user-gesture-required', '--mute-audio', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' });
+// each run's throwaway Chrome profile is ~30 MB; they were never removed (4.7 GB had piled up in $TMPDIR).
+// Kill Chrome, wait for it to exit (it keeps writing to the profile until then), then delete the profile.
+async function finish(code) {
+  if (chrome.exitCode === null && chrome.signalCode === null) {
+    const exited = new Promise(r => chrome.once('exit', r));
+    chrome.kill('SIGKILL');
+    await Promise.race([exited, new Promise(r => setTimeout(r, 3000))]);
+  }
+  try { rmSync(profile, { recursive: true, force: true }); } catch {}
+  process.exit(code);
+}
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Watchdog: never hang the caller (CI, agents) if Chrome or the page wedges.
-const watchdog = setTimeout(() => { console.error('shot.mjs: timed out, killing Chrome'); chrome.kill('SIGKILL'); process.exit(2); }, (Number(secs) + 45) * 1000);
+const watchdog = setTimeout(() => { console.error('shot.mjs: timed out, killing Chrome'); finish(2); }, (Number(secs) + 45) * 1000);
 watchdog.unref?.();
 
 let ws;
@@ -66,5 +78,4 @@ writeFileSync(out, Buffer.from(shot.result.data, 'base64'));
 console.log(logs.join('\n') || '(no console output)');
 console.log('saved', out);
 ws.close();
-chrome.kill();
-process.exit(0);
+await finish(0);
