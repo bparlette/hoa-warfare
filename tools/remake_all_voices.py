@@ -22,7 +22,7 @@ CAST = {
     'trumpers': ('en-US-SteffanNeural', '+10%', '-5Hz'),
     'furries': ('en-GB-ThomasNeural', '+20%', '+10Hz'),
     'animeWeebs': ('en-US-EricNeural', '+25%', '+15Hz'),
-    'pickleballRetirees': ('en-AU-NeilNeural', '+5%', '-15Hz'),
+    'pickleballRetirees': ('en-US-DavisNeural', '+5%', '-10Hz'),
     'wokeLibs': ('en-US-MichelleNeural', '+15%', '+10Hz'),
 }
 
