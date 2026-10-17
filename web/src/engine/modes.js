@@ -5,6 +5,8 @@
 // Objects in `this.objects` are plain data: { id, kind, pos:{x,y,z}, team?, radius?, ... }.
 // The renderer draws them by `kind`; the HUD reads `hud()`.
 
+import { nearestNode } from './map.js';
+
 export class Mode {
   static id = 'base';
   static label = 'Base';
@@ -30,6 +32,8 @@ export class Mode {
    * that overrides botGoal gets a 50/50 split; override this to tune it.
    */
   botRole(actor, i, n) { return this.botGoal !== Mode.prototype.botGoal && i < Math.ceil(n / 2) ? 'objective' : 'hunter'; }
+  /** True while this bot should run its objective instead of stopping to fight (e.g. carrying a flag). */
+  botRunner(actor) { return false; }
   /** Which map spawn set (0 = south street, 1 = north greenbelt) this actor uses. */
   spawnSide(actor) { return actor.team; }
   respawnDelay(actor) { return actor.isBot ? 3 : 4.5; }
@@ -355,13 +359,10 @@ export class StealTheCasserole extends Mode {
   static label = 'Steal the Casserole';
   static parent = 'CTF';
   static defaults = { scoreLimit: 3, timeLimit: 360 };
-  // Each kitchen sits on its own team's side (team 0 spawns south, team 1 north; see Sim spawns).
-  // They used to be swapped, so you "stole" the casserole at your own spawn and had to run it into the
-  // enemy spawn to score: bot matches always ended 0-0.
-  static BASES = [
-    { team: 0, pos: { x: 0, y: 0, z: 35 }, name: 'South Kitchen' },
-    { team: 1, pos: { x: 0, y: 0, z: -35 }, name: 'North Kitchen' },
-  ];
+  // Each kitchen sits on its own team's side, KITCHEN_T of the way from the map centre to that team's
+  // spawns, snapped to a walkable nav node so it works on every map. Kitchens right next to the spawns
+  // (and, before that, swapped onto the enemy side) meant every carrier died at the enemy spawn: 0-0.
+  static KITCHEN_T = 0.6;
   static PICKUP_R = 1.6;
   static CAPTURE_R = 2.4;
   static RETURN_TIMEOUT = 30;
@@ -370,27 +371,24 @@ export class StealTheCasserole extends Mode {
     super(sim);
   }
 
+  /** Kitchen for a team: part-way from the map centre toward its spawns, on the nearest nav node. */
+  kitchenPos(team) {
+    const { spawns, nodes, boxes } = this.sim.map;
+    const pts = spawns[this.spawnSide({ team })] || [];
+    const cx = pts.reduce((s, p) => s + p[0], 0) / (pts.length || 1);
+    const cz = pts.reduce((s, p) => s + p[1], 0) / (pts.length || 1);
+    const t = StealTheCasserole.KITCHEN_T;
+    const n = nodes?.length ? nodes[nearestNode(nodes, boxes, cx * t, cz * t)] : null;
+    return n ? { x: n.x, y: 0, z: n.z } : { x: cx * t, y: 0, z: cz * t };
+  }
+
   onStart() {
-    this.objects = [
-      { id: this.nextObjectId++, kind: 'casseroleBase', team: 0, pos: { ...StealTheCasserole.BASES[0].pos }, radius: StealTheCasserole.CAPTURE_R },
-      { id: this.nextObjectId++, kind: 'casseroleBase', team: 1, pos: { ...StealTheCasserole.BASES[1].pos }, radius: StealTheCasserole.CAPTURE_R },
-      {
-        id: this.nextObjectId++, kind: 'casserole', team: 0,
-        homePos: { ...StealTheCasserole.BASES[0].pos },
-        pos: { ...StealTheCasserole.BASES[0].pos },
-        state: 'home',
-        carrierId: null,
-        droppedAt: 0,
-      },
-      {
-        id: this.nextObjectId++, kind: 'casserole', team: 1,
-        homePos: { ...StealTheCasserole.BASES[1].pos },
-        pos: { ...StealTheCasserole.BASES[1].pos },
-        state: 'home',
-        carrierId: null,
-        droppedAt: 0,
-      },
-    ];
+    this.objects = [];
+    for (const team of [0, 1]) {
+      const pos = this.kitchenPos(team);
+      this.objects.push({ id: this.nextObjectId++, kind: 'casseroleBase', team, pos: { ...pos }, radius: StealTheCasserole.CAPTURE_R });
+      this.objects.push({ id: this.nextObjectId++, kind: 'casserole', team, homePos: { ...pos }, pos: { ...pos }, state: 'home', carrierId: null, droppedAt: 0 });
+    }
   }
 
   getCasserole(team) {
@@ -422,6 +420,8 @@ export class StealTheCasserole extends Mode {
     }
     return false;
   }
+
+  botRunner(actor) { return this.getCasserole(1 - actor.team)?.carrierId === actor.id; }
 
   botGoal(actor) {
     const myCasserole = this.getCasserole(actor.team);

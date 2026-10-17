@@ -949,7 +949,10 @@ export class Sim {
       if (inp.reload) this.startReload(a);
       if (inp.fire) this.fire(a);
       a.triggerHeld = inp.fire;
-      if (!inp.fire && a.reloadUntil === 0 && a.ammo < (this.activeWeapon(a)?.mag ?? 0) && now - (a.lastShotAt ?? 0) >= 1.0) {
+      // auto-reload after 1 s of not shooting, stretched for slow guns: a flat 1 s reloaded a sniper
+      // (1.15 s between shots) after every single shot
+      const aw = this.activeWeapon(a);
+      if (!inp.fire && a.reloadUntil === 0 && a.ammo < (aw?.mag ?? 0) && now - (a.lastShotAt ?? 0) >= Math.max(1.0, (aw?.intervalSec ?? 0) + 0.5)) {
         this.startReload(a);
       }
       if (inp.melee) this.melee(a);
@@ -1136,11 +1139,14 @@ export class Sim {
       b.nextScanAt = now + 0.18 + rng() * 0.08;
       const f = forwardOf(a.yaw);
       let best = null, bd = Infinity;
+      // runners (e.g. a casserole carrier) only fight what is in their face and otherwise keep moving
+      const runner = this.mode.botRunner(a);
+      if (runner && b.target && Math.hypot(b.target.pos.x - a.pos.x, b.target.pos.z - a.pos.z) > 6) { b.target = null; b.path = null; }
       for (const e of this.actors) {
         if (!e.alive || e.team === a.team) continue;
         const dx = e.pos.x - a.pos.x, dz = e.pos.z - a.pos.z;
         const d = Math.hypot(dx, dz);
-        if (d > K.range) continue;
+        if (d > (runner ? 6 : K.range)) continue;
         const inFov = (dx * f.x + dz * f.z) / (d || 1) > Math.cos(K.fov);
         const alerted = d < 7 || e.revealedUntil > now || (a.lastHitBy === e.id && now - a.lastHurtAt < 1.5) || e === b.target;
         if (!inFov && !alerted) continue;
@@ -1178,8 +1184,14 @@ export class Sim {
       wantYaw = yawTo(ax, az);
       wantPitch = Math.atan2(aimY, d);
       if (now >= b.strafeUntil) { b.strafeDir = rng() < 0.5 ? -1 : 1; b.strafeUntil = now + 0.5 + rng() * 0.9; }
-      inp.right = b.strafeDir * 0.8;
-      inp.forward = d > 24 ? 0.7 : d < 5 ? -0.5 : 0;
+      // fight at the held weapon's range: close in until inside its falloff (shotguns rush, rifles hold),
+      // and weapons that are wildly inaccurate on the move (snipers) plant their feet to shoot
+      const w = this.activeWeapon(a);
+      const pref = Math.max(6, Math.min(24, (w?.falloff?.startM ?? 30) * 0.8));
+      const planted = (w?.spread?.moveMult ?? 1) >= 3 && now - b.seenAt < 0.35;
+      inp.right = planted ? 0 : b.strafeDir * 0.8;
+      inp.forward = d > pref ? (planted ? 0 : 0.7) : d < Math.min(5, pref * 0.5) ? -0.5 : 0;
+      if (pref < 10 && d > pref) { inp.forward = 1; inp.sprint = true; } // close-range guns rush in
       // mid-fight, drift onto a nearby objective (e.g. a receipt) instead of pure strafing
       // mid-fight: objective players keep pushing to the objective while they shoot (fight on the
       // move); hunters only grab something they are practically standing on (e.g. a receipt)
@@ -1194,12 +1206,19 @@ export class Sim {
       }
       if (d < 1.8) inp.melee = true;
       const aligned = Math.abs(wrap(wantYaw - a.yaw)) < 0.15;
-      if (aligned && now >= b.reactAt && now - b.seenAt < 0.35) {
+      const inRange = d <= Math.max(12, (w?.falloff?.startM ?? 60) * 1.6); // shotguns hold fire until close
+      if (aligned && inRange && now >= b.reactAt && now - b.seenAt < 0.35) {
         if (b.burstLeft <= 0 && now >= b.nextBurstAt) {
-          b.burstLeft = K.burst[0] + Math.floor(rng() * K.burst[1]);
+          // a burst lasts about as long as an AR burst whatever the gun, so slow weapons (sniper, shotgun)
+          // re-roll their aim error every shot instead of repeating one bad aim for several seconds
+          const shots = K.burst[0] + Math.floor(rng() * K.burst[1]);
+          b.burstLeft = Math.max(1, Math.round(shots * Math.min(1, 0.105 / (w?.intervalSec || 0.105))));
           b.aimHead = rng() < K.head;
           const moving = Math.hypot(t.vel.x, t.vel.z) > 1;
-          const sigma = K.sigma[0] + d * K.sigma[1] + (moving ? K.sigma[2] : 0);
+          // slow guns get the time between shots to line up: aim error shrinks with the fire interval,
+          // so a sniper bot is a threat instead of one wild shot per second (spray weapons are unchanged)
+          const settle = Math.min(1, 0.105 / (w?.intervalSec || 0.105)) ** 0.18;
+          const sigma = (K.sigma[0] + d * K.sigma[1] + (moving ? K.sigma[2] : 0)) * settle;
           b.errYaw = gauss(rng) * sigma;
           b.errPitch = gauss(rng) * sigma * 0.7;
         }
