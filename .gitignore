@@ -5,6 +5,7 @@ dist/*.png
 dist/*.mp4
 dist/*.webm
 dist/shorts/
+dist/director/
 dist/demo/
 dist/*.zip
 dist/desktop/

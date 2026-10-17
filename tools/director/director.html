@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HOA Warfare director</title>
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #view { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  #out { display: none; }
+</style>
+</head>
+<body>
+<!-- Video tooling (tools/director/direct.mjs drives this page over CDP). Not part of the game. -->
+<canvas id="view"></canvas>
+<canvas id="out"></canvas>
+<script type="module" src="director.js"></script>
+</body>
+</html>
