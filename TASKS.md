@@ -2,7 +2,7 @@
 
 Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task at a time in this file.
 
-**Current state (2026-10-16):** 16 factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids). 209 tests passing (0 failures). Demo on itch.io live with 6 factions.
+**Current state (2026-10-16, after Claude's audit):** 16 factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids). 213 tests passing (0 failures). Demo on itch.io live with 6 factions. 3 playable maps, 8 modes; every scoring mode scores on every map in bot matches (`node tools/botsim.mjs modes`). The live multiplayer server is an **old build** (see W1).
 
 ---
 
@@ -32,13 +32,90 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 - [ ] Submit for QA review **(Moth)**
 
 ### P1: Online Multiplayer Cloud Deployment — [Assigned: Claude]
-- [ ] Deploy `server/multiplayer.mjs` to production container on Render / Fly.io **(Claude)**
-- [ ] Update `data/demo.json` `serverUrl` with live deployed `wss://` endpoint **(Claude)**
-- [ ] Verify connection handshake, rate limiting, and 20Hz snapshot sync over public WebSocket **(Claude)**
+- [x] Deploy `server/multiplayer.mjs` to Render: live at `wss://hoa-warfare-online.onrender.com/ws` **(Claude)**
+- [x] Update `data/demo.json` `serverUrl` with the live `wss://` endpoint **(Claude)**
+- [ ] Redeploy: the live server is an old build (ignores `?mode=`, so online mode sync from 79f550b and today's server fixes are not live). See W1 **(Owner)**
+
+---
+
+## Next-stage worker prompts (from the 2026-10-16 audit)
+
+Each task below is a self-contained prompt: paste it to the named worker. Every task ends with
+`npm test` passing and a push to `main` with a commit message that says what changed, why, and which checks ran.
+Shared rules for all: targeted edits only (no whole-file rewrites), read a file before writing it, never commit
+another agent's uncommitted work, no personal data (public repo).
+
+### W1 — Redeploy the multiplayer server [Owner, 5 min] — open
+> In the Render dashboard, open the `hoa-warfare-online` service and click **Manual Deploy → Deploy latest commit**
+> (and turn on Auto-Deploy for `main` if you want every push to go live). The live build predates online mode sync
+> (79f550b), so every online room plays Clash, and it lacks bba968d (an unknown `?mode=` would crash the newer
+> server code; the fix is in) and the snapshot fix that makes Evict the Block sites render online.
+> **Done when:** a room opened with `?mode=evict` shows lettered lawn rings online.
+
+### W2 — Cut draw calls with static batching [Antigravity] — open
+> Every map draws ~690-775 meshes per frame (perf overlay, `?perf=1`), too many for low-end laptops and phones on
+> CrazyGames. In `web/src/engine/render.js`, at the end of `buildWorld()`, merge the static world meshes by
+> material (three.js `BufferGeometryUtils.mergeGeometries` from `web/vendor`, or one `InstancedMesh` per repeated
+> prop: trees, fence posts, cars, houses beyond the fence, cloud puffs). Keep separate anything that moves, flashes
+> or can be destroyed (destructibles, car alarms, mower, sprinklers, objective views); tag those at creation rather
+> than guessing. Keep `_worldCreatedObjects` disposal working for map changes.
+> **Done when:** perf overlay shows under 250 draws on all 3 maps with the same picture (compare
+> `node tools/shot.mjs "spectate=1&seed=7&perf=1&map=<id>"` before/after), `npm test` passes.
+
+### W3 — Fix stripmall side balance [Antigravity] — open
+> On stripmall, team 1 spawns at z≈-22 (near the centre) but team 0 at z≈+42. With identical factions, Steal the
+> Casserole ends 3-16 for team 1 over 6 seeds (`node tools/botsim.mjs mode stealTheCasserole stripmall`, second line).
+> Pickleball has the same layout (team 1 at z≈-24). Move team 1's spawns so both sides are about the same
+> distance from the centre and from cover, or mirror the layout. Keep `web/tests/integrity.test.mjs` passing
+> (spawns, nav nodes and objectives must stay out of props).
+> **Done when:** the same-faction line of `botsim mode stealTheCasserole` and `botsim mode clash` is within
+> 40/60 on both maps.
+
+### W4 — Weapon balance pass [Antigravity or Sonnet] — open
+> Bots now use each weapon at its own range (6b6debf). Per-weapon K/D on the cul-de-sac
+> (`node tools/botsim.mjs weapons`): sniper 1.65, pistol 1.40, AR 1.32, SMG 0.96, LMG 0.76, shotgun 0.47. Faction
+> strength follows the faction's default weapon (`FACTION_DEFAULT_LOADOUTS` in `web/src/engine/sim.js`), so tune
+> `data/weapons.json` only (damage, spread, falloff, fire interval), not bot code. Target: every primary between 0.8
+> and 1.25 on all three maps. The LMG is the outlier on the wrong side for its role; the shotgun dies on approach.
+> **Done when:** `botsim weapons <map>` for each map is inside the band and `npm test` passes.
+
+### W5 — Record the 79 missing voice lines, delete orphans [Muse] — open
+> 79 lines on the recording sheet (`dist/vo_session_sheet.csv`) have no audio and fall back to browser TTS:
+> hoaDads 7, karens 6, valleyGirls 6, cloutStreamers 6, fratHouse 5, gymRats 5, wallstreetBets 5, trumpers 5,
+> brainRot 4, fabulous 4, pickleballRetirees 4, rednecks 3, tradwives 3, furries 2, wokeLibs 1, animeWeebs 1,
+> rivalry 12 (karens and hoaDads are demo factions: do those first). Generate them with your voice pipeline, add them
+> to `web/vo/manifest.json`, then raise `COVERAGE_FLOOR` in `web/tests/audio.test.mjs` to the new coverage
+> (1.0 when complete). Separately, `web/vo/` holds 295 `.ogg` files the manifest does not list (224 are for cut
+> factions): delete them with `git rm` after checking each prefix against `data/hoa_content.json`.
+> **Done when:** audio and integrity tests pass with the raised floor and `web/vo` has no unlisted files.
+
+### W6 — Viral-video director tool [Claude] — open
+> The owner asked for a script-driven tool (not shipped in the game) that controls movement, aim, gunshots and voice
+> lines by line ID, plus camera and captions, so viral clips show real, timed kills. `tools/viral-director/` is
+> named under "Removed" below but does not exist. Build `tools/director/`: a JSON/JS shot script (actors, waypoints, aim
+> targets, `fire` at t, `say <lineId>` at t, camera cuts, captions) that drives the deterministic `Sim` headlessly
+> with scripted inputs, renders each frame in headless Chrome at fixed timestep, mixes voice/gun audio from the
+> event timeline with ffmpeg, and writes a 1080x1920 MP4. Reuse `tools/shot.mjs` CDP code and the bark manifest.
+> **Done when:** an example script produces a 15 s vertical clip where the scripted kills, lines and captions land on
+> the scripted frames, and nothing under `web/` changes behaviour for players.
+
+### W7 — Tooling hygiene [any] — open
+> (a) `tools/bake_weapons.mjs` leaks a Chrome profile per run in `$TMPDIR` like `shot.mjs` did (fixed in 1e64617:
+> kill Chrome, wait for exit, `rmSync` the profile); apply the same fix. (b) Several orphaned headless Chrome
+> processes from Oct 15-16 runs are still alive (`ps -ax | grep remote-debugging-port`); whoever owns them should
+> stop them. (c) Enable CI: copy `docs/ci/test.yml` to `.github/workflows/test.yml` through the GitHub web UI
+> (the agents' token cannot push workflow files) **(Owner)**.
 
 ---
 
 ## Completed (2026-10-16)
+
+- [x] **Audit fixes (Claude)** — sniper reloaded after every shot (auto-reload regression); bots weapon-aware
+  (K/D spread 0.25-1.46 → 0.47-1.65); Steal the Casserole scores on every map (kitchens + carrier hook);
+  shared nav-graph builder keeps bot nodes out of props (stuck 152-640 → 0-9); objectives moved off props on
+  new maps (`Mode.openSpot`); `?mode=` crash and object-field loss in the multiplayer server; dev server LAN
+  exposure, wildcard CORS and crash inputs; vibrate console spam; tutorial dummies inside props; Chrome
+  profile leak (4.7 GB); `tools/botsim.mjs`. Commits d2761c0..58d3180.
 
 - [x] **Cut 4 factions** — Removed oldMoney, emoKids, mlmHuns, theaterKids. 16 factions remain. (Moth)
 - [x] **Chatter system** — Ambient team banter every 5s during silence, never interrupts action voices. `web/src/core/chatter.js` (Moth)
