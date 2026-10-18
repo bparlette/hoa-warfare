@@ -109,7 +109,7 @@
       </div>
       <div id="factions" class="factions-grid-2x3"></div>
       <div class="lobby-action-bar">
-        <button type="button" id="deploy" class="btn-deploy">▶ DEPLOY NOW</button>
+        <button type="button" id="deploy" class="btn-deploy btn-deploy-pulse">▶ DEPLOY NOW</button>
         <button type="button" id="btnTutorial" class="btn-online btn-tutorial" title="30-Second Suburban Firing Range & Tutorial">🎯 TUTORIAL / FIRING RANGE</button>
         <button type="button" id="btnQuickMatch" class="btn-online btn-quickmatch-main" disabled>🌐 QUICK MATCH</button>
         <div id="heroDossier" style="display:none;"></div>
@@ -166,11 +166,12 @@
 </div>
 
 <div id="pause" class="overlay hidden">
-  <div class="panel small">
-    <h2>PAUSED</h2>
-    <p id="pauseHint">Tap resume or click to keep fighting for the block.</p>
+  <div class="panel small pause-card">
+    <div class="pause-crosshair-icon">🎯</div>
+    <h2>CLICK TO AIM &amp; RESUME</h2>
+    <p id="pauseHint">Tap resume or click anywhere to lock mouse look and resume fighting.</p>
     <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:stretch;width:100%;max-width:320px;margin:0 auto">
-      <button id="btnResume" type="button" class="btn-deploy" style="font-size:16px;padding:12px 16px;">▶ RESUME MATCH</button>
+      <button id="btnResume" type="button" class="btn-deploy btn-deploy-pulse" style="font-size:16px;padding:12px 16px;">▶ RESUME MATCH</button>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
         <button id="btnPauseMute" type="button" class="btn-online" style="flex:1;">🔊 MUTE SOUND</button>
         <button id="btnInvite" type="button" class="hidden btn-online" style="flex:1;">🔗 COPY LINK</button>

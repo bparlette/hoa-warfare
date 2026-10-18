@@ -88,9 +88,41 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 #board .t0 { color: #29adff; } #board .t1 { color: #ff004d; } #board .me { background: #ffec2733; }
 
 .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(#111d35dd, #111d35f2), url("../assets/art/cover_key_art.jpg") center/cover; z-index: 5; }
-#pause, #end { background: #111d35cc; }
+#pause {
+  background: radial-gradient(circle at center, rgba(17, 29, 53, 0.45) 0%, rgba(10, 15, 29, 0.85) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#end {
+  background: radial-gradient(circle at center, rgba(17, 29, 53, 0.6) 0%, rgba(10, 15, 29, 0.92) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
 .panel { background: #1d2b53; border: 4px solid #fff1e8; padding: 22px 30px; max-width: 900px; width: 92vw; box-shadow: 8px 8px 0 #000; max-height: 94vh; overflow: auto; }
 .panel.small { max-width: 420px; text-align: center; }
+.panel.pause-card {
+  background: rgba(29, 43, 83, 0.86);
+  border: 2px solid rgba(0, 229, 255, 0.85);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.3), 0 10px 40px rgba(0, 0, 0, 0.7);
+  border-radius: 14px;
+}
+.pause-crosshair-icon {
+  font-size: 34px;
+  margin-bottom: 2px;
+  filter: drop-shadow(0 0 8px #00e5ff);
+  animation: pulseCrosshair 1.5s infinite ease-in-out;
+}
+@keyframes pulseCrosshair {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 16px #ffec27); }
+}
+.btn-deploy-pulse {
+  animation: pulseDeploy 2s infinite ease-in-out;
+}
+@keyframes pulseDeploy {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 77, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 25px rgba(255, 236, 39, 0.7); transform: scale(1.02); }
+}
 
 .sr-only {
   position: absolute;

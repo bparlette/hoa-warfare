@@ -25,7 +25,7 @@ import { CareerProfile } from './progression.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
-const PAUSE_HINT = { mouse: 'Click to keep fighting for the block.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume.' };
+const PAUSE_HINT = { mouse: 'Click anywhere to lock aim & resume the match.', pad: 'Press START or A to resume · VIEW to quit', touch: 'Tap anywhere to resume the match.' };
 
 const $ = id => typeof document !== 'undefined' ? document.getElementById(id) : null;
 const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
@@ -818,8 +818,8 @@ class Game {
 
   update(dt) {
     this.realTime += dt;
-    const sim = this.sim;
-    const paused = !state.spectate && !input.engaged && !sim.over;
+    const isAuto = params.get('auto') === '1' || params.get('autostart') === '1';
+    const paused = !state.spectate && !input.engaged && !sim.over && !isAuto;
     const showPause = paused && !this.hud.killcam && $('menu').classList.contains('hidden');
     $('pause').classList.toggle('hidden', !showPause);
     if (showPause) $('pauseHint').textContent = PAUSE_HINT[input.device];
