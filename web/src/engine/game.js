@@ -1100,6 +1100,35 @@ class Game {
           break;
         case 'receiptConfirmed': if (a === me) { sfx.kill(); this.showBanner('RECEIPT CONFIRMED', `${e.victimName} has been processed`); this.hud.popScore?.('🧾 +100 RECEIPT!', true); } break;
         case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
+        case 'zoneCaptured':
+          if (e.cappers?.includes(me.id) && !me.isBot) {
+            career.unlockAchievement('ACH_HOA_PATROL');
+            this.hud.popScore?.(`🚩 +150 ZONE ${e.letter}!`, true);
+          }
+          this.showBanner(`ZONE ${e.letter} SECURED`, `${e.name} captured by ${e.team === me.team ? 'YOUR TEAM' : 'ENEMY'}`);
+          break;
+        case 'casseroleCaptured':
+          if (e.carrierId === me.id && !me.isBot) {
+            career.unlockAchievement('ACH_CASSEROLE_THIEF');
+            this.hud.popScore?.('🥘 +300 CASSEROLE SECURED!', true);
+          }
+          this.showBanner(e.team === me.team ? 'CASSEROLE SECURED!' : 'ENEMY SCORED!', e.team === me.team ? 'Brought the hot dish home!' : 'The enemy captured your casserole!');
+          break;
+        case 'objectiveBark':
+          if (e.what === 'noticePosted') {
+            if (e.id === me.id && !me.isBot) {
+              career.unlockAchievement('ACH_EVICTION');
+              this.hud.popScore?.('📄 +200 EVICTION POSTED!', true);
+            }
+            this.showBanner('EVICTION NOTICE POSTED', `Notice posted at Site ${e.site || 'A'}`);
+          } else if (e.what === 'noticeTornDown') {
+            if (e.id === me.id && !me.isBot) {
+              career.unlockAchievement('ACH_EVICTION');
+              this.hud.popScore?.('🛡️ +250 NOTICE DEFUSED!', true);
+            }
+            this.showBanner('EVICTION DEFUSED', 'The eviction notice was torn down in time!');
+          }
+          break;
         case 'hardpointRotated': this.showBanner('NEW LAWN ACTIVE', e.name); break;
         case 'matchEnd':
           if (!me.isBot) {

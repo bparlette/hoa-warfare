@@ -315,7 +315,8 @@ export class HoaPatrol extends Mode {
           if (z.capProgress >= 1) {
             z.ownerTeam = 0;
             z.capProgress = 1;
-            sim.emit({ type: 'zoneCaptured', letter: z.letter, name: z.name, team: 0 });
+            const cappers = sim.actors.filter(a => a.team === 0 && this.isInside(a, z)).map(a => a.id);
+            sim.emit({ type: 'zoneCaptured', letter: z.letter, name: z.name, team: 0, cappers });
           }
         }
       } else if (t1 > 0) {
@@ -328,7 +329,8 @@ export class HoaPatrol extends Mode {
           if (z.capProgress >= 1) {
             z.ownerTeam = 1;
             z.capProgress = 1;
-            sim.emit({ type: 'zoneCaptured', letter: z.letter, name: z.name, team: 1 });
+            const cappers = sim.actors.filter(a => a.team === 1 && this.isInside(a, z)).map(a => a.id);
+            sim.emit({ type: 'zoneCaptured', letter: z.letter, name: z.name, team: 1, cappers });
           }
         }
       } else {
