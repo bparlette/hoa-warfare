@@ -29,7 +29,13 @@ const PAUSE_HINT = { mouse: 'Click anywhere to lock aim & resume the match.', pa
 
 const $ = id => typeof document !== 'undefined' ? document.getElementById(id) : null;
 const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
-export const isDemo = params.get('demo') === '1' || (typeof window !== 'undefined' && window.__HOA_DEMO__ === true);
+// Build marker for the free web demo. tools/package_demo.mjs rewrites this line to `true` in
+// the demo zip (and fails the pack if it cannot), so a demo build is a constant in the shipped
+// file rather than a runtime flag: deleting window.__HOA_DEMO__ in DevTools no longer changes
+// anything, and the demo pack does not contain the paid factions at all (it ships
+// data/demo_content.json instead of data/hoa_content.json).
+export const DEMO_BUILD = false;
+export const isDemo = DEMO_BUILD || params.get('demo') === '1' || (typeof window !== 'undefined' && window.__HOA_DEMO__ === true);
 const FIXED = 1 / 60;
 const KILLCAM_SEC = 3.2;
 
@@ -106,14 +112,16 @@ const state = {
   spectate: params.get('spectate') === '1',
   mode: MODES[params.get('mode')] ? params.get('mode') : 'clash',
   difficulty: initialDifficulty,
-  map: !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
-  goldSkin: !isDemo && params.get('gold') === '1',
+  // Paid maps/skins/mutators are gated on DEMO_BUILD (a build constant), so a DevTools flip of
+  // the demo flag cannot unlock paid content in the free pack.
+  map: !DEMO_BUILD && !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
+  goldSkin: !DEMO_BUILD && !isDemo && params.get('gold') === '1',
   wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
     bigHead: params.get('bighead') === '1',
-    shotgunsOnly: !isDemo && params.get('shotguns') === '1',
-    lowGrav: !isDemo && params.get('lowgrav') === '1',
-    turbo: !isDemo && params.get('turbo') === '1',
+    shotgunsOnly: !DEMO_BUILD && !isDemo && params.get('shotguns') === '1',
+    lowGrav: !DEMO_BUILD && !isDemo && params.get('lowgrav') === '1',
+    turbo: !DEMO_BUILD && !isDemo && params.get('turbo') === '1',
   },
 };
 

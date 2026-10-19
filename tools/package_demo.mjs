@@ -6,6 +6,14 @@
 // Only ships what the demo loads: game code, three.js, data, the logo/favicon/menu art, and voice
 // lines for the demo factions (DEMO_FACTIONS in web/src/engine/game.js; bots only use those too).
 // Marketing video (web/shorts, web/clips) and art masters stay out, so the first load stays small.
+//
+// PAID CONTENT NEVER SHIPS HERE. The demo pack gets data/demo_content.json (the demo factions and
+// their rivalries, built below from data/hoa_content.json) instead of the full content file, and
+// DEMO_BUILD in the shipped game.js is a compile-time true. Both are enforced: the pack fails if
+// the marker cannot be rewritten, and — because the full content file is absent — deleting
+// window.__HOA_DEMO__ in DevTools has nothing paid left to unlock.
+//
+// Flags: --no-zip  build dist/demo/ but skip the zip (fast; used by the packaging test).
 
 import { cpSync, mkdirSync, rmSync, existsSync, statSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
@@ -36,23 +44,58 @@ for (const f of ['logo.png', 'favicon.png', 'badge.png']) if (existsSync(join(WE
 if (existsSync(join(WEB, 'assets', 'characters'))) copy(join(WEB, 'assets', 'characters'), join(DEMO, 'assets', 'characters'));
 if (existsSync(join(WEB, 'assets', 'weapons'))) copy(join(WEB, 'assets', 'weapons'), join(DEMO, 'assets', 'weapons'));
 copy(join(ROOT, 'assets', 'art', 'cover_key_art.jpg'), join(DEMO, 'assets', 'art', 'cover_key_art.jpg'));
-for (const f of ['hoa_content.json', 'weapons.json', 'demo.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+for (const f of ['weapons.json', 'demo.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+// hoa_content.json is deliberately NOT copied: the demo ships demo_content.json (step 2b).
 
 // 2. Paths: the repo serves web/ next to data/ and assets/; in the zip everything sits at the root.
 const gamePath = join(DEMO, 'src', 'engine', 'game.js');
 const game = readFileSync(gamePath, 'utf8');
-const gameFixed = game.replace(/'\.\.\/data\//g, "'data/");
+let gameFixed = game.replace(/'\.\.\/data\//g, "'data/");
 if (gameFixed === game) throw new Error('package_demo: expected ../data/ paths in game.js');
+
+// Build marker: isDemo becomes a constant in the shipped file, so deleting window.__HOA_DEMO__ in
+// DevTools changes nothing. Fail loudly if the line moves, or a refactor would silently ship a
+// demo whose only gate is a client-side flag.
+const DEMO_MARKER = 'export const DEMO_BUILD = false;';
+if (!gameFixed.includes(DEMO_MARKER)) throw new Error('package_demo: DEMO_BUILD marker missing from game.js');
+gameFixed = gameFixed.replace(DEMO_MARKER, 'export const DEMO_BUILD = true; // rewritten by tools/package_demo.mjs');
+
+// Content: the demo loads the whitelisted file built in step 2b, never the paid one. The full
+// hoa_content.json is not in the zip at all, so unlocking the flag would find nothing paid.
+const CONTENT_REF = "'data/hoa_content.json'";
+if (!gameFixed.includes(CONTENT_REF)) throw new Error('package_demo: content path reference missing from game.js');
+gameFixed = gameFixed.replace(CONTENT_REF, "'data/demo_content.json'");
 writeFileSync(gamePath, gameFixed);
 const cssPath = join(DEMO, 'style.css');
 writeFileSync(cssPath, readFileSync(cssPath, 'utf8').replace(/url\((["']?)\.\.\/assets\//g, 'url($1assets/'));
+
+// 2b. Demo content whitelist: only the demo factions and the rivalries between them. Everything
+// else in hoa_content.json (the other factions' stats, names and barks) stays out of the zip.
+const demoFactions = JSON.parse(game.match(/DEMO_FACTIONS\s*=\s*(\[[^\]]*\])/)[1].replace(/'/g, '"'));
+const fullContent = JSON.parse(readFileSync(join(ROOT, 'data', 'hoa_content.json'), 'utf8'));
+const demoContent = { ...fullContent, __demo: true, factions: {}, rivalry: [] };
+for (const id of demoFactions) {
+  const faction = fullContent.factions[id];
+  if (!faction) throw new Error(`package_demo: DEMO_FACTIONS lists ${id}, which is not in hoa_content.json`);
+  // `brief` is design documentation (angle/joke mines/rivalsFirst, with paid faction ids in it)
+  // and nothing at runtime reads it, so the demo pack drops it.
+  const { brief, ...runtimeFaction } = faction;
+  demoContent.factions[id] = runtimeFaction;
+}
+// Rivalry quips are keyed { killer, victim }: keep only the pairs where BOTH sides are in the demo,
+// the same rule the voice manifest uses. Anything else would name a faction the pack does not ship.
+demoContent.rivalry = (fullContent.rivalry || []).filter(
+  r => demoFactions.includes(r?.killer) && demoFactions.includes(r?.victim)
+);
+mkdirSync(join(DEMO, 'data'), { recursive: true });
+writeFileSync(join(DEMO, 'data', 'demo_content.json'), JSON.stringify(demoContent, null, 2));
+console.log(`  → content: ${Object.keys(demoContent.factions).length} demo factions, ${demoContent.rivalry.length} rivalries (paid factions excluded)`);
 
 // 3. Demo flag
 const htmlPath = join(DEMO, 'index.html');
 writeFileSync(htmlPath, readFileSync(htmlPath, 'utf8').replace('<head>', '<head>\n<script>window.__HOA_DEMO__ = true;</script>'));
 
 // 4. Voice lines: demo factions only (rivalries only when both sides are in the demo)
-const demoFactions = JSON.parse(game.match(/DEMO_FACTIONS\s*=\s*(\[[^\]]*\])/)[1].replace(/'/g, '"'));
 const manifest = JSON.parse(readFileSync(join(WEB, 'vo', 'manifest.json'), 'utf8'));
 const keep = id => {
   const m = id.match(/^rivalry\.([^-]+)-([^.]+)\./);
@@ -91,7 +134,21 @@ const scan = dir => {
 scan(DEMO);
 if (offenders.length) throw new Error('package_demo: paths escape the zip root in ' + offenders.join(', '));
 
+// 5b. Leak check: no paid faction id may appear in any shipped data file.
+const paidIds = Object.keys(fullContent.factions).filter(id => !demoFactions.includes(id));
+for (const f of readdirSync(join(DEMO, 'data'))) {
+  const body = readFileSync(join(DEMO, 'data', f), 'utf8');
+  const leaked = paidIds.filter(id => body.includes(`"${id}"`));
+  if (leaked.length) throw new Error(`package_demo: paid faction ids in data/${f}: ${leaked.join(', ')}`);
+}
+if (existsSync(join(DEMO, 'data', 'hoa_content.json'))) throw new Error('package_demo: the full content file must not ship in the demo');
+
 // 6. Zip
+const noZip = process.argv.includes('--no-zip') || process.env.HOA_PACK_NO_ZIP === '1';
+if (noZip) {
+  console.log('\n✅ dist/demo/ built (zip skipped: --no-zip)');
+  process.exit(0);
+}
 execSync(`cd "${DEMO}" && zip -r -q "${ZIP_PATH}" .`, { stdio: 'inherit' });
 const size = statSync(ZIP_PATH).size;
 console.log(`\n✅ dist/hoa-warfare-web-demo.zip (${mb(size)} MB)`);

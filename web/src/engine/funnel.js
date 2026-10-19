@@ -22,6 +22,10 @@ export function detectPortal(loc = typeof location !== 'undefined' ? location : 
 export class Funnel {
   constructor(config = {}, portal = detectPortal()) {
     this.cfg = { ...DEFAULTS, ...config };
+    // The end-of-match Steam card is the funnel: a lock of 0 (or a typo) would make it instantly
+    // skippable, so clamp it. A deliberate shorter lock is never wanted; longer is fine.
+    const lock = Number(this.cfg.ctaLockSec);
+    this.cfg.ctaLockSec = Number.isFinite(lock) ? Math.min(15, Math.max(3, lock)) : DEFAULTS.ctaLockSec;
     this.portal = portal;
   }
 
