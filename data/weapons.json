@@ -7,7 +7,9 @@
     "Hitboxes: body cylinder r=0.42 h=1.42, head sphere r=0.25 at 1.62 (sim.js BODY). Headshot = damage.head.",
     "TTK sanity: body hits to kill = ceil(100 / damage.body). Keep ARs at 4-5, SMGs 5-6 at their faster interval.",
     "Balance check: `node tools/botsim.mjs weapons <map>` (6 seeds of 6v6, all-Karens). Aim for every primary inside 0.75-1.35 K/D on culdesac, stripmall AND pickleball; a step change in falloff (`mult`) is a cliff for players, so tune `startM` first.",
-    "Measured 2024-06 after the shotgun/sniper pass: culdesac 0.75-1.24, stripmall 0.67-1.60, pickleball 0.49-2.63. Pickleball's open courts still favour the sniper: it wins by NOT dying (27 deaths in 6 matches), so read its K/D as 'the safest pick on open ground', not raw power.",
+    "MEASURE WITH A BIG SAMPLE: `node tools/botsim.mjs weapons <map> --seeds=20`. Six seeds is noise - the sniper read 1.68 on pickleball then 1.13 on the next run with no AR change in between, and tuning against that chases luck. The tool now prints a 1-sigma error on every K/D.",
+    "Measured 2024-06-20 seeds, all-Karen teams: culdesac 0.89-1.16, stripmall 0.87-1.10, pickleball 0.73-1.41 (every primary inside 0.75-1.35 except the two role cases below).",
+    "Two readings outside the band are deliberate. Pickleball's sniper (1.41+-0.16) wins by NOT dying - long open courts, it never has to cross no-man's land, so K/D overstates its power; that is the map favouring a role, and cutting it further made it a trap on culdesac (0.87). The shotgun (0.73+-0.05 on pickleball, 0.94 on culdesac) is the same story in reverse: a 19 m falloff on a 60 m court. Both are role/map fits, not outliers to chase - check that a buff does not push them out of band on the maps where they already sit at 0.9+.",
     "The 8 launch weapons from the GDD: allowance (AR), sideHustle (SMG), divorceSettlement (shotgun), trustFund (sniper), subdivision (LMG), permit (pistol), lawsuit (launcher; thrown briefcase), participationTrophy (melee)."
   ],
   "weapons": {
@@ -23,24 +25,24 @@
     "sideHustle": {
       "name": "The Side Hustle", "class": "smg", "slot": "primary", "fire": "hitscan", "auto": true,
       "mag": 36, "reloadSec": 1.35, "intervalSec": 0.075, "pellets": 1,
-      "damage": { "body": 18, "head": 38 },
-      "range": 55, "falloff": { "startM": 18, "mult": 0.6 },
-      "spread": { "base": 0.022, "moveMult": 1.4, "airMult": 2.2 },
+      "damage": { "body": 20, "head": 40 },
+      "range": 55, "falloff": { "startM": 22, "mult": 0.62 },
+      "spread": { "base": 0.020, "moveMult": 1.4, "airMult": 2.2 },
       "recoil": { "viewKick": 0.08 },
       "feedIcon": "⚡", "tracer": "faction", "viewmodel": "smg"
     },
     "divorceSettlement": {
       "name": "The Divorce Settlement", "class": "shotgun", "slot": "primary", "fire": "hitscan", "auto": false,
-      "mag": 7, "reloadSec": 2.2, "intervalSec": 0.68, "pellets": 8,
-      "damage": { "body": 22, "head": 36 },
-      "range": 40, "falloff": { "startM": 14, "mult": 0.55 },
+      "mag": 7, "reloadSec": 2.0, "intervalSec": 0.68, "pellets": 9,
+      "damage": { "body": 23, "head": 36 },
+      "range": 46, "falloff": { "startM": 19, "mult": 0.66 },
       "spread": { "base": 0.055, "moveMult": 1.25, "airMult": 1.8 },
       "recoil": { "viewKick": 0.28 },
       "feedIcon": "💥", "tracer": "faction", "viewmodel": "shotgun"
     },
     "trustFund": {
       "name": "The Trust Fund", "class": "sniper", "slot": "primary", "fire": "hitscan", "auto": false,
-      "mag": 5, "reloadSec": 2.5, "intervalSec": 1.35, "pellets": 1,
+      "mag": 4, "reloadSec": 3.0, "intervalSec": 1.5, "pellets": 1,
       "damage": { "body": 80, "head": 180 },
       "range": 140, "falloff": { "startM": 80, "mult": 0.9 },
       "spread": { "base": 0.001, "moveMult": 3.8, "airMult": 6.0 },

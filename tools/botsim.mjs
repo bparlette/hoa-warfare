@@ -30,7 +30,12 @@ function match({ mode = 'clash', map = 'culdesac', seed = 1, limit = 300, actor 
   return sim;
 }
 
-const [cmd = 'modes', a1, a2] = process.argv.slice(2);
+const argv = process.argv.slice(2);
+// --seeds=N: weapons/mode read K/D and score off a handful of matches, and run-to-run noise there is
+// as big as a balance change (sniper swung 1.68 -> 1.13 with 38 deaths in the sample). Tune against a
+// bigger sample so you chase signal, not luck.
+const SEEDS = Math.max(1, Number((argv.find((a) => a.startsWith('--seeds=')) || '').split('=')[1]) || 6);
+const [cmd = 'modes', a1, a2] = argv.filter((a) => !a.startsWith('--seeds='));
 const mapList = s => (s ? s.split(',') : Object.keys(MAPS));
 
 if (cmd === 'modes') {
@@ -53,7 +58,7 @@ if (cmd === 'modes') {
   }
 } else if (cmd === 'weapons') {
   const st = Object.fromEntries(PRIMARIES.map(w => [w, { shots: 0, hits: 0, kills: 0, deaths: 0 }]));
-  for (let seed = 1; seed <= 6; seed++) {
+  for (let seed = 1; seed <= SEEDS; seed++) {
     const sim = match({ map: a1 || 'culdesac', seed, actor: i => ({ team: i % 2, faction: 'karens', loadout: PRIMARIES[(Math.floor(i / 2) + seed) % PRIMARIES.length] }),
       onStep: (s, events) => {
         for (const e of events) if (e.type === 'shot') {
@@ -66,7 +71,10 @@ if (cmd === 'modes') {
     for (const a of sim.actors) { const w = st[a.weapons.primary.id]; w.kills += a.kills; w.deaths += a.deaths; }
   }
   for (const [w, s] of Object.entries(st).sort((x, y) => y[1].kills / y[1].deaths - x[1].kills / x[1].deaths)) {
-    console.log(`${w.padEnd(18)} K/D ${(s.kills / (s.deaths || 1)).toFixed(2)}  ${s.kills}/${s.deaths}  acc ${(s.hits / (s.shots || 1)).toFixed(2)}  shots ${s.shots}`);
+    // 1-sigma on a ratio of small counts: the band is only meaningful if the sample clears it.
+    const kd = s.kills / (s.deaths || 1);
+    const err = kd * Math.sqrt(1 / (s.kills || 1) + 1 / (s.deaths || 1));
+    console.log(`${w.padEnd(18)} K/D ${kd.toFixed(2)}+-${err.toFixed(2)}  ${s.kills}/${s.deaths}  acc ${(s.hits / (s.shots || 1)).toFixed(2)}  shots ${s.shots}`);
   }
 } else if (cmd === 'factions') {
   const st = Object.fromEntries(FACTIONS.map(f => [f, { k: 0, d: 0 }]));
@@ -81,11 +89,13 @@ if (cmd === 'modes') {
   if (!a1 || !MODES[a1]) { console.error(`usage: botsim.mjs mode <${Object.keys(MODES).join('|')}> [map]`); process.exit(1); }
   for (const same of [false, true]) {
     const tot = [0, 0];
-    for (let seed = 1; seed <= 6; seed++) {
-      const sim = match({ mode: a1, map: a2 || 'culdesac', seed, actor: i => ({ team: i % 2, faction: same ? 'karens' : FACTIONS[i % FACTIONS.length] }) });
+    for (let seed = 1; seed <= SEEDS; seed++) {
+      // Rotate the faction pairing per seed: with a fixed pairing the "mixed factions" line compares the
+      // same two fixed teams every time, so it reads as a map/spawn imbalance when it is a faction one.
+      const sim = match({ mode: a1, map: a2 || 'culdesac', seed, actor: i => ({ team: i % 2, faction: same ? 'karens' : FACTIONS[(i + seed) % FACTIONS.length] }) });
       tot[0] += sim.score[0]; tot[1] += sim.score[1];
     }
-    console.log(`${a1} on ${a2 || 'culdesac'} (${same ? 'same faction both teams' : 'mixed factions'}): total score ${tot[0]}-${tot[1]} over 6 seeds`);
+    console.log(`${a1} on ${a2 || 'culdesac'} (${same ? 'same faction both teams' : 'mixed factions'}): total score ${tot[0]}-${tot[1]} over ${SEEDS} seeds`);
   }
 } else {
   console.error('usage: node tools/botsim.mjs modes|weapons|factions|mode <mode> [map]');

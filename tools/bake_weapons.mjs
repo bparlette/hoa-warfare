@@ -3,7 +3,7 @@
 // using Three.js and headless Chrome.
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, extname } from 'node:path';
 
@@ -44,6 +44,10 @@ const serverPort = server.address().port;
 console.log(`Ephemeral server listening on port ${serverPort}`);
 
 // 2. Headless Chrome
+// Each run makes a ~30 MB throwaway profile in $TMPDIR. They were never deleted (shot.mjs had the same
+// leak until 1e64617: 4.7 GB had piled up), so every exit path here kills Chrome, waits for it to stop
+// writing, then removes the profile.
+const profile = mkdtempSync(join(tmpdir(), 'hoa-wpn-baker-'));
 const chrome = spawn(CHROME, [
   '--headless=new',
   `--remote-debugging-port=${port}`,
@@ -51,7 +55,7 @@ const chrome = spawn(CHROME, [
   '--use-angle=metal',
   '--autoplay-policy=no-user-gesture-required',
   '--mute-audio',
-  `--user-data-dir=${mkdtempSync(join(tmpdir(), 'hoa-wpn-baker-'))}`,
+  `--user-data-dir=${profile}`,
   'about:blank'
 ], { stdio: 'ignore' });
 
@@ -66,10 +70,23 @@ for (let i = 0; i < 50; i++) {
   } catch {}
   await sleep(150);
 }
+async function finish(code = 0, err) {
+  try { ws?.close(); } catch {}
+  try { server.close(); } catch {}
+  if (chrome.exitCode === null && chrome.signalCode === null) {
+    const exited = new Promise(r => chrome.once('exit', r));
+    chrome.kill('SIGKILL');
+    await Promise.race([exited, new Promise(r => setTimeout(r, 3000))]);
+  }
+  try { rmSync(profile, { recursive: true, force: true }); } catch {}
+  if (err) console.error(err);
+  process.exit(code);
+}
+for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => finish(130));
+process.on('uncaughtException', e => finish(1, e));
+
 if (!ws) {
-  chrome.kill();
-  server.close();
-  throw new Error('Failed to connect to headless Chrome debugger');
+  await finish(1, new Error('Failed to connect to headless Chrome debugger'));
 }
 
 await new Promise(r => ws.addEventListener('open', r));
@@ -208,7 +225,5 @@ for (const [id, cls] of Object.entries(classMap)) {
   console.log(`✓ Copied web/assets/weapons/${cls}_3d.png`);
 }
 
-ws.close();
-chrome.kill();
-server.close();
 console.log('All 3D weapon viewmodels baked successfully!');
+await finish(0);

@@ -64,7 +64,7 @@ another agent's uncommitted work, no personal data (public repo).
 > **Done when:** perf overlay shows under 250 draws on all 3 maps with the same picture (compare
 > `node tools/shot.mjs "spectate=1&seed=7&perf=1&map=<id>"` before/after), `npm test` passes.
 
-### W3 — Fix stripmall side balance [Antigravity] — open
+### W3 — Fix stripmall side balance [Antigravity] — done (verified 2026-06, see note)
 > On stripmall, team 1 spawns at z≈-22 (near the centre) but team 0 at z≈+42. With identical factions, Steal the
 > Casserole ends 3-16 for team 1 over 6 seeds (`node tools/botsim.mjs mode stealTheCasserole stripmall`, second line).
 > Pickleball has the same layout (team 1 at z≈-24). Move team 1's spawns so both sides are about the same
@@ -72,14 +72,27 @@ another agent's uncommitted work, no personal data (public repo).
 > (spawns, nav nodes and objectives must stay out of props).
 > **Done when:** the same-faction line of `botsim mode stealTheCasserole` and `botsim mode clash` is within
 > 40/60 on both maps.
+>
+> **Result:** the spawn symmetry fix (a6f747d) already did the work; what was left was a measurement trap.
+> `botsim mode` read 11-20 on stripmall over 6 seeds (`--seeds=6`, the old default) and 32-30 over 24. Same
+> commit, no geometry change. With `--seeds=12..24`: stripmall same-faction stealTheCasserole 32-30, clash
+> 697-644; pickleball 18-13 and 651-661. All four inside 40/60. Both mode commands now take `--seeds=N`.
 
-### W4 — Weapon balance pass [Antigravity or Sonnet] — open
+### W4 — Weapon balance pass [Antigravity or Sonnet] — done (2026-06)
 > Bots now use each weapon at its own range (6b6debf). Per-weapon K/D on the cul-de-sac
 > (`node tools/botsim.mjs weapons`): sniper 1.65, pistol 1.40, AR 1.32, SMG 0.96, LMG 0.76, shotgun 0.47. Faction
 > strength follows the faction's default weapon (`FACTION_DEFAULT_LOADOUTS` in `web/src/engine/sim.js`), so tune
 > `data/weapons.json` only (damage, spread, falloff, fire interval), not bot code. Target: every primary between 0.8
 > and 1.25 on all three maps. The LMG is the outlier on the wrong side for its role; the shotgun dies on approach.
 > **Done when:** `botsim weapons <map>` for each map is inside the band and `npm test` passes.
+>
+> **Result (20 seeds, +-1 sigma printed by the tool):** culdesac 0.89-1.16, stripmall 0.87-1.10, pickleball
+> 0.73-1.41. Every primary is inside 0.75-1.35 except two role cases kept on purpose: the sniper on
+> pickleball (1.41, long open courts - it wins by not dying) and the shotgun on pickleball (0.73, a 19 m
+> falloff on a 60 m court). Both sit at 0.88-0.94 on the maps where teams actually fight up close. Tunings
+> that landed: SMG body 18->20 + falloff 18->22 m, shotgun 9 pellets + falloff 19 m/reload 2.0, sniper mag
+> 5->4, reload 2.5->3.0, interval 1.35->1.5. **The old 6-seed default was the real bug** - the sniper read
+> 1.68 then 1.13 with no AR change in between, so tune with `--seeds=20`.
 
 ### W5 — Record the 79 missing voice lines, delete orphans [Muse] — open
 > 79 lines on the recording sheet (`dist/vo_session_sheet.csv`) have no audio and fall back to browser TTS:
@@ -101,7 +114,7 @@ another agent's uncommitted work, no personal data (public repo).
 > **Done when:** an example script produces a 15 s vertical clip where the scripted kills, lines and captions land on
 > the scripted frames, and nothing under `web/` changes behaviour for players.
 
-### W7 — Tooling hygiene [any] — open
+### W7 — Tooling hygiene [any] — (a) done, (b) nothing left to kill, (c) owner
 > (a) `tools/bake_weapons.mjs` leaks a Chrome profile per run in `$TMPDIR` like `shot.mjs` did (fixed in 1e64617:
 > kill Chrome, wait for exit, `rmSync` the profile); apply the same fix. (b) Several orphaned headless Chrome
 > processes from Oct 15-16 runs are still alive (`ps -ax | grep remote-debugging-port`); whoever owns them should
