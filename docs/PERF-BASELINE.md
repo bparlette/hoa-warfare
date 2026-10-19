@@ -58,3 +58,51 @@ character silhouettes are the two things players look at every frame).
 - `Game.update()` threw `ReferenceError: sim is not defined` on every frame, so the canvas stayed
   blank (11 KB blank screenshot). Update now aliases `sim`, and the slice renders a full match
   (590 KB screenshot, 719 draws, 120+ frames advanced).
+
+## Draw-call breakdown (measured 2026-10-19)
+
+Measured with `node tools/shot.mjs "spectate=1&seed=7&perf=1&map=<id>"` on the
+current build: **culdesac ~640, pickleball ~700-770, stripmall ~775-800 draws**
+(variation is bot spread and frustum culling, not the map).
+
+Where they go on stripmall (`renderer.worldDraws` + a scene walk):
+
+| bucket | meshes | notes |
+|---|---|---|
+| characters (12 bots) | ~475 | 33-39 meshes each, ~65 tris each |
+| static world after `mergeStatic` | 80 | it already collapses 425 -> 80 |
+| fx / transparent / dynamic props | ~240 | 83 fx meshes, casserole, rings, mower, sprites |
+
+So **static batching is already done** and W2's "under 250" is not reachable by
+batting the map: the world is 80 draws and the characters are 475.
+
+Why the characters cannot be batched: a character is 33 parts but only ~13
+distinct appearances, and the parts that share an appearance live under
+*different* bones (left hand and right hand, hip and shoulder). Merging them
+per bone was implemented and measured at 798 -> 776 draws (2%), i.e. not worth
+the code, so it is not in the tree. The real cost is one draw per small part per
+bot, which needs one of:
+
+1. **Character LOD** - hide sub-15 cm detail (ears, nose, shoe caps, weapon
+   trim, headwear) beyond ~18 m, where it is sub-pixel anyway. Cheapest real win,
+   no art change, but it only pays off when bots are far, and on these maps they
+   are often close.
+2. **One material atlas per character** (all parts share a texture, so the
+   rigid parts of a bone merge into one draw). Needs the character art rebuilt
+   around an atlas; that is a project, not a task.
+3. **FX pooling** - the ~240 fx/transparent draws are short-lived particles that
+   each own a mesh; one pooled InstancedMesh per effect type would remove most
+   of them.
+
+Until one of those lands, phone-tier performance should be judged on *tris*
+(~50k, fine) and on the quality tier (`?quality=low`), not on the 250 number.
+
+## Measurement trap: a stale server reports believable numbers
+
+`tools/shot.mjs` used to trust whatever answered on 8642. A leftover
+`node tools/serve.mjs` from an **older checkout** (`~/Games/hoa-warfare`) was
+answering there, so a run could silently measure a different build - it reported
+`calls: 0` with a `sim is not defined` exception out of a long-fixed `update()`.
+`shot.mjs` now compares the served `web/src/engine/game.js` against this
+checkout and refuses to run otherwise. If it fails, `pkill -f "tools/serve.mjs 8642"`
+and start the server from this repo.

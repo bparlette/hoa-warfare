@@ -3,7 +3,7 @@
 //   node tools/shot.mjs "<url query>" out.png [seconds] [extra js to eval before shooting]
 // Needs Google Chrome installed and `node tools/serve.mjs` running. Uses CDP over Node's WebSocket.
 import { spawn } from 'node:child_process';
-import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -60,7 +60,25 @@ if (process.env.MOBILE) {
   await send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true, screenOrientation: { type: 'landscapePrimary', angle: 90 } });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
 }
-await send('Page.navigate', { url: `${process.env.SHOT_BASE || 'http://127.0.0.1:8642'}${process.env.SHOT_PATH || '/web/'}?${query}` });
+// Guard: the perf numbers are only meaningful if the browser is serving THIS
+// checkout. A leftover `tools/serve.mjs` from another copy of the repo answers
+// on 8642 too, and it silently reported 775 draws and even a dead update() loop
+// from an old build. Compare a real source file before measuring.
+const base = process.env.SHOT_BASE || 'http://127.0.0.1:8642';
+{
+  const probe = await fetch(`${base}/web/src/engine/game.js`).then(r => (r.ok ? r.text() : null)).catch(() => null);
+  const local = readFileSync(new URL('../web/src/engine/game.js', import.meta.url), 'utf8');
+  if (probe === null) {
+    console.error(`shot: nothing is serving ${base} - start it from THIS repo: node tools/serve.mjs 8642`);
+    process.exit(1);
+  }
+  if (probe !== local) {
+    console.error(`shot: ${base} is serving a DIFFERENT copy of the repo (game.js differs from ${import.meta.url}).`);
+    console.error('shot: kill that server (pkill -f "tools/serve.mjs 8642") and start one here, or every number is from the wrong build.');
+    process.exit(1);
+  }
+}
+await send('Page.navigate', { url: `${base}${process.env.SHOT_PATH || '/web/'}?${query}` });
 // Perf probe: sample every frame from the first moments of the run so every shot
 // also reports real fps + draw calls (renderer.info) instead of guesswork.
 await send('Runtime.evaluate', { expression: `window.__perf = { n: 0, t0: performance.now(), calls: 0, tris: 0, programs: 0 };
