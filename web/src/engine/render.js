@@ -1683,8 +1683,11 @@ export class Renderer {
     }
     this.camRecoil = Math.max(0, (this.camRecoil || 0) - dt * 0.22);
 
-    this.camera.position.set(a.pos.x, a.pos.y + BODY.eye, a.pos.z);
-    this.camera.rotation.set(a.pitch + this.camRecoil, a.yaw, 0, 'YXZ');
+    // Impact shake (game/juice.js): offsets are added on top of the aim the player already has, so a
+    // shaking camera never moves where the shot goes - the sim uses a.pitch/a.yaw, not the camera.
+    const j = this.juice?.sample();
+    this.camera.position.set(a.pos.x + (j?.x || 0), a.pos.y + BODY.eye + (j?.y || 0), a.pos.z);
+    this.camera.rotation.set(a.pitch + this.camRecoil + (j?.pitch || 0), a.yaw + (j?.yaw || 0), j?.roll || 0, 'YXZ');
     const vm = this.viewmodel;
     vm.visible = alive;
     const vmType = activeW?.viewmodel || 'blaster';

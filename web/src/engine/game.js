@@ -724,6 +724,7 @@ class Game {
     // Camera shake / recoil / hit markers. Seeded with the match seed so `?seed=N` replays shake the same
     // way, which the video tooling and bug reports depend on. render.js adds the offsets to the camera.
     this.juice = createJuice({ seed });
+    if (renderer) renderer.juice = this.juice;
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
     const activeMap = buildMap(state.map);
     if (renderer) renderer.setMap(activeMap);
