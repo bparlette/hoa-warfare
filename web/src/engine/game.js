@@ -7,6 +7,7 @@ import { mulberry32 } from '../core/rng.js';
 import { Sim, yawTo } from './sim.js';
 import { MODES } from './modes.js';
 import { BarkSystem } from './barks.js';
+import { createJuice, JUICE } from './juice.js';
 import { ChatterDirector } from '../core/chatter.js';
 import { Renderer } from './render.js';
 import { Voice, Sfx } from './audio.js';
@@ -720,6 +721,9 @@ class Game {
     this.session = session;
     const seed = Number(params.get('seed')) || (Date.now() % 100000);
     this.rng = mulberry32(seed);
+    // Camera shake / recoil / hit markers. Seeded with the match seed so `?seed=N` replays shake the same
+    // way, which the video tooling and bug reports depend on. render.js adds the offsets to the camera.
+    this.juice = createJuice({ seed });
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
     const activeMap = buildMap(state.map);
     if (renderer) renderer.setMap(activeMap);
@@ -830,6 +834,7 @@ class Game {
     // alias the same way). Without this alias the whole update() threw
     // "sim is not defined" on the first frame and the canvas stayed black.
     const sim = this.sim;
+    this.juice.update(dt);
     const isAuto = params.get('auto') === '1' || params.get('autostart') === '1';
     const paused = !state.spectate && !input.engaged && !sim.over && !isAuto;
     const showPause = paused && !this.hud.killcam && $('menu').classList.contains('hidden');
@@ -995,6 +1000,9 @@ class Game {
           const col = factions[a.faction]?.look?.accent || '#ffec27';
           if (live) { renderer.tracer(e.from, e.to, col); renderer.impact(e.to, col); }
           const d = Math.hypot(a.pos.x - me.pos.x, a.pos.z - me.pos.z);
+          // Suppression: close enemy fire rattles the camera. Scales with how close the shot was, so a
+          // distant firefight does not make your own screen jitter.
+          if (a !== me && d < 18) this.juice.add(0.055 * (1 - d / 18));
           const wdef = weaponsData.weapons[e.weaponId];
           const playWeaponSound = (vol = 1) => {
             if (wdef?.class === 'shotgun') sfx.shotgun(vol);
@@ -1023,6 +1031,8 @@ class Game {
           break;
         }
         case 'localShot': { // online: our own trigger pull, before the server's 'shot' comes back
+          // Firing recoil is not juice.punch(): render.js already carries camRecoil, which is the weapon's
+          // viewKick, so adding a second kick on the same event double-counts it.
           const wc = weaponsData.weapons[e.weaponId]?.class;
           if (wc === 'shotgun') sfx.shotgun(1); else if (wc === 'sniper') sfx.sniper(1); else if (wc === 'smg') sfx.smg(1);
           else if (wc === 'lmg') sfx.lmg(1); else if (wc === 'pistol') sfx.pistol(1); else sfx.shot(1);
@@ -1041,6 +1051,7 @@ class Game {
             }
             haptic(45);
             sfx.hurt();
+            this.juice.add(JUICE.takeHit);
           }
           break;
         case 'kill': {
@@ -1052,6 +1063,7 @@ class Game {
           if (e.killerId === me.id && !me.isBot) {
             sfx.kill();
             haptic([40, 20, 60]);
+            this.juice.add(e.headshot ? JUICE.headshot : JUICE.kill).hit();
             const streak = me.streak || 1;
             const label = e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : streak === 7 ? '🚜 MOWER STAMPEDE!' : streak === 5 ? '🚁 HELICOPTER UNLOCKED!' : streak === 3 ? '🔔 RING CAM UAV!' : '+1 EVICTION';
             this.showBanner(label, streak >= 3 ? `${streak}x CITATION STREAK` : '');
@@ -1095,7 +1107,13 @@ class Game {
             career.unlockAchievement('ACH_HELO_DOWN');
           }
           break;
-        case 'explosion': if (live) renderer.explosion(e.pos); sfx.boom(); break;
+        case 'explosion': {
+          const dExp = Math.hypot(e.pos.x - me.pos.x, e.pos.z - me.pos.z);
+          if (dExp < 30) this.juice.add(dExp < 12 ? JUICE.explosionNear : JUICE.explosionFar);
+          if (live) renderer.explosion(e.pos);
+          sfx.boom();
+          break;
+        }
         case 'boing': if (a === me || Math.hypot(a.pos.x - me.pos.x, a.pos.z - me.pos.z) < 20) sfx.boing(); break;
         case 'reload': if (a === me) sfx.reload(); break;
         case 'swing': if (a === me) sfx.swing(); break;
