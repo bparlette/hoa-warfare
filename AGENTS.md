@@ -32,6 +32,10 @@ node tools/script_tools.mjs csv > dist/vo_session_sheet.csv
 
 # Take headless automated screenshot/smoke test (requires Chrome)
 node tools/shot.mjs "spectate=1&seed=7" dist/smoke.png 5
+
+# Audit lobby + match-settings layout at desktop/landscape-phone/portrait sizes
+# (flags controls clipped off-screen, stacked on each other, or too small to tap)
+node tools/ui-audit.mjs
 ```
 
 ## 3. Architecture & Ownership Domains
