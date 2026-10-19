@@ -1206,7 +1206,10 @@ export class Sim {
       }
       if (d < 1.8) inp.melee = true;
       const aligned = Math.abs(wrap(wantYaw - a.yaw)) < 0.15;
-      const inRange = d <= Math.max(12, (w?.falloff?.startM ?? 60) * 1.6); // shotguns hold fire until close
+      // shotguns hold fire until close; long-range guns stop wasting rounds at 80 m+ (bots were
+      // sniping across the pickleball courts, which made the sniper a bot-meta pick and left it 2.5x
+      // the K/D of the next primary)
+      const inRange = d <= Math.min(80, Math.max(12, (w?.falloff?.startM ?? 60) * 1.6));
       if (aligned && inRange && now >= b.reactAt && now - b.seenAt < 0.35) {
         if (b.burstLeft <= 0 && now >= b.nextBurstAt) {
           // a burst lasts about as long as an AR burst whatever the gun, so slow weapons (sniper, shotgun)
@@ -1217,7 +1220,7 @@ export class Sim {
           const moving = Math.hypot(t.vel.x, t.vel.z) > 1;
           // slow guns get the time between shots to line up: aim error shrinks with the fire interval,
           // so a sniper bot is a threat instead of one wild shot per second (spray weapons are unchanged)
-          const settle = Math.min(1, 0.105 / (w?.intervalSec || 0.105)) ** 0.18;
+          const settle = Math.min(1, 0.105 / (w?.intervalSec || 0.105)) ** 0.12;
           const sigma = (K.sigma[0] + d * K.sigma[1] + (moving ? K.sigma[2] : 0)) * settle;
           b.errYaw = gauss(rng) * sigma;
           b.errPitch = gauss(rng) * sigma * 0.7;
