@@ -261,6 +261,28 @@ export function rayGround(o, dir, maxT = Infinity) {
   return t >= 0 && t <= maxT ? t : Infinity;
 }
 
+/**
+ * Walking distance from one nav node to every other node, in metres (Dijkstra over `links`).
+ * Modes that place objectives need this: a map's spawns are rarely the same walk apart even when
+ * they look symmetric on the grid, and objectives dropped at "45% of the way to the centre" land
+ * wildly differently on each side (stripmall's kitchens were 13.6 m and 29.5 m from their own
+ * spawns, so one team defended and attacked over a third of the distance of the other).
+ */
+export function navDistances(nodes, from) {
+  const n = nodes.length;
+  const dist = new Array(n).fill(Infinity), done = new Array(n).fill(false);
+  if (from < 0 || from >= n) return dist;
+  dist[from] = 0;
+  for (;;) {
+    let u = -1;
+    for (let i = 0; i < n; i++) if (!done[i] && dist[i] < Infinity && (u < 0 || dist[i] < dist[u])) u = i;
+    if (u < 0) break;
+    done[u] = true;
+    for (const { to: v, d } of nodes[u].links) if (dist[u] + d < dist[v]) dist[v] = dist[u] + d;
+  }
+  return dist;
+}
+
 /** Shortest path over nav nodes (Dijkstra; ~45 nodes so no heap needed). */
 export function findPath(nodes, from, to) {
   const n = nodes.length;

@@ -5,7 +5,7 @@
 // Objects in `this.objects` are plain data: { id, kind, pos:{x,y,z}, team?, radius?, ... }.
 // The renderer draws them by `kind`; the HUD reads `hud()`.
 
-import { nearestNode } from './map.js';
+import { nearestNode, navDistances } from './map.js';
 
 export class Mode {
   static id = 'base';
@@ -374,9 +374,12 @@ export class StealTheCasserole extends Mode {
   static label = 'Steal the Casserole';
   static parent = 'CTF';
   static defaults = { scoreLimit: 3, timeLimit: 360 };
-  // Each kitchen sits on its own team's side, KITCHEN_T of the way from the map centre to that team's
-  // spawns, snapped to a walkable nav node so it works on every map. Kitchens right next to the spawns
-  // (and, before that, swapped onto the enemy side) meant every carrier died at the enemy spawn: 0-0.
+  // Each kitchen sits on its own team's side, KITCHEN_T of the walk from that team's spawns to the
+  // enemy spawns. Walking distance, not straight-line geometry: the two sides of a map are rarely the
+  // same walk apart (on stripmall the old "45% of the way to the centre" rule put team 1's kitchen
+  // 13.6 m from its spawn and team 0's 29.5 m from its own), which handed one team a free defensive
+  // camp and a shorter counter-attack. Kitchens right next to the spawns (and, before that, swapped
+  // onto the enemy side) meant every carrier died at the enemy spawn: 0-0.
   static KITCHEN_T = 0.45;
   static PICKUP_R = 1.6;
   static CAPTURE_R = 2.4;
@@ -386,15 +389,87 @@ export class StealTheCasserole extends Mode {
     super(sim);
   }
 
-  /** Kitchen for a team: part-way from the map centre toward its spawns, on the nearest nav node. */
+  /**
+   * Kitchen for a team: the walkable point KITCHEN_T of the way from the map centre out to that
+   * team's spawns, measured in walking distance and mirrored about the centre, so BOTH kitchens sit
+   * the same walk from the middle of the map. The old rule ("45% of the way from the centre to the
+   * spawns", snapped to the nearest nav node) used straight-line geometry and node snapping on maps
+   * whose sides are not alike: on stripmall it put team 1's kitchen 13.6 m from its spawn and team
+   * 0's 29.5 m from its own, so team 1 defended for free and counter-attacked over half the ground.
+   * Nav nodes are 10-15 m apart, so link midpoints are candidates too (a link is known clear, so its
+   * midpoint is walkable).
+   */
   kitchenPos(team) {
     const { spawns, nodes, boxes } = this.sim.map;
-    const pts = spawns[this.spawnSide({ team })] || [];
-    const cx = pts.reduce((s, p) => s + p[0], 0) / (pts.length || 1);
-    const cz = pts.reduce((s, p) => s + p[1], 0) / (pts.length || 1);
+    const centroid = side => {
+      const pts = spawns[side] || [];
+      return {
+        x: pts.reduce((s, p) => s + p[0], 0) / (pts.length || 1),
+        z: pts.reduce((s, p) => s + p[1], 0) / (pts.length || 1),
+      };
+    };
+    const own = centroid(this.spawnSide({ team }));
     const t = StealTheCasserole.KITCHEN_T;
-    const n = nodes?.length ? nodes[nearestNode(nodes, boxes, cx * t, cz * t)] : null;
-    return n ? { x: n.x, y: 0, z: n.z } : { x: cx * t, y: 0, z: cz * t };
+    const geometric = () => {
+      const x = (spawns[this.spawnSide({ team })] || [[0, 0]])[0][0] * t;
+      const z = (spawns[this.spawnSide({ team })] || [[0, 0]])[0][1] * t;
+      const n = nodes?.length ? nodes[nearestNode(nodes, boxes, x, z)] : null;
+      return n ? { x: n.x, y: 0, z: n.z } : { x, y: 0, z };
+    };
+    if (!nodes?.length) return geometric();
+
+    const centreIdx = nearestNode(nodes, boxes, 0, 0);
+    const fromCentre = navDistances(nodes, centreIdx);
+    const foe = centroid(this.spawnSide({ team: 1 - team }));
+    const fromOwnSpawn = navDistances(nodes, nearestNode(nodes, boxes, own.x, own.z));
+    const fromFoeSpawn = navDistances(nodes, nearestNode(nodes, boxes, foe.x, foe.z));
+    // Same target for both teams: a shared fraction of the mean walk from the centre out to the
+    // spawns, so an asymmetric map still gets two kitchens the same walk from the middle.
+    let sum = 0, count = 0;
+    for (const side of [0, 1]) {
+      const c = centroid(this.spawnSide({ team: side }));
+      const w = navDistances(nodes, nearestNode(nodes, boxes, c.x, c.z))[centreIdx];
+      if (Number.isFinite(w)) { sum += w; count++; }
+    }
+    const spawnReach = count ? sum / count : fromOwnSpawn[centreIdx];
+    if (!Number.isFinite(spawnReach) || spawnReach <= 0) return geometric();
+    // Two pulls on the same point: `t` of the way out from the centre, and the rest of the way in
+    // from the spawns. Scoring both keeps one team from getting a kitchen that is fairly placed by
+    // one measure and badly placed by the other (culdesac's two halves are 7.6 m apart, so a purely
+    // centre-based rule gave team 1 a 30 m walk to its own kitchen against team 0's 20 m).
+    const centreTarget = spawnReach * t;
+    const spawnTarget = spawnReach * (1 - t);
+    // Equal own-walk is the fairness that matters: both teams must run the same distance to defend.
+    // The centre term breaks ties (two candidates the same walk from spawn) in favour of the one
+    // nearer the middle, so a kitchen never hides behind its own spawns. Ownership (below) is what
+    // stops the search choosing a point behind the spawn or out on the wing.
+    const score = (fromCentreD, fromSpawnD) =>
+      Math.abs(fromSpawnD - spawnTarget) + 0.25 * Math.abs(fromCentreD - centreTarget);
+    // Whose half a point is on: whoever walks to it first (a walking-distance Voronoi split). This is
+    // symmetric by construction — a plain dot-product test against the spawn axis counted points
+    // off to one side as "own half" for both teams and gave stripmall one kitchen shared by both.
+    const ownedByTeam = i => fromOwnSpawn[i] < fromFoeSpawn[i];
+
+    let best = null, bestScore = Infinity;
+    const consider = (x, z, dCentre, dSpawn, owned) => {
+      if (!Number.isFinite(dCentre) || !Number.isFinite(dSpawn) || dSpawn <= 0 || !owned) return;
+      const s = score(dCentre, dSpawn);
+      if (s < bestScore) { bestScore = s; best = { x, z }; }
+    };
+    for (let i = 0; i < nodes.length; i++) {
+      consider(nodes[i].x, nodes[i].z, fromCentre[i], fromOwnSpawn[i], ownedByTeam(i));
+      for (const l of nodes[i].links) {
+        if (l.to < i) continue;
+        const j = l.to;
+        const owned = Math.min(fromOwnSpawn[i], fromOwnSpawn[j]) < Math.min(fromFoeSpawn[i], fromFoeSpawn[j]);
+        // A midpoint's walk is the mean of its endpoints' (exact when the link lies on a shortest
+        // path, which is the common case). Using one endpoint's distance plus half the link biased
+        // every midpoint toward whichever node happened to be indexed first.
+        consider((nodes[i].x + nodes[j].x) / 2, (nodes[i].z + nodes[j].z) / 2,
+          (fromCentre[i] + fromCentre[j]) / 2, (fromOwnSpawn[i] + fromOwnSpawn[j]) / 2, owned);
+      }
+    }
+    return best ? { x: best.x, y: 0, z: best.z } : geometric();
   }
 
   onStart() {
