@@ -818,6 +818,10 @@ class Game {
 
   update(dt) {
     this.realTime += dt;
+    // Every per-frame path below reads `sim` (and updateOnline builds its own
+    // alias the same way). Without this alias the whole update() threw
+    // "sim is not defined" on the first frame and the canvas stayed black.
+    const sim = this.sim;
     const isAuto = params.get('auto') === '1' || params.get('autostart') === '1';
     const paused = !state.spectate && !input.engaged && !sim.over && !isAuto;
     const showPause = paused && !this.hud.killcam && $('menu').classList.contains('hidden');

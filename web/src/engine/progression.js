@@ -3,6 +3,10 @@
 
 const STORAGE_KEY = 'hoa.career.v1';
 
+// Hard cap on demo progression. Enforced here (not just in the UI) so a tampered
+// localStorage profile or a flipped window.__HOA_DEMO__ can never surface ranks 6-10.
+export const DEMO_MAX_RANK = 5;
+
 export const HOA_RANKS = [
   { rank: 1,  title: 'Probationary Renter',         badge: '🌱', xp: 0,     demoAllowed: true },
   { rank: 2,  title: 'Lawn Measurer',               badge: '📏', xp: 150,   demoAllowed: true },
@@ -49,8 +53,9 @@ function defaultProfile() {
 }
 
 export class CareerProfile {
-  constructor({ isDemo = false, onAchievement = null, onRankUp = null } = {}) {
+  constructor({ isDemo = false, maxRank = DEMO_MAX_RANK, onAchievement = null, onRankUp = null } = {}) {
     this.isDemo = isDemo;
+    this.maxRank = Math.max(1, Math.min(HOA_RANKS.length, maxRank));
     this.onAchievement = onAchievement;
     this.onRankUp = onRankUp;
     this.data = this.load();
@@ -89,11 +94,12 @@ export class CareerProfile {
 
   getRankInfo() {
     const xp = this.data.xp || 0;
+    const cap = this.isDemo ? this.maxRank : HOA_RANKS.length;
     let current = HOA_RANKS[0];
     let next = null;
     for (let i = 0; i < HOA_RANKS.length; i++) {
       const r = HOA_RANKS[i];
-      if (this.isDemo && !r.demoAllowed) {
+      if (r.rank > cap || (this.isDemo && !r.demoAllowed)) {
         next = r;
         break;
       }
@@ -105,7 +111,7 @@ export class CareerProfile {
         break;
       }
     }
-    const demoCapped = this.isDemo && current.rank >= 5 && xp >= 1300;
+    const demoCapped = this.isDemo && current.rank >= cap && xp >= (HOA_RANKS[cap - 1]?.xp ?? 0);
     return {
       current,
       rank: current.rank,

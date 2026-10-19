@@ -61,6 +61,17 @@ if (process.env.MOBILE) {
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
 }
 await send('Page.navigate', { url: `${process.env.SHOT_BASE || 'http://127.0.0.1:8642'}${process.env.SHOT_PATH || '/web/'}?${query}` });
+// Perf probe: sample every frame from the first moments of the run so every shot
+// also reports real fps + draw calls (renderer.info) instead of guesswork.
+await send('Runtime.evaluate', { expression: `window.__perf = { n: 0, t0: performance.now(), calls: 0, tris: 0, programs: 0 };
+  (function tick() {
+    // window.__hoa.renderer is the game's render wrapper; .gl is the THREE.WebGLRenderer
+    const gl = window.__hoa && window.__hoa.renderer && window.__hoa.renderer.gl;
+    const info = gl && gl.info;
+    if (info) { window.__perf.calls = info.render.calls; window.__perf.tris = info.render.triangles; window.__perf.programs = info.programs ? info.programs.length : 0; window.__perf.textures = info.memory.textures; window.__perf.geoms = info.memory.geometries; }
+    window.__perf.n++;
+    requestAnimationFrame(tick);
+  })();` });
 await sleep(Number(secs) * 1000);
 if (process.env.TOUCH) {
   for (const step of JSON.parse(process.env.TOUCH)) {
@@ -73,6 +84,10 @@ if (evalJs) {
   console.log('eval:', JSON.stringify(r.result?.result?.value ?? r.result));
   await sleep(1500);
 }
+const perf = await send('Runtime.evaluate', { expression: `window.__perf ? JSON.stringify({
+  fps: +(window.__perf.n / ((performance.now() - window.__perf.t0) / 1000)).toFixed(1),
+  frames: window.__perf.n, calls: window.__perf.calls, tris: window.__perf.tris, programs: window.__perf.programs, textures: window.__perf.textures, geoms: window.__perf.geoms }) : null`, returnByValue: true });
+if (perf.result?.result?.value) console.log('perf:', perf.result.result.value);
 const shot = await send('Page.captureScreenshot', { format: 'png' });
 writeFileSync(out, Buffer.from(shot.result.data, 'base64'));
 console.log(logs.join('\n') || '(no console output)');
