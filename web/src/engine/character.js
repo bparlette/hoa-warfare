@@ -45,10 +45,21 @@ function geo(w, h, d) {
 }
 const mat = (o) => new THREE.MeshLambertMaterial(o);
 
+// Ink outline (SLASHIDO lesson): inverted-hull — a slightly larger BackSide copy
+// of each part in near-black ink. Added as a child so it inherits part transforms
+// (incl. ragdoll pieces). One shared material; castShadow disabled by the traverse
+// in buildCharacter (outlines are never in the casters set).
+const inkMat = new THREE.MeshBasicMaterial({ color: '#101014', side: THREE.BackSide });
+
 function part(w, h, d, material, y = 0) {
   const m = new THREE.Mesh(geo(w, h, d), material);
   m.position.y = y;
   m.castShadow = true;
+  const ink = new THREE.Mesh(m.geometry, inkMat);
+  ink.scale.setScalar(1.045);
+  ink.castShadow = false;
+  ink.receiveShadow = false;
+  m.add(ink);
   return m;
 }
 

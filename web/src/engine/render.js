@@ -187,6 +187,14 @@ export class Renderer {
     sun.shadow.bias = -0.0015;
     this.scene.add(sun);
     this.sun = sun;
+    // Dual rim lights (SLASHIDO lesson): cyan from back-left, orange from back-right.
+    // No shadows — cheap edge definition that lifts the low-poly characters off the map.
+    const rimCyan = new THREE.DirectionalLight('#00e5ff', 1.1);
+    rimCyan.position.set(-40, 18, -35);
+    this.scene.add(rimCyan);
+    const rimOrange = new THREE.DirectionalLight('#ff9500', 0.9);
+    rimOrange.position.set(40, 14, -35);
+    this.scene.add(rimOrange);
   }
 
   setMap(map) {

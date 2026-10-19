@@ -78,14 +78,10 @@ test('audio: committed manifest covers the full recording sheet', () => {
   const csv = readFileSync(csvPath, 'utf8').split('\n').slice(1).filter(Boolean);
   const csvIds = csv.map(line => line.split('","')[1]);
   const missing = csvIds.filter(id => !ids.has(id));
-  // Lines without a recording fall back to browser TTS at runtime. Coverage may only go up: raise this floor
-  // to 1.0 after `node tools/vo_synth.mjs` records the gap (see TASKS.md, Muse).
-  const COVERAGE_FLOOR = 0.92;
-  const coverage = 1 - missing.length / csvIds.length;
-  assert.ok(coverage >= COVERAGE_FLOOR, `voice coverage ${(coverage * 100).toFixed(1)}% < ${COVERAGE_FLOOR * 100}%; unrecorded: ${missing.slice(0, 8).join(', ')}...`);
+  assert.deepEqual(missing, []);
   for (const id of csvIds) {
     const entry = manifest.lines[id];
-    if (entry) assert.equal(entry.file, id.replace(/\./g, '_') + '.ogg', id);
+    assert.equal(entry.file, id.replace(/\./g, '_') + '.ogg', id);
   }
 });
 
@@ -201,7 +197,7 @@ test('map: residential lawns contain sprinkler nodes', () => {
 
 test('audio: Voice.say pads the busy window against edge clipping', async () => {
   stubFetch({ version: 1, lines: { 'x.y': { file: 'x_y.ogg', duration: 2.0 } } });
-  globalThis.Audio = class { constructor() {} play() { return Promise.resolve(); } pause() {} set volume(v) {} };
+  globalThis.Audio = class { constructor() {} play() { return Promise.resolve(); } pause() {} set volume(v) {} addEventListener() {} removeEventListener() {} };
   try {
     const v = new Voice({ factions: {} });
     await tick();

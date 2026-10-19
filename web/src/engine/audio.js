@@ -100,7 +100,20 @@ export class Voice {
         this.speakTts(o, text, est, performance.now() / 1000);
       };
       audio.onerror = fallback;
-      audio.play().catch(err => { if (err?.name !== 'NotAllowedError') fallback(); });
+      audio.preload = 'auto';
+      // Wait for audio to be buffered before playing to prevent clipped beginnings.
+      const playWhenReady = () => {
+        audio.play().catch(err => { if (err?.name !== 'NotAllowedError') fallback(); });
+      };
+      if (audio.readyState >= 3) {
+        playWhenReady();
+      } else {
+        audio.addEventListener('canplaythrough', playWhenReady, { once: true });
+        // Fallback: play after short timeout if the event doesn't fire.
+        setTimeout(() => {
+          if (audio.paused) playWhenReady();
+        }, 300);
+      }
       const dur = this.durations.get(o.lineId) ?? est;
       this.current = { priority: o.priority, until: now + VOICE_STARTUP_PAD + dur + VOICE_END_PAD, audio };
       return true;
