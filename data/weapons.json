@@ -9,6 +9,7 @@
     "Balance check: `node tools/botsim.mjs weapons <map>` (6 seeds of 6v6, all-Karens). Aim for every primary inside 0.75-1.35 K/D on culdesac, stripmall AND pickleball; a step change in falloff (`mult`) is a cliff for players, so tune `startM` first.",
     "MEASURE WITH A BIG SAMPLE: `node tools/botsim.mjs weapons <map> --seeds=20`. Six seeds is noise - the sniper read 1.68 on pickleball then 1.13 on the next run with no AR change in between, and tuning against that chases luck. The tool now prints a 1-sigma error on every K/D.",
     "Measured 2024-06-20 seeds, all-Karen teams: culdesac 0.89-1.16, stripmall 0.87-1.10, pickleball 0.73-1.41 (every primary inside 0.75-1.35 except the two role cases below).",
+    "Sniper re-check (mag 5, reload 2.6 s, 1.6 s between shots): culdesac 0.92+-0.19, stripmall 1.17+-0.24, pickleball 1.40+-0.28. Cutting the magazine to 4 made it a trap on culdesac (0.55) because every wasted round cost a 3 s reload in a map where you get one look; five rounds with a slower bolt is the version that is liveable on both.",
     "Two readings outside the band are deliberate. Pickleball's sniper (1.41+-0.16) wins by NOT dying - long open courts, it never has to cross no-man's land, so K/D overstates its power; that is the map favouring a role, and cutting it further made it a trap on culdesac (0.87). The shotgun (0.73+-0.05 on pickleball, 0.94 on culdesac) is the same story in reverse: a 19 m falloff on a 60 m court. Both are role/map fits, not outliers to chase - check that a buff does not push them out of band on the maps where they already sit at 0.9+.",
     "The 8 launch weapons from the GDD: allowance (AR), sideHustle (SMG), divorceSettlement (shotgun), trustFund (sniper), subdivision (LMG), permit (pistol), lawsuit (launcher; thrown briefcase), participationTrophy (melee)."
   ],
@@ -42,7 +43,7 @@
     },
     "trustFund": {
       "name": "The Trust Fund", "class": "sniper", "slot": "primary", "fire": "hitscan", "auto": false,
-      "mag": 4, "reloadSec": 3.0, "intervalSec": 1.5, "pellets": 1,
+      "mag": 5, "reloadSec": 2.6, "intervalSec": 1.6, "pellets": 1,
       "damage": { "body": 80, "head": 180 },
       "range": 140, "falloff": { "startM": 80, "mult": 0.9 },
       "spread": { "base": 0.001, "moveMult": 3.8, "airMult": 6.0 },
