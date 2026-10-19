@@ -4,6 +4,7 @@
 import * as THREE from '../../vendor/three.module.min.js';
 import { T, shade, pixelTex } from './textures.js';
 import { CharacterView } from './character.js';
+import { updateDetailLod } from './lod.js';
 import { BODY, forwardOf } from './sim.js';
 
 THREE.ColorManagement.enabled = false;
@@ -1365,6 +1366,9 @@ export class Renderer {
         hitDir: s.hitDir,
       });
       if (c.head?.scale) c.head.scale.setScalar(bigHead ? 2.1 : 1);
+      // Sub-pixel detail (ears, nose, shoe caps, weapon trim) only exists within
+      // 13 m; past that it is a draw call for nothing. See lod.js.
+      updateDetailLod(c, this.camera.position);
       if (s.id === hideId) c.root.visible = false;
     }
     if (snap.helicopters) this.updateHelicopters(snap.helicopters, dt);

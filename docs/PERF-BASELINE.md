@@ -76,7 +76,7 @@ Where they go on stripmall (`renderer.worldDraws` + a scene walk):
 So **static batching is already done** and W2's "under 250" is not reachable by
 batting the map: the world is 80 draws and the characters are 475.
 
-Why the characters cannot be batched: a character is 33 parts but only ~13
+Why the characters cannot be *batched*: a character is 33 parts but only ~13
 distinct appearances, and the parts that share an appearance live under
 *different* bones (left hand and right hand, hip and shoulder). Merging them
 per bone was implemented and measured at 798 -> 776 draws (2%), i.e. not worth
@@ -94,8 +94,24 @@ bot, which needs one of:
    each own a mesh; one pooled InstancedMesh per effect type would remove most
    of them.
 
-Until one of those lands, phone-tier performance should be judged on *tris*
-(~50k, fine) and on the quality tier (`?quality=low`), not on the 250 number.
+**Landed:** option 1, character detail LOD (`web/src/engine/lod.js`, 4 tests).
+Sub-16 cm parts are hidden past 13 m, where a nose is under two pixels on a
+phone. Characters within 13 m keep every part, so the picture up close is
+identical.
+
+| map | before | after LOD |
+|---|---|---|
+| culdesac | ~640 | 537 |
+| pickleball | ~700-770 | 566 |
+| stripmall | ~775-800 | 668 |
+
+Upper bound if every sub-16 cm part were hidden everywhere: 546 on stripmall
+(that is the whole 198-draw detail layer, which is why half of it survives up
+close where it is actually visible).
+
+Options 2 and 3 (character atlas, FX pooling) are still on the table and are
+what would take these maps to 250; detail LOD alone cannot, because it only
+removes the parts that are genuinely too small to see.
 
 ## Measurement trap: a stale server reports believable numbers
 
