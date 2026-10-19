@@ -388,7 +388,10 @@ export class Sim {
     if (len > 1) { mx /= len; mz /= len; }
     const sprinting = inp.sprint && inp.forward > 0.1 && !inp.fire;
     const baseSpeed = sprinting ? SPRINT : WALK;
-    const speed = this.mutators?.turbo ? baseSpeed * 1.55 : baseSpeed;
+    // Modes may scale an actor's speed (e.g. carrying the casserole: a burst on pickup, then a
+    // small edge so a long run across an open map is not a guaranteed death sentence).
+    const modeScale = this.mode?.speedScale?.(a) ?? 1;
+    const speed = (this.mutators?.turbo ? baseSpeed * 1.55 : baseSpeed) * modeScale;
     const accel = a.onGround ? 40 : 8;
     const k = Math.min(1, accel * dt);
     a.vel.x += (mx * speed - a.vel.x) * k;
@@ -694,7 +697,9 @@ export class Sim {
       return this.damageVehicle(target, amount, attacker, { headshot, melee, explosive, dir, weaponId });
     }
     if (!target.alive || this.time < target.spawnProtectUntil || this.over) return;
-    const dmgMult = typeof target.damageTakenMult === 'number' ? target.damageTakenMult : 1;
+    // Actor-level (per-faction/easy mode) and mode-level (e.g. carrying the casserole) scales multiply.
+    const dmgMult = (typeof target.damageTakenMult === 'number' ? target.damageTakenMult : 1)
+      * (this.mode?.damageScale?.(target) ?? 1);
     const effectiveAmount = amount * dmgMult;
     target.hp -= effectiveAmount;
     target.lastHitBy = attacker?.id ?? null;

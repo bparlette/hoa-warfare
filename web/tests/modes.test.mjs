@@ -319,3 +319,77 @@ test('SuburbanWipeout: team has infinite respawns and wins when all enemy ticket
   assert.equal(sim.winner, 0, 'Team 0 should win the match');
 });
 
+
+test('StealTheCasserole: the carrier gets a grab burst, a steady edge and tougher skin', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(207), mode: 'stealTheCasserole' });
+  const thief = sim.addActor({ id: 'thief', name: 'Thief', team: 1, faction: 'fratHouse', isBot: false });
+  const bystander = sim.addActor({ id: 'idle', name: 'Idle', team: 0, faction: 'karens', isBot: false });
+  sim.start();
+  const mode = sim.mode;
+  const c0 = mode.getCasserole(0);
+
+  // Not carrying: no change from either hook.
+  assert.equal(mode.speedScale(thief), 1);
+  assert.equal(mode.damageScale(thief), 1);
+  assert.equal(mode.speedScale(bystander), 1);
+
+  Object.assign(thief.pos, { x: c0.pos.x, y: 0, z: c0.pos.z });
+  sim.step(1 / 60);
+  assert.equal(c0.state, 'carried');
+  assert.equal(mode.carriedBy(thief), c0, 'carriedBy finds the dish');
+  assert.equal(mode.carriedBy(bystander), null);
+
+  // Grab burst for GRAB_BURST seconds, then the steady carrier speed.
+  assert.equal(mode.speedScale(thief), MODES.stealTheCasserole.GRAB_SPEED);
+  assert.ok(mode.speedScale(thief) > 1, 'burst is a speed edge, not a slow');
+  for (let t = 0; t < MODES.stealTheCasserole.GRAB_BURST + 0.2; t += 1 / 60) sim.step(1 / 60);
+  assert.equal(mode.speedScale(thief), MODES.stealTheCasserole.CARRY_SPEED);
+  assert.ok(mode.speedScale(thief) > 1 && mode.speedScale(thief) < MODES.stealTheCasserole.GRAB_SPEED);
+
+  // Survivability: a carrier takes less damage than an identical bystander.
+  assert.equal(mode.damageScale(thief), MODES.stealTheCasserole.CARRY_DAMAGE_TAKEN);
+  thief.hp = 100; bystander.hp = 100;
+  thief.spawnProtectUntil = 0; bystander.spawnProtectUntil = 0;
+  sim.damage(thief, 50, null, {});
+  sim.damage(bystander, 50, null, {});
+  assert.equal(bystander.hp, 50, 'unscaled actor takes the full hit');
+  assert.equal(thief.hp, 100 - 50 * MODES.stealTheCasserole.CARRY_DAMAGE_TAKEN);
+
+  // Dropping the dish (death) puts both hook values back to neutral.
+  thief.spawnProtectUntil = 0;
+  sim.damage(thief, 999, null, {});
+  assert.equal(thief.alive, false, 'the carrier died');
+  sim.step(1 / 60);
+  assert.equal(c0.state, 'dropped');
+  assert.equal(mode.speedScale(thief), 1);
+  assert.equal(mode.damageScale(thief), 1);
+});
+
+test('StealTheCasserole: the burst actually moves a carrier faster than the same actor walking clean', () => {
+  const walkFor = carrying => {
+    const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(208), mode: 'stealTheCasserole' });
+    const a = sim.addActor({ id: 'a', name: 'A', team: 1, faction: 'fratHouse', isBot: false });
+    const b = sim.addActor({ id: 'b', name: 'B', team: 0, faction: 'karens', isBot: false });
+    sim.start();
+    const c0 = sim.mode.getCasserole(0);
+    Object.assign(b.pos, { x: 30, y: 0, z: 30 });
+    Object.assign(a.pos, { x: a.pos.x, y: 0, z: a.pos.z });
+    if (carrying) Object.assign(a.pos, { x: c0.pos.x, y: 0, z: c0.pos.z });
+    sim.step(1 / 60);
+    if (carrying) assert.equal(sim.mode.getCasserole(0).carrierId, 'a');
+    // Walk a straight line along +x for a second, on open ground.
+    const start = { x: a.pos.x, z: a.pos.z };
+    a.input.forward = 1;
+    a.input.sprint = true;
+    for (let i = 0; i < 60; i++) {
+      a.input.yaw = -Math.PI / 2; // face +x
+      a.input.forward = 1; a.input.sprint = true;
+      sim.step(1 / 60);
+    }
+    return Math.hypot(a.pos.x - start.x, a.pos.z - start.z);
+  };
+  const clean = walkFor(false);
+  const loaded = walkFor(true);
+  assert.ok(clean > 2, `sanity: a clean sprinter covers ground (${clean.toFixed(2)} m)`);
+  assert.ok(loaded > clean, `carrier with the burst covers more ground (${loaded.toFixed(2)} vs ${clean.toFixed(2)} m)`);
+});

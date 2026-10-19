@@ -1119,6 +1119,17 @@ class Game {
           }
           this.showBanner(`ZONE ${e.letter} SECURED`, `${e.name} captured by ${e.team === me.team ? 'YOUR TEAM' : 'ENEMY'}`);
           break;
+        case 'casseroleTaken':
+          // The carrier rules (speed burst, steady edge, 20% less damage taken) are invisible unless
+          // the player is told: a pickup is the moment to say it.
+          if (e.actorId === me.id && !me.isBot) {
+            this.showBanner('HOT DISH!', 'Sprint burst, then a steady edge home — tougher skin while you carry');
+            this.hud.popScore?.('\ud83e\udd58 CASSEROLE GRABBED \u2014 HAUL IT HOME', true);
+            sfx.reload();
+          } else if (e.casseroleTeam === me.team) {
+            this.showBanner('CASSEROLE STOLEN', 'Chase the carrier down — a dropped dish returns home in 30s');
+          }
+          break;
         case 'casseroleCaptured':
           if (e.carrierId === me.id && !me.isBot) {
             career.unlockAchievement('ACH_CASSEROLE_THIEF');

@@ -46,6 +46,10 @@ export class Mode {
   botRole(actor, i, n) { return this.botGoal !== Mode.prototype.botGoal && i < Math.ceil(n / 2) ? 'objective' : 'hunter'; }
   /** True while this bot should run its objective instead of stopping to fight (e.g. carrying a flag). */
   botRunner(actor) { return false; }
+  /** Movement multiplier for an actor this frame (1 = untouched). */
+  speedScale(actor) { return 1; }
+  /** Damage-taken multiplier for an actor (1 = untouched). */
+  damageScale(actor) { return 1; }
   /** Which map spawn set (0 = south street, 1 = north greenbelt) this actor uses. */
   spawnSide(actor) { return actor.team; }
   respawnDelay(actor) { return actor.isBot ? 3 : 4.5; }
@@ -384,6 +388,18 @@ export class StealTheCasserole extends Mode {
   static PICKUP_R = 1.6;
   static CAPTURE_R = 2.4;
   static RETURN_TIMEOUT = 30;
+  // Carrying the casserole is the whole point of the mode, and bots (and players) were dying 5 s
+  // after every pickup on the dense maps: 163 pickups and 3 captures across four seeds on
+  // stripmall, carriers dying with ~16 m still to run because a kitchen parked in an open lot gets
+  // camped. Two small, symmetric edges fix that without turning the run into a free win:
+  //   - a grab burst (~1.2 s at +45%) so a carrier can break out of the crowd standing on the dish;
+  //   - a steady +12% while carrying, and 20% less damage taken (the dish is heavy, not armour -
+  //     three shots still drop you, four from a full-health player).
+  // Defender-side compensation is the return rule below: a dropped dish still goes home after 30 s.
+  static GRAB_BURST = 1.2;
+  static GRAB_SPEED = 1.45;
+  static CARRY_SPEED = 1.12;
+  static CARRY_DAMAGE_TAKEN = 0.8;
 
   constructor(sim) {
     super(sim);
@@ -513,6 +529,24 @@ export class StealTheCasserole extends Mode {
 
   botRunner(actor) { return this.getCasserole(1 - actor.team)?.carrierId === actor.id; }
 
+  /** The casserole this actor is carrying, or null. */
+  carriedBy(actor) {
+    for (const o of this.objects) if (o.kind === 'casserole' && o.carrierId === actor.id) return o;
+    return null;
+  }
+
+  speedScale(actor) {
+    const c = this.carriedBy(actor);
+    if (!c) return 1;
+    return this.sim.time - (c.grabbedAt ?? -Infinity) < StealTheCasserole.GRAB_BURST
+      ? StealTheCasserole.GRAB_SPEED
+      : StealTheCasserole.CARRY_SPEED;
+  }
+
+  damageScale(actor) {
+    return this.carriedBy(actor) ? StealTheCasserole.CARRY_DAMAGE_TAKEN : 1;
+  }
+
   botGoal(actor) {
     const myCasserole = this.getCasserole(actor.team);
     const enemyCasserole = this.getCasserole(1 - actor.team);
@@ -586,6 +620,7 @@ export class StealTheCasserole extends Mode {
             } else {
               c.state = 'carried';
               c.carrierId = a.id;
+              c.grabbedAt = now;
               sim.emit({ type: 'casseroleTaken', team: a.team, actorId: a.id, casseroleTeam: c.team });
               break;
             }
@@ -598,6 +633,7 @@ export class StealTheCasserole extends Mode {
           if (d <= StealTheCasserole.PICKUP_R && a.pos.y < 2.0) {
             c.state = 'carried';
             c.carrierId = a.id;
+            c.grabbedAt = now;
             sim.emit({ type: 'casseroleTaken', team: a.team, actorId: a.id, casseroleTeam: c.team });
             break;
           }
