@@ -74,11 +74,23 @@ async function loadJson(path) {
   return await res2.json();
 }
 
-const [content, weaponsData, demoConfig] = await Promise.all([
+const [content, weaponsData, demoConfig, perksData] = await Promise.all([
   loadJson('../data/hoa_content.json'),
   loadJson('../data/weapons.json'),
   loadJson('../data/demo.json').catch(() => ({})),
+  loadJson('../data/perks.json').catch(() => ({ perks: {} })),
 ]);
+const PRIMARY_IDS = Object.keys(weaponsData.weapons).filter(id => weaponsData.weapons[id].slot === 'primary');
+const CLASS_KEY = 'hoa.class.v1';
+function loadClass() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CLASS_KEY) || '{}');
+    return { primary: PRIMARY_IDS.includes(c.primary) ? c.primary : 'signature', perk: perksData.perks[c.perk] ? c.perk : '' };
+  } catch { return { primary: 'signature', perk: '' }; }
+}
+function saveClass() {
+  try { localStorage.setItem(CLASS_KEY, JSON.stringify({ primary: state.primary, perk: state.perk })); } catch {}
+}
 // Web demo -> Steam funnel (links, CTA copy, share text). Steam buttons in the static HTML are wired now.
 export const funnel = new Funnel(demoConfig || {});
 funnel.wireSteamLinks();
@@ -128,6 +140,7 @@ const state = {
   map: !DEMO_BUILD && !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
   goldSkin: !DEMO_BUILD && !isDemo && params.get('gold') === '1',
   showCamo: true,
+  ...loadClass(),
   wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
     bigHead: params.get('bighead') === '1',
@@ -433,6 +446,7 @@ export function buildMenu() {
   if ($('opt007')) $('opt007').checked = state.style === '007';
   if ($('optVoice')) $('optVoice').checked = state.voice;
   if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
+  syncClassOptions();
   if ($('optMap')) $('optMap').value = state.map;
   if ($('mutBigHead')) $('mutBigHead').checked = !!state.mutators.bigHead;
   if ($('mutShotguns')) $('mutShotguns').checked = !!state.mutators.shotgunsOnly;
@@ -471,6 +485,48 @@ if ($('matchSettingsModal')) {
 
 if ($('optMode')) $('optMode').onchange = e => { state.mode = e.target.value; updateMatchSettingsSummary(); };
 if ($('optDifficulty')) $('optDifficulty').onchange = e => { state.difficulty = e.target.value; updateMatchSettingsSummary(); };
+
+const classDemoActive = () => isDemo || DEMO_BUILD || (typeof window !== 'undefined' && window.__HOA_DEMO__ === true);
+/** Create-a-class selects. The demo keeps the faction's signature gun and the demoAllowed perks. */
+function syncClassOptions() {
+  const demo = classDemoActive();
+  const sel = $('optPrimary'), perkSel = $('optPerk');
+  if (!sel?.options || !perkSel?.options) return;
+  if (!sel.options.length) {
+    sel.add(new Option(`Signature (${weaponsData.weapons[factionPrimary(state.faction)]?.name || 'faction gun'})`, 'signature'));
+    for (const id of PRIMARY_IDS) sel.add(new Option(`${weaponsData.weapons[id].name}${demo ? ' 🔒 $4.99' : ''}`, id));
+  }
+  {
+    sel.options[0].text = `Signature (${weaponsData.weapons[factionPrimary(state.faction)]?.name || 'faction gun'})`;
+    sel.value = demo ? 'signature' : state.primary;
+  }
+  if (!perkSel.options.length) {
+    perkSel.add(new Option('No perk', ''));
+    for (const [id, p] of Object.entries(perksData.perks)) perkSel.add(new Option(`${p.icon} ${p.name}${demo && !p.demoAllowed ? ' 🔒 $4.99' : ''}`, id));
+  }
+  perkSel.value = state.perk;
+  if ($('perkDesc')) $('perkDesc').textContent = perksData.perks[state.perk]?.desc || 'One perk per player. Pick a playstyle.';
+}
+if ($('optPrimary')) $('optPrimary').onchange = e => {
+  if (classDemoActive() && e.target.value !== 'signature') {
+    e.target.value = 'signature';
+    showDemoModal('Create-a-Class', 'Carry any weapon with any faction in the $4.99 Full Game!');
+    return;
+  }
+  state.primary = e.target.value;
+  saveClass();
+};
+if ($('optPerk')) $('optPerk').onchange = e => {
+  const p = perksData.perks[e.target.value];
+  if (p && classDemoActive() && !p.demoAllowed) {
+    e.target.value = state.perk;
+    showDemoModal(`${p.icon} ${p.name}`, `${p.desc} Unlock every perk in the $4.99 Full Game!`);
+    return;
+  }
+  state.perk = e.target.value;
+  saveClass();
+  if ($('perkDesc')) $('perkDesc').textContent = p?.desc || 'One perk per player. Pick a playstyle.';
+};
 if ($('optMap')) {
   $('optMap').onchange = e => {
     const val = e.target.value;
@@ -757,6 +813,7 @@ class Game {
       botDifficulty: params.get('bots') || undefined,
       mutators: state.mutators,
       isDemo,
+      perks: perksData,
     });
     this.barks = new BarkSystem({ library: this.library, content, rng: this.rng, sim: this.sim });
     this.limiter = new AudioLimiter(content.rules.audioLimiter);
@@ -773,10 +830,11 @@ class Game {
       // Online: the server runs the match; this Sim is a mirror that is only written into (see online.js).
       this.me = session.buildMirror(this.sim);
     } else {
-      const myLoadout = FACTION_LOADOUTS[state.faction]?.loadout || 'default';
+      const myLoadout = !classDemoActive() && PRIMARY_IDS.includes(state.primary) ? state.primary : FACTION_LOADOUTS[state.faction]?.loadout || 'default';
+      const myPerk = perksData.perks[state.perk] && (!classDemoActive() || perksData.perks[state.perk].demoAllowed) ? state.perk : null;
       const customName = ($('optName')?.value || params.get('name') || '').trim();
       const myName = customName ? playerName() : 'You';
-      this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, isBot: state.spectate });
+      this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, perk: myPerk, isBot: state.spectate });
       for (let i = 0; i < 11; i++) {
         const team = i < 5 ? 0 : 1;
         const botFaction = pickFaction(team);

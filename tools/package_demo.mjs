@@ -44,7 +44,7 @@ for (const f of ['logo.png', 'favicon.png', 'badge.png']) if (existsSync(join(WE
 if (existsSync(join(WEB, 'assets', 'characters'))) copy(join(WEB, 'assets', 'characters'), join(DEMO, 'assets', 'characters'));
 if (existsSync(join(WEB, 'assets', 'weapons'))) copy(join(WEB, 'assets', 'weapons'), join(DEMO, 'assets', 'weapons'));
 copy(join(ROOT, 'assets', 'art', 'cover_key_art.jpg'), join(DEMO, 'assets', 'art', 'cover_key_art.jpg'));
-for (const f of ['weapons.json', 'demo.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+for (const f of ['weapons.json', 'demo.json', 'perks.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
 // hoa_content.json is deliberately NOT copied: the demo ships demo_content.json (step 2b).
 
 // 2. Paths: the repo serves web/ next to data/ and assets/; in the zip everything sits at the root.

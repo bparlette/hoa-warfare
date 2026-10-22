@@ -101,12 +101,13 @@ export function emptyInput() {
 export class Sim {
   /**
    * @param {{rules:object, weapons:object, rng:()=>number, map?:object, mode?:string, scoreLimit?:number, timeLimit?:number, difficulty?:string}} o
-   * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json
+   * rules = hoa_content.json "rules" (camping tuning lives there); weapons = data/weapons.json; perks = data/perks.json
    */
-  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty, difficulty = null, mutators = {}, isDemo = false }) {
+  constructor({ rules, weapons, rng, map = buildCulDeSac(), mode = 'clash', scoreLimit, timeLimit, botDifficulty, difficulty = null, mutators = {}, isDemo = false, perks = null }) {
     if (!weapons) throw new Error('Sim needs weapons (data/weapons.json)');
     this.rules = rules;
     this.weapons = weapons;
+    this.perks = perks?.perks || {};
     this.isDemo = !!isDemo;
     this.mutators = {
       bigHead: !!mutators?.bigHead,
@@ -166,7 +167,7 @@ export class Sim {
     return this.addActor({ id, name, team, faction, isBot: true, loadout });
   }
 
-  addActor({ id, name, team, faction, isBot = true, loadout = 'default', damageTakenMult, easyLockOn }) {
+  addActor({ id, name, team, faction, isBot = true, loadout = 'default', damageTakenMult, easyLockOn, perk = null }) {
     if (this.mutators?.shotgunsOnly) {
       loadout = 'divorceSettlement';
     } else if (loadout === 'default' && faction && FACTION_DEFAULT_LOADOUTS[faction]) {
@@ -175,15 +176,17 @@ export class Sim {
     const weapons = resolveLoadout(this.weapons, loadout);
     const defaultDmgMult = !isBot && this.difficultyProfile ? this.difficultyProfile.playerDamageTakenMult : 1;
     const defaultLockOn = !isBot && this.difficultyProfile ? !!this.difficultyProfile.lockOn : false;
+    const perkDef = (perk && this.perks[perk]) || null;
     const a = {
       id, name, team, faction, isBot, weapons, triggerHeld: false,
+      perk: perkDef ? perk : null, perkDef,
       damageTakenMult: typeof damageTakenMult === 'number' ? damageTakenMult : defaultDmgMult,
       easyLockOn: typeof easyLockOn === 'boolean' ? easyLockOn : defaultLockOn,
       activeSlot: 'primary', ammoBank: {},
       pos: { x: 0, y: 0, z: 0 }, vel: { x: 0, y: 0, z: 0 }, yaw: 0, pitch: 0,
       hp: 100, alive: false, respawnAt: 0, deathAt: 0,
       inVehicle: null,
-      ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: weapons.equipment?.count ?? 0,
+      ammo: weapons.primary.mag, reloadUntil: 0, nextShotAt: 0, nextMeleeAt: 0, grenades: (weapons.equipment?.count ?? 0) + (perkDef?.extraGrenades || 0),
       onGround: true, kills: 0, deaths: 0, streak: 0, spawnProtectUntil: 0, lowHealthSaid: false,
       lastHitBy: null, lastHurtAt: -Infinity, revealedUntil: 0, firingUntil: 0, meleeAt: -Infinity, lastShotAt: -Infinity,
       hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 },
@@ -291,7 +294,7 @@ export class Sim {
     a.input.yaw = a.yaw; a.input.pitch = 0;
     a.activeSlot = 'primary';
     a.ammoBank = {};
-    Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: a.weapons.equipment?.count ?? 0, streak: 0,
+    Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: (a.weapons.equipment?.count ?? 0) + (a.perkDef?.extraGrenades || 0), streak: 0,
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 }, lastShotAt: -Infinity });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
@@ -404,7 +407,8 @@ export class Sim {
     // Modes may scale an actor's speed (e.g. carrying the casserole: a burst on pickup, then a
     // small edge so a long run across an open map is not a guaranteed death sentence).
     const modeScale = this.mode?.speedScale?.(a) ?? 1;
-    const speed = (this.mutators?.turbo ? baseSpeed * 1.55 : baseSpeed) * modeScale;
+    const perkScale = sprinting ? (a.perkDef?.sprintMult ?? 1) : 1;
+    const speed = (this.mutators?.turbo ? baseSpeed * 1.55 : baseSpeed) * modeScale * perkScale;
     const accel = a.onGround ? 40 : 8;
     const k = Math.min(1, accel * dt);
     a.vel.x += (mx * speed - a.vel.x) * k;
@@ -620,7 +624,7 @@ export class Sim {
   startReload(a) {
     const w = this.activeWeapon(a);
     if (!w || a.reloadUntil > 0 || a.ammo >= w.mag) return;
-    a.reloadUntil = this.time + w.reloadSec;
+    a.reloadUntil = this.time + w.reloadSec * (a.perkDef?.reloadMult ?? 1);
     this.emit({ type: 'reload', id: a.id, weaponId: w.id });
   }
 
@@ -742,7 +746,8 @@ export class Sim {
     if (!target.alive || this.time < target.spawnProtectUntil || this.over) return;
     // Actor-level (per-faction/easy mode) and mode-level (e.g. carrying the casserole) scales multiply.
     const dmgMult = (typeof target.damageTakenMult === 'number' ? target.damageTakenMult : 1)
-      * (this.mode?.damageScale?.(target) ?? 1);
+      * (this.mode?.damageScale?.(target) ?? 1)
+      * (explosive ? (target.perkDef?.explosiveDamageMult ?? 1) : 1);
     const effectiveAmount = amount * dmgMult;
     target.hp -= effectiveAmount;
     target.lastHitBy = attacker?.id ?? null;
@@ -769,7 +774,7 @@ export class Sim {
     }
     target.deaths++;
     target.deathAt = this.time;
-    target.respawnAt = this.time + this.mode.respawnDelay(target);
+    target.respawnAt = this.time + this.mode.respawnDelay(target) * (target.perkDef?.respawnMult ?? 1);
     target.streak = 0;
     const killer = attacker && attacker.id !== target.id ? attacker : null;
     if (killer) {
@@ -798,7 +803,7 @@ export class Sim {
   triggerRingUav(ownerActor) {
     const until = this.time + 15;
     for (const a of this.actors) {
-      if (a.team !== ownerActor.team) {
+      if (a.team !== ownerActor.team && !a.perkDef?.uavImmune) {
         a.revealedUntil = Math.max(a.revealedUntil || 0, until);
       }
     }

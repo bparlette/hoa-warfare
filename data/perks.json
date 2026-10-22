@@ -1,0 +1,53 @@
+{
+  "notes": [
+    "Create-a-class perks: one per player. sim.js reads the numeric fields; the lobby shows name/desc/icon.",
+    "Effect fields (all optional): respawnMult, extraGrenades, sprintMult, explosiveDamageMult, reloadMult, uavImmune, revealBonusSec.",
+    "demoAllowed: selectable in the free web demo; the rest are $4.99 Full Game."
+  ],
+  "perks": {
+    "speakToTheManager": {
+      "name": "Speak to the Manager",
+      "desc": "Respawn 40% faster. Someone is going to hear about this.",
+      "icon": "☎️",
+      "respawnMult": 0.6,
+      "demoAllowed": true
+    },
+    "cardioMom": {
+      "name": "Cardio Mom",
+      "desc": "+12% sprint speed. 5 a.m. spin class pays off.",
+      "icon": "🏃‍♀️",
+      "sprintMult": 1.12,
+      "demoAllowed": true
+    },
+    "secondHelping": {
+      "name": "Second Helping",
+      "desc": "+1 Lawsuit. You always bring extra to the potluck.",
+      "icon": "🥘",
+      "extraGrenades": 1
+    },
+    "thickSkinned": {
+      "name": "Thick-Skinned",
+      "desc": "Take 30% less explosive damage. Twelve years on the board will do that.",
+      "icon": "🛡️",
+      "explosiveDamageMult": 0.7
+    },
+    "quickPaperwork": {
+      "name": "Quick Paperwork",
+      "desc": "Reload 30% faster. Pre-filled forms, in triplicate.",
+      "icon": "📝",
+      "reloadMult": 0.7
+    },
+    "offTheGrid": {
+      "name": "Off the Grid",
+      "desc": "Enemy Ring Doorbell sweeps can't see you. You disabled the Wi-Fi.",
+      "icon": "📵",
+      "uavImmune": true
+    },
+    "nosyNeighbor": {
+      "name": "Nosy Neighbor",
+      "desc": "Enemies who fire stay on your radar 3 s longer. You were watching anyway.",
+      "icon": "👀",
+      "revealBonusSec": 3
+    }
+  }
+}

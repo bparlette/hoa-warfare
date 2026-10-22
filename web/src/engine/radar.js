@@ -189,7 +189,8 @@ export class Radar {
     for (const a of sim.actors) {
       if (!a.alive || a.id === me?.id) continue;
       const isAlly = a.team === me?.team;
-      const revealed = spectate || isAlly || (a.revealedUntil && a.revealedUntil > now) || (a.campState?.state === 'snitch');
+      const nosy = me?.perkDef?.revealBonusSec && now - (a.lastShotAt ?? -Infinity) < 1.8 + me.perkDef.revealBonusSec;
+      const revealed = spectate || isAlly || nosy || (a.revealedUntil && a.revealedUntil > now) || (a.campState?.state === 'snitch');
 
       if (!revealed) continue;
 
