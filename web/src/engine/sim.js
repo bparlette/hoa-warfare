@@ -430,6 +430,36 @@ export class Sim {
       a.onGround = false;
     }
     a.pos.y = ny;
+    this.depenetrate(a);
+  }
+
+  // groundUnder() tests 0.9 of the body radius and overlaps() the full radius, so an actor landing on
+  // a prop's rim drops into it, and from inside every horizontal move is blocked: frozen until killed.
+  depenetrate(a) {
+    const r = BODY.radius + 0.01;
+    for (let pass = 0; pass < 3; pass++) {
+      let moved = false;
+      for (const b of this.map.boxes) {
+        if (!this.overlaps(b, a.pos.x, a.pos.z, a.pos.y)) continue;
+        const { x, z } = a.pos;
+        const cx = Math.max(b.minX, Math.min(x, b.maxX)), cz = Math.max(b.minZ, Math.min(z, b.maxZ));
+        const dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz);
+        if (d > 1e-6) {
+          a.pos.x = cx + dx / d * r;
+          a.pos.z = cz + dz / d * r;
+        } else {
+          const exits = [[x - b.minX, -1, 0], [b.maxX - x, 1, 0], [z - b.minZ, 0, -1], [b.maxZ - z, 0, 1]];
+          const [depth, ex, ez] = exits.reduce((m, e) => (e[0] < m[0] ? e : m));
+          a.pos.x += ex * (depth + r);
+          a.pos.z += ez * (depth + r);
+        }
+        moved = true;
+      }
+      if (!moved) break;
+    }
+    const { minX, maxX, minZ, maxZ } = this.map.bounds;
+    a.pos.x = Math.max(minX + BODY.radius, Math.min(maxX - BODY.radius, a.pos.x));
+    a.pos.z = Math.max(minZ + BODY.radius, Math.min(maxZ - BODY.radius, a.pos.z));
   }
 
   // ---------------------------------------------------------------- combat
