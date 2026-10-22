@@ -100,6 +100,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 }
 .panel { background: #1d2b53; border: 4px solid #fff1e8; padding: 22px 30px; max-width: 900px; width: 92vw; box-shadow: 8px 8px 0 #000; max-height: 94vh; overflow: auto; }
 .panel.small { max-width: 420px; text-align: center; }
+#endPanel h1 small { margin-left: 0.6em; }
+#endBoard td, #endBoard th, #board td, #board th { padding: 1px 10px 1px 0; }
 .panel.pause-card {
   background: rgba(29, 43, 83, 0.86);
   border: 2px solid rgba(0, 229, 255, 0.85);

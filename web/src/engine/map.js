@@ -529,6 +529,13 @@ export function buildPickleballClub() {
     'South Driveway': { x: 0, z: 20 },
     'Northeast Front Lawn': { x: 16, z: 0 },
     'West Front Lawn': { x: -16, z: 0 },
+    // HOA Patrol: the cul-de-sac spots put A behind team 1's spawn and C out on a flank
+    'Gazebo': { x: 0, z: -20 }, 'Clubhouse': { x: 0, z: 0 }, 'Pool Patio': { x: 0, z: 20 },
+  };
+  const zoneNames = {
+    'Cul-de-Sac Circle': 'Center Court Net', 'Gazebo Greenbelt': 'Clubhouse Terrace', 'South Driveway': 'Golf Cart Plaza',
+    'Northeast Front Lawn': 'East Courts', 'West Front Lawn': 'West Courts',
+    'Gazebo': 'Clubhouse Terrace', 'Clubhouse': 'Center Court', 'Pool Patio': 'Golf Cart Plaza',
   };
 
 
@@ -540,6 +547,7 @@ export function buildPickleballClub() {
     spawns,
     nodes,
     zonePos,
+    zoneNames,
     bounds: BOUNDS,
     court: { x: 0, z: 0, r: 16 },
     street: { minX: -8, maxX: 8, minZ: 22, maxZ: 48 },
@@ -752,6 +760,10 @@ export function buildStripMall() {
 
   return {
     id: 'stripmall',
+    zoneNames: {
+      'Cul-de-Sac Circle': 'Center Lot', 'Clubhouse': 'Center Lot', 'Gazebo Greenbelt': 'North Lot', 'Gazebo': 'North Lot',
+      'South Driveway': 'South Lot', 'Pool Patio': 'South Lot', 'Northeast Front Lawn': 'East Lot', 'West Front Lawn': 'West Lot',
+    },
     name: 'Sunset Strip Mall Parking Lot',
     label: 'Sunset Strip Mall Parking Lot',
     boxes,
@@ -845,9 +857,15 @@ export function buildModelHomeShowcase() {
     'South Driveway': { x: 0, z: 25 }, 'Pool Patio': { x: 0, z: 25 },
     'Northeast Front Lawn': { x: 15, z: -8 }, 'West Front Lawn': { x: -15, z: 8 },
   };
+  const zoneNames = {
+    'Cul-de-Sac Circle': 'Open House Street', 'Clubhouse': 'Open House Street',
+    'Gazebo Greenbelt': 'North Backyard', 'Gazebo': 'North Backyard',
+    'South Driveway': 'South Backyard', 'Pool Patio': 'South Backyard',
+    'Northeast Front Lawn': 'North Front Lawn', 'West Front Lawn': 'South Front Lawn',
+  };
 
   return {
-    boxes, spawns, nodes, zonePos,
+    boxes, spawns, nodes, zonePos, zoneNames,
     bounds: B,
     street: { minX: B.minX, maxX: B.maxX, minZ: -4, maxZ: 4 },
     court: { x: 0, z: 0, r: 4 },

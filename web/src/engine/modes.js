@@ -49,6 +49,8 @@ export class Mode {
     const o = this.sim.map?.zonePos?.[def.name];
     return this.openSpot(o ? { x: o.x, y: 0, z: o.z } : def.pos);
   }
+  /** What players see: the map's own name for a zone (zones are authored with cul-de-sac names). */
+  zoneName(def) { return this.sim.map?.zoneNames?.[def.name] || def.name; }
   onStart() {}
   /** Called after the kill event is emitted. killer is null for self-kills. */
   onKill(ev, killer, victim) {}
@@ -184,13 +186,13 @@ export class KingOfTheLawn extends Mode {
     this.objects = [{
       id: this.nextObjectId++, kind: 'lawnZone',
       pos, radius: KingOfTheLawn.ZONE_RADIUS,
-      name: def.name, ownerTeam: null, contested: false,
+      name: this.zoneName(def), ownerTeam: null, contested: false,
     }];
     // stable object (bots compare goals by identity); radius lets objective bots stop at the edge
     this.goal = { x: pos.x, z: pos.z, radius: KingOfTheLawn.ZONE_RADIUS };
     this.ownerTeam = null;
     this.contested = false;
-    this.sim.emit({ type: 'hardpointRotated', name: def.name, pos: { ...pos } });
+    this.sim.emit({ type: 'hardpointRotated', name: this.zoneName(def), pos: { ...pos } });
   }
 
   get zoneObj() { return this.objects[0]; }
@@ -290,7 +292,7 @@ export class HoaPatrol extends Mode {
       id: this.nextObjectId++,
       kind: 'patrolZone',
       letter: def.letter,
-      name: def.name,
+      name: this.zoneName(def),
       pos: this.zoneSpot(def),
       radius: def.radius,
       ownerTeam: null,
