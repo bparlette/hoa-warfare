@@ -1,0 +1,272 @@
+[
+  {
+    "id": "announcer.fineFromAboveFriendly.c.0",
+    "faction": "announcer",
+    "event": "fineFromAboveFriendly",
+    "text": "HOA drone gunship authorized overhead."
+  },
+  {
+    "id": "announcer.fineFromAboveFriendly.c.1",
+    "faction": "announcer",
+    "event": "fineFromAboveFriendly",
+    "text": "Fine From Above is operational."
+  },
+  {
+    "id": "announcer.fineFromAboveEnemy.c.0",
+    "faction": "announcer",
+    "event": "fineFromAboveEnemy",
+    "text": "Warning: enemy HOA drone in airspace!"
+  },
+  {
+    "id": "announcer.fineFromAboveEnemy.c.1",
+    "faction": "announcer",
+    "event": "fineFromAboveEnemy",
+    "text": "Hostile aerial inspection underway! Take cover!"
+  },
+  {
+    "id": "announcer.camoUnlock.c.0",
+    "faction": "announcer",
+    "event": "camoUnlock",
+    "text": "Weapon inspection passed. New camo approved."
+  },
+  {
+    "id": "announcer.camoGold.c.0",
+    "faction": "announcer",
+    "event": "camoGold",
+    "text": "Twenty-four karat gold. Pure suburban luxury."
+  },
+  {
+    "id": "announcer.rezone.c.0",
+    "faction": "announcer",
+    "event": "rezone",
+    "text": "Attention: neighborhood officially re-zoned!"
+  },
+  {
+    "id": "announcer.rezone.c.1",
+    "faction": "announcer",
+    "event": "rezone",
+    "text": "Prestige granted. Welcome to your estate."
+  },
+  {
+    "id": "fratHouse.fineFromAbovePilot.c.0",
+    "faction": "fratHouse",
+    "event": "fineFromAbovePilot",
+    "text": "Air strike from the frat house roof!"
+  },
+  {
+    "id": "brainRot.fineFromAbovePilot.c.0",
+    "faction": "brainRot",
+    "event": "fineFromAbovePilot",
+    "text": "Thermal AC-130! Chat, we are back!"
+  },
+  {
+    "id": "valleyGirls.fineFromAbovePilot.c.0",
+    "faction": "valleyGirls",
+    "event": "fineFromAbovePilot",
+    "text": "Paparazzi drone is locked on you!"
+  },
+  {
+    "id": "rednecks.fineFromAbovePilot.c.0",
+    "faction": "rednecks",
+    "event": "fineFromAbovePilot",
+    "text": "Y'all look real purty in thermal!"
+  },
+  {
+    "id": "karens.fineFromAbovePilot.c.0",
+    "faction": "karens",
+    "event": "fineFromAbovePilot",
+    "text": "High-altitude violation notice incoming!"
+  },
+  {
+    "id": "gymRats.fineFromAbovePilot.c.0",
+    "faction": "gymRats",
+    "event": "fineFromAbovePilot",
+    "text": "Dropping heavy sets from the sky!"
+  },
+  {
+    "id": "cloutStreamers.fineFromAbovePilot.c.0",
+    "faction": "cloutStreamers",
+    "event": "fineFromAbovePilot",
+    "text": "Content drone armed! Clip this now!"
+  },
+  {
+    "id": "wallstreetBets.fineFromAbovePilot.c.0",
+    "faction": "wallstreetBets",
+    "event": "fineFromAbovePilot",
+    "text": "Orbital margin call! To the moon!"
+  },
+  {
+    "id": "hoaDads.fineFromAbovePilot.c.0",
+    "faction": "hoaDads",
+    "event": "fineFromAbovePilot",
+    "text": "Aerial weed-control squadron, cleared hot!"
+  },
+  {
+    "id": "fabulous.fineFromAbovePilot.c.0",
+    "faction": "fabulous",
+    "event": "fineFromAbovePilot",
+    "text": "Darling, your curb appeal is dropping!"
+  },
+  {
+    "id": "trumpers.fineFromAbovePilot.c.0",
+    "faction": "trumpers",
+    "event": "fineFromAbovePilot",
+    "text": "Unsanctioned airspace violation! Cleared hot!"
+  },
+  {
+    "id": "wokeLibs.fineFromAbovePilot.c.0",
+    "faction": "wokeLibs",
+    "event": "fineFromAbovePilot",
+    "text": "Thermal carbon-footprint audit delivered!"
+  },
+  {
+    "id": "furries.fineFromAbovePilot.c.0",
+    "faction": "furries",
+    "event": "fineFromAbovePilot",
+    "text": "Tactical surveillance pounce from above!"
+  },
+  {
+    "id": "animeWeebs.fineFromAbovePilot.c.0",
+    "faction": "animeWeebs",
+    "event": "fineFromAbovePilot",
+    "text": "Orbital anime laser strike, activate!"
+  },
+  {
+    "id": "tradwives.fineFromAbovePilot.c.0",
+    "faction": "tradwives",
+    "event": "fineFromAbovePilot",
+    "text": "Hot cast-iron delivery from heaven!"
+  },
+  {
+    "id": "pickleballRetirees.fineFromAbovePilot.c.0",
+    "faction": "pickleballRetirees",
+    "event": "fineFromAbovePilot",
+    "text": "Pickleball smash from the clouds, junior!"
+  },
+  {
+    "id": "karens.perkManager.c.0",
+    "faction": "karens",
+    "event": "perkManager",
+    "text": "I've already drafted three formal complaints!"
+  },
+  {
+    "id": "hoaDads.perkManager.c.0",
+    "faction": "hoaDads",
+    "event": "perkManager",
+    "text": "Head of zoning is on speed dial!"
+  },
+  {
+    "id": "valleyGirls.perkManager.c.0",
+    "faction": "valleyGirls",
+    "event": "perkManager",
+    "text": "My attorney is texting them right now!"
+  },
+  {
+    "id": "tradwives.perkCardio.c.0",
+    "faction": "tradwives",
+    "event": "perkCardio",
+    "text": "Power-walking before the sourdough even rises."
+  },
+  {
+    "id": "valleyGirls.perkCardio.c.0",
+    "faction": "valleyGirls",
+    "event": "perkCardio",
+    "text": "Five a.m. spin class was warm-up!"
+  },
+  {
+    "id": "gymRats.perkCardio.c.0",
+    "faction": "gymRats",
+    "event": "perkCardio",
+    "text": "Leg day never stops out here!"
+  },
+  {
+    "id": "tradwives.perkHelping.c.0",
+    "faction": "tradwives",
+    "event": "perkHelping",
+    "text": "I brought extra casserole and consequences."
+  },
+  {
+    "id": "rednecks.perkHelping.c.0",
+    "faction": "rednecks",
+    "event": "perkHelping",
+    "text": "Extra rounds in the cooler, boys!"
+  },
+  {
+    "id": "fratHouse.perkHelping.c.0",
+    "faction": "fratHouse",
+    "event": "perkHelping",
+    "text": "Extra keg, extra firepower, let's rage!"
+  },
+  {
+    "id": "hoaDads.perkThick.c.0",
+    "faction": "hoaDads",
+    "event": "perkThick",
+    "text": "Ten years on the board. Immune."
+  },
+  {
+    "id": "rednecks.perkThick.c.0",
+    "faction": "rednecks",
+    "event": "perkThick",
+    "text": "Can't blow up this porch, buddy!"
+  },
+  {
+    "id": "wallstreetBets.perkThick.c.0",
+    "faction": "wallstreetBets",
+    "event": "perkThick",
+    "text": "Diamond hands. I feel nothing."
+  },
+  {
+    "id": "karens.perkPaperwork.c.0",
+    "faction": "karens",
+    "event": "perkPaperwork",
+    "text": "Stamped, sealed, and expedited to board!"
+  },
+  {
+    "id": "hoaDads.perkPaperwork.c.0",
+    "faction": "hoaDads",
+    "event": "perkPaperwork",
+    "text": "Filed in triplicate before you blinked."
+  },
+  {
+    "id": "wokeLibs.perkPaperwork.c.0",
+    "faction": "wokeLibs",
+    "event": "perkPaperwork",
+    "text": "Petition signed, filed, and certified organic."
+  },
+  {
+    "id": "rednecks.perkOffGrid.c.0",
+    "faction": "rednecks",
+    "event": "perkOffGrid",
+    "text": "Shot down the router. Untraceable!"
+  },
+  {
+    "id": "wallstreetBets.perkOffGrid.c.0",
+    "faction": "wallstreetBets",
+    "event": "perkOffGrid",
+    "text": "Off-shore cold wallet protocol engaged."
+  },
+  {
+    "id": "wokeLibs.perkOffGrid.c.0",
+    "faction": "wokeLibs",
+    "event": "perkOffGrid",
+    "text": "Unplugged from the surveillance grid completely."
+  },
+  {
+    "id": "karens.perkNosy.c.0",
+    "faction": "karens",
+    "event": "perkNosy",
+    "text": "The blinds are open. I see EVERYTHING."
+  },
+  {
+    "id": "hoaDads.perkNosy.c.0",
+    "faction": "hoaDads",
+    "event": "perkNosy",
+    "text": "Binoculars on your lawn since dawn."
+  },
+  {
+    "id": "pickleballRetirees.perkNosy.c.0",
+    "faction": "pickleballRetirees",
+    "event": "perkNosy",
+    "text": "Nothing gets past neighborhood watch committee."
+  }
+]

@@ -49,11 +49,14 @@ console.log('  → Copying web client assets & scripts...');
 cpSync(join(ROOT, 'web'), join(DESKTOP_OUT, 'web'), { recursive: true });
 
 // 5. Copy data definitions
-console.log('  → Copying data definitions (hoa_content.json, weapons.json, perks.json)...');
+console.log('  → Copying data definitions (hoa_content.json, weapons.json, perks.json, achievements.json)...');
 mkdirSync(join(DESKTOP_OUT, 'data'), { recursive: true });
 cpSync(join(ROOT, 'data', 'hoa_content.json'), join(DESKTOP_OUT, 'data', 'hoa_content.json'));
 cpSync(join(ROOT, 'data', 'weapons.json'), join(DESKTOP_OUT, 'data', 'weapons.json'));
 cpSync(join(ROOT, 'data', 'perks.json'), join(DESKTOP_OUT, 'data', 'perks.json'));
+if (existsSync(join(ROOT, 'data', 'achievements.json'))) {
+  cpSync(join(ROOT, 'data', 'achievements.json'), join(DESKTOP_OUT, 'data', 'achievements.json'));
+}
 
 // 6. Copy assets if present
 if (existsSync(join(ROOT, 'assets'))) {
