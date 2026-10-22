@@ -531,11 +531,6 @@ export function buildPickleballClub() {
     'West Front Lawn': { x: -16, z: 0 },
   };
 
-  // Kitchens positioned 30m apart (balanced 9m walk from each team's spawn).
-  const kitchenPos = {
-    0: { x: 0, y: 0, z: 15 },
-    1: { x: 0, y: 0, z: -15 },
-  };
 
   return {
     id: 'pickleball',
@@ -545,7 +540,6 @@ export function buildPickleballClub() {
     spawns,
     nodes,
     zonePos,
-    kitchenPos,
     bounds: BOUNDS,
     court: { x: 0, z: 0, r: 16 },
     street: { minX: -8, maxX: 8, minZ: 22, maxZ: 48 },

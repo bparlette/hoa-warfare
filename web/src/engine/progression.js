@@ -62,6 +62,7 @@ function defaultProfile() {
     weaponKills: {},
     weaponHeadshots: {},
     camos: {},
+    challenges: {},
     prestige: 0,
     factionKills: {},
     achievements: {},
@@ -93,6 +94,7 @@ export class CareerProfile {
           return {
             ...defaultProfile(), ...parsed,
             weaponKills: parsed.weaponKills || {}, weaponHeadshots: parsed.weaponHeadshots || {}, camos: parsed.camos || {},
+            challenges: parsed.challenges || {},
             factionKills: parsed.factionKills || {}, achievements: parsed.achievements || {},
           };
         }
@@ -224,6 +226,15 @@ export class CareerProfile {
       if (this.onCamo) this.onCamo(weaponId, tier);
       if (tier.id === 'gold') this.unlockAchievement('ACH_GOLD_STANDARD');
     }
+  }
+
+  /** First completion of a challenge pays its XP; repeats pay nothing. Returns true the first time. */
+  completeChallenge(challenge) {
+    if (!challenge?.id || this.data.challenges[challenge.id]) return false;
+    this.data.challenges[challenge.id] = Date.now();
+    this.addXp(challenge.reward?.xp || 0);
+    this.save();
+    return true;
   }
 
   /** Prestige ("Re-Zoning"): full game only, from the top rank. Camos and achievements stay. */

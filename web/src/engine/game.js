@@ -23,6 +23,7 @@ import { Funnel } from './funnel.js';
 import { OnlineSession } from './online.js';
 import { Portal } from './portal.js';
 import { CareerProfile, CAMO_TIERS, HOA_RANKS } from './progression.js';
+import { challengeApplies, challengeLocked, goalHit, challengePassed } from './challenges.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
@@ -141,6 +142,7 @@ const state = {
   map: !DEMO_BUILD && !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
   goldSkin: !DEMO_BUILD && !isDemo && params.get('gold') === '1',
   showCamo: true,
+  challenge: '',
   ...loadClass(),
   wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
@@ -530,33 +532,48 @@ if ($('optPerk')) $('optPerk').onchange = e => {
   if ($('perkDesc')) $('perkDesc').textContent = p?.desc || 'One perk per player. Pick a playstyle.';
 };
 
+const lockedFor = c => challengeLocked(c, { demo: classDemoActive(), demoFactions: DEMO_FACTIONS, maps: MAPS });
+/** The selected challenge, while its map and mode are still the ones chosen. */
+function activeChallenge() {
+  const c = (challengesData || []).find(ch => ch.id === state.challenge);
+  return c && challengeApplies(c, state) && !lockedFor(c) ? c : null;
+}
 function syncChallengeOptions() {
   const sel = $('optChallenge');
   if (!sel || !sel.options || !challengesData?.length) return;
   if (!sel.options.length) {
     sel.add(new Option('None (Standard Skirmish)', ''));
     for (const c of challengesData) {
-      sel.add(new Option(`${c.reward.badge} ${c.title} (${c.mode})`, c.id));
+      const done = career.profile.challenges?.[c.id] ? ' ✔' : '';
+      sel.add(new Option(`${c.reward.badge} ${c.title} (${c.mode})${lockedFor(c) ? ' 🔒 $4.99' : done}`, c.id));
     }
   }
+  sel.value = activeChallenge() ? state.challenge : '';
 }
 if ($('optChallenge')) $('optChallenge').onchange = e => {
   const c = (challengesData || []).find(ch => ch.id === e.target.value);
   if (!c) {
+    state.challenge = '';
     if ($('challengeDesc')) $('challengeDesc').textContent = 'Pick a curated suburban challenge mission with custom objectives and rewards.';
     return;
   }
+  if (lockedFor(c)) {
+    e.target.value = '';
+    showDemoModal(`${c.reward.badge} ${c.title}`, 'Play every challenge mission on every map in the $4.99 Full Game!');
+    return;
+  }
+  state.challenge = c.id;
   state.mode = c.mode;
   state.map = c.map;
   state.faction = c.playerFaction;
-  state.difficulty = c.modifiers?.botDifficulty || 'medium';
+  state.difficulty = c.rules?.difficulty || 'medium';
   if ($('optMode')) $('optMode').value = c.mode;
   if ($('optMap')) $('optMap').value = c.map;
   if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
   buildMenu();
   updateMatchSettingsSummary();
   if ($('challengeDesc')) {
-    $('challengeDesc').textContent = `${c.briefing} — Reward: ${c.reward.title} (+${c.reward.xp} XP)`;
+    $('challengeDesc').textContent = `${c.briefing}${c.goal ? ` Goal: win and ${c.goal.label.toLowerCase()}.` : ' Goal: win.'} Reward: ${c.reward.title} (+${c.reward.xp} XP, first clear)`;
   }
 };
 if ($('optMap')) {
@@ -865,15 +882,20 @@ class Game {
     this.library = new ContentLibrary(content, { script: state.script, legalSafe: state.legalSafe });
     const activeMap = buildMap(state.map);
     if (renderer) renderer.setMap(activeMap);
+    this.challenge = session ? null : activeChallenge();
+    this.challengeProgress = 0;
+    const ch = this.challenge?.rules || {};
     this.sim = new Sim({
       rules: content.rules,
       weapons: weaponsData,
       rng: this.rng,
       map: activeMap,
       mode: state.mode,
-      difficulty: state.difficulty,
+      scoreLimit: ch.scoreLimit,
+      timeLimit: ch.timeLimit,
+      difficulty: ch.difficulty || state.difficulty,
       botDifficulty: params.get('bots') || undefined,
-      mutators: state.mutators,
+      mutators: { ...state.mutators, ...(ch.mutators || {}) },
       isDemo,
       perks: perksData,
     });
@@ -892,14 +914,15 @@ class Game {
       // Online: the server runs the match; this Sim is a mirror that is only written into (see online.js).
       this.me = session.buildMirror(this.sim);
     } else {
-      const myLoadout = !classDemoActive() && PRIMARY_IDS.includes(state.primary) ? state.primary : FACTION_LOADOUTS[state.faction]?.loadout || 'default';
+      const myLoadout = ch.loadout || (!classDemoActive() && PRIMARY_IDS.includes(state.primary) ? state.primary : FACTION_LOADOUTS[state.faction]?.loadout || 'default');
       const myPerk = perksData.perks[state.perk] && (!classDemoActive() || perksData.perks[state.perk].demoAllowed) ? state.perk : null;
       const customName = ($('optName')?.value || params.get('name') || '').trim();
       const myName = customName ? playerName() : 'You';
       this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, perk: myPerk, isBot: state.spectate });
-      for (let i = 0; i < 11; i++) {
-        const team = i < 5 ? 0 : 1;
-        const botFaction = pickFaction(team);
+      const allies = ch.allies ?? 5, enemies = ch.enemies ?? 6;
+      for (let i = 0; i < allies + enemies; i++) {
+        const team = i < allies ? 0 : 1;
+        const botFaction = team === 1 && this.challenge?.enemyFaction ? this.challenge.enemyFaction : pickFaction(team);
         const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
         this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
       }
@@ -1206,6 +1229,11 @@ class Game {
           if (e.victimId === me.id && !me.isBot) {
             career.recordDeath();
           }
+          if (this.challenge?.goal && !me.isBot && goalHit(this.challenge.goal, e, me.id)) {
+            this.challengeProgress++;
+            const g = this.challenge.goal;
+            if (this.challengeProgress <= g.count) this.hud.popScore?.(`🎯 ${this.challengeProgress}/${g.count} ${g.label.toUpperCase()}`, this.challengeProgress === g.count);
+          }
           if (e.killerId === me.id && !me.isBot) {
             sfx.kill();
             haptic([40, 20, 60]);
@@ -1249,7 +1277,10 @@ class Game {
           }
           break;
         case 'fineFromAboveStart':
-          if (e.id === me.id) this.showBanner('🛸 FINE FROM ABOVE', 'HOA drone online. Aim with the mouse, fire to issue fines. Your body is exposed!');
+          if (e.id === me.id) {
+            this.showBanner('🛸 FINE FROM ABOVE', 'HOA drone online. Aim with the mouse, fire to issue fines. Your body is exposed!');
+            if (!me.isBot) career.unlockAchievement('ACH_FINE_FROM_ABOVE');
+          }
           else if (e.team !== me.team) this.showBanner('⚠️ ENEMY DRONE OVERHEAD', 'Fines incoming. Get under a roof!');
           break;
         case 'fineFromAboveEnd':
@@ -1330,6 +1361,15 @@ class Game {
           if (!me.isBot) {
             this.hud.stopClipRecorder?.();
             career.recordMatchEnd({ won: e.winner === me.team, mode: state.mode });
+            if (this.challenge) {
+              const c = this.challenge;
+              if (challengePassed(c, { won: e.winner === me.team, progress: this.challengeProgress })) {
+                const first = career.completeChallenge(c);
+                this.showBanner(`${c.reward.badge} CHALLENGE CLEARED: ${c.title.toUpperCase()}`, first ? `${c.reward.title} · +${c.reward.xp} XP` : 'Already cleared. The board is unimpressed.');
+              } else {
+                this.showBanner(`❌ CHALLENGE FAILED: ${c.title.toUpperCase()}`, c.goal ? `${c.goal.label}: ${this.challengeProgress}/${c.goal.count}` : 'Win the match to clear it.');
+              }
+            }
             if (e.winner === me.team) { sfx.victory?.(); portal.happytime(); }
             else sfx.defeat?.();
           }

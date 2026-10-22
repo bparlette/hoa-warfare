@@ -794,6 +794,7 @@ export class Sim {
     const ev = {
       type: 'kill', killerId: killer?.id ?? null, victimId: target.id, headshot, melee, explosive, weaponId,
       dir: dir || { x: 0, y: 0, z: 0 }, victimPos: { ...target.pos }, killerPos: killer ? { ...killer.pos } : null,
+      killerAirborne: killer ? killer.onGround === false && !killer.inVehicle : false,
     };
     this.emit(ev);
     this.mode.onKill(ev, killer, target);

@@ -87,3 +87,12 @@ test('old v1 profiles load with empty camo data', () => {
   assert.deepEqual(c.profile.camos, {});
   assert.equal(c.camoProgress('allowance').kills, 12);
 });
+
+test('challenges: first clear pays the reward XP once', () => {
+  const c = new CareerProfile();
+  const ch = { id: 'challenge_x', reward: { xp: 500 } };
+  assert.equal(c.completeChallenge(ch), true);
+  assert.equal(c.profile.xp, 500);
+  assert.equal(c.completeChallenge(ch), false);
+  assert.equal(c.profile.xp, 500);
+});

@@ -7,15 +7,20 @@
     "mode": "clash",
     "playerFaction": "hoaDads",
     "enemyFaction": "karens",
-    "modifiers": {
-      "roadkillsRequired": 5,
-      "scoreLimit": 20,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 500,
       "title": "Groundskeeper Alpha",
       "badge": "🚜"
+    },
+    "rules": {
+      "scoreLimit": 20,
+      "difficulty": "medium"
+    },
+    "goal": {
+      "stat": "kills",
+      "weaponId": "mower",
+      "count": 5,
+      "label": "Run over 5 neighbors with the riding mower"
     }
   },
   {
@@ -26,35 +31,41 @@
     "mode": "loneWolf",
     "playerFaction": "wallstreetBets",
     "enemyFaction": "karens",
-    "modifiers": {
-      "enemyCount": 4,
-      "scoreLimit": 15,
-      "botDifficulty": "hard"
-    },
     "reward": {
       "xp": 600,
       "title": "Shift Supervisor",
       "badge": "💼"
+    },
+    "rules": {
+      "scoreLimit": 15,
+      "difficulty": "hard",
+      "allies": 0,
+      "enemies": 4
     }
   },
   {
     "id": "challenge_03",
     "title": "Cul-de-Sac Sniper Alley",
-    "briefing": "Long-range property assessment disputes across the manicured lawns. Snipers only from the porch balustrades. Headshots award double points.",
+    "briefing": "Long-range property assessment disputes across the manicured lawns. The Trust Fund only, and the board wants 10 clean headshots entered into the minutes.",
     "map": "showcase",
     "mode": "clash",
     "playerFaction": "fabulous",
     "enemyFaction": "rednecks",
-    "modifiers": {
-      "weaponClass": "sniper",
-      "headshotsOnly": false,
-      "scoreLimit": 20,
-      "botDifficulty": "hard"
-    },
     "reward": {
       "xp": 750,
       "title": "Appraisal Assassin",
       "badge": "🎯"
+    },
+    "rules": {
+      "scoreLimit": 20,
+      "difficulty": "hard",
+      "loadout": "trustFund"
+    },
+    "goal": {
+      "stat": "headshots",
+      "count": 10,
+      "label": "Land 10 headshots with The Trust Fund",
+      "weaponId": "trustFund"
     }
   },
   {
@@ -65,15 +76,15 @@
     "mode": "receiptCheck",
     "playerFaction": "hoaDads",
     "enemyFaction": "cloutStreamers",
-    "modifiers": {
-      "scoreLimit": 15,
-      "timeLimit": 180,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 500,
       "title": "Waste Management Tsar",
       "badge": "♻️"
+    },
+    "rules": {
+      "scoreLimit": 15,
+      "timeLimit": 180,
+      "difficulty": "medium"
     }
   },
   {
@@ -84,15 +95,17 @@
     "mode": "stealTheCasserole",
     "playerFaction": "tradwives",
     "enemyFaction": "valleyGirls",
-    "modifiers": {
-      "scoreLimit": 3,
-      "carrySpeedBonus": 1.2,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 650,
       "title": "Starter Guardian",
       "badge": "🍞"
+    },
+    "rules": {
+      "scoreLimit": 3,
+      "difficulty": "medium",
+      "mutators": {
+        "turbo": true
+      }
     }
   },
   {
@@ -103,70 +116,80 @@
     "mode": "kingOfTheLawn",
     "playerFaction": "pickleballRetirees",
     "enemyFaction": "gymRats",
-    "modifiers": {
-      "scoreLimit": 100,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 700,
       "title": "Dink Master",
       "badge": "🎾"
+    },
+    "rules": {
+      "scoreLimit": 100,
+      "difficulty": "medium"
     }
   },
   {
     "id": "challenge_07",
     "title": "The 7:00 AM Leaf Blower Awakening",
-    "briefing": "Saturday morning neighborhood quiet hours expire at precisely 07:00:00. Use extreme wind velocity and knockback to sweep 10 noisy hipsters off your property.",
+    "briefing": "Leaf blowers are banned until 7:00 AM, so you brought the Divorce Settlement instead. Clear 8 noisy neighbors off your property at point-blank range before quiet hours end.",
     "map": "culdesac",
     "mode": "clash",
     "playerFaction": "rednecks",
     "enemyFaction": "wokeLibs",
-    "modifiers": {
-      "weaponClass": "special",
-      "knockback": 20,
-      "scoreLimit": 15,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 650,
       "title": "Two-Stroke Menace",
       "badge": "🍃"
+    },
+    "rules": {
+      "scoreLimit": 15,
+      "difficulty": "medium",
+      "loadout": "divorceSettlement"
+    },
+    "goal": {
+      "stat": "kills",
+      "weaponId": "divorceSettlement",
+      "count": 8,
+      "label": "Get 8 kills with The Divorce Settlement"
     }
   },
   {
     "id": "challenge_08",
     "title": "Midnight Commercial Eviction",
-    "briefing": "Tactical repossession of unzoned strip mall retail units. Wipe out the occupying squatters without dropping a single round.",
+    "briefing": "Tactical repossession of unzoned strip mall retail units. One life per round. Post the eviction notices and win the block before the squatters lawyer up.",
     "map": "stripmall",
     "mode": "evictTheBlock",
     "playerFaction": "wallstreetBets",
     "enemyFaction": "fratHouse",
-    "modifiers": {
-      "scoreLimit": 4,
-      "botDifficulty": "hard"
-    },
     "reward": {
       "xp": 800,
       "title": "Bailiff Emeritus",
       "badge": "📜"
+    },
+    "rules": {
+      "scoreLimit": 4,
+      "difficulty": "hard"
     }
   },
   {
     "id": "challenge_09",
     "title": "High-Altitude Trampoline Sniping",
-    "briefing": "Use the non-compliant backyard trampoline to gain aerial line-of-sight over suburban privacy fences. Wipe out 20 opponents before time expires.",
+    "briefing": "Use the non-compliant backyard trampoline to gain aerial line-of-sight over suburban privacy fences. Win the wipeout and land 5 kills mid-bounce.",
     "map": "pickleball",
     "mode": "wipeout",
     "playerFaction": "cloutStreamers",
     "enemyFaction": "hoaDads",
-    "modifiers": {
-      "scoreLimit": 20,
-      "botDifficulty": "medium"
-    },
     "reward": {
       "xp": 750,
       "title": "Z-Axis Violator",
       "badge": "🎪"
+    },
+    "rules": {
+      "scoreLimit": 20,
+      "difficulty": "medium"
+    },
+    "goal": {
+      "stat": "airborneKills",
+      "count": 5,
+      "label": "Get 5 kills in mid-air"
     }
   },
   {
@@ -177,14 +200,14 @@
     "mode": "clash",
     "playerFaction": "karens",
     "enemyFaction": "hoaDads",
-    "modifiers": {
-      "scoreLimit": 30,
-      "botDifficulty": "veteran"
-    },
     "reward": {
       "xp": 1000,
       "title": "HOA Board Dictator",
       "badge": "👑"
+    },
+    "rules": {
+      "scoreLimit": 30,
+      "difficulty": "hard"
     }
   }
 ]
