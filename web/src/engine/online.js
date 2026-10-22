@@ -25,11 +25,11 @@ export class OnlineSession {
    * Connect and join a room. `room` is a code, or 'auto' for Quick Match.
    * @throws Error with .message 'room_full' | 'timeout' | 'closed' when joining fails
    */
-  static async join({ url, name = 'Player', faction = 'karens', timeoutMs = 6000, NetClientClass = NetClient, knownFactions = null } = {}) {
+  static async join({ url, name = 'Player', faction = 'karens', loadout, perk, timeoutMs = 6000, NetClientClass = NetClient, knownFactions = null } = {}) {
     const session = new OnlineSession(new NetClientClass());
     session.knownFactions = knownFactions; // ids this build can draw; anything else falls back to karens instead of crashing
     const res = await session.net.connect(url, {
-      name, faction, timeoutMs,
+      name, faction, loadout, perk, timeoutMs,
       onRoster: msg => session.onRoster(msg),
       onSnapshot: msg => session.onSnapshot(msg),
       onDisconnect: () => { session.connected = false; },
@@ -105,7 +105,9 @@ export class OnlineSession {
   addMirrorActor(p) {
     if (this.sim.byId.has(p.id)) return this.sim.byId.get(p.id);
     const faction = !this.knownFactions || this.knownFactions.includes(p.faction) ? p.faction : 'karens';
-    const a = this.sim.addActor({ id: p.id, name: cleanName(p.name), team: p.team === 1 ? 1 : 0, faction, isBot: false });
+    // the server already validated primary/perk; anything this build cannot resolve falls back to the faction default
+    const loadout = this.sim.weapons.loadouts?.[p.primary] ? p.primary : 'default';
+    const a = this.sim.addActor({ id: p.id, name: cleanName(p.name), team: p.team === 1 ? 1 : 0, faction, loadout, perk: p.perk || null, isBot: false });
     a.alive = false;
     return a;
   }

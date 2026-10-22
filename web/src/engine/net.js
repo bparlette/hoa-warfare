@@ -43,7 +43,7 @@ export class NetClient {
    * @param {{ name?: string, faction?: string, team?: number, onSnapshot?: Function, onConnect?: Function, onDisconnect?: Function }} callbacks
    * @returns {Promise<{ actorId: string, team: number, roomCode: string }>}
    */
-  connect(url, { name = 'Player', faction = 'karens', team, onSnapshot, onConnect, onDisconnect, onRoster, onError, timeoutMs = 6000 } = {}) {
+  connect(url, { name = 'Player', faction = 'karens', loadout, perk, team, onSnapshot, onConnect, onDisconnect, onRoster, onError, timeoutMs = 6000 } = {}) {
     this.onSnapshot = onSnapshot;
     this.onConnect = onConnect;
     this.onDisconnect = onDisconnect;
@@ -55,6 +55,8 @@ export class NetClient {
         const u = new URL(url, typeof location !== 'undefined' ? location.href : 'http://localhost');
         if (name && !u.searchParams.has('name')) u.searchParams.set('name', name);
         if (faction && !u.searchParams.has('faction')) u.searchParams.set('faction', faction);
+        if (loadout && !u.searchParams.has('loadout')) u.searchParams.set('loadout', loadout);
+        if (perk && !u.searchParams.has('perk')) u.searchParams.set('perk', perk);
         if (team !== undefined && !u.searchParams.has('team')) u.searchParams.set('team', String(team));
 
         const ws = new WebSocket(u.toString());

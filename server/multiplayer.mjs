@@ -45,6 +45,21 @@ const HISTORY_TICKS = 30;      // 0.5 s of positions at 60 Hz
 
 const content = JSON.parse(readFileSync(new URL('../data/hoa_content.json', import.meta.url)));
 const weapons = JSON.parse(readFileSync(new URL('../data/weapons.json', import.meta.url)));
+const perks = JSON.parse(readFileSync(new URL('../data/perks.json', import.meta.url)));
+
+/**
+ * Create-a-class from a join request, never trusted: loadout must be a primary weapon id and perk a
+ * perks.json id, else null (null loadout = the faction's signature gun). A demo server allows only
+ * the signature gun and the demoAllowed perks.
+ */
+export function sanitizeClass({ loadout, perk } = {}, { demo = false, weaponsData = weapons, perksData = perks } = {}) {
+  const isPrimary = typeof loadout === 'string' && weaponsData.weapons[loadout]?.slot === 'primary' && !!weaponsData.loadouts[loadout];
+  const def = typeof perk === 'string' && Object.hasOwn(perksData.perks, perk) ? perksData.perks[perk] : null;
+  return {
+    loadout: !demo && isPrimary ? loadout : null,
+    perk: def && (!demo || def.demoAllowed) ? perk : null,
+  };
+}
 const shippingFactions = Object.keys(content.factions || {}).filter(
   id => !content.factions[id].status || content.factions[id].status !== 'draft'
 );
@@ -226,10 +241,12 @@ function snapObject(o) {
   return out;
 }
 export class Room {
-  constructor(roomCode, { contentData = content, weaponsData = weapons, mode = 'clash', seed, botFactions, quick = false, restartMs = LIMITS.matchRestartMs } = {}) {
+  constructor(roomCode, { contentData = content, weaponsData = weapons, perksData = perks, mode = 'clash', seed, botFactions, quick = false, restartMs = LIMITS.matchRestartMs, demo = false } = {}) {
     this.roomCode = roomCode;
     this.content = contentData;
     this.weapons = weaponsData;
+    this.perks = perksData;
+    this.demo = !!demo;
     this.mode = mode;
     this.quick = quick;
     this.restartMs = restartMs;
@@ -258,6 +275,7 @@ export class Room {
       weapons: this.weapons,
       rng: mulberry32(seed ?? Math.floor(Math.random() * 900000) + 100000),
       mode: this.mode,
+      perks: this.perks,
     });
     this.installLagCompensation(sim);
     return sim;
@@ -361,7 +379,7 @@ export class Room {
     this.nextBotSeq = 1;
     this.sim = this.makeSim();
     for (const client of this.clients.values()) {
-      client.actor = this.sim.addActor({ id: client.actorId, name: client.name, team: client.team, faction: client.faction, isBot: false });
+      client.actor = this.sim.addActor({ id: client.actorId, name: client.name, team: client.team, faction: client.faction, loadout: client.loadout ?? 'default', perk: client.perk, isBot: false });
       this.clientByActor.set(client.actorId, client);
     }
     this.backfillBots();
@@ -369,7 +387,7 @@ export class Room {
   }
 
   rosterPlayers() {
-    return this.sim.actors.map(a => ({ id: a.id, name: a.name, team: a.team, faction: a.faction, bot: a.isBot }));
+    return this.sim.actors.map(a => ({ id: a.id, name: a.name, team: a.team, faction: a.faction, bot: a.isBot, primary: a.weapons.primary.id, perk: a.perk }));
   }
 
   rosterPacket({ newMatch = false } = {}) {
@@ -488,10 +506,11 @@ export class Room {
   isFull() { return this.clients.size >= this.maxSlots; }
 
   /** @returns the client record, or null when every seat has a human. */
-  addPlayer(socket, { name = 'Player', faction = 'karens', team } = {}) {
+  addPlayer(socket, { name = 'Player', faction = 'karens', team, loadout, perk } = {}) {
     if (this.isFull()) return null;
     name = sanitizeName(name);
     if (!this.botFactions.includes(faction) && !shippingFactions.includes(faction)) faction = 'karens';
+    const cls = sanitizeClass({ loadout, perk }, { demo: this.demo, weaponsData: this.weapons, perksData: this.perks });
 
     const humans = [0, 1].map(t => [...this.clients.values()].filter(c => c.team === t).length);
     const assignedTeam = team === 0 || team === 1 ? team : (humans[0] <= humans[1] ? 0 : 1);
@@ -507,8 +526,8 @@ export class Room {
     }
 
     const actorId = `p_${this.nextPlayerSeq++}`;
-    const actor = this.sim.addActor({ id: actorId, name, team: assignedTeam, faction, isBot: false });
-    const client = { socket, actor, actorId, name, faction, team: assignedTeam, rtt: 0, lastInputAt: performance.now() };
+    const actor = this.sim.addActor({ id: actorId, name, team: assignedTeam, faction, loadout: cls.loadout ?? 'default', perk: cls.perk, isBot: false });
+    const client = { socket, actor, actorId, name, faction, loadout: cls.loadout, perk: cls.perk, team: assignedTeam, rtt: 0, lastInputAt: performance.now() };
     this.clients.set(socket, client);
     this.clientByActor.set(actorId, client);
     this.emptySince = null;
@@ -577,9 +596,10 @@ export class Room {
 
 /** Active rooms by code, with quick-match lobbies and caps. */
 export class RoomManager {
-  constructor({ contentData = content, weaponsData = weapons, botFactions, maxRooms = LIMITS.maxRooms, restartMs } = {}) {
+  constructor({ contentData = content, weaponsData = weapons, botFactions, maxRooms = LIMITS.maxRooms, restartMs, demo = false } = {}) {
     this.content = contentData;
     this.weapons = weaponsData;
+    this.demo = !!demo;
     this.botFactions = botFactions;
     this.maxRooms = maxRooms;
     this.restartMs = restartMs;
@@ -603,6 +623,7 @@ export class RoomManager {
         weaponsData: this.weapons,
         botFactions: this.botFactions,
         restartMs: this.restartMs,
+        demo: this.demo,
         ...options,
       });
       this.rooms.set(roomCode, room);
@@ -733,6 +754,8 @@ export function createMultiplayerServer(port = 8080, options = {}) {
     const client = room.addPlayer(socket, {
       name: url.searchParams.get('name') || 'Player',
       faction: url.searchParams.get('faction') || 'karens',
+      loadout: url.searchParams.get('loadout') || undefined,
+      perk: url.searchParams.get('perk') || undefined,
       team,
     });
     if (!client) {

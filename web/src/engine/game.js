@@ -797,7 +797,10 @@ async function startOnline(room = 'auto') {
   try {
     const u = new URL(base, location.href);
     u.searchParams.set('room', room);
-    const session = await OnlineSession.join({ url: u.toString(), name: playerName(), faction: state.faction, timeoutMs: 60000, knownFactions: Object.keys(factions) });
+    // the server re-validates both (and a demo server allows only the signature gun and demo perks)
+    const loadout = !classDemoActive() && PRIMARY_IDS.includes(state.primary) ? state.primary : undefined;
+    const perk = perksData.perks[state.perk] && (!classDemoActive() || perksData.perks[state.perk].demoAllowed) ? state.perk : undefined;
+    const session = await OnlineSession.join({ url: u.toString(), name: playerName(), faction: state.faction, loadout, perk, timeoutMs: 60000, knownFactions: Object.keys(factions) });
     clearTimeout(wakeNote);
     if (token !== connectToken) { session.close(); return; }
     $('connecting').classList.add('hidden');
