@@ -11,6 +11,14 @@ Argon does art only, if it generates images. Sonnet and Gemini Flash are not use
 
 ---
 
+## Final review (Opus, 2026-10-22)
+Code-complete. Verified on `main`: 304/304 tests, lint clean, UI audit clean at 4 sizes, 36/36 map x mode bot
+matches with no crash or stuck actor, web demo zip and Steam desktop build both load and render with no console
+errors, a browser client joined a local online match with its create-a-class intact. Fixed in this pass: saved FOV
+and graphics preset never applied, key rebinding had no UI, the settings drawer crushed the faction cards, zones
+showed cul-de-sac names on every map, pickleball HOA Patrol zones sat behind a spawn, end-screen spacing.
+Everything left is below and needs a human.
+
 ## Owner (human only)
 - [ ] Pay Steam Direct fee, register app, publish "Coming Soon" page (CoD launched 2026-10-22: wishlists are being lost every day this is open).
 - [ ] Set `data/demo.json` `steamUrl` to the live store URL.
