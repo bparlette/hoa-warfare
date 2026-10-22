@@ -87,3 +87,18 @@ test('the end-of-match Steam card cannot be made skippable', () => {
   assert.equal(new Funnel({ ctaLockSec: 9 }).cfg.ctaLockSec, 9);
   assert.equal(new Funnel({ ctaLockSec: 'nonsense' }).cfg.ctaLockSec, 4);
 });
+
+test('every data file the game loads ships in the demo, and no module import escapes the zip', () => {
+  packOnce();
+  const game = readFileSync(new URL('src/engine/game.js', DEMO), 'utf8');
+  for (const [, f] of game.matchAll(/loadJson\('data\/([\w.]+)'\)/g)) assert.ok(existsSync(new URL(`data/${f}`, DEMO)), `data/${f} ships`);
+  const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(new URL(`${e.name}/`, dir)) : e.name.endsWith('.js') ? [new URL(e.name, dir)] : []));
+  for (const file of walk(new URL('src/', DEMO))) {
+    for (const [, rel] of readFileSync(file, 'utf8').matchAll(/from\s+'(\.[^']+\.json)'/g)) {
+      const target = new URL(rel, file);
+      assert.ok(target.href.startsWith(DEMO.href) && existsSync(target), `${fileURLToPath(file)} imports ${rel}`);
+    }
+  }
+  const challenges = JSON.parse(readDemoData('challenges.json'));
+  assert.ok(challenges.length >= 1, 'at least one challenge is playable in the demo');
+});

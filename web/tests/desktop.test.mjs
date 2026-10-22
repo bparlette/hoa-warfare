@@ -201,3 +201,10 @@ test('desktop: internal loopback server starts on ephemeral port without CORS is
   // Clean shutdown
   await new Promise(r => server.close(r));
 });
+
+test('desktop: the build script ships every data file game.js loads', async () => {
+  const { readFileSync } = await import('node:fs');
+  const game = readFileSync(new URL('../src/engine/game.js', import.meta.url), 'utf8');
+  const build = readFileSync(new URL('../../tools/build_desktop.mjs', import.meta.url), 'utf8');
+  for (const [, f] of game.matchAll(/loadJson\('\.\.\/data\/([\w.]+)'\)/g)) assert.ok(build.includes(`'${f}'`), `build_desktop.mjs copies ${f}`);
+});

@@ -51,5 +51,5 @@ Each build task needs an Opus spec first and is done only when its listed checks
 - [x] Record Opus's new lines: Fine From Above callouts, perk barks, camo-unlock and Prestige announcer (45 new lines recorded & manifested).
 
 ## Argon: art only (skip if Argon cannot generate images)
-- [ ] Capsule art that does not resemble the CoD logo, plus a set for the backup title (`assets/steam/`).
+- [x] Capsule art that does not resemble the CoD logo, plus a set for the backup title (`assets/steam/` and `assets/steam/backup_title/`) (done via `tools/build_steam_capsules_v2.mjs`).
 - [x] Steam achievement icons (13 unlocked + 13 locked 256x256 PNGs), 4 camo swatches, 10 Prestige badges in `assets/steam/` (done via `tools/build_steam_achievements.mjs`).

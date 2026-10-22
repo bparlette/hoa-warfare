@@ -18,6 +18,7 @@
 import { cpSync, mkdirSync, rmSync, existsSync, statSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
 import { execSync } from 'node:child_process';
+import { MAPS } from '../web/src/engine/map.js';
 
 const ROOT = resolve(dirname(new URL(import.meta.url).pathname), '..');
 const WEB = join(ROOT, 'web');
@@ -44,7 +45,8 @@ for (const f of ['logo.png', 'favicon.png', 'badge.png']) if (existsSync(join(WE
 if (existsSync(join(WEB, 'assets', 'characters'))) copy(join(WEB, 'assets', 'characters'), join(DEMO, 'assets', 'characters'));
 if (existsSync(join(WEB, 'assets', 'weapons'))) copy(join(WEB, 'assets', 'weapons'), join(DEMO, 'assets', 'weapons'));
 copy(join(ROOT, 'assets', 'art', 'cover_key_art.jpg'), join(DEMO, 'assets', 'art', 'cover_key_art.jpg'));
-for (const f of ['weapons.json', 'demo.json', 'perks.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+for (const f of ['weapons.json', 'demo.json', 'perks.json', 'achievements.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+// challenges.json is filtered in step 2b (paid maps/factions stay out).
 // hoa_content.json is deliberately NOT copied: the demo ships demo_content.json (step 2b).
 
 // 2. Paths: the repo serves web/ next to data/ and assets/; in the zip everything sits at the root.
@@ -66,6 +68,12 @@ const CONTENT_REF = "'data/hoa_content.json'";
 if (!gameFixed.includes(CONTENT_REF)) throw new Error('package_demo: content path reference missing from game.js');
 gameFixed = gameFixed.replace(CONTENT_REF, "'data/demo_content.json'");
 writeFileSync(gamePath, gameFixed);
+// Modules under web/src/engine import repo data as '../../../data/'; in the zip src/ sits at the root.
+const srcFiles = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? srcFiles(join(dir, e.name)) : /\.js$/.test(e.name) ? [join(dir, e.name)] : []));
+for (const f of srcFiles(join(DEMO, 'src'))) {
+  const body = readFileSync(f, 'utf8');
+  if (body.includes("'../../../data/")) writeFileSync(f, body.replaceAll("'../../../data/", "'../../data/"));
+}
 const cssPath = join(DEMO, 'style.css');
 writeFileSync(cssPath, readFileSync(cssPath, 'utf8').replace(/url\((["']?)\.\.\/assets\//g, 'url($1assets/'));
 
@@ -73,6 +81,10 @@ writeFileSync(cssPath, readFileSync(cssPath, 'utf8').replace(/url\((["']?)\.\.\/
 // else in hoa_content.json (the other factions' stats, names and barks) stays out of the zip.
 const demoFactions = JSON.parse(game.match(/DEMO_FACTIONS\s*=\s*(\[[^\]]*\])/)[1].replace(/'/g, '"'));
 const fullContent = JSON.parse(readFileSync(join(ROOT, 'data', 'hoa_content.json'), 'utf8'));
+// Challenges: only the ones the demo can play (free map, demo factions on both sides).
+const allChallenges = JSON.parse(readFileSync(join(ROOT, 'data', 'challenges.json'), 'utf8'));
+const demoChallenges = allChallenges.filter(c => MAPS[c.map]?.freeInDemo && demoFactions.includes(c.playerFaction) && (!c.enemyFaction || demoFactions.includes(c.enemyFaction)));
+writeFileSync(join(DEMO, 'data', 'challenges.json'), JSON.stringify(demoChallenges, null, 2) + '\n');
 const demoContent = { ...fullContent, __demo: true, factions: {}, rivalry: [] };
 for (const id of demoFactions) {
   const faction = fullContent.factions[id];
@@ -128,7 +140,11 @@ const scan = dir => {
     const p = join(dir, ent.name);
     if (ent.isDirectory()) { if (ent.name !== 'vendor' && ent.name !== 'vo') scan(p); continue; }
     if (!/\.(js|css|html)$/.test(ent.name)) continue;
-    if (/['"(]\.\.\/(data|assets)\//.test(readFileSync(p, 'utf8'))) offenders.push(p.slice(DEMO.length + 1));
+    // any relative path that resolves outside the zip root (a module import or a ../data fetch)
+    for (const [, rel] of readFileSync(p, 'utf8').matchAll(/['"(]((?:\.\.\/)+(?:data|assets)\/[^'")]+)/g)) {
+      // '../data/' is relative to the page for fetch/CSS, so it always escapes; deeper module imports are checked by resolving
+      if (/^\.\.\/(data|assets)\//.test(rel) || !resolve(dirname(p), rel).startsWith(DEMO + '/')) offenders.push(`${p.slice(DEMO.length + 1)} -> ${rel}`);
+    }
   }
 };
 scan(DEMO);
