@@ -42,6 +42,7 @@ const CAST = {
   hoaDads:        { voice: 'avocado_v2:vdc_22255',                 pitch: 0.85, rate: 1.15, gender: 'm' },
   animeWeebs:     { voice: 'avocado_v2:qvd_00173',                 pitch: 1.50, rate: 1.40, gender: 'm' },
   furries:        { voice: 'avocado_v2:qvd_00262',                 pitch: 1.40, rate: 1.30, gender: 'm' },
+  announcer:      { voice: 'avocado_v2:vdc_22255',                 pitch: 1.00, rate: 1.15, gender: 'm' },  // PA/megaphone: authoritative suburban announcer
 };
 
 const TTS = '/opt/hatch/bin/tts';
