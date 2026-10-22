@@ -136,7 +136,7 @@ export class Renderer {
     const w = this.canvas?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 800),
           h = this.canvas?.clientHeight || (typeof window !== 'undefined' ? window.innerHeight : 600);
     const baseFov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
-    const targetFov = this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
+    const targetFov = this._thermal ? 42 : this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
     if (this.camera.fov !== targetFov) {
       this.camera.fov = targetFov;
       this.camera.updateProjectionMatrix?.();
@@ -245,6 +245,7 @@ export class Renderer {
       for (const [ox, oy, oz, rad] of [[0, 0, 0, 3.8], [2.8, -0.4, 0.6, 2.8], [-2.6, -0.5, -0.4, 2.6]]) {
         const puff = add(new THREE.Mesh(new THREE.IcosahedronGeometry(rad, 1), cloudMat), { cast: false, receive: false });
         puff.scale.set(1.3, 0.55, 1.0);
+        puff.userData.cloud = true;
         puff.position.set(cx + ox, cy + oy, cz + oz);
       }
     }
@@ -1378,6 +1379,7 @@ export class Renderer {
       // 13 m; past that it is a draw call for nothing. See lod.js.
       updateDetailLod(c, this.camera.position);
       if (s.id === hideId) c.root.visible = false;
+      this.updateHeat(c, s);
     }
     if (snap.helicopters) this.updateHelicopters(snap.helicopters, dt);
     if (snap.mowers) this.updateMowers(snap.mowers, dt);
@@ -1675,6 +1677,7 @@ export class Renderer {
   // ---------------------------------------------------------------- cameras
 
   firstPerson(a, dt, { moving, firing, reloading, meleeAgo, alive, shotFired }) {
+    this.setThermal(false);
     const activeW = a.weapons?.[a.activeSlot || 'primary'] || a.weapons?.primary;
     const interval = activeW?.intervalSec || 0.1;
     let isNewShot = false;
@@ -1755,8 +1758,75 @@ export class Renderer {
     }
   }
 
+  /** Fine From Above: thermal gunship view. `view` comes from sim.droneView(); `team` picks which glows strobe. */
+  droneCam(view, team, t) {
+    this.setThermal(true);
+    this.droneTeam = team;
+    this.heatMats.friend.opacity = Math.sin(t * 14) > 0 ? 0.95 : 0.15;
+    const j = this.juice?.sample();
+    this.camera.position.set(view.pos.x + (j?.x || 0), view.pos.y, view.pos.z);
+    this.camera.rotation.set(view.pitch + (j?.pitch || 0), view.yaw + (j?.yaw || 0), 0, 'YXZ');
+    this.viewmodel.visible = false;
+    this.trophy.visible = false;
+    if (this.flash) this.flash.visible = false;
+    if (this.muzzleLight) this.muzzleLight.intensity = 0;
+  }
+
+  setThermal(on) {
+    if (!!this._thermal === on) return;
+    this._thermal = on;
+    if (this.canvas?.style) this.canvas.style.filter = on ? 'grayscale(1) contrast(1.35)' : '';
+    if (on && !this.heatMats) {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 64;
+      const g = cv.getContext('2d');
+      const grad = g.createRadialGradient(32, 32, 2, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255,255,255,1)');
+      grad.addColorStop(0.45, 'rgba(255,255,255,0.85)');
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 64, 64);
+      const map = new THREE.CanvasTexture(cv);
+      const mat = () => new THREE.SpriteMaterial({ map, transparent: true, depthTest: false, blending: THREE.AdditiveBlending });
+      this.heatMats = { foe: mat(), friend: mat() };
+    }
+    if (!on) for (const c of this.characters.values()) if (c.heat) c.heat.visible = false;
+    // Dim the world so bodies, the only unlit (full-white) things on screen, read as white-hot.
+    if (on) {
+      this.thermalSaved = { bg: this.scene.background, fog: this.scene.fog, lights: [] };
+      this.scene.traverse(o => {
+        if (o.isLight) { this.thermalSaved.lights.push([o, o.intensity]); o.intensity *= 0.6; }
+        if (o.userData?.cloud) o.visible = false;
+      });
+      this.scene.background = new THREE.Color('#1a1a1a');
+      this.scene.fog = null;
+    } else if (this.thermalSaved) {
+      for (const [o, i] of this.thermalSaved.lights) o.intensity = i;
+      this.scene.traverse(o => { if (o.userData?.cloud) o.visible = true; });
+      this.scene.background = this.thermalSaved.bg;
+      this.scene.fog = this.thermalSaved.fog;
+      this.thermalSaved = null;
+    }
+    this.updateCameraFov();
+  }
+
+  /** White-hot glow over each body in thermal view; teammates strobe so they are never shelled by mistake. */
+  updateHeat(c, s) {
+    if (!this._thermal) return;
+    if (!c.heat) {
+      c.heat = new THREE.Sprite(this.heatMats.foe);
+      c.heat.position.set(0, 1.0, 0);
+      c.heat.scale.set(4.2, 5.2, 1);
+      c.heat.renderOrder = 10;
+      c.root.add(c.heat);
+    }
+    c.heat.material = s.team === this.droneTeam ? this.heatMats.friend : this.heatMats.foe;
+    c.heat.visible = c.root.visible && s.alive !== false;
+  }
+
   /** Over-the-shoulder camera behind `from`, looking at `at` (killcam / spectator). */
   chase(from, at, dist = 3.2) {
+    this.setThermal(false);
     this.updateCameraFov();
     if (this.muzzleLight) this.muzzleLight.intensity = 0;
     const fx = from.x ?? from.pos?.x ?? 0;
@@ -1775,6 +1845,7 @@ export class Renderer {
   }
 
   orbit(t) {
+    this.setThermal(false);
     if (this.muzzleLight) this.muzzleLight.intensity = 0;
     const r = 38;
     this.camera.position.set(Math.cos(t * 0.08) * r, 22, Math.sin(t * 0.08) * r);

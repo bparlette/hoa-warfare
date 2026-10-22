@@ -758,6 +758,29 @@ export class Hud {
     return { ...this.perfMetrics };
   }
 
+  /** Fine From Above gunship HUD: bracket reticle, battery countdown, and shell-ready light. */
+  updateDroneOverlay(sim, me) {
+    const on = !!(me?.alive && me.drone);
+    if (!on && !this.droneEl) return;
+    if (!this.droneEl) {
+      const el = document.createElement('div');
+      el.id = 'droneHud';
+      el.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:40;font:bold 16px "Courier New",monospace;color:#fff;text-shadow:0 0 4px #000;display:none';
+      el.innerHTML = '<div style="position:absolute;left:50%;top:50%;width:120px;height:120px;transform:translate(-50%,-50%);border:3px solid #fff;border-width:3px 0;opacity:.85"></div>'
+        + '<div style="position:absolute;left:50%;top:50%;width:120px;height:120px;transform:translate(-50%,-50%);border:3px solid #fff;border-width:0 3px;clip-path:polygon(0 0,18% 0,18% 100%,0 100%,0 0,100% 0,100% 100%,82% 100%,82% 0);opacity:.85"></div>'
+        + '<div style="position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;background:#fff"></div>'
+        + '<div data-k="top" style="position:absolute;left:24px;top:160px;line-height:1.5"></div>'
+        + '<div data-k="ready" style="position:absolute;left:50%;top:calc(50% + 80px);transform:translateX(-50%)"></div>';
+      document.body.appendChild(el);
+      this.droneEl = el;
+    }
+    this.droneEl.style.display = on ? 'block' : 'none';
+    if (!on) return;
+    const d = me.drone, left = Math.max(0, d.until - sim.time);
+    this.droneEl.querySelector('[data-k="top"]').innerHTML = `FINE FROM ABOVE<br>HOA DRONE · WHITE-HOT<br>BATTERY ${left.toFixed(0).padStart(2, '0')}s`;
+    this.droneEl.querySelector('[data-k="ready"]').textContent = sim.time >= d.nextShot ? '[ FINE READY ]' : '[ RELOADING ]';
+  }
+
   showBanner(text, small = '') {
     const $ = this.$;
     const el = $('banner');
@@ -1415,6 +1438,7 @@ export class Hud {
   update({ sim, me, state, renderer, input, voice, sfx, library, radar, realTime }) {
     const $ = this.$;
     $('hud').classList.remove('hidden');
+    this.updateDroneOverlay(sim, me);
     $('s0').textContent = sim.score[0];
     if ($('s1')) $('s1').textContent = sim.score[1];
     const modeClock = sim.mode?.clock?.();

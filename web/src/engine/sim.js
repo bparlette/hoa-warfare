@@ -79,6 +79,18 @@ export function forwardOf(yaw, pitch = 0) {
   return { x: -Math.sin(yaw) * c, y: Math.sin(pitch), z: -Math.cos(yaw) * c };
 }
 export function yawTo(dx, dz) { return Math.atan2(-dx, -dz); }
+
+/** 9-killstreak ($4.99 Full Game): an HOA drone gunship. Its owner stands still and aims from an orbit overhead. */
+export const FINE_FROM_ABOVE = { streak: 9, durationSec: 20, intervalSec: 1.1, botIntervalSec: 2.4, delaySec: 0.9, radius: 5, damage: 170, altitude: 55, orbitR: 28, orbitSec: 36, pitchMid: -0.9, pitchGain: 0.38 };
+
+/** Drone camera for an actor flying Fine From Above. The full mouse pitch range maps onto looking 20-83 degrees down, level = ~52. */
+export function droneView(drone, yaw, pitch, time, bounds) {
+  const F = FINE_FROM_ABOVE;
+  const ang = drone.angle + (time - drone.startedAt) * 2 * Math.PI / F.orbitSec;
+  const cx = bounds ? (bounds.minX + bounds.maxX) / 2 : 0, cz = bounds ? (bounds.minZ + bounds.maxZ) / 2 : 0;
+  const p = Math.max(-1.45, Math.min(-0.35, F.pitchMid + pitch * F.pitchGain));
+  return { pos: { x: cx + Math.cos(ang) * F.orbitR, y: F.altitude, z: cz + Math.sin(ang) * F.orbitR }, yaw, pitch: p, dir: forwardOf(yaw, p) };
+}
 function wrap(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; }
 function gauss(rng) { return Math.sqrt(-2 * Math.log(rng() + 1e-12)) * Math.cos(2 * Math.PI * rng()); }
 
@@ -118,6 +130,7 @@ export class Sim {
     this.byId = new Map();
     this.events = [];
     this.grenades = [];
+    this.fineShells = [];
     this.score = [0, 0];
     this.over = false;
     this.winner = null;
@@ -768,8 +781,11 @@ export class Sim {
         this.spawnHelicopter(killer);
       } else if (!killer.isBot && killer.streak === 7) {
         this.spawnMowerStampede(killer);
+      } else if (killer.streak === FINE_FROM_ABOVE.streak) {
+        this.startFineFromAbove(killer);
       }
     }
+    if (target.drone) { target.drone = null; this.emit({ type: 'fineFromAboveEnd', id: target.id }); }
     const ev = {
       type: 'kill', killerId: killer?.id ?? null, victimId: target.id, headshot, melee, explosive, weaponId,
       dir: dir || { x: 0, y: 0, z: 0 }, victimPos: { ...target.pos }, killerPos: killer ? { ...killer.pos } : null,
@@ -788,6 +804,79 @@ export class Sim {
     }
     this.emit({ type: 'uavSweep', ownerId: ownerActor.id, team: ownerActor.team, until });
     return until;
+  }
+
+  startFineFromAbove(owner) {
+    if (this.isDemo) {
+      this.emit({ type: 'streakLocked', streakType: 'fineFromAbove', ownerId: owner.id, team: owner.team });
+      return null;
+    }
+    const F = FINE_FROM_ABOVE;
+    owner.drone = { startedAt: this.time, until: this.time + F.durationSec, nextShot: this.time + 1.0, angle: this.rng() * 2 * Math.PI };
+    this.emit({ type: 'fineFromAboveStart', id: owner.id, team: owner.team, until: owner.drone.until });
+    return owner.drone;
+  }
+
+  /** While the drone is up its owner stands still and the trigger calls in shells instead of firing the gun. */
+  droneInput(a) {
+    const F = FINE_FROM_ABOVE, d = a.drone, inp = a.input;
+    if (this.time >= d.until) {
+      a.drone = null;
+      this.emit({ type: 'fineFromAboveEnd', id: a.id });
+      return;
+    }
+    if (a.isBot) this.botDroneAim(a);
+    if ((a.isBot || inp.fire) && this.time >= d.nextShot) {
+      const v = droneView(d, inp.yaw, inp.pitch, this.time, this.map.bounds);
+      const maxT = 250;
+      const hit = this.raycast(v.pos, v.dir, maxT, a.id);
+      if (hit.t < maxT) {
+        const pos = { x: v.pos.x + v.dir.x * hit.t, y: v.pos.y + v.dir.y * hit.t, z: v.pos.z + v.dir.z * hit.t };
+        const impactAt = this.time + F.delaySec;
+        this.fineShells.push({ ownerId: a.id, team: a.team, pos, impactAt });
+        this.emit({ type: 'fineShell', id: a.id, pos: { ...pos }, impactAt });
+        d.nextShot = this.time + (a.isBot ? F.botIntervalSec : F.intervalSec);
+      }
+    }
+    Object.assign(inp, { forward: 0, right: 0, jump: false, sprint: false, fire: false, melee: false, grenade: false, reload: false, interact: false });
+  }
+
+  /** Bots point the drone at a random living enemy, with a few metres of error. */
+  botDroneAim(a) {
+    const d = a.drone;
+    if (this.time < d.nextShot - 0.05 && d.aimAt) return this.aimDroneAt(a, d.aimAt);
+    const foes = this.actors.filter(e => e.alive && e.team !== a.team);
+    if (!foes.length) return;
+    const t = foes[Math.floor(this.rng() * foes.length)];
+    d.aimAt = { x: t.pos.x + gauss(this.rng) * 4.5, y: 0, z: t.pos.z + gauss(this.rng) * 4.5 };
+    this.aimDroneAt(a, d.aimAt);
+  }
+
+  aimDroneAt(a, p) {
+    const v = droneView(a.drone, 0, 0, this.time, this.map.bounds);
+    const dx = p.x - v.pos.x, dy = p.y - v.pos.y, dz = p.z - v.pos.z;
+    a.input.yaw = yawTo(dx, dz);
+    const F = FINE_FROM_ABOVE;
+    a.input.pitch = Math.max(-1.45, Math.min(1.45, (Math.atan2(dy, Math.hypot(dx, dz)) - F.pitchMid) / F.pitchGain));
+  }
+
+  stepFineShells() {
+    if (!this.fineShells.length) return;
+    const F = FINE_FROM_ABOVE;
+    const due = this.fineShells.filter(s => this.time >= s.impactAt);
+    this.fineShells = this.fineShells.filter(s => this.time < s.impactAt);
+    for (const s of due) {
+      this.emit({ type: 'explosion', id: s.ownerId, pos: { ...s.pos }, fine: true });
+      const owner = this.byId.get(s.ownerId) || null;
+      for (const e of this.actors) {
+        if (!e.alive || e.team === s.team) continue;
+        const c = { x: e.pos.x, y: e.pos.y + 0.9, z: e.pos.z };
+        const dist = Math.hypot(c.x - s.pos.x, c.y - s.pos.y, c.z - s.pos.z);
+        if (dist >= F.radius) continue;
+        const dir = { x: (c.x - s.pos.x) / (dist || 1), y: 0.6, z: (c.z - s.pos.z) / (dist || 1) };
+        this.damage(e, F.damage * (1 - 0.5 * dist / F.radius), owner, { explosive: true, dir, weaponId: 'fineFromAbove' });
+      }
+    }
   }
 
   /** 7-Killstreak ($4.99 Full Game Exclusive): Autonomous Riding Lawn Mower Stampede. */
@@ -961,6 +1050,7 @@ export class Sim {
       if (typeof a.hitAgo === 'number') a.hitAgo += dt;
       if (!a.alive) { if (now >= a.respawnAt) this.respawn(a); continue; }
       if (a.brain && !a.scripted) this.think(a, dt);
+      if (a.drone) this.droneInput(a);
       if (a.reloadUntil > 0 && now >= a.reloadUntil) {
         a.reloadUntil = 0;
         const w = this.activeWeapon(a);
@@ -994,12 +1084,13 @@ export class Sim {
       if (inp.melee) this.melee(a);
       if (inp.grenade) this.throwGrenade(a);
       if (!a.isBot) { inp.melee = false; inp.grenade = false; inp.reload = false; inp.switchSlot = null; }
-      const c = a.camp.update(now, dt, a.pos, { alive: a.alive, exempt: this.mode.campingExempt(a) });
+      const c = a.camp.update(now, dt, a.pos, { alive: a.alive, exempt: this.mode.campingExempt(a) || !!a.drone });
       if (c.state === 'warning' && a.campState?.state !== 'warning') this.emit({ type: 'campingWarn', id: a.id });
       if (c.state === 'snitch' && a.campState?.state !== 'snitch') { a.revealedUntil = now + 6; this.emit({ type: 'campingSnitch', id: a.id }); }
       a.campState = c;
     }
     this.stepGrenades(dt);
+    this.stepFineShells();
     this.updateHelicopters(dt);
     this.updateMowers(dt);
     this.updateVehicles(dt);
@@ -1122,7 +1213,7 @@ export class Sim {
 
   snapshot() {
     const snap = this.actors.map(a => ({
-      id: a.id, x: a.pos.x, y: a.pos.y, z: a.pos.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive,
+      id: a.id, team: a.team, x: a.pos.x, y: a.pos.y, z: a.pos.z, yaw: a.yaw, pitch: a.pitch, alive: a.alive,
       speed: Math.hypot(a.vel.x, a.vel.z), firing: this.time < a.firingUntil, onGround: a.onGround,
       inVehicle: a.inVehicle || null,
       hitAgo: a.hitAgo ?? Infinity,

@@ -4,7 +4,7 @@
 import { ContentLibrary } from '../core/content.js';
 import { AudioLimiter } from '../core/audioLimiter.js';
 import { mulberry32 } from '../core/rng.js';
-import { Sim, yawTo } from './sim.js';
+import { Sim, yawTo, droneView, FINE_FROM_ABOVE } from './sim.js';
 import { MODES } from './modes.js';
 import { BarkSystem } from './barks.js';
 import { createJuice, JUICE } from './juice.js';
@@ -764,6 +764,8 @@ class Game {
         const botLoadout = FACTION_LOADOUTS[botFaction]?.loadout || 'default';
         this.sim.addActor({ id: 'b' + i, name: names[i], team, faction: botFaction, loadout: botLoadout, isBot: true });
       }
+      // ?drone=1: call in Fine From Above early, for trailer capture and QA screenshots
+      if (params.get('drone') === '1') setTimeout(() => this.me?.alive && this.sim.startFineFromAbove(this.me), 1500);
     }
     for (const a of this.sim.actors) renderer.ensureCharacter(a, this.me.team);
 
@@ -887,6 +889,8 @@ class Game {
         const t = this.me.brain?.target;
         if (me.alive) renderer.chase(me.pos, t?.alive ? t.pos : { x: me.pos.x - Math.sin(me.yaw) * 10, y: me.pos.y, z: me.pos.z - Math.cos(me.yaw) * 10 });
         else renderer.orbit(sim.time);
+      } else if (me.alive && me.drone) {
+        renderer.droneCam(droneView(me.drone, me.yaw, me.pitch, sim.time, sim.map.bounds), me.team, sim.time);
       } else if (me.alive) {
         renderer.firstPerson(me, dt, {
           moving: Math.hypot(me.vel.x, me.vel.z) > 1 && me.onGround, firing: sim.time < me.firingUntil,
@@ -1066,7 +1070,7 @@ class Game {
             haptic([40, 20, 60]);
             this.juice.add(e.headshot ? JUICE.headshot : JUICE.kill).hit();
             const streak = me.streak || 1;
-            const label = e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : streak === 7 ? '🚜 MOWER STAMPEDE!' : streak === 5 ? '🚁 HELICOPTER UNLOCKED!' : streak === 3 ? '🔔 RING CAM UAV!' : '+1 EVICTION';
+            const label = e.headshot ? 'HEADSHOT' : e.melee ? 'TROPHY KILL' : streak === FINE_FROM_ABOVE.streak ? '🛸 FINE FROM ABOVE!' : streak === 7 ? '🚜 MOWER STAMPEDE!' : streak === 5 ? '🚁 HELICOPTER UNLOCKED!' : streak === 3 ? '🔔 RING CAM UAV!' : '+1 EVICTION';
             this.showBanner(label, streak >= 3 ? `${streak}x CITATION STREAK` : '');
             this.hud.popScore?.(e.headshot ? '★ +150 HEADSHOT FINE!' : e.melee ? '🏆 +150 TROPHY BONK!' : '+100 EVICTED!', !!(e.headshot || e.melee || streak >= 3));
             career.recordKill({
@@ -1098,8 +1102,16 @@ class Game {
           break;
         case 'streakLocked':
           if (e.ownerId === me.id) {
-            this.showBanner('🔒 7-STREAK: MOWER STAMPEDE', 'Unlock the Autonomous Lawn Mower Stampede in the $4.99 Full Game!');
+            if (e.streakType === 'fineFromAbove') this.showBanner(`🔒 ${FINE_FROM_ABOVE.streak}-STREAK: FINE FROM ABOVE`, 'Call in the HOA drone gunship in the $4.99 Full Game!');
+            else this.showBanner('🔒 7-STREAK: MOWER STAMPEDE', 'Unlock the Autonomous Lawn Mower Stampede in the $4.99 Full Game!');
           }
+          break;
+        case 'fineFromAboveStart':
+          if (e.id === me.id) this.showBanner('🛸 FINE FROM ABOVE', 'HOA drone online. Aim with the mouse, fire to issue fines. Your body is exposed!');
+          else if (e.team !== me.team) this.showBanner('⚠️ ENEMY DRONE OVERHEAD', 'Fines incoming. Get under a roof!');
+          break;
+        case 'fineFromAboveEnd':
+          if (e.id === me.id) this.showBanner('🛸 DRONE BATTERY DEAD', 'Back on the ground.');
           break;
         case 'streakDestroyed':
           if (e.killerId === me.id && !me.isBot) {
