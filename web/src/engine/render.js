@@ -322,6 +322,28 @@ export class Renderer {
         const evBox = add(new THREE.Mesh(new THREE.PlaneGeometry(4.2, 5.2), evGreenMat), { cast: false });
         evBox.rotation.x = -Math.PI / 2; evBox.position.set(evX, 0.023, 32);
       }
+    } else if (map.id === 'showcase') {
+      // Model Home Showcase: one east-west street between the two show homes
+      const st = map.street;
+      const street = add(new THREE.Mesh(new THREE.PlaneGeometry(st.maxX - st.minX, st.maxZ - st.minZ), lam({ map: T.asphalt([9, 2]) })), { cast: false });
+      street.rotation.x = -Math.PI / 2; street.position.set(0, 0.021, 0);
+      for (let x = st.minX + 2; x < st.maxX; x += 4) {
+        const dash = add(new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.2), lam({ color: '#e8c547' })), { cast: false });
+        dash.rotation.x = -Math.PI / 2; dash.position.set(x, 0.03, 0);
+      }
+      for (const sz of [-1, 1]) {
+        const walk = add(new THREE.Mesh(new THREE.PlaneGeometry(st.maxX - st.minX, 1.8), lam({ map: T.concrete([30, 1]) })), { cast: false });
+        walk.rotation.x = -Math.PI / 2; walk.position.set(0, 0.022, sz * (st.maxZ + 0.9));
+        const path = add(new THREE.Mesh(new THREE.PlaneGeometry(1.4, 6.6), lam({ map: T.concrete([1, 4]) })), { cast: false });
+        path.rotation.x = -Math.PI / 2; path.position.set(sz * 0.8, 0.022, sz * 9.4);
+      }
+      // "MODEL HOME" open-house signs on the lawns
+      for (const sz of [-1, 1]) {
+        const sign = add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 0.08), lam({ color: '#c0262d' })));
+        sign.position.set(-sz * 4.5, 1.3, sz * 7.5);
+        const post = add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.3, 0.08), lam({ color: '#f4f1ea' })));
+        post.position.set(-sz * 4.5, 0.65, sz * 7.5);
+      }
     } else {
       // Default Cul-de-Sac Ground
       const court = add(new THREE.Mesh(new THREE.CircleGeometry(map.court.r, 36), lam({ map: T.asphalt([6, 6]) })), { cast: false });

@@ -759,12 +759,99 @@ export function buildStripMall() {
   };
 }
 
+/**
+ * Model Home Showcase: two show homes face each other across one street, Nuketown-style. Small
+ * (60 x 72 m) and point-symmetric: every solid at (x, z) has a twin at (-x, -z), so neither spawn
+ * is the better side. The exact centre is kept open because it is the one spot equally far from
+ * both spawns, which is where the centre objectives go (zonePos).
+ */
+export function buildModelHomeShowcase() {
+  const B = { minX: -30, maxX: 30, minZ: -36, maxZ: 36 };
+  const boxes = [];
+  const box = (x, z, w, d, h, kind, extra = {}) => {
+    const minY = extra.minY ?? 0;
+    const b = { minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2, minY, maxY: minY + h, kind, ...(kind === 'car' ? { isCar: true } : {}), ...extra };
+    boxes.push(b);
+    return b;
+  };
+  // Twin a solid through the centre.
+  const pair = (x, z, w, d, h, kind, extra = {}, extra2 = extra) => { box(x, z, w, d, h, kind, extra); box(-x, -z, w, d, h, kind, extra2); };
+
+  box(0, B.minZ - 0.5, B.maxX - B.minX + 2, 1, 2.6, 'wall');
+  box(0, B.maxZ + 0.5, B.maxX - B.minX + 2, 1, 2.6, 'wall');
+  box(B.minX - 0.5, 0, 1, B.maxZ - B.minZ, 2.6, 'wall');
+  box(B.maxX + 0.5, 0, 1, B.maxZ - B.minZ, 2.6, 'wall');
+
+  // The two model homes, front doors facing across the street
+  box(0, 17, 14, 9, 5, 'house', { face: 'n', color: '#f2e6a6', id: 0 });
+  box(0, -17, 14, 9, 5, 'house', { face: 's', color: '#b9d4e8', id: 1 });
+
+  // Street: parked cars either side of an open centre
+  pair(-5, -1.3, 4.4, 2, 1.5, 'car', { color: '#d9483b' }, { color: '#3b6fd9' });
+  pair(17, 1.6, 4.4, 2, 1.5, 'car', { color: '#f2f2f2' }, { color: '#5a5a5a' });
+
+  // Front yards: low hedges, bins, mailboxes
+  pair(-6, 10, 5, 1, 1.2, 'hedge');
+  pair(7, 10.5, 3, 1, 1.2, 'hedge');
+  pair(11, 9, 0.7, 0.7, 1.1, 'trash');
+
+  // Side-yard fences (jumpable) split each backyard from its flank lane
+  pair(19, 18, 0.2, 10, 1.0, 'fence');
+  pair(-19, 18, 0.2, 10, 1.0, 'fence');
+  // Flank cover
+  pair(-26, -5, 1, 5, 1.3, 'hedge');
+  pair(24, -2, 2, 4.4, 1.5, 'car', { color: '#3a5a4a' }, { color: '#8a3a3a' });
+
+  // Backyards: trampoline, bin
+  pair(-10, 27, 3, 3, 0.9, 'trampoline');
+  pair(14, 30, 0.7, 0.7, 1.1, 'trash');
+
+  const trees = [[-24, 8], [24, -8], [24, 24], [-24, -24], [-15, 31], [15, -31]];
+  trees.forEach(([x, z]) => box(x, z, 0.6, 0.6, 3.2, 'tree'));
+
+  const prop = (id, kind, x, z, hp, extra = {}) => ({ id, kind, pos: { x, y: kind === 'rocketPropane' ? 0.5 : 0, z }, hp, maxHp: hp, destroyed: false, ...extra });
+  const mailboxes = [prop('mailbox_s', 'mailbox', 3, 8, 25), prop('mailbox_n', 'mailbox', -3, -8, 25)];
+  const glassTables = [prop('glassTable_s', 'glassTable', 8, 28, 20), prop('glassTable_n', 'glassTable', -8, -28, 20)];
+  const rocketPropane = [prop('propane_s', 'rocketPropane', -16, 29, 30, { triggered: false }), prop('propane_n', 'rocketPropane', 16, -29, 30, { triggered: false })];
+  for (const mb of mailboxes) box(mb.pos.x, mb.pos.z, 0.35, 0.35, 1.2, 'mailbox', { id: mb.id, hp: mb.hp, maxHp: mb.maxHp, destroyed: false });
+
+  const sprinklers = [[-6, 7], [6, -7], [12, 13], [-12, -13]].map(([x, z], id) => Object.assign([x, z], {
+    id: `showcase_sprinkler_${id + 1}`, index: id, kind: 'sprinkler', pos: { x, y: 0, z }, x, y: 0, z, radius: 2.4, arc: Math.PI, active: true, isSprinkler: true,
+  }));
+
+  // Team 0 = south backyard, team 1 = north backyard (mirrored)
+  const south = [[-8, 31], [-4, 32], [0, 32], [4, 32], [8, 31], [-13, 33], [13, 33], [0, 29]];
+  const spawns = { 0: south, 1: south.map(([x, z]) => [-x, -z]) };
+
+  const xs = [-26, -18, -11, -4, 0, 4, 11, 18, 26], zs = [-32, -26, -18, -11, -6, 0, 6, 11, 18, 26, 32];
+  const nodes = buildNavGraph(boxes, xs.flatMap(x => zs.map(z => [x, z])), { maxLink: 14, stepH: 0.45 });
+
+  // Objective spots: centre zones on the open middle, home zones in the backyards, side zones as a mirrored pair.
+  const zonePos = {
+    'Cul-de-Sac Circle': { x: 0, z: 0 }, 'Clubhouse': { x: 0, z: 0 },
+    'Gazebo Greenbelt': { x: 0, z: -25 }, 'Gazebo': { x: 0, z: -25 },
+    'South Driveway': { x: 0, z: 25 }, 'Pool Patio': { x: 0, z: 25 },
+    'Northeast Front Lawn': { x: 15, z: -8 }, 'West Front Lawn': { x: -15, z: 8 },
+  };
+
+  return {
+    boxes, spawns, nodes, zonePos,
+    bounds: B,
+    street: { minX: B.minX, maxX: B.maxX, minZ: -4, maxZ: 4 },
+    court: { x: 0, z: 0, r: 4 },
+    trees, sprinklers, sprinklerNodes: sprinklers,
+    mailboxes, glassTables, rocketPropane, rocketPropanes: rocketPropane,
+    destructibles: [...mailboxes, ...glassTables, ...rocketPropane],
+  };
+}
+
 export const MAPS = {
   culdesac:   { id: 'culdesac',   label: 'Oakridge Cul-de-Sac',                name: 'Oakridge Cul-de-Sac',                demoAllowed: true,  freeInDemo: true,  build: buildCulDeSac },
   // Shady Pines Pickleball Club: Full custom layout with 4 tournament courts, nets, clubhouse, golf carts, bleachers!
   pickleball: { id: 'pickleball', label: 'Shady Pines Pickleball Club',        name: 'Shady Pines Pickleball Club',        demoAllowed: false, freeInDemo: false, wip: false, tagline: '4 neon courts and luxury golf carts!', build: buildPickleballClub },
   // Sunset Strip Mall Parking Lot: Supermarket & boutique storefronts, delivery docks, SUV corridors & EV superchargers!
   stripmall:  { id: 'stripmall',  label: 'Sunset Strip Mall Parking Lot',      name: 'Sunset Strip Mall Parking Lot',      demoAllowed: false, freeInDemo: false, wip: false, tagline: 'Dense SUV lanes and rooftop sniper perches!', build: buildStripMall },
+  showcase:   { id: 'showcase',   label: 'Model Home Showcase',                name: 'Model Home Showcase',                demoAllowed: false, freeInDemo: false, wip: false, tagline: 'Two show homes, one street, zero escape.', build: buildModelHomeShowcase },
 };
 
 export function buildMap(mapId = 'culdesac') {
