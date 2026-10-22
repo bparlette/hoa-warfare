@@ -533,12 +533,15 @@ export class Hud {
     const topBar = make('div', 'doorbellTopBar', 'doorbell-top-bar');
     if (topBar.style) {
       topBar.style.position = 'absolute';
-      topBar.style.top = '16px';
-      topBar.style.left = '24px';
-      topBar.style.right = '24px';
+      // stacked under the scoreboard: a full-width bar ran into the radar, the score and the kill feed
+      topBar.style.top = '58px';
+      topBar.style.left = '50%';
+      topBar.style.transform = 'translateX(-50%)';
       topBar.style.display = 'flex';
-      topBar.style.justifyContent = 'space-between';
+      topBar.style.flexDirection = 'column';
       topBar.style.alignItems = 'center';
+      topBar.style.gap = '2px';
+      topBar.style.whiteSpace = 'nowrap';
       topBar.style.fontFamily = 'monospace, "Courier New", sans-serif';
       topBar.style.fontSize = '14px';
       topBar.style.fontWeight = 'bold';
@@ -609,7 +612,6 @@ export class Hud {
     this._doorbellTs = tsEl;
     this._doorbellInfo = info;
     this._doorbellBanner = banner;
-    el.textContent = `REC ● [LIVE] ${formatDoorbellTimestamp()} FRONT PORCH CAM #01 - 1080P HD · BATTERY 84% ⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY`;
   }
 
   updateDoorbellOverlay(active, time) {
@@ -626,12 +628,6 @@ export class Hud {
     const ts = formatDoorbellTimestamp(time);
     const tsEl = el.querySelector?.('#doorbellTimestamp') || this.$('doorbellTimestamp') || this._doorbellTs;
     if (tsEl) tsEl.textContent = ts;
-
-    const recEl = el.querySelector?.('#doorbellRec') || this.$('doorbellRec') || this._doorbellRec;
-    if (recEl) {
-      recEl.textContent = `REC ● [LIVE] ${ts}`;
-    }
-    el.textContent = `REC ● [LIVE] ${ts} FRONT PORCH CAM #01 - 1080P HD · BATTERY 84% ⚠️ MOTION DETECTED: UNAPPROVED NEIGHBOR ON PROPERTY`;
   }
 
   _applySuburbanHudStyle(el) {
@@ -889,7 +885,7 @@ export class Hud {
     el.className = 's';
     const f = this.factions[b.faction]?.name || '';
     const col = this.factions[b.faction]?.look.accent || '#fff';
-    el.innerHTML = `<b style="color:${col}">${b.name}</b> (${f}): ${b.text}<i>${b.lineId}${channel && channel !== 'world' ? ' · ' + channel : ''}</i>`;
+    el.innerHTML = `<b style="color:${col}">${b.name}</b> (${f}): ${b.text}`;
     subs.appendChild(el);
     while (subs.children.length > (isLow ? 2 : 4)) subs.firstChild.remove();
     setTimeout(() => el.remove(), isLow ? 3000 : 4500);
@@ -953,7 +949,7 @@ export class Hud {
       btnCitation.textContent = '📜 HOA CITATION';
       if (btnCitation.style) {
         btnCitation.style.position = 'absolute';
-        btnCitation.style.top = '16px';
+        btnCitation.style.bottom = '132px';
         btnCitation.style.right = '200px';
         btnCitation.style.zIndex = '50';
       }
@@ -1053,7 +1049,7 @@ export class Hud {
         <p>The full game unlocks ${funnel ? funnel.pitch(Object.keys(this.factions).length) : 'every faction, weapon and mode'}.</p>
         <a data-steam="end_card" href="#" onclick="return false" class="btn-wishlist btn-wishlist-glow">★ WISHLIST ON STEAM ($4.99)</a>
       </div>` : '';
-    $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[0]} - ${sim.score[1]}</small></h1>
+    $('endPanel').innerHTML = `<h1>${draw ? 'DRAW' : won ? 'BLOCK SECURED' : 'EVICTED'}<small>${sim.score[me.team] ?? sim.score[0]} - ${sim.score[1 - me.team] ?? sim.score[1]}</small></h1>
       ${demoCard}
       <div class="podium">
         <div class="mvp podium-card podium-mower">
@@ -1453,7 +1449,7 @@ export class Hud {
     $('nades').textContent = `${W.equipment ? `${W.equipment.name} x${me.grenades} [G]` : ''}${W.melee ? ` · ${W.melee.name.replace('The ', '')} [F]` : ''} · [Q/1/2] Swap`;
     const mh = sim.mode.hud(me);
     const diffLabel = state.difficulty === 'easy' ? 'EASY (3x HP · LOCK-ON)' : state.difficulty === 'hard' ? 'HARD (1x HP)' : 'MEDIUM (2x HP)';
-    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit} · ${diffLabel}${mh ? `<br>${mh}` : ''}<br>${state.script === 'steam' ? 'STEAM script' : 'CLEAN script'} · legal-safe ${library.legalSafe ? 'ON' : 'OFF'} · ${renderer?.retro ? '16-bit' : 'clean render'}${state.style007 ? ' · 007 GoldenEye' : ''}${voice?.enabled ? '' : ' · muted'}`;
+    $('modes').innerHTML = `${sim.mode.constructor.label} · first to ${sim.scoreLimit} · ${diffLabel}${mh ? `<br>${mh}` : ''}${voice?.enabled ? '' : '<br>muted'}`;
     const ch = $('crosshair');
     if (ch) {
       ch.style.display = me.alive && !this.killcam && !state.spectate ? '' : 'none';

@@ -79,13 +79,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #111d35; fon
 #dmgIndicator { position: absolute; left: 50%; top: 50%; width: 140px; height: 140px; pointer-events: none; opacity: 0; transition: opacity 0.4s ease-out; transform: translate(-50%, -50%) rotate(0rad); z-index: 45; }
 #dmgIndicator::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 56px; height: 24px; border-top: 6px solid #ff004d; border-radius: 50% 50% 0 0; filter: drop-shadow(0 -2px 8px #ff004d); }
 #killcam { position: absolute; inset: 0; border: 10px solid #ff004d; }
-#killcam .tag { position: absolute; top: 16px; left: 16px; background: #ff004d; padding: 4px 12px; font-size: 22px; }
-#killcam #btnExportShort, #killcam .btn-short-kc { position: absolute; top: 16px; right: 16px; z-index: 50; pointer-events: auto; }
-#kcWho { position: absolute; top: 60px; left: 16px; font-size: 18px; }
+#killcam .tag { position: absolute; top: 152px; left: 16px; background: #ff004d; padding: 4px 12px; font-size: 22px; }
+#killcam #btnExportShort, #killcam .btn-short-kc { position: absolute; bottom: 132px; right: 16px; z-index: 50; pointer-events: auto; }
+#kcWho { position: absolute; top: 196px; left: 16px; font-size: 18px; }
 #kcLine { position: absolute; bottom: 18%; width: 100%; text-align: center; font-size: 38px; color: #ffec27; font-family: Impact, "Arial Black", sans-serif; -webkit-text-stroke: 1px #000; padding: 0 8%; }
 #board { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #111d35ee; border: 4px solid #fff1e8; padding: 14px 20px; font-size: 14px; min-width: 520px; }
 #board table { width: 100%; border-collapse: collapse; } #board td, #board th { padding: 2px 8px; text-align: left; }
-#board .t0 { color: #29adff; } #board .t1 { color: #ff004d; } #board .me { background: #ffec2733; }
+#board .t0, #endBoard .t0 { color: #29adff; } #board .t1, #endBoard .t1 { color: #ff004d; } #board .me, #endBoard .me { background: #ffec2733; }
 
 .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(#111d35dd, #111d35f2), url("../assets/art/cover_key_art.jpg") center/cover; z-index: 5; }
 #pause {
@@ -869,8 +869,9 @@ button:hover { background: #ff6c24; }
 .btn-share:active { transform: translateY(1px); box-shadow: 2px 2px 0 #000; }
 .keys { font-size: 12px; color: #c2c3c7; line-height: 1.6; }
 .podium { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
-.podium div { background: #111d35; border: 3px solid #5f574f; padding: 10px; }
-.podium .podium-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6); }
+/* only the two cards are boxed: `.podium div` boxed every line inside them too */
+.podium > div { background: #111d35; border: 3px solid #5f574f; padding: 10px; }
+.podium .podium-card { position: relative; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6); }
 .podium .mvp { border-color: #ffec27; background: linear-gradient(135deg, #182544 0%, #111d35 100%); box-shadow: 0 0 16px rgba(255, 236, 39, 0.25), 4px 4px 0 #000; }
 .podium .mvp .mvp-badge { color: #ffec27; font-family: Impact, "Arial Black", sans-serif; font-size: 14px; letter-spacing: 1px; margin-bottom: 4px; }
 .podium .mvp .mower-crowned { display: inline-block; background: rgba(255, 236, 39, 0.15); border: 1px solid #ffec27; color: #ffec27; font-size: 12px; font-weight: 800; padding: 4px 8px; margin-top: 6px; border-radius: 4px; }
