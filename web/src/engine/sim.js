@@ -819,7 +819,7 @@ export class Sim {
     }
     const F = FINE_FROM_ABOVE;
     owner.drone = { startedAt: this.time, until: this.time + F.durationSec, nextShot: this.time + 1.0, angle: this.rng() * 2 * Math.PI };
-    this.emit({ type: 'fineFromAboveStart', id: owner.id, team: owner.team, until: owner.drone.until });
+    this.emit({ type: 'fineFromAboveStart', id: owner.id, team: owner.team, until: owner.drone.until, startedAt: owner.drone.startedAt, angle: owner.drone.angle });
     return owner.drone;
   }
 
@@ -840,8 +840,8 @@ export class Sim {
         const pos = { x: v.pos.x + v.dir.x * hit.t, y: v.pos.y + v.dir.y * hit.t, z: v.pos.z + v.dir.z * hit.t };
         const impactAt = this.time + F.delaySec;
         this.fineShells.push({ ownerId: a.id, team: a.team, pos, impactAt });
-        this.emit({ type: 'fineShell', id: a.id, pos: { ...pos }, impactAt });
         d.nextShot = this.time + (a.isBot ? F.botIntervalSec : F.intervalSec);
+        this.emit({ type: 'fineShell', id: a.id, pos: { ...pos }, impactAt, nextShot: d.nextShot });
       }
     }
     Object.assign(inp, { forward: 0, right: 0, jump: false, sprint: false, fire: false, melee: false, grenade: false, reload: false, interact: false });

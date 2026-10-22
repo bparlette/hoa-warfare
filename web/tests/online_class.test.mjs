@@ -59,3 +59,19 @@ test('client mirror builds the same weapons and perk the server roster says', ()
   const b = session.addMirrorActor({ id: 'p_2', name: 'Old', team: 1, faction: 'tradwives' });
   assert.equal(b.weapons.primary.id, 'divorceSettlement', 'older servers send no primary: faction default');
 });
+
+test('online: the client mirror follows the server drone (start, shell timer, end)', () => {
+  const sim = new Sim({ rules: content.rules, weapons, rng: mulberry32(1), perks });
+  const session = new OnlineSession({ connect() {}, disconnect() {} });
+  session.sim = sim;
+  session.addMirrorActor({ id: 'p_1', name: 'Pilot', team: 0, faction: 'karens' });
+  session.events.push({ type: 'fineFromAboveStart', id: 'p_1', team: 0, until: 30, startedAt: 10, angle: 1.2 });
+  session.takeEvents();
+  assert.deepEqual(sim.byId.get('p_1').drone, { startedAt: 10, until: 30, angle: 1.2, nextShot: 11 });
+  session.events.push({ type: 'fineShell', id: 'p_1', nextShot: 13.1 });
+  session.takeEvents();
+  assert.equal(sim.byId.get('p_1').drone.nextShot, 13.1);
+  session.events.push({ type: 'fineFromAboveEnd', id: 'p_1' });
+  session.takeEvents();
+  assert.equal(sim.byId.get('p_1').drone, null);
+});

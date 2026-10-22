@@ -159,6 +159,10 @@ export class OnlineSession {
       if (e.type === 'swing') { const a = sim.byId.get(e.id); if (a) a.meleeAt = sim.time; }
       // limits only arrive with init/roster, so the HUD clock would sit at 0:00 through overtime
       if (e.type === 'overtime') { sim.timeLimit += e.seconds; sim.scoreLimit = Math.max(...sim.score) + 1; }
+      // the server flies the drone; the mirror only needs enough of it to place the camera and HUD
+      if (e.type === 'fineFromAboveStart') { const a = sim.byId.get(e.id); if (a) a.drone = { startedAt: e.startedAt, until: e.until, angle: e.angle, nextShot: e.startedAt + 1 }; }
+      if (e.type === 'fineShell') { const a = sim.byId.get(e.id); if (a?.drone) a.drone.nextShot = e.nextShot; }
+      if (e.type === 'fineFromAboveEnd' || (e.type === 'kill' && e.victimId)) { const a = sim.byId.get(e.type === 'kill' ? e.victimId : e.id); if (a) a.drone = null; }
       // our own shot was already played locally when we pulled the trigger; keep this one for tracer + hit marker
       if (e.type === 'shot' && e.id === this.me?.id) out.push({ ...e, echo: true });
       else out.push(e);
