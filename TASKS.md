@@ -8,6 +8,8 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 
 ## Active Priorities (Assigned to Specialized Worker AIs)
 
+> **$4.99 launch work, split by AI (Opus + Haiku; Muse voice only; Argon art only):** see [`docs/launch/todo-by-ai.md`](docs/launch/todo-by-ai.md) (2026-10-22).
+
 ### P0: Steam "Coming Soon" Page & App Registration
 - [ ] Pay $100 Steam Direct fee and register app at partner.steamgames.com **(Owner)**
 - [ ] Upload storefront assets from `assets/steam/` (7 files, all built) **(Owner)**
