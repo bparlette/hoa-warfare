@@ -154,10 +154,14 @@ export function buildCulDeSac() {
     [-32, -30], [-20, -38], [-32, 30], [-20, 40], [-10, 26], [-10, -19],
   ];
   const nodes = buildNavGraph(boxes, half.flatMap(([x, z]) => x === 0 ? [[x, z]] : [[x, z], [-x, z]]), { maxLink: 20, stepH: 0.45 });
+  // Team 1's walk to the circle detours round the gazebo (47.6 m vs 40 m), so team 0 nearly always
+  // took the opening King of the Lawn zone. Nudge it toward team 1.
+  const zonePos = { 'Cul-de-Sac Circle': { x: 0, z: -4 } };
   return {
     boxes,
     spawns,
     nodes,
+    zonePos,
     bounds: BOUNDS,
     court: COURT,
     street: STREET,

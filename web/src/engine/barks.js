@@ -75,6 +75,7 @@ export class BarkSystem {
           break;
         case 'noticeTookEffect': this.announcer.push('Eviction complete!'); break;
         case 'halftime': this.announcer.push('Switching sides!'); break;
+        case 'overtime': this.announcer.push('Sudden death! Next casserole home wins!'); break;
         case 'roundEnd': this.announcer.push(`Round ${ev.round} to the ${ev.winner === 0 ? 'Block' : 'Board'}.`); break;
         case 'receiptConfirmed':
         case 'receiptDenied':

@@ -15,9 +15,23 @@ export class Mode {
     this.sim = sim;
     this.objects = [];
     this.nextObjectId = 1;
+    // Every map has a stronger side for some mode (20-seed botsim: stripmall Receipt Check 18-2 and
+    // pickleball King of the Lawn 18-2 for the south spawn). HALFTIME modes coin-flip the starting
+    // sides and swap once when either team reaches half the score limit.
+    this.sidesSwapped = this.constructor.HALFTIME && sim.rng() < 0.5 ? 1 : 0;
+    this.halftimeDone = false;
   }
+  static HALFTIME = false;
   /** Defaults the sim uses unless the caller overrides them. */
   static defaults = { scoreLimit: 40, timeLimit: 300 };
+  /** Called by Sim.addScore after every point that does not end the match. */
+  onScore() {
+    if (!this.constructor.HALFTIME || this.halftimeDone) return;
+    if (Math.max(...this.sim.score) * 2 < this.sim.scoreLimit) return;
+    this.halftimeDone = true;
+    this.sidesSwapped ^= 1;
+    this.sim.emit({ type: 'halftime' });
+  }
   /**
    * Objective positions are authored on the cul-de-sac; on other maps one can land inside a building
    * or car. Returns the position unchanged when it is open ground, else the nearest bot nav node.
@@ -29,6 +43,11 @@ export class Mode {
     if (!blocked || !nodes.length) return { x: pos.x, y: pos.y ?? 0, z: pos.z };
     const n = nodes[nearestNode(nodes, boxes, pos.x, pos.z)];
     return { x: n.x, y: 0, z: n.z };
+  }
+  /** A named zone's spot: the map's own `zonePos[name]` when it sets one (to even out walks), else the shared default. */
+  zoneSpot(def) {
+    const o = this.sim.map?.zonePos?.[def.name];
+    return this.openSpot(o ? { x: o.x, y: 0, z: o.z } : def.pos);
   }
   onStart() {}
   /** Called after the kill event is emitted. killer is null for self-kills. */
@@ -51,7 +70,7 @@ export class Mode {
   /** Damage-taken multiplier for an actor (1 = untouched). */
   damageScale(actor) { return 1; }
   /** Which map spawn set (0 = south street, 1 = north greenbelt) this actor uses. */
-  spawnSide(actor) { return actor.team; }
+  spawnSide(actor) { return actor.team ^ this.sidesSwapped; }
   respawnDelay(actor) { return actor.isBot ? 3 : 4.5; }
   /** Round or objective clock in seconds left, or null to fall back to the match clock. */
   clock() { return null; }
@@ -65,6 +84,7 @@ export class Clash extends Mode {
   static id = 'clash';
   static label = 'Cul-de-Sac Clash';
   static parent = 'TDM';
+  static HALFTIME = true;
   static defaults = { scoreLimit: 60, timeLimit: 600 };
   onKill(ev, killer) { if (killer) this.sim.addScore(killer.team, 1); }
 }
@@ -77,6 +97,7 @@ export class ReceiptCheck extends Mode {
   static id = 'receiptCheck';
   static label = 'Receipt Check';
   static parent = 'Kill Confirmed';
+  static HALFTIME = true;
   static defaults = { scoreLimit: 25, timeLimit: 300 };
   static PICKUP_R = 1.3;
   static LIFETIME = 30;
@@ -131,12 +152,15 @@ export class KingOfTheLawn extends Mode {
   static defaults = { scoreLimit: 100, timeLimit: 360 };
   static ZONE_RADIUS = 5.2;
   static ROTATE_SEC = 50;
+  // The team that spawns nearer a zone takes nearly all of its points, so the rotation alternates
+  // sides in matched pairs after a neutral opener. The old order gave team 0 three of the first four
+  // zones on culdesac and it won 18 of 20 seeds.
   static ZONES = [
-    { name: 'Gazebo Greenbelt', pos: { x: 0, y: 0, z: -32 } },
     { name: 'Cul-de-Sac Circle', pos: { x: 0, y: 0, z: 0 } },
-    { name: 'East Front Lawn', pos: { x: 18, y: 0, z: 10 } },
-    { name: 'West Front Lawn', pos: { x: -18, y: 0, z: 10 } },
+    { name: 'Gazebo Greenbelt', pos: { x: 0, y: 0, z: -32 } },
     { name: 'South Driveway', pos: { x: 0, y: 0, z: 32 } },
+    { name: 'Northeast Front Lawn', pos: { x: 18, y: 0, z: -10 } },
+    { name: 'West Front Lawn', pos: { x: -18, y: 0, z: 10 } },
   ];
 
   constructor(sim) {
@@ -156,7 +180,7 @@ export class KingOfTheLawn extends Mode {
     this.zoneIndex = idx % KingOfTheLawn.ZONES.length;
     this.rotateAt = this.sim.time + KingOfTheLawn.ROTATE_SEC;
     const def = KingOfTheLawn.ZONES[this.zoneIndex];
-    const pos = this.openSpot(def.pos);
+    const pos = this.zoneSpot(def);
     this.objects = [{
       id: this.nextObjectId++, kind: 'lawnZone',
       pos, radius: KingOfTheLawn.ZONE_RADIUS,
@@ -247,6 +271,7 @@ export class HoaPatrol extends Mode {
   static id = 'hoaPatrol';
   static label = 'HOA Patrol';
   static parent = 'Domination';
+  static HALFTIME = true;
   static defaults = { scoreLimit: 120, timeLimit: 360 };
   static CAP_SEC = 3.0;
   static ZONES = [
@@ -266,7 +291,7 @@ export class HoaPatrol extends Mode {
       kind: 'patrolZone',
       letter: def.letter,
       name: def.name,
-      pos: this.openSpot(def.pos),
+      pos: this.zoneSpot(def),
       radius: def.radius,
       ownerTeam: null,
       contested: false,
@@ -378,6 +403,8 @@ export class StealTheCasserole extends Mode {
   static label = 'Steal the Casserole';
   static parent = 'CTF';
   static defaults = { scoreLimit: 3, timeLimit: 360 };
+  // About one capture every 2-3 minutes in bot matches, so 1 in 4 matches ended level on the clock.
+  static OVERTIME_SEC = 120;
   // Each kitchen sits on its own team's side, KITCHEN_T of the walk from that team's spawns to the
   // enemy spawns. Walking distance, not straight-line geometry: the two sides of a map are rarely the
   // same walk apart (on stripmall the old "45% of the way to the centre" rule put team 1's kitchen
@@ -895,6 +922,7 @@ export class SuburbanWipeout extends Mode {
   static id = 'wipeout';
   static label = 'Suburban Wipeout: Enemy Elimination';
   static parent = 'Elimination';
+  static HALFTIME = true;
   static defaults = { scoreLimit: 40, timeLimit: 900 };
 
   constructor(sim) {

@@ -941,6 +941,7 @@ export class Sim {
     if (this.over) return;
     this.score[team] += n;
     if (this.score[team] >= this.scoreLimit) this.end(team);
+    else this.mode.onScore?.();
   }
 
   end(winner) {
@@ -1003,7 +1004,18 @@ export class Sim {
     this.updateMowers(dt);
     this.updateVehicles(dt);
     this.mode.update(dt);
-    if (now >= this.timeLimit) this.end(this.score[0] === this.score[1] ? null : this.score[0] > this.score[1] ? 0 : 1);
+    if (now >= this.timeLimit) {
+      const tied = this.score[0] === this.score[1];
+      const ot = this.mode.constructor.OVERTIME_SEC;
+      if (tied && ot && !this.overtime) {
+        this.overtime = true;
+        this.timeLimit += ot;
+        this.scoreLimit = this.score[0] + 1;
+        this.emit({ type: 'overtime', seconds: ot });
+      } else {
+        this.end(tied ? null : this.score[0] > this.score[1] ? 0 : 1);
+      }
+    }
   }
 
   updateVehicles(dt) {

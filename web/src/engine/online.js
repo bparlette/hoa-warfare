@@ -155,6 +155,8 @@ export class OnlineSession {
       if (e.id && !sim.byId.has(e.id)) continue;
       if (e.type === 'kill' && e.victimId && !sim.byId.has(e.victimId)) continue;
       if (e.type === 'swing') { const a = sim.byId.get(e.id); if (a) a.meleeAt = sim.time; }
+      // limits only arrive with init/roster, so the HUD clock would sit at 0:00 through overtime
+      if (e.type === 'overtime') { sim.timeLimit += e.seconds; sim.scoreLimit = Math.max(...sim.score) + 1; }
       // our own shot was already played locally when we pulled the trigger; keep this one for tracer + hit marker
       if (e.type === 'shot' && e.id === this.me?.id) out.push({ ...e, echo: true });
       else out.push(e);
