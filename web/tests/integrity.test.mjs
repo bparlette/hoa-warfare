@@ -6,7 +6,7 @@ import { readFileSync, existsSync } from 'node:fs';
 const root = new URL('../../', import.meta.url);
 const content = JSON.parse(readFileSync(new URL('data/hoa_content.json', root)));
 const manifest = JSON.parse(readFileSync(new URL('web/vo/manifest.json', root)));
-const factions = new Set(Object.keys(content.factions));
+const factions = new Set([...Object.keys(content.factions), 'announcer']);
 const factionsOf = id => (id.startsWith('rivalry.') ? id.split('.')[1].split('-') : [id.split('.')[0]]);
 
 test('every voice line in the manifest has its audio file (a missing file meant a silent, channel-blocking bark)', () => {
