@@ -997,9 +997,14 @@ export class Renderer {
     return this.vmMeshes?.[key]?.muzzlePos || this.muzzleOffsets?.[weaponOrClass] || this.muzzleOffsets?.[key] || { x: 0, y: 0.02, z: -0.33 };
   }
 
-  setGoldSkin(enabled) {
-    this.goldSkin = !!enabled;
+  setGoldSkin(enabled) { this.setCamo(enabled ? { id: 'gold', color: 0xffd700 } : null); }
+
+  /** Earned camo ({ id, color }, see progression.js CAMO_TIERS) on the first-person weapons, or null for factory finish. */
+  setCamo(tier) {
+    this.camo = tier || null;
+    this.goldSkin = this.camo?.id === 'gold';
     if (!this.vmMeshes) return;
+    const tint = new THREE.Color(), base = new THREE.Color();
     for (const grp of Object.values(this.vmMeshes)) {
       grp.traverse(obj => {
         if (!obj.isMesh || !obj.material) return;
@@ -1013,6 +1018,10 @@ export class Renderer {
             obj.material.emissive.setHex(0x805a00);
             obj.material.emissiveIntensity = 0.35;
           }
+        } else if (this.camo && obj.userData.origColor !== undefined) {
+          // keep some of the factory shading so the gun still reads as a gun, not a solid blob
+          obj.material.color?.copy(base.setHex(obj.userData.origColor).lerp(tint.setHex(this.camo.color), 0.7));
+          if (obj.material.emissive) obj.material.emissive.setHex(obj.userData.origEmissive || 0);
         } else if (obj.userData.origColor !== undefined) {
           obj.material.color?.setHex(obj.userData.origColor);
           if (obj.material.emissive) {

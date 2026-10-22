@@ -22,7 +22,7 @@ import { NetClient } from './net.js';
 import { Funnel } from './funnel.js';
 import { OnlineSession } from './online.js';
 import { Portal } from './portal.js';
-import { CareerProfile } from './progression.js';
+import { CareerProfile, CAMO_TIERS, HOA_RANKS } from './progression.js';
 
 export const DEMO_FACTIONS = ['karens', 'tradwives', 'hoaDads', 'furries', 'trumpers', 'pickleballRetirees'];
 
@@ -44,7 +44,17 @@ export const career = new CareerProfile({
   isDemo,
   onAchievement: ach => game?.hud?.showAchievementToast?.(ach),
   onRankUp: rank => game?.showBanner?.(`🎖️ PROMOTED: ${rank.title.toUpperCase()}`, `HOA Career Rank ${rank.rank} Reached!`),
+  onCamo: (weaponId, tier) => {
+    game?.showBanner?.(`🎨 CAMO UNLOCKED: ${tier.name.toUpperCase()}`, `${weaponsData.weapons[weaponId]?.name || weaponId} · +250 XP`);
+    if (game?.me?.weapons?.primary?.id === weaponId && state.showCamo) renderer?.setCamo?.(tier);
+  },
 });
+
+/** Primary weapon id a faction carries (camo is tracked per weapon). */
+export function factionPrimary(faction) {
+  const loadout = FACTION_LOADOUTS[faction]?.loadout || 'default';
+  return weaponsData.loadouts[loadout]?.primary || 'allowance';
+}
 
 async function loadJson(path) {
   if (typeof window === 'undefined') {
@@ -117,6 +127,7 @@ const state = {
   // the demo flag cannot unlock paid content in the free pack.
   map: !DEMO_BUILD && !isDemo && MAPS[initialMapParam] && !MAPS[initialMapParam].wip ? initialMapParam : 'culdesac',
   goldSkin: !DEMO_BUILD && !isDemo && params.get('gold') === '1',
+  showCamo: true,
   wpnVisual: (params.get('wpn') === '3d' || (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' && localStorage.getItem('hoa_wpn_visual') === '3d')) ? '3d' : '2d',
   mutators: {
     bigHead: params.get('bighead') === '1',
@@ -395,7 +406,25 @@ export function buildMenu() {
   if ($('careerRankBadge')) {
     const rInfo = career.getRankInfo();
     const capNote = rInfo.cappedInDemo ? ' 🔒 (MAX IN DEMO)' : rInfo.nextRank ? ` (${rInfo.xp}/${rInfo.nextRank.xp} XP)` : ' (MAX)';
-    $('careerRankBadge').textContent = `${rInfo.current.badge} RANK ${rInfo.current.rank}: ${rInfo.current.title.toUpperCase()}${capNote}`;
+    const pres = career.profile.prestige ? `🏚️ RE-ZONED ${career.profile.prestige} · ` : '';
+    $('careerRankBadge').textContent = `${pres}${rInfo.current.badge} RANK ${rInfo.current.rank}: ${rInfo.current.title.toUpperCase()}${capNote}`;
+  }
+  if ($('careerCamo')) {
+    const wid = factionPrimary(state.faction);
+    const pr = career.camoProgress(wid);
+    const wname = weaponsData.weapons[wid]?.name || wid;
+    const have = pr.current ? `🎨 ${pr.current.name}` : '🎨 Factory Finish';
+    const next = pr.next
+      ? ` · next ${pr.next.name}: ${Math.min(pr.kills, pr.next.kills)}/${pr.next.kills} kills${pr.next.headshots ? `, ${Math.min(pr.headshots, pr.next.headshots)}/${pr.next.headshots} headshots` : ''}`
+      : pr.lockedGold ? ' · 24K Gold in the $4.99 Full Game 🔒' : ' · MAXED';
+    $('careerCamo').textContent = `${wname}: ${have}${next}`;
+  }
+  if ($('btnRezone')) {
+    $('btnRezone').hidden = !career.canPrestige();
+    $('btnRezone').onclick = () => {
+      if (!confirm(`Re-Zone to Prestige ${(career.profile.prestige || 0) + 1}? Your rank resets to ${HOA_RANKS[0].title}. Camos and achievements stay.`)) return;
+      if (career.prestige()) { buildMenu(); game?.showBanner?.('🏚️ RE-ZONED!', `Prestige ${career.profile.prestige} · The board remembers.`); }
+    };
   }
   if ($('optSteam')) $('optSteam').checked = state.script === 'steam';
   if ($('optLegal')) $('optLegal').checked = state.legalSafe;
@@ -409,7 +438,7 @@ export function buildMenu() {
   if ($('mutShotguns')) $('mutShotguns').checked = !!state.mutators.shotgunsOnly;
   if ($('mutLowGrav')) $('mutLowGrav').checked = !!state.mutators.lowGrav;
   if ($('mutTurbo')) $('mutTurbo').checked = !!state.mutators.turbo;
-  if ($('optGoldSkin')) $('optGoldSkin').checked = !!state.goldSkin;
+  if ($('optGoldSkin')) $('optGoldSkin').checked = !!state.showCamo;
   if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
   updateMatchSettingsSummary();
 }
@@ -478,17 +507,7 @@ for (const [elId, mutKey, label, tagline] of [
   }
 }
 if ($('optGoldSkin')) {
-  $('optGoldSkin').onchange = e => {
-    const demoActive = isDemo || (typeof window !== 'undefined' && (window.__HOA_DEMO__ === true || new URLSearchParams(window.location?.search || '').get('demo') === '1'));
-    if (demoActive && e.target.checked) {
-      e.target.checked = false;
-      state.goldSkin = false;
-      showDemoModal('24K Gold Weapon Skins', 'Flex on the HOA Board with solid 24-karat gold viewmodels!');
-      return;
-    }
-    state.goldSkin = e.target.checked;
-    renderer?.setGoldSkin?.(state.goldSkin);
-  };
+  $('optGoldSkin').onchange = e => { state.showCamo = e.target.checked; };
 }
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
 if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
@@ -774,7 +793,9 @@ class Game {
       renderer.setWeapon(initW.viewmodel);
       renderer.weaponSwitchT = 0; // no switch animation on initial spawn
     }
-    renderer?.setGoldSkin?.(state.goldSkin);
+    // ?gold=1 (full build only) forces 24K Gold for trailer capture; otherwise the camo this weapon has earned
+    const camo = state.goldSkin ? CAMO_TIERS.at(-1) : career.camoFor(this.me?.weapons?.primary?.id);
+    renderer?.setCamo?.(state.showCamo || state.goldSkin ? camo : null);
 
     this.frames = [];
     this.hearing = { priority: -1, until: 0 };
@@ -1074,6 +1095,7 @@ class Game {
             this.showBanner(label, streak >= 3 ? `${streak}x CITATION STREAK` : '');
             this.hud.popScore?.(e.headshot ? '★ +150 HEADSHOT FINE!' : e.melee ? '🏆 +150 TROPHY BONK!' : '+100 EVICTED!', !!(e.headshot || e.melee || streak >= 3));
             career.recordKill({
+              weaponId: e.weaponId,
               headshot: !!e.headshot,
               melee: !!e.melee,
               explosive: !!e.explosive,

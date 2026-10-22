@@ -68,7 +68,7 @@ test('desktop: achievement unlocking and querying works without errors', () => {
 
   // getAchievements returns updated statuses
   const all = bridge.getAchievements();
-  assert.equal(all.length, 10);
+  assert.equal(all.length, ACHIEVEMENTS.length);
   const firstFine = all.find(a => a.id === 'ACH_FIRST_FINE');
   const campSnitch = all.find(a => a.id === 'ACH_CAMP_SNITCH');
   const lawnOrder = all.find(a => a.id === 'ACH_LAWN_ORDER');
@@ -94,8 +94,8 @@ test('desktop: achievement unlocking and querying works without errors', () => {
   assert.equal(bridge.isAchievementUnlocked(null), false);
 });
 
-test('desktop: all 10 achievement definitions are valid with name, description, and ID', () => {
-  assert.equal(ACHIEVEMENTS.length, 10, 'Must have exactly 10 Launch Steam Achievements');
+test('desktop: every achievement definition is valid with name, description, and ID', () => {
+  assert.equal(ACHIEVEMENTS.length, 13, 'Launch Steam Achievements');
 
   const seenIds = new Set();
   for (const ach of ACHIEVEMENTS) {

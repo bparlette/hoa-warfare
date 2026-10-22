@@ -31,7 +31,20 @@ export const ACHIEVEMENTS = {
   ACH_CAMP_SNITCH:    { id: 'ACH_CAMP_SNITCH',    name: 'Get Moving!',            desc: 'Trigger a loitering self-snitch citation.', icon: '🚨' },
   ACH_LAWSUIT:        { id: 'ACH_LAWSUIT',        name: 'See You in Court',       desc: 'Eliminate an opponent with a Lawsuit grenade.', icon: '⚖️' },
   ACH_TROPHY_HUNTER:  { id: 'ACH_TROPHY_HUNTER',  name: 'Everyone Gets a Trophy', desc: 'Eliminate an opponent with the Participation Trophy melee.', icon: '🥇' },
+  ACH_FINE_FROM_ABOVE:{ id: 'ACH_FINE_FROM_ABOVE',name: 'Fine From Above',        desc: 'Call in the HOA drone gunship with a 9-killstreak.', icon: '🛸' },
+  ACH_GOLD_STANDARD:  { id: 'ACH_GOLD_STANDARD',  name: 'Gold Standard',          desc: 'Earn 24K Gold camo on any weapon.', icon: '✨' },
+  ACH_REZONED:        { id: 'ACH_REZONED',        name: 'Re-Zoned',               desc: 'Reach Supreme HOA Board President and Re-Zone (Prestige).', icon: '🏚️' },
 };
+
+// Per-weapon camo, earned with that weapon's kills and headshots. Gold needs the full game.
+export const CAMO_TIERS = [
+  { id: 'beige',   name: 'HOA-Approved Beige', kills: 25,  headshots: 0,  color: 0xd8c8a0 },
+  { id: 'mulch',   name: 'Fresh Mulch',        kills: 60,  headshots: 10, color: 0x6b4a2b },
+  { id: 'granite', name: 'Granite Countertop', kills: 120, headshots: 25, color: 0x9a9a9a },
+  { id: 'gold',    name: '24K Gold',           kills: 200, headshots: 50, color: 0xffd700, fullGameOnly: true },
+];
+export const CAMO_XP = 250;
+export const PRESTIGE_MAX = 10;
 
 function defaultProfile() {
   return {
@@ -46,6 +59,9 @@ function defaultProfile() {
     matches: 0,
     helicoptersDestroyed: 0,
     weaponKills: {},
+    weaponHeadshots: {},
+    camos: {},
+    prestige: 0,
     factionKills: {},
     achievements: {},
     goldSkinEnabled: false,
@@ -53,11 +69,12 @@ function defaultProfile() {
 }
 
 export class CareerProfile {
-  constructor({ isDemo = false, maxRank = DEMO_MAX_RANK, onAchievement = null, onRankUp = null } = {}) {
+  constructor({ isDemo = false, maxRank = DEMO_MAX_RANK, onAchievement = null, onRankUp = null, onCamo = null } = {}) {
     this.isDemo = isDemo;
     this.maxRank = Math.max(1, Math.min(HOA_RANKS.length, maxRank));
     this.onAchievement = onAchievement;
     this.onRankUp = onRankUp;
+    this.onCamo = onCamo;
     this.data = this.load();
     this.syncRank();
   }
@@ -72,7 +89,11 @@ export class CareerProfile {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          return { ...defaultProfile(), ...parsed, weaponKills: parsed.weaponKills || {}, factionKills: parsed.factionKills || {}, achievements: parsed.achievements || {} };
+          return {
+            ...defaultProfile(), ...parsed,
+            weaponKills: parsed.weaponKills || {}, weaponHeadshots: parsed.weaponHeadshots || {}, camos: parsed.camos || {},
+            factionKills: parsed.factionKills || {}, achievements: parsed.achievements || {},
+          };
         }
       }
     } catch {}
@@ -159,7 +180,11 @@ export class CareerProfile {
     if (headshot) this.data.headshots = (this.data.headshots || 0) + 1;
     if (melee) this.data.meleeKills = (this.data.meleeKills || 0) + 1;
     if (explosive) this.data.grenadeKills = (this.data.grenadeKills || 0) + 1;
-    if (weaponId) this.data.weaponKills[weaponId] = (this.data.weaponKills[weaponId] || 0) + 1;
+    if (weaponId) {
+      this.data.weaponKills[weaponId] = (this.data.weaponKills[weaponId] || 0) + 1;
+      if (headshot) this.data.weaponHeadshots[weaponId] = (this.data.weaponHeadshots[weaponId] || 0) + 1;
+      this.checkCamo(weaponId);
+    }
     if (faction) this.data.factionKills[faction] = (this.data.factionKills[faction] || 0) + 1;
 
     this.addXp(headshot ? 35 : 25);
@@ -168,6 +193,53 @@ export class CareerProfile {
     if (explosive) this.unlockAchievement('ACH_LAWSUIT');
     if (streak >= 5) this.unlockAchievement('ACH_STREAK_5');
     this.save();
+  }
+
+  /** Camo tiers this build can earn: the demo stops below gold. */
+  camoTiers() { return this.isDemo ? CAMO_TIERS.filter(t => !t.fullGameOnly) : CAMO_TIERS; }
+
+  /** Highest camo earned on a weapon, or null. */
+  camoFor(weaponId) {
+    const id = this.data.camos[weaponId];
+    return this.camoTiers().find(t => t.id === id) || null;
+  }
+
+  /** Progress toward the next camo on a weapon: { current, next, kills, headshots }. */
+  camoProgress(weaponId) {
+    const current = this.camoFor(weaponId);
+    const tiers = this.camoTiers();
+    const next = tiers[current ? tiers.indexOf(current) + 1 : 0] || null;
+    return { current, next, kills: this.data.weaponKills[weaponId] || 0, headshots: this.data.weaponHeadshots[weaponId] || 0, lockedGold: this.isDemo };
+  }
+
+  checkCamo(weaponId) {
+    const kills = this.data.weaponKills[weaponId] || 0, headshots = this.data.weaponHeadshots[weaponId] || 0;
+    const tiers = this.camoTiers();
+    let idx = tiers.indexOf(this.camoFor(weaponId));
+    while (tiers[idx + 1] && kills >= tiers[idx + 1].kills && headshots >= tiers[idx + 1].headshots) {
+      const tier = tiers[++idx];
+      this.data.camos[weaponId] = tier.id;
+      this.addXp(CAMO_XP);
+      if (this.onCamo) this.onCamo(weaponId, tier);
+      if (tier.id === 'gold') this.unlockAchievement('ACH_GOLD_STANDARD');
+    }
+  }
+
+  /** Prestige ("Re-Zoning"): full game only, from the top rank. Camos and achievements stay. */
+  canPrestige() {
+    return !this.isDemo && this.getRankInfo().rank === HOA_RANKS.length && (this.data.prestige || 0) < PRESTIGE_MAX;
+  }
+
+  prestige() {
+    if (!this.canPrestige()) return false;
+    this.data.prestige = (this.data.prestige || 0) + 1;
+    this.data.xp = 0;
+    this.syncRank();
+    this.unlockAchievement('ACH_REZONED');
+    this.data.xp = 0;
+    this.syncRank();
+    this.save();
+    return true;
   }
 
   recordDeath() {
