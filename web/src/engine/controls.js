@@ -16,6 +16,7 @@ export const LOOK = {
   maxPitch: 1.45,
   invertY: false,         // invert vertical mouse look
   fov: 75,                // base horizontal-derived vertical FOV
+  graphics: 'high',       // 'high' | 'low' (renderer.setQualityTier)
   keyBindings: {
     forward: 'KeyW',
     back: 'KeyS',
@@ -45,6 +46,7 @@ export function loadPcSettings() {
     if (typeof data.mouseSens === 'number' && Number.isFinite(data.mouseSens)) LOOK.mouseSens = data.mouseSens;
     if (typeof data.invertY === 'boolean') LOOK.invertY = data.invertY;
     if (typeof data.fov === 'number' && Number.isFinite(data.fov)) LOOK.fov = data.fov;
+    if (data.graphics === 'high' || data.graphics === 'low') LOOK.graphics = data.graphics;
     if (data.keyBindings && typeof data.keyBindings === 'object') {
       Object.assign(LOOK.keyBindings, data.keyBindings);
     }
@@ -56,6 +58,7 @@ export function savePcSettings(patch = {}) {
   if (typeof patch.mouseSens === 'number') LOOK.mouseSens = patch.mouseSens;
   if (typeof patch.invertY === 'boolean') LOOK.invertY = patch.invertY;
   if (typeof patch.fov === 'number') LOOK.fov = patch.fov;
+  if (patch.graphics === 'high' || patch.graphics === 'low') LOOK.graphics = patch.graphics;
   if (patch.keyBindings && typeof patch.keyBindings === 'object') {
     Object.assign(LOOK.keyBindings, patch.keyBindings);
   }
@@ -65,10 +68,44 @@ export function savePcSettings(patch = {}) {
         mouseSens: LOOK.mouseSens,
         invertY: LOOK.invertY,
         fov: LOOK.fov,
+        graphics: LOOK.graphics,
         keyBindings: LOOK.keyBindings,
       }));
     } catch {}
   }
+}
+
+export const DEFAULT_KEY_BINDINGS = Object.freeze({ ...LOOK.keyBindings });
+
+/** Rebind an action. A key already used by another action swaps onto this action's old key. */
+export function rebindKey(action, code) {
+  const kb = LOOK.keyBindings;
+  if (!(action in kb) || typeof code !== 'string' || !code) return false;
+  const clash = Object.keys(kb).find(k => k !== action && kb[k] === code);
+  if (clash) kb[clash] = kb[action];
+  kb[action] = code;
+  savePcSettings({ keyBindings: kb });
+  return true;
+}
+
+export function resetKeyBindings() {
+  Object.assign(LOOK.keyBindings, DEFAULT_KEY_BINDINGS);
+  savePcSettings({ keyBindings: LOOK.keyBindings });
+}
+
+/** Settings menu "press a key": the next key press goes to `cb(code)`, or `cb(null)` on Escape. */
+export function captureNextKey(cb) {
+  const h = e => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    cb(e.code === 'Escape' ? null : e.code);
+  };
+  window.addEventListener('keydown', h, { capture: true, once: true });
+}
+
+/** "KeyW" -> "W", "Digit1" -> "1", "ShiftLeft" -> "L-Shift". */
+export function keyLabel(code) {
+  return String(code || '').replace(/^Key/, '').replace(/^Digit/, '').replace(/^(Shift|Control|Alt|Meta)(Left|Right)$/, (_, k, s) => `${s[0]}-${k === 'Control' ? 'Ctrl' : k}`);
 }
 
 // Automatically load on import if running in browser

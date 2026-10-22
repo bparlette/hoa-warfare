@@ -14,7 +14,7 @@ import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac, buildMap, MAPS } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
-import { Controls, LOOK, loadPcSettings, savePcSettings, aimAssist, triggerHaptic as haptic } from './controls.js';
+import { Controls, LOOK, loadPcSettings, savePcSettings, rebindKey, resetKeyBindings, captureNextKey, keyLabel, aimAssist, triggerHaptic as haptic } from './controls.js';
 import { PerfOverlay } from './perf.js';
 import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
@@ -641,7 +641,7 @@ if ($('optFov')) {
     renderer?.setUserFov(val);
   };
   $('optFov').value = LOOK.fov || 75;
-  updateFov($('optFov').value);
+  updateFov(Number($('optFov').value));
   $('optFov').oninput = e => updateFov(Number(e.target.value));
 }
 if ($('optInvertY')) {
@@ -649,10 +649,41 @@ if ($('optInvertY')) {
   $('optInvertY').onchange = e => savePcSettings({ invertY: e.target.checked });
 }
 if ($('optGraphics')) {
+  $('optGraphics').value = LOOK.graphics;
+  if (LOOK.graphics !== 'high') renderer?.setQualityTier(LOOK.graphics);
   $('optGraphics').onchange = e => {
+    savePcSettings({ graphics: e.target.value });
     renderer?.setQualityTier(e.target.value);
   };
 }
+const BIND_LABELS = {
+  forward: 'Forward', back: 'Back', left: 'Left', right: 'Right', jump: 'Jump', sprint: 'Sprint', reload: 'Reload',
+  melee: 'Trophy (melee)', grenade: 'Lawsuit', interact: 'Use / Mower', switchToggle: 'Swap weapon',
+  slotPrimary: 'Primary', slotSecondary: 'Secondary', scoreboard: 'Scoreboard',
+};
+function renderKeyBinds() {
+  const box = $('keyBinds');
+  if (!box || typeof document === 'undefined') return;
+  box.innerHTML = '';
+  for (const [action, label] of Object.entries(BIND_LABELS)) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'keybind';
+    b.textContent = `${label}: ${keyLabel(LOOK.keyBindings[action])}`;
+    b.onclick = () => {
+      b.textContent = `${label}: press a key (Esc cancels)`;
+      captureNextKey(code => { if (code) rebindKey(action, code); renderKeyBinds(); });
+    };
+    box.appendChild(b);
+  }
+  const reset = document.createElement('button');
+  reset.type = 'button';
+  reset.className = 'keybind keybind-reset';
+  reset.textContent = 'Reset keys';
+  reset.onclick = () => { resetKeyBindings(); renderKeyBinds(); };
+  box.appendChild(reset);
+}
+renderKeyBinds();
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
 if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };
 if ($('optLegal')) $('optLegal').onchange = e => { state.legalSafe = e.target.checked; };

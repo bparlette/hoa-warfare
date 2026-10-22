@@ -83,3 +83,24 @@ test('Steam Deck detection and device-pad class synchronization', () => {
   c.setDevice('mouse');
   assert.equal(c.device, 'mouse');
 });
+
+import { rebindKey, resetKeyBindings, keyLabel, DEFAULT_KEY_BINDINGS, LOOK as LOOK2 } from '../src/engine/controls.js';
+
+test('key rebinding: a bound key swaps instead of leaving two actions on one key; reset restores', () => {
+  resetKeyBindings();
+  assert.ok(rebindKey('jump', 'KeyC'));
+  assert.equal(LOOK2.keyBindings.jump, 'KeyC');
+  assert.ok(rebindKey('reload', 'KeyC'));
+  assert.equal(LOOK2.keyBindings.reload, 'KeyC');
+  assert.equal(LOOK2.keyBindings.jump, DEFAULT_KEY_BINDINGS.reload, 'jump took reload\'s old key');
+  assert.equal(rebindKey('notAnAction', 'KeyZ'), false);
+  resetKeyBindings();
+  assert.deepEqual({ ...LOOK2.keyBindings }, { ...DEFAULT_KEY_BINDINGS });
+});
+
+test('key labels read like keys', () => {
+  assert.equal(keyLabel('KeyW'), 'W');
+  assert.equal(keyLabel('Digit1'), '1');
+  assert.equal(keyLabel('ShiftLeft'), 'L-Shift');
+  assert.equal(keyLabel('Space'), 'Space');
+});

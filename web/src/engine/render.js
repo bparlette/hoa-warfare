@@ -181,6 +181,11 @@ export class Renderer {
       this.quality.maxRatio = 2;
       this.quality.maxSplats = 160;
     }
+    if (this.sun) {
+      this.sun.shadow.mapSize.set(this.quality.shadow, this.quality.shadow);
+      this.sun.shadow.map?.dispose();
+      this.sun.shadow.map = null; // three.js reallocates at the new size on the next frame
+    }
     this.resize();
   }
 
