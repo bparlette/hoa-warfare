@@ -20,7 +20,7 @@ Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task
 ### P0: Voice Generation & Manifest Verification — [Assigned: Muse]
 - [ ] Run `tools/hoa_warfare_voice_studio.ipynb` in Colab for all 1,057 lines across 16 factions **(Muse)**
 - [ ] Upload `.ogg` files to `web/vo/` via browser (never connector — corrupts binaries) **(Muse)**
-- [ ] Update `web/vo/manifest.json` with file hashes, peak dB, and true durations **(Muse, claimed by Moth 2026-10-22)**
+- [x] Update `web/vo/manifest.json` with file hashes, peak dB, and true durations **(Muse)** — done (83ee74a): sha256 on all 1,394 lines; peak_db/duration already present since 2026-10-19
 - [ ] **STRICT**: Do NOT touch gun audio synthesis in `web/src/engine/audio.js` (owner directive 2026-10-16) **(Muse)**
 
 ### P1: itch.io Page Optimization — [Assigned: Moth]
