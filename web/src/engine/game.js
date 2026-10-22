@@ -74,11 +74,12 @@ async function loadJson(path) {
   return await res2.json();
 }
 
-const [content, weaponsData, demoConfig, perksData] = await Promise.all([
+const [content, weaponsData, demoConfig, perksData, challengesData] = await Promise.all([
   loadJson('../data/hoa_content.json'),
   loadJson('../data/weapons.json'),
   loadJson('../data/demo.json').catch(() => ({})),
   loadJson('../data/perks.json').catch(() => ({ perks: {} })),
+  loadJson('../data/challenges.json').catch(() => ([])),
 ]);
 const PRIMARY_IDS = Object.keys(weaponsData.weapons).filter(id => weaponsData.weapons[id].slot === 'primary');
 const CLASS_KEY = 'hoa.class.v1';
@@ -387,9 +388,9 @@ export function buildMenu() {
     if (pag) {
       const pageNum = menuPage + 1;
       pag.innerHTML = `
-        <button type="button" class="page-btn" id="fcPrev" ${menuPage === 0 ? 'disabled' : ''} aria-label="Previous factions">◀ Prev</button>
+        <button type="button" class="page-btn" id="fcPrev" ${menuPage === 0 ? 'disabled' : ''} aria-label="Previous factions"><span class="pad-glyph pad-lb">LB</span>◀ Prev</button>
         <span>Page ${pageNum} of ${totalPages}</span>
-        <button type="button" class="page-btn" id="fcNext" ${menuPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next factions">Next ▶</button>
+        <button type="button" class="page-btn" id="fcNext" ${menuPage >= totalPages - 1 ? 'disabled' : ''} aria-label="Next factions">Next ▶<span class="pad-glyph pad-rb">RB</span></button>
       `;
       const prevBtn = $('fcPrev');
       const nextBtn = $('fcNext');
@@ -405,11 +406,11 @@ export function buildMenu() {
   const depBtn = $('deploy');
   if (depBtn) {
     if (isLocked) {
-      depBtn.textContent = '🔒 LOCKED IN DEMO (WISHLIST ON STEAM)';
+      depBtn.innerHTML = '<span class="pad-glyph pad-a">A</span>🔒 LOCKED IN DEMO (WISHLIST ON STEAM)';
       depBtn.classList.add('btn-locked');
       depBtn.onclick = () => showDemoModal(selF.name, selF.tagline);
     } else {
-      depBtn.textContent = `▶ DEPLOY AS ${selF.name.toUpperCase()}`;
+      depBtn.innerHTML = `<span class="pad-glyph pad-a">A</span>▶ DEPLOY AS ${selF.name.toUpperCase()}`;
       depBtn.classList.remove('btn-locked');
       depBtn.onclick = () => startGame();
     }
@@ -447,6 +448,7 @@ export function buildMenu() {
   if ($('optVoice')) $('optVoice').checked = state.voice;
   if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
   syncClassOptions();
+  syncChallengeOptions();
   if ($('optMap')) $('optMap').value = state.map;
   if ($('mutBigHead')) $('mutBigHead').checked = !!state.mutators.bigHead;
   if ($('mutShotguns')) $('mutShotguns').checked = !!state.mutators.shotgunsOnly;
@@ -526,6 +528,36 @@ if ($('optPerk')) $('optPerk').onchange = e => {
   state.perk = e.target.value;
   saveClass();
   if ($('perkDesc')) $('perkDesc').textContent = p?.desc || 'One perk per player. Pick a playstyle.';
+};
+
+function syncChallengeOptions() {
+  const sel = $('optChallenge');
+  if (!sel || !sel.options || !challengesData?.length) return;
+  if (!sel.options.length) {
+    sel.add(new Option('None (Standard Skirmish)', ''));
+    for (const c of challengesData) {
+      sel.add(new Option(`${c.reward.badge} ${c.title} (${c.mode})`, c.id));
+    }
+  }
+}
+if ($('optChallenge')) $('optChallenge').onchange = e => {
+  const c = (challengesData || []).find(ch => ch.id === e.target.value);
+  if (!c) {
+    if ($('challengeDesc')) $('challengeDesc').textContent = 'Pick a curated suburban challenge mission with custom objectives and rewards.';
+    return;
+  }
+  state.mode = c.mode;
+  state.map = c.map;
+  state.faction = c.playerFaction;
+  state.difficulty = c.modifiers?.botDifficulty || 'medium';
+  if ($('optMode')) $('optMode').value = c.mode;
+  if ($('optMap')) $('optMap').value = c.map;
+  if ($('optDifficulty')) $('optDifficulty').value = state.difficulty;
+  buildMenu();
+  updateMatchSettingsSummary();
+  if ($('challengeDesc')) {
+    $('challengeDesc').textContent = `${c.briefing} — Reward: ${c.reward.title} (+${c.reward.xp} XP)`;
+  }
 };
 if ($('optMap')) {
   $('optMap').onchange = e => {
@@ -1444,13 +1476,18 @@ if (typeof document !== 'undefined') {
   });
 }
 
-// Controller navigation outside gameplay: menu (A deploy, LB/RB or D-pad faction), pause (START resume,
-// VIEW quit), end screen (A run it back, B menu). In-game START pauses.
+// Controller navigation outside gameplay: menu (A deploy, LB/RB or D-pad faction, X tutorial, VIEW settings),
+// pause (START resume, VIEW quit), end screen (A run it back, B menu). In-game START pauses.
 if (input) {
   input.onPadPress = pr => {
     sfx.unlock();
     const menuOpen = $('menu') && !$('menu').classList.contains('hidden');
     const endOpen = $('end') && !$('end').classList.contains('hidden');
+    const settingsModalOpen = $('matchSettingsModal') && !$('matchSettingsModal').classList.contains('hidden');
+    if (settingsModalOpen) {
+      if (pr.B || pr.START || pr.VIEW) $('matchSettingsModal')?.classList.add('hidden');
+      return;
+    }
     if (menuOpen) {
       const step = (pr.RB || pr.RIGHT ? 1 : 0) - (pr.LB || pr.LEFT ? 1 : 0);
       if (step) {
@@ -1460,13 +1497,15 @@ if (input) {
         buildMenu();
       }
       if (pr.A || pr.START) startGame();
+      else if (pr.X) $('btnTutorial')?.click();
+      else if (pr.VIEW) $('btnMatchSettings')?.click();
     } else if (endOpen) {
       if (pr.A) startGame();
       if (pr.B) toMenu();
     } else if (game) {
       if (pr.START) input.userPaused = !input.userPaused;
       else if (input.userPaused && pr.VIEW) toMenu();
-      else if (input.userPaused && pr.A) input.userPaused = false;
+      else if (input.userPaused && (pr.A || pr.B)) input.userPaused = false;
     }
   };
 }

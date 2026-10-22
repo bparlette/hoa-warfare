@@ -443,6 +443,9 @@ export class StealTheCasserole extends Mode {
    * midpoint is walkable).
    */
   kitchenPos(team) {
+    if (this.sim.map?.kitchenPos?.[team]) {
+      return this.openSpot(this.sim.map.kitchenPos[team]);
+    }
     const { spawns, nodes, boxes } = this.sim.map;
     const centroid = side => {
       const pts = spawns[side] || [];

@@ -1698,3 +1698,106 @@ body.touch-mode #netInfo { top: 4px; left: auto; right: 112px; transform: none; 
     order: 3;
   }
 }
+
+/* ------------------------------------------------------------- */
+/* CONTROLLER GLYPHS & STEAM DECK LAYOUT                        */
+/* ------------------------------------------------------------- */
+
+.pad-glyph {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 999px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  margin-right: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  text-shadow: none;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
+
+body.device-pad .pad-glyph {
+  display: inline-flex;
+}
+
+.pad-glyph.pad-a {
+  background: #107c10;
+  color: #ffffff;
+  border: 1.5px solid #2ecc71;
+}
+
+.pad-glyph.pad-b {
+  background: #c41230;
+  color: #ffffff;
+  border: 1.5px solid #e74c3c;
+}
+
+.pad-glyph.pad-x {
+  background: #005fb8;
+  color: #ffffff;
+  border: 1.5px solid #3498db;
+}
+
+.pad-glyph.pad-y {
+  background: #d4a017;
+  color: #111111;
+  border: 1.5px solid #f1c40f;
+}
+
+.pad-glyph.pad-lb,
+.pad-glyph.pad-rb {
+  background: #2d3748;
+  color: #e2e8f0;
+  border: 1.5px solid #718096;
+  border-radius: 4px;
+  font-size: 9px;
+  min-width: 20px;
+  height: 16px;
+}
+
+.pad-glyph.pad-lt,
+.pad-glyph.pad-rt {
+  background: #1a202c;
+  color: #e2e8f0;
+  border: 1.5px solid #4a5568;
+  border-radius: 4px;
+  font-size: 9px;
+  min-width: 20px;
+  height: 16px;
+}
+
+.pad-glyph.pad-start,
+.pad-glyph.pad-view {
+  background: #2d3748;
+  color: #cbd5e0;
+  border: 1.5px solid #4a5568;
+  border-radius: 4px;
+  font-size: 9px;
+  min-width: 32px;
+  height: 16px;
+}
+
+/* Steam Deck 1280x800 & Handheld Landscape Layout */
+@media (min-width: 1200px) and (max-height: 850px) {
+  .lobby-center {
+    max-width: 960px;
+    padding: 8px 16px;
+  }
+  .factions-grid-2x3 {
+    gap: 8px;
+    max-height: 380px;
+  }
+  .faction-card {
+    height: 175px;
+  }
+  .lobby-action-bar {
+    margin-top: 10px;
+    gap: 12px;
+  }
+}

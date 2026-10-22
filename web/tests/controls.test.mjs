@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { deadzone, stickLook, touchStick, readGamepad, aimAssist, PAD, LOOK } from '../src/engine/controls.js';
+import { deadzone, stickLook, touchStick, readGamepad, aimAssist, PAD, LOOK, Controls } from '../src/engine/controls.js';
 import { Sim } from '../src/engine/sim.js';
 import { mulberry32 } from '../src/core/rng.js';
 
@@ -71,4 +71,15 @@ test('aim assist: sticky on a visible enemy, nothing through walls or behind you
   Object.assign(me.pos, { x: -27, y: 0, z: 12 }); me.yaw = 0;  // west house between us and the foe
   Object.assign(foe.pos, { x: -27, y: 0, z: -12 });
   assert.equal(aimAssist(sim, me).slow, 1, 'no assist through a house');
+});
+
+test('Steam Deck detection and device-pad class synchronization', () => {
+  assert.equal(typeof Controls.isSteamDeck, 'function');
+  const dummyCanvas = {};
+  const c = new Controls({ canvas: dummyCanvas });
+  assert.ok(c.device === 'mouse' || c.device === 'touch' || c.device === 'pad');
+  c.setDevice('pad');
+  assert.equal(c.device, 'pad');
+  c.setDevice('mouse');
+  assert.equal(c.device, 'mouse');
 });

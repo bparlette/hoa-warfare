@@ -59,6 +59,9 @@ await send('Page.enable');
 if (process.env.MOBILE) {
   await send('Emulation.setDeviceMetricsOverride', { width: 844, height: 390, deviceScaleFactor: 2, mobile: true, screenOrientation: { type: 'landscapePrimary', angle: 90 } });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+} else {
+  const w = Number(process.env.SHOT_W || 1920), h = Number(process.env.SHOT_H || 1080);
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
 }
 // Guard: the perf numbers are only meaningful if the browser is serving THIS
 // checkout. A leftover `tools/serve.mjs` from another copy of the repo answers

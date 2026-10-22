@@ -128,13 +128,42 @@ export function readGamepad(gp, prev) {
 // ------------------------------------------------------------------------------------------------
 
 export class Controls {
+  static isSteamDeck() {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    if (/Valve Steam Gamepad|SteamDeck|SteamOS/i.test(ua)) return true;
+    if (typeof window !== 'undefined' && window.location?.search) {
+      try {
+        const q = new URLSearchParams(window.location.search);
+        if (q.get('deck') === '1' || q.get('pad') === '1') return true;
+      } catch {}
+    }
+    return false;
+  }
+
+  syncDeviceClasses() {
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.toggle('device-pad', this.device === 'pad');
+      document.body.classList.toggle('device-mouse', this.device === 'mouse');
+      document.body.classList.toggle('device-touch', this.device === 'touch');
+    }
+  }
+
+  setDevice(device) {
+    if (this.device !== device) {
+      this.device = device;
+      this.syncDeviceClasses();
+    }
+  }
+
   /**
    * @param {{canvas:HTMLCanvasElement, touchRoot?:HTMLElement}} o
    * Callbacks (assign): onPadPress(pressedMap, inGame) for menu/pause navigation.
    */
   constructor({ canvas, touchRoot = null }) {
     this.canvas = canvas;
-    this.device = typeof matchMedia !== 'undefined' && matchMedia?.('(pointer: coarse)')?.matches ? 'touch' : 'mouse';
+    const isTouch = typeof matchMedia !== 'undefined' && matchMedia?.('(pointer: coarse)')?.matches;
+    this.device = Controls.isSteamDeck() ? 'pad' : (isTouch ? 'touch' : 'mouse');
     this.locked = false;
     this.userPaused = false;
     this.keys = new Set();
@@ -148,6 +177,7 @@ export class Controls {
     this.onTarget = false;
     this.touch = { stick: null, look: new Map(), fire: false, jump: false, board: false, move: { forward: 0, right: 0, sprint: false } };
     this.onPadPress = null;
+    this.syncDeviceClasses();
     if (typeof document !== 'undefined') this.bindMouseKeys();
     if (touchRoot) this.bindTouch(touchRoot);
   }
@@ -168,7 +198,7 @@ export class Controls {
   bindMouseKeys() {
     document.addEventListener('pointerlockchange', () => {
       this.locked = document.pointerLockElement === this.canvas;
-      if (this.locked) { this.device = 'mouse'; this.userPaused = false; }
+      if (this.locked) { this.setDevice('mouse'); this.userPaused = false; }
       else this.mouseFire = false;
     });
     document.addEventListener('mousemove', e => {
@@ -183,7 +213,7 @@ export class Controls {
       const kb = LOOK.keyBindings;
       if (e.code === (kb.scoreboard || 'Tab')) e.preventDefault();
       this.keys.add(e.code);
-      if ([kb.forward || 'KeyW', kb.left || 'KeyA', kb.back || 'KeyS', kb.right || 'KeyD'].includes(e.code) && this.device !== 'mouse') this.device = 'mouse';
+      if ([kb.forward || 'KeyW', kb.left || 'KeyA', kb.back || 'KeyS', kb.right || 'KeyD'].includes(e.code) && this.device !== 'mouse') this.setDevice('mouse');
       const p = this.pending;
       if (e.code === (kb.reload || 'KeyR')) p.reload = true;
       if (e.code === (kb.melee || 'KeyF') || e.code === 'KeyV') p.melee = true;
@@ -213,7 +243,7 @@ export class Controls {
 
     root.addEventListener('pointerdown', e => {
       if (!isTouch(e)) return;
-      this.device = 'touch';
+      this.setDevice('touch');
       this.userPaused = false;
       dismissLookHint();
       const btn = e.target.closest('[data-t]');
@@ -275,7 +305,7 @@ export class Controls {
       el.addEventListener('pointerdown', e => {
         if (!isTouch(e)) return;
         e.preventDefault(); e.stopPropagation();
-        this.device = 'touch';
+        this.setDevice('touch');
         dismissLookHint();
         try { el.setPointerCapture?.(e.pointerId); } catch {}
         el.classList.add('on');
@@ -324,7 +354,7 @@ export class Controls {
     const gp = pads.find(p => p && p.connected && p.mapping === 'standard') || pads.find(p => p && p.connected);
     if (!gp) { this.pad = null; return null; }
     this.pad = readGamepad(gp, this.padPrev);
-    if (this.pad.active) this.device = 'pad';
+    if (this.pad.active) this.setDevice('pad');
     const pr = this.pad.pressed;
     if (Object.keys(pr).length && this.onPadPress) this.onPadPress(pr);
     return pr;

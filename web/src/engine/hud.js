@@ -1075,8 +1075,8 @@ export class Hud {
       </div>
       <div id="endBoard" style="margin-top:12px"></div>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px">
-        <button id="again" style="margin-top:0">${againLabel}</button>
-        <button id="endMenu" style="margin-top:0">MENU</button>
+        <button id="again" style="margin-top:0"><span class="pad-glyph pad-a">A</span>${againLabel}</button>
+        <button id="endMenu" style="margin-top:0"><span class="pad-glyph pad-b">B</span>MENU</button>
         <button id="btnShareScore" class="btn-share" style="margin-top:0">📋 SHARE SCORE</button>
         <button id="btnShareCard" class="btn-share" style="margin-top:0">📸 SAVE / SHARE CARD</button>
         <button id="btnSaveClip" class="btn-share" style="margin-top:0">🎥 SAVE CLIP</button>

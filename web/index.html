@@ -85,6 +85,7 @@
           <input id="optName" type="text" maxlength="16" placeholder="Your name" autocomplete="off" spellcheck="false">
         </div>
         <button type="button" id="btnMatchSettings" class="btn-match-settings" title="Change Mode, Map, and Bot Difficulty">
+          <span class="pad-glyph pad-view">VIEW</span>
           <span class="settings-gear">⚙️</span>
           <span class="settings-text-wrap">
             <span class="settings-title">MATCH SETTINGS</span>
@@ -111,8 +112,8 @@
       </div>
       <div id="factions" class="factions-grid-2x3"></div>
       <div class="lobby-action-bar">
-        <button type="button" id="deploy" class="btn-deploy btn-deploy-pulse">▶ DEPLOY NOW</button>
-        <button type="button" id="btnTutorial" class="btn-online btn-tutorial" title="30-Second Suburban Firing Range & Tutorial">🎯 TUTORIAL / FIRING RANGE</button>
+        <button type="button" id="deploy" class="btn-deploy btn-deploy-pulse"><span class="pad-glyph pad-a">A</span>▶ DEPLOY NOW</button>
+        <button type="button" id="btnTutorial" class="btn-online btn-tutorial" title="30-Second Suburban Firing Range & Tutorial"><span class="pad-glyph pad-x">X</span>🎯 TUTORIAL / FIRING RANGE</button>
         <button type="button" id="btnQuickMatch" class="btn-online btn-quickmatch-main" disabled>🌐 QUICK MATCH</button>
         <div id="heroDossier" style="display:none;"></div>
       </div>
@@ -246,6 +247,11 @@
         <label for="optPerk">CREATE-A-CLASS: PERK</label>
         <select id="optPerk"></select>
         <small class="field-desc" id="perkDesc">One perk per player. Pick a playstyle.</small>
+      </div>
+      <div class="settings-field">
+        <label for="optChallenge">CHALLENGE MISSIONS (OPTIONAL)</label>
+        <select id="optChallenge"></select>
+        <small class="field-desc" id="challengeDesc">Pick a curated suburban challenge mission with custom objectives and rewards.</small>
       </div>
     </div>
     <div class="modal-footer">

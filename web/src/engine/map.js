@@ -521,6 +521,22 @@ export function buildPickleballClub() {
 
   const nodes = buildNavGraph(boxes, nodeCoords, { maxLink: 22, stepH: 1.15 });
 
+  // Balanced, point-symmetric objective positions across the center court net:
+  // Center, North terrace, South plaza, East court promontory, West court promontory.
+  const zonePos = {
+    'Cul-de-Sac Circle': { x: 0, z: 0 },
+    'Gazebo Greenbelt': { x: 0, z: -20 },
+    'South Driveway': { x: 0, z: 20 },
+    'Northeast Front Lawn': { x: 16, z: 0 },
+    'West Front Lawn': { x: -16, z: 0 },
+  };
+
+  // Kitchens positioned 30m apart (balanced 9m walk from each team's spawn).
+  const kitchenPos = {
+    0: { x: 0, y: 0, z: 15 },
+    1: { x: 0, y: 0, z: -15 },
+  };
+
   return {
     id: 'pickleball',
     name: 'Shady Pines Pickleball Club',
@@ -528,6 +544,8 @@ export function buildPickleballClub() {
     boxes,
     spawns,
     nodes,
+    zonePos,
+    kitchenPos,
     bounds: BOUNDS,
     court: { x: 0, z: 0, r: 16 },
     street: { minX: -8, maxX: 8, minZ: 22, maxZ: 48 },

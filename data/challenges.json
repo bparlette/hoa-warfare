@@ -1,0 +1,190 @@
+[
+  {
+    "id": "challenge_01",
+    "title": "Lawn Mower Massacre",
+    "briefing": "The HOA Kentucky Bluegrass height ordinance has been repeatedly violated. Mount the riding mower and harvest 5 trespassing Karens via suburban vehicular roadkill.",
+    "map": "culdesac",
+    "mode": "clash",
+    "playerFaction": "hoaDads",
+    "enemyFaction": "karens",
+    "modifiers": {
+      "roadkillsRequired": 5,
+      "scoreLimit": 20,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 500,
+      "title": "Groundskeeper Alpha",
+      "badge": "🚜"
+    }
+  },
+  {
+    "id": "challenge_02",
+    "title": "Managerial Meltdown",
+    "briefing": "You asked to speak with the regional manager. You got four of them. Hold your ground against an angry Karen strike team armed with Lawsuit Grenades.",
+    "map": "pickleball",
+    "mode": "loneWolf",
+    "playerFaction": "wallstreetBets",
+    "enemyFaction": "karens",
+    "modifiers": {
+      "enemyCount": 4,
+      "scoreLimit": 15,
+      "botDifficulty": "hard"
+    },
+    "reward": {
+      "xp": 600,
+      "title": "Shift Supervisor",
+      "badge": "💼"
+    }
+  },
+  {
+    "id": "challenge_03",
+    "title": "Cul-de-Sac Sniper Alley",
+    "briefing": "Long-range property assessment disputes across the manicured lawns. Snipers only from the porch balustrades. Headshots award double points.",
+    "map": "showcase",
+    "mode": "clash",
+    "playerFaction": "fabulous",
+    "enemyFaction": "rednecks",
+    "modifiers": {
+      "weaponClass": "sniper",
+      "headshotsOnly": false,
+      "scoreLimit": 20,
+      "botDifficulty": "hard"
+    },
+    "reward": {
+      "xp": 750,
+      "title": "Appraisal Assassin",
+      "badge": "🎯"
+    }
+  },
+  {
+    "id": "challenge_04",
+    "title": "Curbside Recycling Riot",
+    "briefing": "Someone placed unwashed yogurt containers in the curbside recycling bin. Collect 15 dropped violation receipts before the auditors close the book.",
+    "map": "stripmall",
+    "mode": "receiptCheck",
+    "playerFaction": "hoaDads",
+    "enemyFaction": "cloutStreamers",
+    "modifiers": {
+      "scoreLimit": 15,
+      "timeLimit": 180,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 500,
+      "title": "Waste Management Tsar",
+      "badge": "♻️"
+    }
+  },
+  {
+    "id": "challenge_05",
+    "title": "Sourdough Starter Heist",
+    "briefing": "An artisanal 100-year-old sourdough mother culture has been swiped. Infiltrate the enemy kitchen, secure the dish, and sprint home without spilling.",
+    "map": "culdesac",
+    "mode": "stealTheCasserole",
+    "playerFaction": "tradwives",
+    "enemyFaction": "valleyGirls",
+    "modifiers": {
+      "scoreLimit": 3,
+      "carrySpeedBonus": 1.2,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 650,
+      "title": "Starter Guardian",
+      "badge": "🍞"
+    }
+  },
+  {
+    "id": "challenge_06",
+    "title": "Pickleball Turf War",
+    "briefing": "Senior doubles championship turns uncivilized. Hold the center court non-volley zone (the kitchen) against aggressive Gym Rats for 100 seconds.",
+    "map": "pickleball",
+    "mode": "kingOfTheLawn",
+    "playerFaction": "pickleballRetirees",
+    "enemyFaction": "gymRats",
+    "modifiers": {
+      "scoreLimit": 100,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 700,
+      "title": "Dink Master",
+      "badge": "🎾"
+    }
+  },
+  {
+    "id": "challenge_07",
+    "title": "The 7:00 AM Leaf Blower Awakening",
+    "briefing": "Saturday morning neighborhood quiet hours expire at precisely 07:00:00. Use extreme wind velocity and knockback to sweep 10 noisy hipsters off your property.",
+    "map": "culdesac",
+    "mode": "clash",
+    "playerFaction": "rednecks",
+    "enemyFaction": "wokeLibs",
+    "modifiers": {
+      "weaponClass": "special",
+      "knockback": 20,
+      "scoreLimit": 15,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 650,
+      "title": "Two-Stroke Menace",
+      "badge": "🍃"
+    }
+  },
+  {
+    "id": "challenge_08",
+    "title": "Midnight Commercial Eviction",
+    "briefing": "Tactical repossession of unzoned strip mall retail units. Wipe out the occupying squatters without dropping a single round.",
+    "map": "stripmall",
+    "mode": "evictTheBlock",
+    "playerFaction": "wallstreetBets",
+    "enemyFaction": "fratHouse",
+    "modifiers": {
+      "scoreLimit": 4,
+      "botDifficulty": "hard"
+    },
+    "reward": {
+      "xp": 800,
+      "title": "Bailiff Emeritus",
+      "badge": "📜"
+    }
+  },
+  {
+    "id": "challenge_09",
+    "title": "High-Altitude Trampoline Sniping",
+    "briefing": "Use the non-compliant backyard trampoline to gain aerial line-of-sight over suburban privacy fences. Wipe out 20 opponents before time expires.",
+    "map": "pickleball",
+    "mode": "wipeout",
+    "playerFaction": "cloutStreamers",
+    "enemyFaction": "hoaDads",
+    "modifiers": {
+      "scoreLimit": 20,
+      "botDifficulty": "medium"
+    },
+    "reward": {
+      "xp": 750,
+      "title": "Z-Axis Violator",
+      "badge": "🎪"
+    }
+  },
+  {
+    "id": "challenge_10",
+    "title": "Grand HOA Annual General Meeting",
+    "briefing": "The HOA Board Election has devolved into total tactical armed warfare. Defeat a veteran coalition of Board Executives on maximum difficulty.",
+    "map": "showcase",
+    "mode": "clash",
+    "playerFaction": "karens",
+    "enemyFaction": "hoaDads",
+    "modifiers": {
+      "scoreLimit": 30,
+      "botDifficulty": "veteran"
+    },
+    "reward": {
+      "xp": 1000,
+      "title": "HOA Board Dictator",
+      "badge": "👑"
+    }
+  }
+]
