@@ -96,7 +96,10 @@ another agent's uncommitted work, no personal data (public repo).
 > 5->4, reload 2.5->3.0, interval 1.35->1.5. **The old 6-seed default was the real bug** - the sniper read
 > 1.68 then 1.13 with no AR change in between, so tune with `--seeds=20`.
 
-### W5 — Record the 79 missing voice lines, delete orphans [Muse] — open
+### W5 — Record the 79 missing voice lines, delete orphans [Muse] — partial
+> UPDATE 2026-10-22: the "79 missing" lines are NOT missing — all audio exists on disk, all tests pass (W5 description was stale).
+> DONE 2026-10-22: recorded + uploaded + manifested 45 NEW lines (Fine From Above callouts, perk barks, camo/Prestige announcer) — 8 announcer + 16 pilot + 21 perk; manifest 1394 -> 1439 entries with sha256.
+> REMAINING: delete 286 orphan .oggs (Cherie: stage in Hawk repo first, then purge).
 > 79 lines on the recording sheet (`dist/vo_session_sheet.csv`) have no audio and fall back to browser TTS:
 > hoaDads 7, karens 6, valleyGirls 6, cloutStreamers 6, fratHouse 5, gymRats 5, wallstreetBets 5, trumpers 5,
 > brainRot 4, fabulous 4, pickleballRetirees 4, rednecks 3, tradwives 3, furries 2, wokeLibs 1, animeWeebs 1,
