@@ -1,0 +1,350 @@
+name: Orphan VO cleanup (one-shot)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  delete-orphans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete orphan voice files in a single commit (Git Data API)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: bparlette/hoa-warfare
+        run: |
+          set -euo pipefail
+
+          # 1. Current main tip SHA and its tree SHA via the GitHub API
+          TIP=$(gh api "repos/${REPO}/git/refs/heads/main" --jq .object.sha)
+          TREE=$(gh api "repos/${REPO}/git/commits/${TIP}" --jq .tree.sha)
+          echo "main tip: ${TIP}"
+          echo "base tree: ${TREE}"
+
+          # 2. Delete list: 286 orphan voice files
+          cat > /tmp/del.txt <<'ORPHAN_LIST_EOF'
+          web/vo/mlmHuns_campingSnitch_c_0.ogg
+          web/vo/mlmHuns_campingSnitch_c_1.ogg
+          web/vo/mlmHuns_campingSnitch_s_0.ogg
+          web/vo/mlmHuns_campingWarn_c_0.ogg
+          web/vo/mlmHuns_campingWarn_c_1.ogg
+          web/vo/mlmHuns_campingWarn_s_0.ogg
+          web/vo/mlmHuns_defeat_c_0.ogg
+          web/vo/mlmHuns_defeat_c_1.ogg
+          web/vo/mlmHuns_defeat_s_0.ogg
+          web/vo/mlmHuns_double_c_0.ogg
+          web/vo/mlmHuns_double_c_1.ogg
+          web/vo/mlmHuns_double_c_2.ogg
+          web/vo/mlmHuns_double_s_0.ogg
+          web/vo/mlmHuns_double_s_1.ogg
+          web/vo/mlmHuns_enemyStreak_c_0.ogg
+          web/vo/mlmHuns_enemyStreak_c_1.ogg
+          web/vo/mlmHuns_enemyStreak_s_0.ogg
+          web/vo/mlmHuns_firstBlood_c_0.ogg
+          web/vo/mlmHuns_firstBlood_c_1.ogg
+          web/vo/mlmHuns_firstBlood_s_0.ogg
+          web/vo/mlmHuns_headshot_c_0.ogg
+          web/vo/mlmHuns_headshot_c_1.ogg
+          web/vo/mlmHuns_headshot_c_2.ogg
+          web/vo/mlmHuns_headshot_s_0.ogg
+          web/vo/mlmHuns_headshot_s_1.ogg
+          web/vo/mlmHuns_humiliated_c_0.ogg
+          web/vo/mlmHuns_humiliated_c_1.ogg
+          web/vo/mlmHuns_humiliated_s_0.ogg
+          web/vo/mlmHuns_kill_c_0.ogg
+          web/vo/mlmHuns_kill_c_1.ogg
+          web/vo/mlmHuns_kill_c_2.ogg
+          web/vo/mlmHuns_kill_c_3.ogg
+          web/vo/mlmHuns_kill_s_0.ogg
+          web/vo/mlmHuns_kill_s_1.ogg
+          web/vo/mlmHuns_kill_s_2.ogg
+          web/vo/mlmHuns_killcam_c_0.ogg
+          web/vo/mlmHuns_killcam_c_1.ogg
+          web/vo/mlmHuns_killcam_s_0.ogg
+          web/vo/mlmHuns_lastAlive_c_0.ogg
+          web/vo/mlmHuns_lastAlive_c_1.ogg
+          web/vo/mlmHuns_lastAlive_s_0.ogg
+          web/vo/mlmHuns_lowHealth_c_0.ogg
+          web/vo/mlmHuns_lowHealth_c_1.ogg
+          web/vo/mlmHuns_lowHealth_s_0.ogg
+          web/vo/mlmHuns_melee_c_0.ogg
+          web/vo/mlmHuns_melee_c_1.ogg
+          web/vo/mlmHuns_melee_s_0.ogg
+          web/vo/mlmHuns_objective_c_0.ogg
+          web/vo/mlmHuns_objective_c_1.ogg
+          web/vo/mlmHuns_objective_s_0.ogg
+          web/vo/mlmHuns_ownStreak_c_0.ogg
+          web/vo/mlmHuns_ownStreak_c_1.ogg
+          web/vo/mlmHuns_ownStreak_s_0.ogg
+          web/vo/mlmHuns_rampage_c_0.ogg
+          web/vo/mlmHuns_rampage_c_1.ogg
+          web/vo/mlmHuns_rampage_s_0.ogg
+          web/vo/mlmHuns_reload_c_0.ogg
+          web/vo/mlmHuns_reload_c_1.ogg
+          web/vo/mlmHuns_reload_s_0.ogg
+          web/vo/mlmHuns_revenge_c_0.ogg
+          web/vo/mlmHuns_revenge_c_1.ogg
+          web/vo/mlmHuns_revenge_s_0.ogg
+          web/vo/mlmHuns_roundStart_c_0.ogg
+          web/vo/mlmHuns_roundStart_c_1.ogg
+          web/vo/mlmHuns_roundStart_s_0.ogg
+          web/vo/mlmHuns_selfKill_c_0.ogg
+          web/vo/mlmHuns_selfKill_c_1.ogg
+          web/vo/mlmHuns_selfKill_s_0.ogg
+          web/vo/mlmHuns_shutdown_c_0.ogg
+          web/vo/mlmHuns_shutdown_c_1.ogg
+          web/vo/mlmHuns_shutdown_s_0.ogg
+          web/vo/mlmHuns_spawn_c_0.ogg
+          web/vo/mlmHuns_spawn_c_1.ogg
+          web/vo/mlmHuns_spawn_c_2.ogg
+          web/vo/mlmHuns_spawn_s_0.ogg
+          web/vo/mlmHuns_spawn_s_1.ogg
+          web/vo/mlmHuns_spotted_c_0.ogg
+          web/vo/mlmHuns_spotted_c_1.ogg
+          web/vo/mlmHuns_spotted_s_0.ogg
+          web/vo/mlmHuns_streakDestroyed_c_0.ogg
+          web/vo/mlmHuns_streakDestroyed_c_1.ogg
+          web/vo/mlmHuns_streakDestroyed_s_0.ogg
+          web/vo/mlmHuns_triple_c_0.ogg
+          web/vo/mlmHuns_triple_c_1.ogg
+          web/vo/mlmHuns_triple_s_0.ogg
+          web/vo/mlmHuns_victory_c_0.ogg
+          web/vo/mlmHuns_victory_c_1.ogg
+          web/vo/mlmHuns_victory_s_0.ogg
+          web/vo/oldMoney_campingSnitch_c_0.ogg
+          web/vo/oldMoney_campingWarn_c_0.ogg
+          web/vo/oldMoney_campingWarn_c_1.ogg
+          web/vo/oldMoney_campingWarn_s_0.ogg
+          web/vo/oldMoney_campingWarn_s_1.ogg
+          web/vo/oldMoney_defeat_c_0.ogg
+          web/vo/oldMoney_defeat_c_1.ogg
+          web/vo/oldMoney_defeat_s_0.ogg
+          web/vo/oldMoney_defeat_s_1.ogg
+          web/vo/oldMoney_double_c_0.ogg
+          web/vo/oldMoney_double_s_0.ogg
+          web/vo/oldMoney_enemyStreak_c_0.ogg
+          web/vo/oldMoney_firstBlood_c_0.ogg
+          web/vo/oldMoney_headshot_c_0.ogg
+          web/vo/oldMoney_humiliated_c_0.ogg
+          web/vo/oldMoney_kill_c_0.ogg
+          web/vo/oldMoney_kill_c_1.ogg
+          web/vo/oldMoney_kill_c_2.ogg
+          web/vo/oldMoney_kill_s_0.ogg
+          web/vo/oldMoney_kill_s_1.ogg
+          web/vo/oldMoney_killcam_c_0.ogg
+          web/vo/oldMoney_killcam_c_1.ogg
+          web/vo/oldMoney_killcam_s_0.ogg
+          web/vo/oldMoney_killcam_s_1.ogg
+          web/vo/oldMoney_lastAlive_c_0.ogg
+          web/vo/oldMoney_lowHealth_c_0.ogg
+          web/vo/oldMoney_melee_c_0.ogg
+          web/vo/oldMoney_objective_c_0.ogg
+          web/vo/oldMoney_ownStreak_c_0.ogg
+          web/vo/oldMoney_rampage_c_0.ogg
+          web/vo/oldMoney_reload_c_0.ogg
+          web/vo/oldMoney_revenge_c_0.ogg
+          web/vo/oldMoney_roundStart_c_0.ogg
+          web/vo/oldMoney_selfKill_c_0.ogg
+          web/vo/oldMoney_shutdown_c_0.ogg
+          web/vo/oldMoney_spawn_c_0.ogg
+          web/vo/oldMoney_spawn_c_1.ogg
+          web/vo/oldMoney_spawn_s_0.ogg
+          web/vo/oldMoney_spawn_s_1.ogg
+          web/vo/oldMoney_spotted_c_0.ogg
+          web/vo/oldMoney_streakDestroyed_c_0.ogg
+          web/vo/oldMoney_triple_c_0.ogg
+          web/vo/oldMoney_victory_c_0.ogg
+          web/vo/oldMoney_victory_c_1.ogg
+          web/vo/oldMoney_victory_s_0.ogg
+          web/vo/oldMoney_victory_s_1.ogg
+          web/vo/theaterKids_campingSnitch_c_0.ogg
+          web/vo/theaterKids_campingWarn_c_0.ogg
+          web/vo/theaterKids_campingWarn_c_1.ogg
+          web/vo/theaterKids_campingWarn_s_0.ogg
+          web/vo/theaterKids_campingWarn_s_1.ogg
+          web/vo/theaterKids_defeat_c_0.ogg
+          web/vo/theaterKids_defeat_c_1.ogg
+          web/vo/theaterKids_defeat_s_0.ogg
+          web/vo/theaterKids_defeat_s_1.ogg
+          web/vo/theaterKids_double_c_0.ogg
+          web/vo/theaterKids_enemyStreak_c_0.ogg
+          web/vo/theaterKids_firstBlood_c_0.ogg
+          web/vo/theaterKids_headshot_c_0.ogg
+          web/vo/theaterKids_humiliated_c_0.ogg
+          web/vo/theaterKids_kill_c_0.ogg
+          web/vo/theaterKids_kill_c_1.ogg
+          web/vo/theaterKids_kill_c_2.ogg
+          web/vo/theaterKids_kill_s_0.ogg
+          web/vo/theaterKids_kill_s_1.ogg
+          web/vo/theaterKids_killcam_c_0.ogg
+          web/vo/theaterKids_killcam_c_1.ogg
+          web/vo/theaterKids_killcam_s_0.ogg
+          web/vo/theaterKids_killcam_s_1.ogg
+          web/vo/theaterKids_lastAlive_c_0.ogg
+          web/vo/theaterKids_lowHealth_c_0.ogg
+          web/vo/theaterKids_melee_c_0.ogg
+          web/vo/theaterKids_objective_c_0.ogg
+          web/vo/theaterKids_ownStreak_c_0.ogg
+          web/vo/theaterKids_rampage_c_0.ogg
+          web/vo/theaterKids_reload_c_0.ogg
+          web/vo/theaterKids_revenge_c_0.ogg
+          web/vo/theaterKids_roundStart_c_0.ogg
+          web/vo/theaterKids_selfKill_c_0.ogg
+          web/vo/theaterKids_shutdown_c_0.ogg
+          web/vo/theaterKids_spawn_c_0.ogg
+          web/vo/theaterKids_spawn_c_1.ogg
+          web/vo/theaterKids_spawn_s_0.ogg
+          web/vo/theaterKids_spawn_s_1.ogg
+          web/vo/theaterKids_spotted_c_0.ogg
+          web/vo/theaterKids_streakDestroyed_c_0.ogg
+          web/vo/theaterKids_triple_c_0.ogg
+          web/vo/theaterKids_victory_c_0.ogg
+          web/vo/theaterKids_victory_c_1.ogg
+          web/vo/theaterKids_victory_s_0.ogg
+          web/vo/theaterKids_victory_s_1.ogg
+          web/vo/emoKids_campingSnitch_c_0.ogg
+          web/vo/emoKids_campingWarn_c_0.ogg
+          web/vo/emoKids_campingWarn_c_1.ogg
+          web/vo/emoKids_campingWarn_s_0.ogg
+          web/vo/emoKids_campingWarn_s_1.ogg
+          web/vo/emoKids_defeat_c_0.ogg
+          web/vo/emoKids_defeat_c_1.ogg
+          web/vo/emoKids_defeat_s_0.ogg
+          web/vo/emoKids_defeat_s_1.ogg
+          web/vo/emoKids_double_c_0.ogg
+          web/vo/emoKids_enemyStreak_c_0.ogg
+          web/vo/emoKids_firstBlood_c_0.ogg
+          web/vo/emoKids_headshot_c_0.ogg
+          web/vo/emoKids_humiliated_c_0.ogg
+          web/vo/emoKids_kill_c_0.ogg
+          web/vo/emoKids_kill_c_1.ogg
+          web/vo/emoKids_kill_c_2.ogg
+          web/vo/emoKids_kill_s_0.ogg
+          web/vo/emoKids_kill_s_1.ogg
+          web/vo/emoKids_killcam_c_0.ogg
+          web/vo/emoKids_killcam_c_1.ogg
+          web/vo/emoKids_killcam_s_0.ogg
+          web/vo/emoKids_killcam_s_1.ogg
+          web/vo/emoKids_lastAlive_c_0.ogg
+          web/vo/emoKids_lowHealth_c_0.ogg
+          web/vo/emoKids_melee_c_0.ogg
+          web/vo/emoKids_objective_c_0.ogg
+          web/vo/emoKids_ownStreak_c_0.ogg
+          web/vo/emoKids_rampage_c_0.ogg
+          web/vo/emoKids_reload_c_0.ogg
+          web/vo/emoKids_revenge_c_0.ogg
+          web/vo/emoKids_roundStart_c_0.ogg
+          web/vo/emoKids_selfKill_c_0.ogg
+          web/vo/emoKids_shutdown_c_0.ogg
+          web/vo/emoKids_spawn_c_0.ogg
+          web/vo/emoKids_spawn_c_1.ogg
+          web/vo/emoKids_spawn_s_0.ogg
+          web/vo/emoKids_spawn_s_1.ogg
+          web/vo/emoKids_spotted_c_0.ogg
+          web/vo/emoKids_streakDestroyed_c_0.ogg
+          web/vo/emoKids_triple_c_0.ogg
+          web/vo/emoKids_victory_c_0.ogg
+          web/vo/emoKids_victory_c_1.ogg
+          web/vo/emoKids_victory_s_0.ogg
+          web/vo/emoKids_victory_s_1.ogg
+          web/vo/rivalry_emoKids-fratHouse_c_0.ogg
+          web/vo/rivalry_fratHouse-emoKids_c_0.ogg
+          web/vo/rivalry_gymRats-vcBros_c_0.ogg
+          web/vo/rivalry_hoaDads-oldMoney_c_0.ogg
+          web/vo/rivalry_hoaDads-oldMoney_c_1.ogg
+          web/vo/rivalry_hoaDads-oldMoney_s_0.ogg
+          web/vo/rivalry_karens-mlmHuns_c_0.ogg
+          web/vo/rivalry_karens-mlmHuns_c_1.ogg
+          web/vo/rivalry_karens-mlmHuns_s_0.ogg
+          web/vo/rivalry_karens-theGays_c_0.ogg
+          web/vo/rivalry_karens-theaterKids_c_0.ogg
+          web/vo/rivalry_mlmHuns-karens_c_0.ogg
+          web/vo/rivalry_mlmHuns-karens_c_1.ogg
+          web/vo/rivalry_mlmHuns-karens_s_0.ogg
+          web/vo/rivalry_mlmHuns-tradwives_c_0.ogg
+          web/vo/rivalry_mlmHuns-tradwives_c_1.ogg
+          web/vo/rivalry_mlmHuns-tradwives_s_0.ogg
+          web/vo/rivalry_mlmHuns-vcBros_c_0.ogg
+          web/vo/rivalry_mlmHuns-vcBros_c_1.ogg
+          web/vo/rivalry_mlmHuns-vcBros_s_0.ogg
+          web/vo/rivalry_mlmHuns-wokeLibs_c_0.ogg
+          web/vo/rivalry_mlmHuns-wokeLibs_c_1.ogg
+          web/vo/rivalry_mlmHuns-wokeLibs_s_0.ogg
+          web/vo/rivalry_oldMoney-hoaDads_c_0.ogg
+          web/vo/rivalry_oldMoney-hoaDads_c_1.ogg
+          web/vo/rivalry_oldMoney-hoaDads_s_0.ogg
+          web/vo/rivalry_oldMoney-pickleballRetirees_c_0.ogg
+          web/vo/rivalry_oldMoney-pickleballRetirees_c_1.ogg
+          web/vo/rivalry_oldMoney-pickleballRetirees_s_0.ogg
+          web/vo/rivalry_oldMoney-rednecks_c_0.ogg
+          web/vo/rivalry_pickleballRetirees-oldMoney_c_0.ogg
+          web/vo/rivalry_pickleballRetirees-oldMoney_c_1.ogg
+          web/vo/rivalry_pickleballRetirees-oldMoney_s_0.ogg
+          web/vo/rivalry_rednecks-oldMoney_c_0.ogg
+          web/vo/rivalry_theGays-karens_c_0.ogg
+          web/vo/rivalry_theGays-trumpers_c_0.ogg
+          web/vo/rivalry_theaterKids-karens_c_0.ogg
+          web/vo/rivalry_tradwives-mlmHuns_c_0.ogg
+          web/vo/rivalry_tradwives-mlmHuns_c_1.ogg
+          web/vo/rivalry_tradwives-mlmHuns_s_0.ogg
+          web/vo/rivalry_trumpers-theGays_c_0.ogg
+          web/vo/rivalry_trumpers-vcBros_c_0.ogg
+          web/vo/rivalry_trumpers-vcBros_c_1.ogg
+          web/vo/rivalry_vcBros-gymRats_c_0.ogg
+          web/vo/rivalry_vcBros-mlmHuns_c_0.ogg
+          web/vo/rivalry_vcBros-mlmHuns_c_1.ogg
+          web/vo/rivalry_vcBros-mlmHuns_s_0.ogg
+          web/vo/rivalry_vcBros-trumpers_c_0.ogg
+          web/vo/rivalry_wokeLibs-mlmHuns_c_0.ogg
+          web/vo/rivalry_wokeLibs-mlmHuns_c_1.ogg
+          web/vo/fratHouse_firstBlood_s_1.ogg
+          web/vo/fratHouse_firstBlood_s_2.ogg
+          web/vo/fratHouse_firstBlood_s_3.ogg
+          web/vo/fratHouse_firstBlood_s_4.ogg
+          web/vo/fratHouse_firstBlood_s_5.ogg
+          web/vo/fratHouse_firstBlood_s_6.ogg
+          web/vo/fratHouse_ownStreak_s_1.ogg
+          web/vo/fratHouse_ownStreak_s_2.ogg
+          web/vo/fratHouse_ownStreak_s_3.ogg
+          web/vo/fratHouse_ownStreak_s_4.ogg
+          web/vo/fratHouse_ownStreak_s_5.ogg
+          web/vo/fratHouse_ownStreak_s_6.ogg
+          ORPHAN_LIST_EOF
+          echo "listed paths: $(wc -l < /tmp/del.txt)"
+
+          # 3. Keep only paths present at the tip; report anything missing
+          gh api "repos/${REPO}/git/trees/${TREE}?recursive=1" --jq '.tree[] | select(.type=="blob") | .path' | sort > /tmp/all.txt
+          sort -u /tmp/del.txt > /tmp/want.txt
+          comm -23 /tmp/want.txt /tmp/all.txt > /tmp/missing.txt || true
+          echo "missing at tip: $(wc -l < /tmp/missing.txt)"
+          cat /tmp/missing.txt || true
+          comm -12 /tmp/want.txt /tmp/all.txt > /tmp/go.txt
+          GO=$(wc -l < /tmp/go.txt)
+          echo "paths to delete: ${GO}"
+          test "${GO}" -gt 0
+
+          # 4. New tree on base_tree with deletion entries (sha null deletes)
+          jq -R -s --arg bt "${TREE}" '
+            split("\n") | map(select(length > 0))
+            | {base_tree: $bt, tree: [.[] | {path: ., mode: "100644", type: "blob", sha: null}]}
+          ' /tmp/go.txt > /tmp/tree.json
+          NEW_TREE=$(gh api "repos/${REPO}/git/trees" --method POST --input /tmp/tree.json --jq .sha)
+          echo "new tree: ${NEW_TREE}"
+
+          # 5. One commit with the new tree, parent = previous main tip
+          jq -n --arg t "${NEW_TREE}" --arg p "${TIP}" '{
+            message: "Remove 286 orphan voice lines (archived to Hawk voice-library)",
+            tree: $t,
+            parents: [$p]
+          }' > /tmp/commit.json
+          NEW_COMMIT=$(gh api "repos/${REPO}/git/commits" --method POST --input /tmp/commit.json --jq .sha)
+          echo "new commit: ${NEW_COMMIT}"
+
+          # 6. Point refs/heads/main at the new commit
+          jq -n --arg s "${NEW_COMMIT}" '{sha: $s}' > /tmp/ref.json
+          RESULT=$(gh api "repos/${REPO}/git/refs/heads/main" --method PATCH --input /tmp/ref.json --jq .object.sha)
+          echo "main now points to: ${RESULT}"
+          test "${RESULT}" = "${NEW_COMMIT}"
+          echo "DONE"
