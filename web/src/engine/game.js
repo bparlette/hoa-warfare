@@ -5,7 +5,7 @@ import { ContentLibrary } from '../core/content.js';
 import { AudioLimiter } from '../core/audioLimiter.js';
 import { mulberry32 } from '../core/rng.js';
 import { Sim, yawTo, droneView, FINE_FROM_ABOVE } from './sim.js';
-import { MODES } from './modes.js';
+import { MODES, menuModes, weeklyMode } from './modes.js';
 import { BarkSystem } from './barks.js';
 import { createJuice, JUICE } from './juice.js';
 import { ChatterDirector } from '../core/chatter.js';
@@ -457,7 +457,16 @@ export function buildMenu() {
   if ($('mutLowGrav')) $('mutLowGrav').checked = !!state.mutators.lowGrav;
   if ($('mutTurbo')) $('mutTurbo').checked = !!state.mutators.turbo;
   if ($('optGoldSkin')) $('optGoldSkin').checked = !!state.showCamo;
-  if ($('optMode')) $('optMode').innerHTML = Object.values(MODES).map(M => `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${M.label} (${M.parent})</option>`).join('');
+  if ($('optMode')) {
+    const ids = menuModes();
+    if (!ids.includes(state.mode) && MODES[state.mode] && state.mode !== 'tutorial') ids.push(state.mode); // a challenge or ?mode= pick
+    const weekly = weeklyMode();
+    $('optMode').innerHTML = ids.map(id => {
+      const M = MODES[id];
+      const tag = id === weekly ? `🔥 THIS WEEK: ${M.label}` : M.label;
+      return `<option value="${M.id}"${M.id === state.mode ? ' selected' : ''}>${tag} (${M.parent})</option>`;
+    }).join('');
+  }
   updateMatchSettingsSummary();
 }
 

@@ -1293,6 +1293,16 @@ export const MODES = {
 Object.defineProperty(MODES, 'range', { value: SuburbanTutorial, enumerable: false, writable: true, configurable: true });
 Object.defineProperty(MODES, 'firingRange', { value: SuburbanTutorial, enumerable: false, writable: true, configurable: true });
 
+// The menu shows five core modes plus one featured mode that rotates weekly, so a small player
+// base is not split eight ways. Rotating modes stay playable via challenges, URLs and online rooms.
+export const CORE_MODES = ['clash', 'kingOfTheLawn', 'stealTheCasserole', 'evictTheBlock', 'loneWolf'];
+export const ROTATING_MODES = ['wipeout', 'receiptCheck', 'hoaPatrol'];
+export const WEEK_MS = 7 * 24 * 3600 * 1000;
+export function currentWeek(now = Date.now()) { return Math.floor(now / WEEK_MS); }
+export function weeklyMode(week = currentWeek()) { return ROTATING_MODES[((week % ROTATING_MODES.length) + ROTATING_MODES.length) % ROTATING_MODES.length]; }
+/** Mode ids for the menu, in order: the core five, then this week's featured mode. */
+export function menuModes(week = currentWeek()) { return [...CORE_MODES, weeklyMode(week)]; }
+
 export const MODE_ALIASES = {
   patrol: 'hoaPatrol',
   casserole: 'stealTheCasserole',
