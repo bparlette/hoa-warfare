@@ -12,8 +12,9 @@ npm run serve          # or: node tools/serve.mjs
 # open http://localhost:8642/web/
 ```
 
-Cul-de-Sac Clash (TDM to 40 or 5:00), 6v6 with bots, Phase 0 factions (Karens, Brain Rot, Frat House,
-Clout Streamers). Click to lock the mouse.
+Cul-de-Sac Clash (TDM to 40 or 5:00), 6v6 with bots across 16 shipping factions, 4 maps
+(Oakridge Cul-de-Sac, Shady Pines Pickleball Club, Sunset Strip Mall, Model Home Showcase),
+and 8 tactical modes + Suburban Firing Range tutorial. Click to lock the mouse.
 
 | Key | Action |
 |---|---|
@@ -97,7 +98,7 @@ render feature or a Godot `SubViewport` + canvas shader.
 ## Checks
 
 ```bash
-npm test               # 282 tests: core rules + full seeded bot matches, killcam, camping, grenades, maps, modes
+npm test               # 286 tests: core rules + full seeded bot matches, killcam, camping, grenades, maps, modes, achievements
 npm run lint           # 1.8-second rule + event coverage
 node tools/shot.mjs "spectate=1&seed=7&voice=0" dist/shot.png 8   # needs serve running + Chrome
 ```

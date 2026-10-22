@@ -2,7 +2,7 @@
 
 Status: `open`, `claimed by <name> (date)`, or `done (<commit>)`. Claim one task at a time in this file.
 
-**Current state (2026-10-16, after Claude's audit):** 16 factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids). 213 tests passing (0 failures). Demo on itch.io live with 6 factions. 3 playable maps, 8 modes; every scoring mode scores on every map in bot matches (`node tools/botsim.mjs modes`). The live multiplayer server is an **old build** (see W1).
+**Current state (2026-10-22):** 16 shipping factions (4 cut: oldMoney, emoKids, mlmHuns, theaterKids), 4 playable maps (culdesac, pickleball, stripmall, showcase), 8 tactical modes + tutorial, 10 challenge missions, 13 Steam launch achievements, controller glyphs, 285 tests passing (0 failures). Free demo on itch.io live with 6 factions. Full game $4.99 packaging complete (`npm run desktop`).
 
 ---
 

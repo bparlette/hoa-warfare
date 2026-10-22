@@ -16,7 +16,10 @@ const EXPECTED_ACHIEVEMENT_KEYS = [
   'ACH_STREAK_5',
   'ACH_CAMP_SNITCH',
   'ACH_LAWSUIT',
-  'ACH_TROPHY_HUNTER'
+  'ACH_TROPHY_HUNTER',
+  'ACH_FINE_FROM_ABOVE',
+  'ACH_GOLD_STANDARD',
+  'ACH_REZONED'
 ];
 
 test('desktop: SteamAPI mock/fallback initializes safely', () => {
@@ -142,6 +145,24 @@ test('desktop: every achievement definition is valid with name, description, and
 
   assert.equal(ACHIEVEMENT_MAP.ACH_TROPHY_HUNTER.name, 'Everyone Gets a Trophy');
   assert.equal(ACHIEVEMENT_MAP.ACH_TROPHY_HUNTER.description, 'Get a Participation Trophy melee kill.');
+
+  assert.equal(ACHIEVEMENT_MAP.ACH_FINE_FROM_ABOVE.name, 'Fine From Above');
+  assert.equal(ACHIEVEMENT_MAP.ACH_FINE_FROM_ABOVE.description, 'Call in the HOA drone gunship with a 9-killstreak.');
+
+  assert.equal(ACHIEVEMENT_MAP.ACH_GOLD_STANDARD.name, 'Gold Standard');
+  assert.equal(ACHIEVEMENT_MAP.ACH_GOLD_STANDARD.description, 'Earn 24K Gold camo on any weapon.');
+
+  assert.equal(ACHIEVEMENT_MAP.ACH_REZONED.name, 'Re-Zoned');
+  assert.equal(ACHIEVEMENT_MAP.ACH_REZONED.description, 'Reach Supreme HOA Board President and Re-Zone (Prestige).');
+});
+
+test('desktop: Steam achievement icon PNG assets exist and match schema', () => {
+  for (const ach of ACHIEVEMENTS) {
+    const unlockedPath = resolve(`assets/steam/achievements/${ach.icon}.png`);
+    const lockedPath = resolve(`assets/steam/achievements/${ach.icon}_locked.png`);
+    assert.ok(existsSync(unlockedPath), `Unlocked achievement icon must exist: ${unlockedPath}`);
+    assert.ok(existsSync(lockedPath), `Locked achievement icon must exist: ${lockedPath}`);
+  }
 });
 
 test('desktop: wrapper configuration defines 1920x1080 default, fullscreen option, autoHideMenuBar', () => {

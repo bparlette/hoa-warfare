@@ -37,7 +37,7 @@ for (const ach of ACHIEVEMENTS) {
     throw new Error(`Invalid achievement definition: ${JSON.stringify(ach)}`);
   }
 }
-console.log(`     ✓ All 10 achievements verified.`);
+console.log(`     ✓ All ${ACHIEVEMENTS.length} achievements verified.`);
 
 // 3. Copy desktop wrapper source files
 console.log('  → Copying desktop wrapper files (main.mjs, preload.cjs, steamworks.js)...');

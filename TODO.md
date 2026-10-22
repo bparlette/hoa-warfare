@@ -93,3 +93,20 @@
 - [x] **Monthly Brain-Rot Patch Architecture (`data/patches/`)**:
   - [x] Authored JSON schema in `data/patches/schema.json` and launch patch `data/patches/2026-10.json` (Season 1: Pumpkin Spice Martial Law).
 
+---
+
+## Phase 4: Launch Polish & Production Asset Suite (COMPLETED)
+- [x] **Controller Glyphs & Steam Deck Layout**:
+  - [x] Implemented `Controls.isSteamDeck()` auto-detection, `?deck=1` and `?pad=1` test toggles, and dynamic `device-pad` class synchronizing authentic console button glyphs (`[A]`, `[B]`, `[X]`, `[Y]`, `[LB]`, `[RB]`, `[START]`, `[VIEW]`).
+- [x] **Objective-Mode Geometry & Pickleball Symmetry**:
+  - [x] Achieved 0m kitchen walking asymmetry and 48–52% golden balance band on Shady Pines Pickleball Club (`kingOfTheLawn` 1314–1447, `stealTheCasserole` 11–10, `clash` 1128–1101 over 20-seed botsim).
+- [x] **10 Curated Satirical Challenge Missions (`data/challenges.json`)**:
+  - [x] Authored 10 thematic challenge missions (Lawn Mower Massacre, Managerial Meltdown, Sourdough Starter Heist, Pickleball Turf War, etc.) with XP rewards, mutators, and lobby selector `#optChallenge`.
+- [x] **Steam Launch Achievement Icons & Badges (`assets/steam/`)**:
+  - [x] Generated all 13 Steam launch achievement icons (both 256×256 Unlocked and Locked PNGs) in `assets/steam/achievements/`.
+  - [x] Generated 4 weapon camo swatches (`camo_beige.png`, `camo_mulch.png`, `camo_granite.png`, `camo_gold.png`) in `assets/steam/camos/`.
+  - [x] Generated 10 Prestige / Re-Zoning badges (`prestige_1.png` – `prestige_10.png`) in `assets/steam/prestige/`.
+- [x] **Itch.io High-Impact Visual Suite (`assets/itch/`)**:
+  - [x] Built Retina game card covers (`cover_630x500.jpg`, `cover_1260x1000.jpg`), page header banners (`banner_960x400.jpg`, `banner_1920x800.jpg`), and 8 curated 1920×1080 action screenshots with upload guide (`assets/itch/README.md`).
+
+

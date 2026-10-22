@@ -61,6 +61,24 @@ const ACHIEVEMENTS = [
     name: 'Everyone Gets a Trophy',
     description: 'Get a Participation Trophy melee kill.',
     icon: 'ach_trophy_hunter'
+  },
+  {
+    id: 'ACH_FINE_FROM_ABOVE',
+    name: 'Fine From Above',
+    description: 'Call in the HOA drone gunship with a 9-killstreak.',
+    icon: 'ach_fine_from_above'
+  },
+  {
+    id: 'ACH_GOLD_STANDARD',
+    name: 'Gold Standard',
+    description: 'Earn 24K Gold camo on any weapon.',
+    icon: 'ach_gold_standard'
+  },
+  {
+    id: 'ACH_REZONED',
+    name: 'Re-Zoned',
+    description: 'Reach Supreme HOA Board President and Re-Zone (Prestige).',
+    icon: 'ach_rezoned'
   }
 ];
 
