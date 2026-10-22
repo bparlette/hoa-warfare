@@ -14,7 +14,67 @@ export const LOOK = {
   padCurve: 2,            // response exponent: fine aim near centre, fast turns at the edge
   touchSens: 0.0062,      // rad per CSS pixel dragged
   maxPitch: 1.45,
+  invertY: false,         // invert vertical mouse look
+  fov: 75,                // base horizontal-derived vertical FOV
+  keyBindings: {
+    forward: 'KeyW',
+    back: 'KeyS',
+    left: 'KeyA',
+    right: 'KeyD',
+    jump: 'Space',
+    sprint: 'ShiftLeft',
+    reload: 'KeyR',
+    melee: 'KeyF',
+    grenade: 'KeyG',
+    interact: 'KeyE',
+    switchToggle: 'KeyQ',
+    slotPrimary: 'Digit1',
+    slotSecondary: 'Digit2',
+    scoreboard: 'Tab',
+  },
 };
+
+const SETTINGS_KEY = 'hoa.pc_settings.v1';
+
+export function loadPcSettings() {
+  if (typeof localStorage === 'undefined') return LOOK;
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return LOOK;
+    const data = JSON.parse(raw);
+    if (typeof data.mouseSens === 'number' && Number.isFinite(data.mouseSens)) LOOK.mouseSens = data.mouseSens;
+    if (typeof data.invertY === 'boolean') LOOK.invertY = data.invertY;
+    if (typeof data.fov === 'number' && Number.isFinite(data.fov)) LOOK.fov = data.fov;
+    if (data.keyBindings && typeof data.keyBindings === 'object') {
+      Object.assign(LOOK.keyBindings, data.keyBindings);
+    }
+  } catch {}
+  return LOOK;
+}
+
+export function savePcSettings(patch = {}) {
+  if (typeof patch.mouseSens === 'number') LOOK.mouseSens = patch.mouseSens;
+  if (typeof patch.invertY === 'boolean') LOOK.invertY = patch.invertY;
+  if (typeof patch.fov === 'number') LOOK.fov = patch.fov;
+  if (patch.keyBindings && typeof patch.keyBindings === 'object') {
+    Object.assign(LOOK.keyBindings, patch.keyBindings);
+  }
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+        mouseSens: LOOK.mouseSens,
+        invertY: LOOK.invertY,
+        fov: LOOK.fov,
+        keyBindings: LOOK.keyBindings,
+      }));
+    } catch {}
+  }
+}
+
+// Automatically load on import if running in browser
+if (typeof window !== 'undefined') {
+  loadPcSettings();
+}
 export const STICK_DEADZONE = 0.15;
 
 /** Radial deadzone with rescale, so output still reaches 1 at full deflection and has no diagonal bias. */
@@ -114,22 +174,24 @@ export class Controls {
     document.addEventListener('mousemove', e => {
       if (!this.locked) return;
       this.yaw -= e.movementX * LOOK.mouseSens;
-      this.pitch = clampPitch(this.pitch - e.movementY * LOOK.mouseSens);
+      const pitchDelta = e.movementY * LOOK.mouseSens * (LOOK.invertY ? -1 : 1);
+      this.pitch = clampPitch(this.pitch - pitchDelta);
     });
     document.addEventListener('mousedown', e => { if (this.locked && e.button === 0) this.mouseFire = true; });
     document.addEventListener('mouseup', e => { if (e.button === 0) this.mouseFire = false; });
     document.addEventListener('keydown', e => {
-      if (e.code === 'Tab') e.preventDefault();
+      const kb = LOOK.keyBindings;
+      if (e.code === (kb.scoreboard || 'Tab')) e.preventDefault();
       this.keys.add(e.code);
-      if (['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code) && this.device !== 'mouse') this.device = 'mouse';
+      if ([kb.forward || 'KeyW', kb.left || 'KeyA', kb.back || 'KeyS', kb.right || 'KeyD'].includes(e.code) && this.device !== 'mouse') this.device = 'mouse';
       const p = this.pending;
-      if (e.code === 'KeyR') p.reload = true;
-      if (e.code === 'KeyF' || e.code === 'KeyV') p.melee = true;
-      if (e.code === 'KeyG') p.grenade = true;
-      if (e.code === 'KeyE') p.interact = true;
-      if (e.code === 'KeyQ') p.switchSlot = 'toggle';
-      if (e.code === 'Digit1') p.switchSlot = 'primary';
-      if (e.code === 'Digit2') p.switchSlot = 'secondary';
+      if (e.code === (kb.reload || 'KeyR')) p.reload = true;
+      if (e.code === (kb.melee || 'KeyF') || e.code === 'KeyV') p.melee = true;
+      if (e.code === (kb.grenade || 'KeyG')) p.grenade = true;
+      if (e.code === (kb.interact || 'KeyE')) p.interact = true;
+      if (e.code === (kb.switchToggle || 'KeyQ')) p.switchSlot = 'toggle';
+      if (e.code === (kb.slotPrimary || 'Digit1')) p.switchSlot = 'primary';
+      if (e.code === (kb.slotSecondary || 'Digit2')) p.switchSlot = 'secondary';
     });
     document.addEventListener('keyup', e => this.keys.delete(e.code));
     window.addEventListener('blur', () => { this.keys.clear(); this.mouseFire = false; });
@@ -271,9 +333,11 @@ export class Controls {
   /** Write this frame's intent into actor.input. */
   apply(a, dt, sim = null) {
     const k = this.keys, inp = a.input, pad = this.pad, t = this.touch;
-    let fwd = (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0);
-    let right = (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) - (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0);
-    let jump = k.has('Space'), sprint = k.has('ShiftLeft') || k.has('ShiftRight');
+    const kb = LOOK.keyBindings;
+    const fwdKey = kb.forward || 'KeyW', backKey = kb.back || 'KeyS', leftKey = kb.left || 'KeyA', rightKey = kb.right || 'KeyD';
+    let fwd = (k.has(fwdKey) || k.has('ArrowUp') ? 1 : 0) - (k.has(backKey) || k.has('ArrowDown') ? 1 : 0);
+    let right = (k.has(rightKey) || k.has('ArrowRight') ? 1 : 0) - (k.has(leftKey) || k.has('ArrowLeft') ? 1 : 0);
+    let jump = k.has(kb.jump || 'Space'), sprint = k.has(kb.sprint || 'ShiftLeft') || k.has('ShiftRight');
     let fire = this.mouseFire;
 
     if (pad) {

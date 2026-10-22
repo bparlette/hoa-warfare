@@ -1,0 +1,177 @@
+{
+  "manifestTotal": 1394,
+  "oggFilesTotal": 1680,
+  "missingFromDiskCount": 0,
+  "orphansOnDiskCount": 286,
+  "orphansByFaction": {
+    "emoKids": 45,
+    "fratHouse": 12,
+    "mlmHuns": 88,
+    "oldMoney": 46,
+    "rivalry": 50,
+    "theaterKids": 45
+  },
+  "orphansSample": [
+    "emoKids_campingSnitch_c_0.ogg",
+    "emoKids_campingWarn_c_0.ogg",
+    "emoKids_campingWarn_c_1.ogg",
+    "emoKids_campingWarn_s_0.ogg",
+    "emoKids_campingWarn_s_1.ogg",
+    "emoKids_defeat_c_0.ogg",
+    "emoKids_defeat_c_1.ogg",
+    "emoKids_defeat_s_0.ogg",
+    "emoKids_defeat_s_1.ogg",
+    "emoKids_double_c_0.ogg",
+    "emoKids_enemyStreak_c_0.ogg",
+    "emoKids_firstBlood_c_0.ogg",
+    "emoKids_headshot_c_0.ogg",
+    "emoKids_humiliated_c_0.ogg",
+    "emoKids_kill_c_0.ogg",
+    "emoKids_kill_c_1.ogg",
+    "emoKids_kill_c_2.ogg",
+    "emoKids_kill_s_0.ogg",
+    "emoKids_kill_s_1.ogg",
+    "emoKids_killcam_c_0.ogg",
+    "emoKids_killcam_c_1.ogg",
+    "emoKids_killcam_s_0.ogg",
+    "emoKids_killcam_s_1.ogg",
+    "emoKids_lastAlive_c_0.ogg",
+    "emoKids_lowHealth_c_0.ogg",
+    "emoKids_melee_c_0.ogg",
+    "emoKids_objective_c_0.ogg",
+    "emoKids_ownStreak_c_0.ogg",
+    "emoKids_rampage_c_0.ogg",
+    "emoKids_reload_c_0.ogg"
+  ],
+  "missingContentLinesCount": 1269,
+  "missingContentLinesSample": [
+    {
+      "id": "fratHouse.kill.clean.0",
+      "factionId": "fratHouse",
+      "category": "kill.clean",
+      "text": "BRO. Did you SEE that?!"
+    },
+    {
+      "id": "fratHouse.kill.clean.1",
+      "factionId": "fratHouse",
+      "category": "kill.clean",
+      "text": "Rush week is OVER for you."
+    },
+    {
+      "id": "fratHouse.kill.clean.2",
+      "factionId": "fratHouse",
+      "category": "kill.clean",
+      "text": "That's going in the group chat!"
+    },
+    {
+      "id": "fratHouse.kill.clean.3",
+      "factionId": "fratHouse",
+      "category": "kill.clean",
+      "text": "Losers do DISHES."
+    },
+    {
+      "id": "fratHouse.kill.clean.4",
+      "factionId": "fratHouse",
+      "category": "kill.clean",
+      "text": "Your house got REVOKED."
+    },
+    {
+      "id": "fratHouse.kill.steam.0",
+      "factionId": "fratHouse",
+      "category": "kill.steam",
+      "text": "Upper-decked your respawn!"
+    },
+    {
+      "id": "fratHouse.kill.steam.1",
+      "factionId": "fratHouse",
+      "category": "kill.steam",
+      "text": {
+        "t": "Paid for that with Dad's Amex!",
+        "alt": "Paid for that with Dad's card!",
+        "flag": "brand"
+      }
+    },
+    {
+      "id": "fratHouse.kill.steam.2",
+      "factionId": "fratHouse",
+      "category": "kill.steam",
+      "text": {
+        "t": "Spit out my Zyn for this!",
+        "alt": "Spit out my pouch for this!",
+        "flag": "brand"
+      }
+    },
+    {
+      "id": "fratHouse.headshot.clean.0",
+      "factionId": "fratHouse",
+      "category": "headshot.clean",
+      "text": "DOME! Nothing but net!"
+    },
+    {
+      "id": "fratHouse.headshot.clean.1",
+      "factionId": "fratHouse",
+      "category": "headshot.clean",
+      "text": "Headshot! Chug! Chug!"
+    },
+    {
+      "id": "fratHouse.headshot.steam.0",
+      "factionId": "fratHouse",
+      "category": "headshot.steam",
+      "text": "DOME! Right in the receding hairline!"
+    },
+    {
+      "id": "fratHouse.headshot.steam.1",
+      "factionId": "fratHouse",
+      "category": "headshot.steam",
+      "text": "DOME! Sink the cup!"
+    },
+    {
+      "id": "fratHouse.revenge.clean.0",
+      "factionId": "fratHouse",
+      "category": "revenge.clean",
+      "text": "Remember me, pledge?"
+    },
+    {
+      "id": "fratHouse.shutdown.clean.0",
+      "factionId": "fratHouse",
+      "category": "shutdown.clean",
+      "text": "Streak's over. Kiddie table."
+    },
+    {
+      "id": "fratHouse.melee.clean.0",
+      "factionId": "fratHouse",
+      "category": "melee.clean",
+      "text": "High five! TO THE FACE!"
+    },
+    {
+      "id": "fratHouse.humiliated.clean.0",
+      "factionId": "fratHouse",
+      "category": "humiliated.clean",
+      "text": "Bro... did you just slap me?"
+    },
+    {
+      "id": "fratHouse.humiliated.steam.0",
+      "factionId": "fratHouse",
+      "category": "humiliated.steam",
+      "text": "Bro... lawyer's deleting that footage."
+    },
+    {
+      "id": "fratHouse.double.clean.0",
+      "factionId": "fratHouse",
+      "category": "double.clean",
+      "text": "DOUBLE! Run it back, boys!"
+    },
+    {
+      "id": "fratHouse.double.clean.1",
+      "factionId": "fratHouse",
+      "category": "double.clean",
+      "text": "Double! Keg stand for everyone!"
+    },
+    {
+      "id": "fratHouse.double.steam.0",
+      "factionId": "fratHouse",
+      "category": "double.steam",
+      "text": "DOUBLE! Chug! Chug!"
+    }
+  ]
+}

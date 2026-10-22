@@ -135,7 +135,8 @@ export class Renderer {
     if (!this.camera) return;
     const w = this.canvas?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 800),
           h = this.canvas?.clientHeight || (typeof window !== 'undefined' ? window.innerHeight : 600);
-    const baseFov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
+    const userFov = this.userFov || 75;
+    const baseFov = w < h ? Math.min(108, Math.round(userFov + (1 - w / h) * 28)) : userFov;
     const targetFov = this._thermal ? 42 : this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
     if (this.camera.fov !== targetFov) {
       this.camera.fov = targetFov;
@@ -150,7 +151,8 @@ export class Renderer {
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
     // Widen vertical FOV on portrait mobile screens so horizontal field-of-view stays comfortable
-    const baseFov = w < h ? Math.min(98, Math.round(75 + (1 - w / h) * 28)) : 75;
+    const userFov = this.userFov || 75;
+    const baseFov = w < h ? Math.min(108, Math.round(userFov + (1 - w / h) * 28)) : userFov;
     this.camera.fov = this._isDoorbellCam ? (this.doorbellFov || 115) : baseFov;
     this.camera.updateProjectionMatrix();
     const lh = this.lowHeight, lw = Math.round(lh * w / h);
@@ -158,6 +160,28 @@ export class Renderer {
     if (this.post?.material?.uniforms?.lowRes) {
       this.post.material.uniforms.lowRes.value.set(lw, lh);
     }
+  }
+
+  setUserFov(fov) {
+    if (typeof fov === 'number' && Number.isFinite(fov)) {
+      this.userFov = Math.max(60, Math.min(110, fov));
+      this.updateCameraFov();
+    }
+  }
+
+  setQualityTier(tier) {
+    if (tier === 'low') {
+      this.quality.tier = 'low';
+      this.quality.shadow = 1024;
+      this.quality.maxRatio = 1.25;
+      this.quality.maxSplats = 60;
+    } else {
+      this.quality.tier = 'high';
+      this.quality.shadow = 2048;
+      this.quality.maxRatio = 2;
+      this.quality.maxSplats = 160;
+    }
+    this.resize();
   }
 
   setRetro(on) { this.retro = on; this.resize(); }

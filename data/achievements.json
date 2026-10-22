@@ -1,0 +1,93 @@
+[
+  {
+    "id": "ACH_FIRST_FINE",
+    "name": "First Citation",
+    "description": "Score your first kill.",
+    "icon": "📋",
+    "steamIcon": "ach_first_fine"
+  },
+  {
+    "id": "ACH_LAWN_ORDER",
+    "name": "Lawn & Order",
+    "description": "Win a Cul-de-Sac Clash match.",
+    "icon": "🏆",
+    "steamIcon": "ach_lawn_order"
+  },
+  {
+    "id": "ACH_CASSEROLE_THIEF",
+    "name": "Casserole Bandit",
+    "description": "Capture enemy casserole in Steal the Casserole.",
+    "icon": "🥘",
+    "steamIcon": "ach_casserole_thief"
+  },
+  {
+    "id": "ACH_HOA_PATROL",
+    "name": "Neighborhood Watch",
+    "description": "Capture 3 zones in HOA Patrol.",
+    "icon": "🚩",
+    "steamIcon": "ach_hoa_patrol"
+  },
+  {
+    "id": "ACH_EVICTION",
+    "name": "Eviction Notice",
+    "description": "Post or defuse notice in Evict the Block.",
+    "icon": "📄",
+    "steamIcon": "ach_eviction"
+  },
+  {
+    "id": "ACH_HELO_DOWN",
+    "name": "Dad's Pride Grounded",
+    "description": "Shoot down Dad's Helicopter.",
+    "icon": "🚁",
+    "steamIcon": "ach_helo_down"
+  },
+  {
+    "id": "ACH_STREAK_5",
+    "name": "Overbearing HOA",
+    "description": "Call in Dad's Helicopter killstreak.",
+    "icon": "⭐",
+    "steamIcon": "ach_streak_5"
+  },
+  {
+    "id": "ACH_CAMP_SNITCH",
+    "name": "Get Moving!",
+    "description": "Trigger a camping self-snitch.",
+    "icon": "🚨",
+    "steamIcon": "ach_camp_snitch"
+  },
+  {
+    "id": "ACH_LAWSUIT",
+    "name": "See You in Court",
+    "description": "Get a kill with a Lawsuit Grenade.",
+    "icon": "⚖️",
+    "steamIcon": "ach_lawsuit"
+  },
+  {
+    "id": "ACH_TROPHY_HUNTER",
+    "name": "Everyone Gets a Trophy",
+    "description": "Get a Participation Trophy melee kill.",
+    "icon": "🥇",
+    "steamIcon": "ach_trophy_hunter"
+  },
+  {
+    "id": "ACH_FINE_FROM_ABOVE",
+    "name": "Fine From Above",
+    "description": "Call in the HOA drone gunship with a 9-killstreak.",
+    "icon": "🛸",
+    "steamIcon": "ach_fine_from_above"
+  },
+  {
+    "id": "ACH_GOLD_STANDARD",
+    "name": "Gold Standard",
+    "description": "Earn 24K Gold camo on any weapon.",
+    "icon": "✨",
+    "steamIcon": "ach_gold_standard"
+  },
+  {
+    "id": "ACH_REZONED",
+    "name": "Re-Zoned",
+    "description": "Reach Supreme HOA Board President and Re-Zone (Prestige).",
+    "icon": "🏚️",
+    "steamIcon": "ach_rezoned"
+  }
+]

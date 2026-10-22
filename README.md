@@ -97,7 +97,7 @@ render feature or a Godot `SubViewport` + canvas shader.
 ## Checks
 
 ```bash
-npm test               # 209 tests: core rules + full seeded bot matches, killcam, camping, grenades, maps, modes
+npm test               # 282 tests: core rules + full seeded bot matches, killcam, camping, grenades, maps, modes
 npm run lint           # 1.8-second rule + event coverage
 node tools/shot.mjs "spectate=1&seed=7&voice=0" dist/shot.png 8   # needs serve running + Chrome
 ```

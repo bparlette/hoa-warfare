@@ -14,7 +14,7 @@ import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac, buildMap, MAPS } from './map.js';
 import { Radar } from './radar.js';
 import { GunbarrelIntro } from './gunbarrel.js';
-import { Controls, aimAssist, triggerHaptic as haptic } from './controls.js';
+import { Controls, LOOK, loadPcSettings, savePcSettings, aimAssist, triggerHaptic as haptic } from './controls.js';
 import { PerfOverlay } from './perf.js';
 import { STYLES, getInitialStyle, applyStyle, cycleStyle } from './styles.js';
 import { Hud } from './hud.js';
@@ -564,6 +564,36 @@ for (const [elId, mutKey, label, tagline] of [
 }
 if ($('optGoldSkin')) {
   $('optGoldSkin').onchange = e => { state.showCamo = e.target.checked; };
+}
+// PC & Display Settings
+if ($('optSens')) {
+  const updateSens = val => {
+    const mult = (val / 22).toFixed(1);
+    if ($('valSens')) $('valSens').textContent = `${mult}x`;
+    savePcSettings({ mouseSens: 0.0001 * val });
+  };
+  $('optSens').value = Math.round((LOOK.mouseSens || 0.0022) / 0.0001);
+  updateSens($('optSens').value);
+  $('optSens').oninput = e => updateSens(Number(e.target.value));
+}
+if ($('optFov')) {
+  const updateFov = val => {
+    if ($('valFov')) $('valFov').textContent = `${val}°`;
+    savePcSettings({ fov: val });
+    renderer?.setUserFov(val);
+  };
+  $('optFov').value = LOOK.fov || 75;
+  updateFov($('optFov').value);
+  $('optFov').oninput = e => updateFov(Number(e.target.value));
+}
+if ($('optInvertY')) {
+  $('optInvertY').checked = !!LOOK.invertY;
+  $('optInvertY').onchange = e => savePcSettings({ invertY: e.target.checked });
+}
+if ($('optGraphics')) {
+  $('optGraphics').onchange = e => {
+    renderer?.setQualityTier(e.target.value);
+  };
 }
 if ($('optStyle')) $('optStyle').onchange = e => { applyStyle(e.target.value, state, renderer, $); };
 if ($('optSteam')) $('optSteam').onchange = e => { state.script = e.target.checked ? 'steam' : 'clean'; };

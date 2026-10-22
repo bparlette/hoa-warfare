@@ -1,6 +1,8 @@
 // Persistent Career Progression, HOA Ranks, 24K Gold Weapon Mastery, & Live Achievement Toasts.
 // Demo caps rank progression at Rank 5 ("Neighborhood Watch") and gates 24K Gold Weapon Skins behind the $4.99 Full Game.
 
+import rawAchievements from '../../../data/achievements.json' with { type: 'json' };
+
 const STORAGE_KEY = 'hoa.career.v1';
 
 // Hard cap on demo progression. Enforced here (not just in the UI) so a tampered
@@ -20,21 +22,20 @@ export const HOA_RANKS = [
   { rank: 10, title: 'Supreme HOA Board President', badge: '👑', xp: 10000, demoAllowed: false },
 ];
 
-export const ACHIEVEMENTS = {
-  ACH_FIRST_FINE:     { id: 'ACH_FIRST_FINE',     name: 'First Citation',         desc: 'Issue your first fine (kill) in the cul-de-sac.', icon: '📋' },
-  ACH_LAWN_ORDER:     { id: 'ACH_LAWN_ORDER',     name: 'Lawn & Order',           desc: 'Win a match and secure the block.', icon: '🏆' },
-  ACH_CASSEROLE_THIEF:{ id: 'ACH_CASSEROLE_THIEF',name: 'Casserole Bandit',       desc: 'Capture the enemy casserole in Steal the Casserole.', icon: '🥘' },
-  ACH_HOA_PATROL:     { id: 'ACH_HOA_PATROL',     name: 'Neighborhood Watch',     desc: 'Capture a patrol zone in HOA Patrol.', icon: '🚩' },
-  ACH_EVICTION:       { id: 'ACH_EVICTION',       name: 'Eviction Notice',        desc: 'Post or tear down an eviction notice.', icon: '📄' },
-  ACH_HELO_DOWN:      { id: 'ACH_HELO_DOWN',      name: "Dad's Pride Grounded",   desc: "Shoot down Dad's RC Patrol Helicopter.", icon: '🚁' },
-  ACH_STREAK_5:       { id: 'ACH_STREAK_5',       name: 'Overbearing HOA',        desc: "Earn a 5-killstreak and call in Dad's Helicopter.", icon: '⭐' },
-  ACH_CAMP_SNITCH:    { id: 'ACH_CAMP_SNITCH',    name: 'Get Moving!',            desc: 'Trigger a loitering self-snitch citation.', icon: '🚨' },
-  ACH_LAWSUIT:        { id: 'ACH_LAWSUIT',        name: 'See You in Court',       desc: 'Eliminate an opponent with a Lawsuit grenade.', icon: '⚖️' },
-  ACH_TROPHY_HUNTER:  { id: 'ACH_TROPHY_HUNTER',  name: 'Everyone Gets a Trophy', desc: 'Eliminate an opponent with the Participation Trophy melee.', icon: '🥇' },
-  ACH_FINE_FROM_ABOVE:{ id: 'ACH_FINE_FROM_ABOVE',name: 'Fine From Above',        desc: 'Call in the HOA drone gunship with a 9-killstreak.', icon: '🛸' },
-  ACH_GOLD_STANDARD:  { id: 'ACH_GOLD_STANDARD',  name: 'Gold Standard',          desc: 'Earn 24K Gold camo on any weapon.', icon: '✨' },
-  ACH_REZONED:        { id: 'ACH_REZONED',        name: 'Re-Zoned',               desc: 'Reach Supreme HOA Board President and Re-Zone (Prestige).', icon: '🏚️' },
-};
+export const ACHIEVEMENTS = Object.freeze(
+  Object.fromEntries(
+    rawAchievements.map(a => [
+      a.id,
+      {
+        id: a.id,
+        name: a.name,
+        desc: a.description,
+        icon: a.icon,
+        steamIcon: a.steamIcon
+      }
+    ])
+  )
+);
 
 // Per-weapon camo, earned with that weapon's kills and headshots. Gold needs the full game.
 export const CAMO_TIERS = [

@@ -4,88 +4,15 @@
 // or gracefully falls back to mock/offline mode for web and headless testing.
 
 import { createRequire } from 'node:module';
+import rawAchievements from '../data/achievements.json' with { type: 'json' };
 
-// The Launch Steam Achievements for Call of Karen: HOA Warfare
-export const ACHIEVEMENTS = [
-  {
-    id: 'ACH_FIRST_FINE',
-    name: 'First Citation',
-    description: 'Score your first kill.',
-    icon: 'ach_first_fine'
-  },
-  {
-    id: 'ACH_LAWN_ORDER',
-    name: 'Lawn & Order',
-    description: 'Win a Cul-de-Sac Clash match.',
-    icon: 'ach_lawn_order'
-  },
-  {
-    id: 'ACH_CASSEROLE_THIEF',
-    name: 'Casserole Bandit',
-    description: 'Capture enemy casserole in Steal the Casserole.',
-    icon: 'ach_casserole_thief'
-  },
-  {
-    id: 'ACH_HOA_PATROL',
-    name: 'Neighborhood Watch',
-    description: 'Capture 3 zones in HOA Patrol.',
-    icon: 'ach_hoa_patrol'
-  },
-  {
-    id: 'ACH_EVICTION',
-    name: 'Eviction Notice',
-    description: 'Post or defuse notice in Evict the Block.',
-    icon: 'ach_eviction'
-  },
-  {
-    id: 'ACH_HELO_DOWN',
-    name: "Dad's Pride Grounded",
-    description: "Shoot down Dad's Helicopter.",
-    icon: 'ach_helo_down'
-  },
-  {
-    id: 'ACH_STREAK_5',
-    name: 'Overbearing HOA',
-    description: "Call in Dad's Helicopter killstreak.",
-    icon: 'ach_streak_5'
-  },
-  {
-    id: 'ACH_CAMP_SNITCH',
-    name: 'Get Moving!',
-    description: 'Trigger a camping self-snitch.',
-    icon: 'ach_camp_snitch'
-  },
-  {
-    id: 'ACH_LAWSUIT',
-    name: 'See You in Court',
-    description: 'Get a kill with a Lawsuit Grenade.',
-    icon: 'ach_lawsuit'
-  },
-  {
-    id: 'ACH_TROPHY_HUNTER',
-    name: 'Everyone Gets a Trophy',
-    description: 'Get a Participation Trophy melee kill.',
-    icon: 'ach_trophy_hunter'
-  },
-  {
-    id: 'ACH_FINE_FROM_ABOVE',
-    name: 'Fine From Above',
-    description: 'Call in the HOA drone gunship with a 9-killstreak.',
-    icon: 'ach_fine_from_above'
-  },
-  {
-    id: 'ACH_GOLD_STANDARD',
-    name: 'Gold Standard',
-    description: 'Earn 24K Gold camo on any weapon.',
-    icon: 'ach_gold_standard'
-  },
-  {
-    id: 'ACH_REZONED',
-    name: 'Re-Zoned',
-    description: 'Reach Supreme HOA Board President and Re-Zone (Prestige).',
-    icon: 'ach_rezoned'
-  }
-];
+// The Launch Steam Achievements for Call of Karen: HOA Warfare (single source of truth in data/achievements.json)
+export const ACHIEVEMENTS = rawAchievements.map(a => ({
+  id: a.id,
+  name: a.name,
+  description: a.description,
+  icon: a.steamIcon
+}));
 
 export const ACHIEVEMENT_MAP = Object.freeze(
   Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]))

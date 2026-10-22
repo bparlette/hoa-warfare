@@ -29,14 +29,16 @@ filming everything. You will hear about it.
 
 - **16 playable suburban factions**, each with a distinct voice, personality,
   and full voice-line set — no silent protagonists here
-- **3 suburban battlegrounds**: Oakridge Cul-de-Sac, Shady Pines Pickleball
-  Club, and Sunset Strip Mall Parking Lot
-- **5 game modes**: Cul-de-Sac Clash (team deathmatch), Receipt Check
-  (kill-confirmed), Evict the Block (Search & Destroy), HOA Patrol
-  (domination), and Steal the Casserole (capture the flag)
+- **4 suburban battlegrounds**: Oakridge Cul-de-Sac, Shady Pines Pickleball
+  Club, Sunset Strip Mall Parking Lot, and the new Model Home Showcase (Nuketown-style)
+- **8 game modes**: Cul-de-Sac Clash (team deathmatch), Wipeout, Receipt Check
+  (kill-confirmed), King of the Lawn (hardpoint), Evict the Block (Search & Destroy),
+  HOA Patrol (domination), Steal the Casserole (capture the flag), and Lone Wolf (free-for-all)
 - **Driveable vehicles & killstreaks**: mount the suburban riding lawn mower,
-  trigger the 3-streak Ring Doorbell UAV, and call in Dad's RC Patrol
-  Helicopter or a 7-streak Lawn Mower Stampede
+  trigger the 3-streak Ring Doorbell UAV, call in Dad's RC Patrol Helicopter (5-streak),
+  a 7-streak Lawn Mower Stampede, or the devastating 9-streak Fine From Above (thermal drone gunship)
+- **Progression & Customization**: Create-a-Class (pick primary + 1 tactical perk),
+  Weapon Camo Mastery (Beige, Mulch, Granite, 24K Gold), and Re-Zoning (Prestige Ranks)
 - **Suburban arsenal**: the Allowance AR, Lawsuit Grenades, the Participation
   Trophy (melee), the Ban Hammer, and more
 - **Rivalry system**: matched factions trash-talk each other with bespoke

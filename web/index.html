@@ -134,6 +134,20 @@
               </select>
             </div>
             <div class="settings-block">
+              <h3>PC & Display Settings</h3>
+              <div class="toggles">
+                <label>Sensitivity: <input type="range" id="optSens" min="5" max="50" value="22" style="vertical-align:middle;width:90px"> <span id="valSens">1.0x</span></label>
+                <label>Field of View: <input type="range" id="optFov" min="65" max="105" value="75" style="vertical-align:middle;width:90px"> <span id="valFov">75°</span></label>
+                <label><input type="checkbox" id="optInvertY"> Invert Mouse Look (Y-Axis)</label>
+                <label>Graphics:
+                  <select id="optGraphics" style="font-size:11px;padding:2px 4px;margin-left:4px;">
+                    <option value="high" selected>High (2K Shadows, 60fps)</option>
+                    <option value="low">Low (1K Shadows, Battery Saver)</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="settings-block">
               <h3>Build & Audio Options</h3>
               <div class="toggles">
                 <label><input type="checkbox" id="optSteam"> Steam script (vicious)</label>
