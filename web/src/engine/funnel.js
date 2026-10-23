@@ -5,7 +5,7 @@
 //              from ?portal= or the hostname; becomes utm_source on every Steam link
 //   steamLink  Steam store URL with UTM tags, or the fallback page while there is no Steam app yet
 
-const DEFAULTS = { steamUrl: null, fallbackUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', shareUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', priceLabel: '$4.99', ctaLockSec: 4 };
+const DEFAULTS = { steamUrl: null, storeUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare-full', fallbackUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', shareUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare', priceLabel: '$4.99', ctaLockSec: 4 };
 
 export function detectPortal(loc = typeof location !== 'undefined' ? location : null) {
   if (!loc) return 'local';
@@ -29,7 +29,11 @@ export class Funnel {
     this.portal = portal;
   }
 
-  get live() { return !!this.cfg.steamUrl; }
+  get live() { return !!(this.cfg.steamUrl || this.cfg.storeUrl); }
+
+  /** Where the buy button goes: Steam when live, otherwise the itch.io full-game page. */
+  get storeBase() { return this.cfg.steamUrl || this.cfg.storeUrl || this.cfg.fallbackUrl; }
+  get onSteam() { return !!this.cfg.steamUrl; }
 
   /**
    * Is a store button allowed at this placement? CrazyGames forbids cross-promotion except a store link
@@ -43,9 +47,9 @@ export class Funnel {
   /** Whether the end-of-match Steam card (and its unskippable lock) may be shown here. */
   get endCard() { return this.allowsStoreLink('end_card'); }
 
-  /** Steam store link tagged with where the click came from; fallback page until the app exists. */
+  /** Store link tagged with where the click came from; itch.io full-game page until Steam is live. */
   steamLink(placement = 'button') {
-    const base = this.cfg.steamUrl || this.cfg.fallbackUrl;
+    const base = this.storeBase;
     try {
       const u = new URL(base);
       u.searchParams.set('utm_source', this.portal);
@@ -56,8 +60,9 @@ export class Funnel {
   }
 
   ctaLabel(short = false) {
-    if (!this.live) return short ? '★ Coming soon to Steam' : '★ COMING SOON TO STEAM';
-    return short ? '★ Wishlist on Steam' : `★ WISHLIST ON STEAM (${this.cfg.priceLabel})`;
+    if (this.onSteam) return short ? '★ Wishlist on Steam' : `★ WISHLIST ON STEAM (${this.cfg.priceLabel})`;
+    if (this.cfg.storeUrl) return short ? '★ Get the full game' : `★ GET THE FULL GAME (${this.cfg.priceLabel})`;
+    return short ? '★ Coming soon to Steam' : '★ COMING SOON TO STEAM';
   }
 
   /** What the full game unlocks. Only promise things that exist or are committed for launch. */
@@ -90,10 +95,16 @@ export class Funnel {
         continue;
       }
       if (!this.live) {
-        // No Steam URL yet — buttons do nothing until Steam account exists
+        // No store URL yet — buttons do nothing until the full game is purchasable
         a.href = '#';
         a.onclick = () => false;
         a.removeAttribute('target');
+      } else if (!this.onSteam) {
+        // Full game is live on itch.io but not Steam yet — link to the itch.io page
+        a.href = this.steamLink(a.dataset.steam || 'button');
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.onclick = null;
       } else {
         a.href = this.steamLink(a.dataset.steam || 'button');
         a.target = '_blank';

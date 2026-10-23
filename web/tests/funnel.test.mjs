@@ -18,7 +18,7 @@ test('portal detection: itch, CrazyGames, Newgrounds, GitHub Pages, override', (
 
 test('Steam link: never the invalid placeholder; tagged with portal and placement; fallback until the app exists', () => {
   const pre = new Funnel(demo, 'itch');
-  assert.equal(pre.live, demo.steamUrl !== null);
+  assert.equal(pre.live, demo.steamUrl !== null || demo.storeUrl !== null);
   const link = new URL(pre.steamLink('end_card'));
   assert.ok(!link.href.includes('/app/hoa-warfare'), 'non-numeric Steam app URLs 404');
   assert.equal(link.searchParams.get('utm_source'), 'itch');
@@ -26,7 +26,11 @@ test('Steam link: never the invalid placeholder; tagged with portal and placemen
   const live = new Funnel({ ...demo, steamUrl: 'https://store.steampowered.com/app/1234560/' }, 'crazygames');
   assert.ok(live.steamLink('menu').startsWith('https://store.steampowered.com/app/1234560/?utm_source=crazygames'));
   assert.equal(live.ctaLabel(), '★ WISHLIST ON STEAM ($4.99)');
-  assert.equal(new Funnel({ steamUrl: null }, 'x').ctaLabel(), '★ COMING SOON TO STEAM', 'no fake wishlist button before the page exists');
+  // Full game live on itch.io but no Steam page yet: buttons link to the itch.io full-game page
+  const itchOnly = new Funnel({ steamUrl: null, storeUrl: 'https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare-full' }, 'x');
+  assert.equal(itchOnly.ctaLabel(), '★ GET THE FULL GAME ($4.99)');
+  assert.ok(itchOnly.steamLink('menu').startsWith('https://homebrewgametrailers.itch.io/call-of-karen-hoa-warfare-full'));
+  assert.equal(new Funnel({ steamUrl: null, storeUrl: null }, 'x').ctaLabel(), '★ COMING SOON TO STEAM', 'no fake wishlist button before the page exists');
 });
 
 test('share text and pitch: real K-D, demo link, no multiplayer promise', () => {
@@ -45,9 +49,14 @@ test('wireSteamLinks rewrites every tagged button', () => {
   assert.equal(nLive, 2);
   assert.ok(liveEls.every(e => e.href.includes('utm_source=newgrounds')));
   assert.ok(liveEls[1].textContent.startsWith('★ Coming soon') || liveEls[1].textContent.startsWith('★ Wishlist'));
-  // Not live yet (steamUrl null): buttons do nothing until the Steam account exists
+  // Not live yet (no steamUrl, no storeUrl): buttons do nothing until the full game is purchasable
   const idleEls = [mk('menu'), mk('pause', true)];
-  const nIdle = new Funnel(demo, 'newgrounds').wireSteamLinks({ querySelectorAll: () => idleEls });
+  const nIdle = new Funnel({ steamUrl: null, storeUrl: null }, 'newgrounds').wireSteamLinks({ querySelectorAll: () => idleEls });
   assert.equal(nIdle, 2);
-  assert.ok(idleEls.every(e => e.href === '#' && e.onclick() === false), 'buttons must do nothing before the Steam URL exists');
+  assert.ok(idleEls.every(e => e.href === '#' && e.onclick() === false), 'buttons must do nothing before the store URL exists');
+  // Full game on itch.io, no Steam yet: buttons link out to the itch.io page
+  const itchEls = [mk('menu'), mk('pause', true)];
+  const nItch = new Funnel(demo, 'newgrounds').wireSteamLinks({ querySelectorAll: () => itchEls });
+  assert.equal(nItch, 2);
+  assert.ok(itchEls.every(e => e.href.includes('call-of-karen-hoa-warfare-full') && e.href.includes('utm_source=newgrounds')), 'buttons link to the itch.io full-game page');
 });
