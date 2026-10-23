@@ -246,9 +246,14 @@ export class Sim {
     };
     let best = null, bestScore = -Infinity, safe = false;
     const side = this.mode.spawnSide(a);
-    for (const p of this.map.spawns[side]) {
+    // Lone Wolf: the whole faction hunts one player, so a fixed spawn cluster gets watched from 25-35 m
+    // (20-29% of the player's deaths came inside 3 s of spawning). Any nav point is a candidate.
+    const pool = this.mode.spawnAnywhere?.(a) ? [...this.map.spawns[side], ...this.map.nodes.map(n => [n.x, n.z])] : this.map.spawns[side];
+    for (const p of pool) {
       const { t, s } = score(p);
-      if (s > bestScore) { bestScore = s; best = p; safe = t.seenClose === 0; }
+      // an enemy 8 m away behind a wall is not "safe" either: in Lone Wolf the whole faction converged on
+      // the player's one spawn cluster and 20-29% of the player's deaths came inside 3 s of spawning
+      if (s > bestScore) { bestScore = s; best = p; safe = t.seenClose === 0 && t.near >= 10; }
     }
     if (safe) return best;
     // Base is camped: fall back to any nav point no enemy can see up close and none is within 15 m of.

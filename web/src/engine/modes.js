@@ -903,6 +903,8 @@ export class LoneWolf extends Mode {
     }
   }
 
+  spawnAnywhere(actor) { return actor.team === 0; }
+
   respawnDelay(actor) {
     if (actor.team === 0) return 2.5; // Player has INFINITE RESPAWNS
     if (this.enemiesLeft <= 0) return Infinity; // Enemies stop respawning once ticket pool is 0
