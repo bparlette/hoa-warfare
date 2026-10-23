@@ -46,6 +46,14 @@ if (existsSync(join(WEB, 'assets', 'characters'))) copy(join(WEB, 'assets', 'cha
 if (existsSync(join(WEB, 'assets', 'weapons'))) copy(join(WEB, 'assets', 'weapons'), join(DEMO, 'assets', 'weapons'));
 copy(join(ROOT, 'assets', 'art', 'cover_key_art.jpg'), join(DEMO, 'assets', 'art', 'cover_key_art.jpg'));
 for (const f of ['weapons.json', 'demo.json', 'perks.json', 'achievements.json']) copy(join(ROOT, 'data', f), join(DEMO, 'data', f));
+// Demo stays offline (funnel to paid full game): force serverUrl null in the demo build only.
+// The repo's data/demo.json carries the live server URL for the full game.
+{
+  const p = join(DEMO, 'data', 'demo.json');
+  const j = JSON.parse(readFileSync(p, 'utf8'));
+  j.serverUrl = null;
+  writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
+}
 // challenges.json is filtered in step 2b (paid maps/factions stay out).
 // hoa_content.json is deliberately NOT copied: the demo ships demo_content.json (step 2b).
 
