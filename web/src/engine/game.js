@@ -9,7 +9,7 @@ import { MODES, menuModes, weeklyMode } from './modes.js';
 import { BarkSystem } from './barks.js';
 import { createJuice, JUICE } from './juice.js';
 import { ChatterDirector } from '../core/chatter.js';
-import { Renderer } from './render.js';
+import { Renderer, disposeTree } from './render.js';
 import { Voice, Sfx } from './audio.js';
 import { buildCulDeSac, buildMap, MAPS } from './map.js';
 import { Radar } from './radar.js';
@@ -1017,11 +1017,11 @@ class Game {
       for (const id of ['nextMatch', 'netInfo']) $(id)?.classList.add('hidden');
     }
     this.hud.reset();
-    for (const c of renderer.characters.values()) renderer.scene.remove(c.root);
+    for (const c of renderer.characters.values()) { renderer.scene.remove(c.root); disposeTree(c.root); }
     renderer.characters.clear();
     for (const r of renderer.ragdolls) r.dispose();
     renderer.ragdolls = [];
-    for (const f of renderer.fx) renderer.scene.remove(f.obj);
+    for (const f of renderer.fx) { renderer.scene.remove(f.obj); if (!f.shared) disposeTree(f.obj); }
     renderer.fx = [];
     if (renderer.casings) {
       for (const c of renderer.casings) {

@@ -2223,6 +2223,21 @@ export function detectQuality() {
  * once the shadow pass is counted, which is what kills phones. Only call this on objects that
  * never move afterwards. Returns {before, after} mesh counts.
  */
+/**
+ * Free an object tree's GPU memory (geometry, materials, their textures). Removing it from the scene
+ * alone left every match's characters and effects on the GPU: +45 geometries and +15 textures per
+ * rematch. A shared resource is safe to free; three.js uploads it again on its next draw.
+ */
+export function disposeTree(root) {
+  root?.traverse?.(o => {
+    o.geometry?.dispose?.();
+    for (const m of Array.isArray(o.material) ? o.material : o.material ? [o.material] : []) {
+      for (const k of ['map', 'emissiveMap', 'alphaMap', 'normalMap']) m[k]?.dispose?.();
+      m.dispose?.();
+    }
+  });
+}
+
 export function mergeStatic(scene, objects) {
   const groups = new Map();
   let before = 0;
