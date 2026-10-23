@@ -19,6 +19,19 @@ and graphics preset never applied, key rebinding had no UI, the settings drawer 
 showed cul-de-sac names on every map, pickleball HOA Patrol zones sat behind a spawn, end-screen spacing.
 Everything left is below and needs a human.
 
+## Release playtest (Opus, 2026-10-22)
+Played every map x mode (4 x 8, plus the tutorial, Hard difficulty, and both built packages) in a real browser with
+keyboard input on the human slot, and backed each fix with 30-40 seed bot data. Fixed:
+- TUTORIAL button threw "unknown mode" and left Deploy broken until a reload; the tutorial mower spawned blocked
+  by a parked car so drill 4 could never be finished; completion ended the match twice.
+- HOA Patrol bots camped their home zone (one kill in a two-minute match); now they attack, score limit 250.
+- Bots paced near their spawn whenever an enemy was revealed, then got snitched (culdesac 1.6 -> 0 snitches/min).
+- Lone Wolf gave the player five teammates, lost its 200 HP on respawn, overflowed the HP bar, and 20-29% of the
+  player's deaths were spawn kills (now 2-17%).
+- Pickleball kitchens 18 m apart (a 3-0 in 35 s); stripmall King of the Lawn team-0 bias (33/40 -> 24/16).
+- Debug line IDs and dev flags shown in the HUD, killcam overlay flattened onto the scoreboard, end-screen boxes.
+Result: 307/307 tests; every map x mode within the 40-60% win band over 40 seeds; 0 stuck bots; both builds play.
+
 ## Owner (human only)
 - [ ] Pay Steam Direct fee, register app, publish "Coming Soon" page (CoD launched 2026-10-22: wishlists are being lost every day this is open).
 - [ ] Set `data/demo.json` `steamUrl` to the live store URL.
