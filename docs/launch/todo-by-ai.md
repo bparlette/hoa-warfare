@@ -32,6 +32,12 @@ keyboard input on the human slot, and backed each fix with 30-40 seed bot data. 
 - Debug line IDs and dev flags shown in the HUD, killcam overlay flattened onto the scoreboard, end-screen boxes.
 Result: 307/307 tests; every map x mode within the 40-60% win band over 40 seeds; 0 stuck bots; both builds play.
 
+Second pass (2026-10-23): every action key, the drone, touch controls, a two-browser online Quick Match,
+challenges, achievements, rematch memory. Fixed: second-half respawns faced the player's own back wall
+(halftime side swap), stripmall spawns facing a parked car, three achievements unlocking on the wrong
+condition (any win / first zone / any explosive), challenge goals unreachable before the score limit, and
+GPU memory growing every rematch. 310/310 tests.
+
 ## Owner (human only)
 - [ ] Pay Steam Direct fee, register app, publish "Coming Soon" page (CoD launched 2026-10-22: wishlists are being lost every day this is open).
 - [ ] Set `data/demo.json` `steamUrl` to the live store URL.
