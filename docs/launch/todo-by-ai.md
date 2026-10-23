@@ -38,6 +38,11 @@ challenges, achievements, rematch memory. Fixed: second-half respawns faced the 
 condition (any win / first zone / any explosive), challenge goals unreachable before the score limit, and
 GPU memory growing every rematch. 310/310 tests.
 
+Regression pass (2026-10-23): all 32 map x mode matches replayed in the browser (0 stuck, 0 spawn deaths) and a
+fresh 40-seed sweep of every map x mode. Fixed culdesac Steal the Casserole: team 1 won 29/40 (kitchen tucked
+behind the gazebo); mirrored kitchens give 20/20. Every map x mode is now 15-25 of 40. Note: the demo has
+online off (`serverUrl` null) until the Render server is redeployed, but store tags still list "Multiplayer".
+
 ## Owner (human only)
 - [ ] Pay Steam Direct fee, register app, publish "Coming Soon" page (CoD launched 2026-10-22: wishlists are being lost every day this is open).
 - [ ] Set `data/demo.json` `steamUrl` to the live store URL.
