@@ -157,11 +157,16 @@ export function buildCulDeSac() {
   // Team 1's walk to the circle detours round the gazebo (47.6 m vs 40 m), so team 0 nearly always
   // took the opening King of the Lawn zone. Nudge it toward team 1.
   const zonePos = { 'Cul-de-Sac Circle': { x: 0, z: -4 } };
+  // Steal the Casserole: the walking-distance rule put team 1's kitchen behind the gazebo at
+  // (-5, -19.5) against team 0's (0, 16) on the open road, and team 1 won 29/40 matches (77 captures
+  // to 36). Mirrored kitchens 32 m apart are even (68 to 66) and see more captures.
+  const kitchenPos = { 0: { x: 0, y: 0, z: 16 }, 1: { x: 0, y: 0, z: -16 } };
   return {
     boxes,
     spawns,
     nodes,
     zonePos,
+    kitchenPos,
     bounds: BOUNDS,
     court: COURT,
     street: STREET,
