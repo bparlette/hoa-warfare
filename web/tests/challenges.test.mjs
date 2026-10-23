@@ -47,7 +47,7 @@ test('challenges.json: every rule and goal is one the game actually applies', ()
       assert.ok(weaponsData.weapons[l.equipment]?.projectile, `${c.id}: equipment is throwable (leafBlower crashes throwGrenade)`);
     }
     if (c.goal) {
-      assert.ok(['kills', 'headshots', 'airborneKills'].includes(c.goal.stat), `${c.id}: goal stat`);
+      assert.ok(['kills', 'headshots', 'airborneKills', 'roadkills'].includes(c.goal.stat), `${c.id}: goal stat`);
       assert.ok(c.goal.count > 0 && c.goal.label, `${c.id}: goal count/label`);
     }
   }
@@ -76,6 +76,11 @@ test('challenges: goals count the right kills; passing needs a win and the goal'
   assert.ok(!goalHit(mower, { type: 'kill', killerId: 'b1', weaponId: 'mower' }, 'you'));
   assert.ok(goalHit({ stat: 'headshots', count: 1 }, { type: 'kill', killerId: 'you', headshot: true }, 'you'));
   assert.ok(!goalHit({ stat: 'airborneKills', count: 1 }, { type: 'kill', killerId: 'you', killerAirborne: false }, 'you'));
+  // run-overs count, not kills (the mower hits for 85)
+  const runOver = { stat: 'roadkills', count: 5 };
+  assert.ok(goalHit(runOver, { type: 'roadkill', killerId: 'you', targetId: 'b1' }, 'you'));
+  assert.ok(!goalHit(runOver, { type: 'roadkill', killerId: 'b2', targetId: 'b1' }, 'you'));
+  assert.ok(!goalHit(runOver, { type: 'kill', killerId: 'you', weaponId: 'allowance' }, 'you'));
   const c = { goal: mower };
   assert.ok(!challengePassed(c, { won: true, progress: 4 }));
   assert.ok(!challengePassed(c, { won: false, progress: 9 }));

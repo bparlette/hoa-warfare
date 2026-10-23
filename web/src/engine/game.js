@@ -1179,6 +1179,14 @@ class Game {
     }
   }
 
+  trackChallenge(e) {
+    const me = this.me;
+    if (!this.challenge?.goal || me.isBot || !goalHit(this.challenge.goal, e, me.id)) return;
+    this.challengeProgress++;
+    const g = this.challenge.goal;
+    if (this.challengeProgress <= g.count) this.hud.popScore?.(`🎯 ${this.challengeProgress}/${g.count} ${g.label.toUpperCase()}`, this.challengeProgress === g.count);
+  }
+
   handle(evs) {
     const sim = this.sim, me = this.me, now = sim.time;
     const out = this.barks.process(evs, now, me.id);
@@ -1253,6 +1261,7 @@ class Game {
           this.meFiredThisStep = true;
           break;
         }
+        case 'roadkill': this.trackChallenge(e); break;
         case 'hurt':
           if (e.id === me.id) {
             const attacker = e.attackerId ? sim.byId.get(e.attackerId) : null;
@@ -1273,11 +1282,7 @@ class Game {
           if (e.victimId === me.id && !me.isBot) {
             career.recordDeath();
           }
-          if (this.challenge?.goal && !me.isBot && goalHit(this.challenge.goal, e, me.id)) {
-            this.challengeProgress++;
-            const g = this.challenge.goal;
-            if (this.challengeProgress <= g.count) this.hud.popScore?.(`🎯 ${this.challengeProgress}/${g.count} ${g.label.toUpperCase()}`, this.challengeProgress === g.count);
-          }
+          this.trackChallenge(e);
           if (e.killerId === me.id && !me.isBot) {
             sfx.kill();
             haptic([40, 20, 60]);

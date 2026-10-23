@@ -12,6 +12,8 @@ export function challengeLocked(c, { demo, demoFactions, maps }) {
 
 /** Does this sim event count toward the challenge goal for player `meId`? */
 export function goalHit(goal, ev, meId) {
+  // runs over, not kills: the mower hits for 85, so most run-overs leave the neighbor standing
+  if (goal?.stat === 'roadkills') return ev.type === 'roadkill' && ev.killerId === meId;
   if (!goal || ev.type !== 'kill' || ev.killerId !== meId) return false;
   if (goal.weaponId && ev.weaponId !== goal.weaponId) return false;
   if (goal.stat === 'headshots') return !!ev.headshot;

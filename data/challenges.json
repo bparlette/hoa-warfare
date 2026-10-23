@@ -13,12 +13,11 @@
       "badge": "🚜"
     },
     "rules": {
-      "scoreLimit": 20,
+      "scoreLimit": 40,
       "difficulty": "medium"
     },
     "goal": {
-      "stat": "kills",
-      "weaponId": "mower",
+      "stat": "roadkills",
       "count": 5,
       "label": "Run over 5 neighbors with the riding mower"
     }
@@ -46,7 +45,7 @@
   {
     "id": "challenge_03",
     "title": "Cul-de-Sac Sniper Alley",
-    "briefing": "Long-range property assessment disputes across the manicured lawns. The Trust Fund only, and the board wants 10 clean headshots entered into the minutes.",
+    "briefing": "Long-range property assessment disputes across the manicured lawns. The Trust Fund only, and the board wants 8 clean headshots entered into the minutes.",
     "map": "showcase",
     "mode": "clash",
     "playerFaction": "fabulous",
@@ -57,14 +56,14 @@
       "badge": "🎯"
     },
     "rules": {
-      "scoreLimit": 20,
+      "scoreLimit": 60,
       "difficulty": "hard",
       "loadout": "trustFund"
     },
     "goal": {
       "stat": "headshots",
-      "count": 10,
-      "label": "Land 10 headshots with The Trust Fund",
+      "count": 8,
+      "label": "Land 8 headshot kills with The Trust Fund",
       "weaponId": "trustFund"
     }
   },
@@ -140,7 +139,7 @@
       "badge": "🍃"
     },
     "rules": {
-      "scoreLimit": 15,
+      "scoreLimit": 50,
       "difficulty": "medium",
       "loadout": "divorceSettlement"
     },
@@ -183,7 +182,7 @@
       "badge": "🎪"
     },
     "rules": {
-      "scoreLimit": 20,
+      "scoreLimit": 40,
       "difficulty": "medium"
     },
     "goal": {
