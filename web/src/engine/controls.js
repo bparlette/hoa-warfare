@@ -450,7 +450,6 @@ export class Controls {
     this.pending = {};
     const vechs = sim?.vehicles || this.sim?.vehicles;
     if (vechs) this.updateVehicleInteraction(a, vechs);
-    if (!a.alive) this.resetLook(a.team === 0 ? 0 : Math.PI);
     if (this.lockTarget && a.alive) {
       let dyaw = this.lockTarget.yaw - this.yaw;
       while (dyaw > Math.PI) dyaw -= 2 * Math.PI;

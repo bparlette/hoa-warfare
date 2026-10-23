@@ -294,7 +294,7 @@ export class Sim {
     const best = this.pickSpawn(a);
     Object.assign(a.pos, { x: best[0], y: 0, z: best[1] });
     Object.assign(a.vel, { x: 0, y: 0, z: 0 });
-    a.yaw = this.mode.spawnSide(a) === 0 ? 0 : Math.PI;
+    a.yaw = best[2] ?? (this.mode.spawnSide(a) === 0 ? 0 : Math.PI); // a spawn point may set its own facing
     a.pitch = 0;
     a.input.yaw = a.yaw; a.input.pitch = 0;
     a.activeSlot = 'primary';
@@ -304,7 +304,7 @@ export class Sim {
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 }, lastShotAt: -Infinity });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
-    this.emit({ type: 'spawn', id: a.id, roundReset });
+    this.emit({ type: 'spawn', id: a.id, roundReset, yaw: a.yaw });
   }
 
   enterVehicle(actor, vehicleId = null) {

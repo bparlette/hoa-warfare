@@ -1179,6 +1179,9 @@ class Game {
     }
   }
 
+  /** Spawn facing, the same rule as Sim.respawn: side 0 faces -z, side 1 faces +z. */
+  spawnYaw() { return this.sim.mode.spawnSide(this.me) === 0 ? 0 : Math.PI; }
+
   trackChallenge(e) {
     const me = this.me;
     if (!this.challenge?.goal || me.isBot || !goalHit(this.challenge.goal, e, me.id)) return;
@@ -1262,6 +1265,11 @@ class Game {
           break;
         }
         case 'roadkill': this.trackChallenge(e); break;
+        case 'spawn':
+          // face the way this spawn faces. The controls reset the view by team while dead, so after a
+          // halftime side swap every respawn looked straight at the player's own back wall
+          if (e.id === me.id && !me.isBot) input.resetLook(e.yaw ?? this.spawnYaw());
+          break;
         case 'hurt':
           if (e.id === me.id) {
             const attacker = e.attackerId ? sim.byId.get(e.attackerId) : null;
@@ -1682,7 +1690,7 @@ function startGame(session = null) {
   input.userPaused = false;
   if (input.device === 'touch') { document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape')).catch(() => {}); }
   game = new Game(session);
-  if (session) input.resetLook(game.me.team === 0 ? 0 : Math.PI); // team 1 spawns at the far end, facing the court
+  input.resetLook(game.spawnYaw()); // the coin flip can start team 0 at the far end
   $('btnInvite')?.classList.toggle('hidden', !session);
   if (params.get('short') === '1' && !window.__shortStarted) {
     window.__shortStarted = true;

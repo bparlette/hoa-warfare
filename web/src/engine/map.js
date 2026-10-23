@@ -736,8 +736,10 @@ export function buildStripMall() {
   const destructibles = [...parcelLockers, ...glassTables, ...rocketPropane];
 
   // Spawns: Team 0 = South Entrance & EV Stalls, Team 1 = North Storefront Promenade & Loading Bay
+  // [x, z, yaw]: the +-8 pair faced a parked car 1.7 m away; they look past it toward the lot instead
+  // (moving them out from behind the car exposed the spawn and swung casserole to 1/39)
   const spawns = {
-    0: [[-8, 22], [-4, 22], [4, 22], [8, 22], [-18, 22], [18, 22], [28, 24], [34, 18]],
+    0: [[-8, 22, -0.6], [-4, 22], [4, 22], [8, 22, 0.6], [-18, 22], [18, 22], [28, 24], [34, 18]],
     1: [[-8, -22], [-4, -22], [4, -22], [8, -22], [-18, -22], [18, -22], [28, -24], [34, -18]],
   };
 
