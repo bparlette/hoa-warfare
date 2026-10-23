@@ -962,7 +962,8 @@ class Game {
       const customName = ($('optName')?.value || params.get('name') || '').trim();
       const myName = customName ? playerName() : 'You';
       this.me = this.sim.addActor({ id: 'you', name: myName, team: 0, faction: state.faction, loadout: myLoadout, perk: myPerk, isBot: state.spectate });
-      const allies = ch.allies ?? 5, enemies = ch.enemies ?? 6;
+      // Lone Wolf is you against a whole faction: five bot teammates turned it into plain team deathmatch
+      const allies = ch.allies ?? (state.mode === 'loneWolf' ? 0 : 5), enemies = ch.enemies ?? 6;
       for (let i = 0; i < allies + enemies; i++) {
         const team = i < allies ? 0 : 1;
         const botFaction = team === 1 && this.challenge?.enemyFaction ? this.challenge.enemyFaction : pickFaction(team);

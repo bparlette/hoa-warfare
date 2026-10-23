@@ -537,6 +537,10 @@ export function buildPickleballClub() {
     'Northeast Front Lawn': 'East Courts', 'West Front Lawn': 'West Courts',
     'Gazebo': 'Clubhouse Terrace', 'Clubhouse': 'Center Court', 'Pool Patio': 'Golf Cart Plaza',
   };
+  // Steal the Casserole: the auto rule put the kitchens 18 m apart on this small map, and a player who
+  // grabbed the dish sprinted it home in 2 s (a 3-0 in 35 s). 26 m apart keeps bot matches even
+  // (11/7/2 over 20 seeds) and the first capture near 70 s. The 30 m tried in 91d3734 starved bots.
+  const kitchenPos = { 0: { x: 0, y: 0, z: 13 }, 1: { x: 0, y: 0, z: -13 } };
 
 
   return {
@@ -548,6 +552,7 @@ export function buildPickleballClub() {
     nodes,
     zonePos,
     zoneNames,
+    kitchenPos,
     bounds: BOUNDS,
     court: { x: 0, z: 0, r: 16 },
     street: { minX: -8, maxX: 8, minZ: 22, maxZ: 48 },
@@ -760,6 +765,9 @@ export function buildStripMall() {
 
   return {
     id: 'stripmall',
+    // King of the Lawn opener: at the shared (0,0) team 0 took 70% of the opening zone and won 33 of
+    // 40 seeds. Measured, not walk-modelled (the coarse nav graph mispredicts here): 24/16 at (7,-2).
+    zonePos: { 'Cul-de-Sac Circle': { x: 7, z: -2 } },
     zoneNames: {
       'Cul-de-Sac Circle': 'Center Lot', 'Clubhouse': 'Center Lot', 'Gazebo Greenbelt': 'North Lot', 'Gazebo': 'North Lot',
       'South Driveway': 'South Lot', 'Pool Patio': 'South Lot', 'Northeast Front Lawn': 'East Lot', 'West Front Lawn': 'West Lot',

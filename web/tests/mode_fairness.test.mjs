@@ -81,5 +81,9 @@ for (const id of maps) {
       // Placing a kitchen next to the enemy spawn produced 0-0 matches (every carrier died instantly).
       assert.ok(r.toEnemyKitchen > 12, `${id} team ${r.team}: enemy kitchen only ${r.toEnemyKitchen.toFixed(1)} m away`);
     }
+    // The carry home is the mode: pickleball's kitchens 18 m apart let a player capture 2 s after the grab.
+    const [t0, t1] = rows;
+    const apart = Math.hypot(t0.ownKitchen.x - t1.ownKitchen.x, t0.ownKitchen.z - t1.ownKitchen.z);
+    assert.ok(apart >= 24, `${id}: kitchens only ${apart.toFixed(1)} m apart, the carry home is a 2 s sprint`);
   });
 }

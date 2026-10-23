@@ -33,7 +33,7 @@ filming everything. You will hear about it.
   Club, Sunset Strip Mall Parking Lot, and the new Model Home Showcase (Nuketown-style)
 - **8 game modes**: Cul-de-Sac Clash (team deathmatch), Wipeout, Receipt Check
   (kill-confirmed), King of the Lawn (hardpoint), Evict the Block (Search & Destroy),
-  HOA Patrol (domination), Steal the Casserole (capture the flag), and Lone Wolf (free-for-all)
+  HOA Patrol (domination), Steal the Casserole (capture the flag), and Lone Wolf (you alone against a whole faction)
 - **Driveable vehicles & killstreaks**: mount the suburban riding lawn mower,
   trigger the 3-streak Ring Doorbell UAV, call in Dad's RC Patrol Helicopter (5-streak),
   a 7-streak Lawn Mower Stampede, or the devastating 9-streak Fine From Above (thermal drone gunship)

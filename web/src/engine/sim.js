@@ -294,7 +294,8 @@ export class Sim {
     a.input.yaw = a.yaw; a.input.pitch = 0;
     a.activeSlot = 'primary';
     a.ammoBank = {};
-    Object.assign(a, { hp: 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: (a.weapons.equipment?.count ?? 0) + (a.perkDef?.extraGrenades || 0), streak: 0,
+    // maxHp: Lone Wolf's 200 HP lasted only until the first death
+    Object.assign(a, { hp: a.maxHp || 100, alive: true, ammo: a.weapons.primary.mag, reloadUntil: 0, grenades: (a.weapons.equipment?.count ?? 0) + (a.perkDef?.extraGrenades || 0), streak: 0,
       spawnProtectUntil: this.time + 1.2, lowHealthSaid: false, lastHitBy: null, onGround: true, hitAgo: Infinity, hitDir: { x: 0, y: 0, z: 0 }, lastShotAt: -Infinity });
     a.camp.reset();
     if (a.brain) { resetBrain(a.brain); a.brain.aimYaw = a.yaw; }
@@ -1314,7 +1315,12 @@ export class Sim {
       }
       if (!b.target && !b.lastKnown) {
         const snitch = this.actors.find(e => e.alive && e.team !== a.team && e.revealedUntil > now);
-        if (snitch && (b.role !== 'objective' || !this.roleGoal(a))) { b.lastKnown = { x: snitch.pos.x, z: snitch.pos.z }; b.path = null; }
+        // Plan once per revealed enemy. The path builder consumes lastKnown, so re-arming it on every
+        // 0.2 s scan threw the path away each time: while anyone was revealed (UAV, a snitched camper)
+        // bots paced around their nearest node, got snitched themselves, and fed the loop.
+        if (snitch && (b.role !== 'objective' || !this.roleGoal(a)) && (b.chaseId !== snitch.id || !b.path || b.pathIdx >= b.path.length)) {
+          b.chaseId = snitch.id; b.lastKnown = { x: snitch.pos.x, z: snitch.pos.z }; b.path = null;
+        }
       }
     }
 
@@ -1446,7 +1452,7 @@ function resetBrain(b) {
   Object.assign(b, {
     target: null, seenAt: 0, reactAt: 0, lastKnown: null, objective: null, path: null, pathIdx: 0, role: b.role ?? 'hunter',
     strafeDir: 1, strafeUntil: 0, burstLeft: 0, nextBurstAt: 0, errYaw: 0, errPitch: 0, aimHead: false,
-    aimYaw: 0, aimPitch: 0, progressAt: 0, progressPos: { x: 0, z: 0 },
+    aimYaw: 0, aimPitch: 0, progressAt: 0, progressPos: { x: 0, z: 0 }, chaseId: null,
   });
   b.spotted.clear();
 }

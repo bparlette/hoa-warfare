@@ -1440,8 +1440,10 @@ export class Hud {
     const modeClock = sim.mode?.clock?.();
     const left = Math.max(0, modeClock != null ? modeClock : sim.timeLimit - sim.time);
     $('clock').textContent = `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
-    $('hpfill').style.width = `${me.alive ? me.hp : 0}%`;
-    $('hpfill').style.background = me.hp < 25 ? '#ff004d' : me.hp < 60 ? '#ffa300' : '#00e436';
+    // a share of max HP: Lone Wolf's 200 HP drew the bar at up to 200% width, out of its frame
+    const hpPct = me.alive ? Math.max(0, Math.min(100, (me.hp / (me.maxHp || 100)) * 100)) : 0;
+    $('hpfill').style.width = `${hpPct}%`;
+    $('hpfill').style.background = hpPct < 25 ? '#ff004d' : hpPct < 60 ? '#ffa300' : '#00e436';
     const W = me.weapons;
     const activeW = (W && W[me.activeSlot]) || W.primary;
     $('wname').textContent = `${activeW.name}${me.activeSlot === 'secondary' ? ' [SECONDARY]' : ''}`;
