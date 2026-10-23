@@ -274,7 +274,9 @@ export class HoaPatrol extends Mode {
   static label = 'HOA Patrol';
   static parent = 'Domination';
   static HALFTIME = true;
-  static defaults = { scoreLimit: 120, timeLimit: 360 };
+  // 120 was set while both teams sat on their home zones (1 pt/s each); with zones changing hands a
+  // team holding two of three reached 120 in ~80 s. 250 gives ~3 minutes.
+  static defaults = { scoreLimit: 250, timeLimit: 360 };
   static CAP_SEC = 3.0;
   static ZONES = [
     { letter: 'A', name: 'Gazebo', pos: { x: 0, y: 0, z: -32 }, radius: 5.2 },
@@ -311,17 +313,18 @@ export class HoaPatrol extends Mode {
     return this.objects.some(z => z.kind === 'patrolZone' && this.isInside(actor, z));
   }
 
+  /**
+   * Nearest zone the team does not hold (or is losing), else the nearest one it does. The old rule
+   * scored distance x 2.5 for owned zones, which is 0 for a bot standing on one: each team capped its
+   * home zone and sat there, nobody went for B, and culdesac matches ended 120-117 with one kill.
+   */
   botGoal(actor) {
+    const zones = this.objects.filter(z => z.kind === 'patrolZone');
+    const open = zones.filter(z => z.ownerTeam !== actor.team || z.contested);
     let best = null, bestDist = Infinity;
-    for (const z of this.objects) {
-      if (z.kind !== 'patrolZone') continue;
+    for (const z of open.length ? open : zones) {
       const d = Math.hypot(z.pos.x - actor.pos.x, z.pos.z - actor.pos.z);
-      const weight = (z.ownerTeam !== actor.team || z.contested) ? 1.0 : 2.5;
-      const score = d * weight;
-      if (score < bestDist) {
-        bestDist = score;
-        best = z.pos;
-      }
+      if (d < bestDist) { bestDist = d; best = z.pos; }
     }
     return best;
   }
