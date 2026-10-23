@@ -1107,7 +1107,7 @@ body.style-cctv #cctvOverlay {
 }
 .cctv-hud {
   position: absolute;
-  top: 20px;
+  top: 152px; /* below the radar (130px at top 12); at the top it was drawn over the radar */
   left: 20px;
   font-family: monospace;
   font-size: 14px;
@@ -1167,9 +1167,11 @@ body.style-vhs #vhsOverlay {
   background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%);
   background-size: 100% 3px;
 }
+/* the killcam's own label sits in the same spot */
+body:has(#killcam:not(.hidden)) .vhs-hud, body:has(#killcam:not(.hidden)) .cctv-hud { display: none; }
 .vhs-hud {
   position: absolute;
-  top: 24px;
+  top: 152px; /* below the radar, not over it */
   left: 24px;
   font-family: monospace;
   font-size: 16px;
