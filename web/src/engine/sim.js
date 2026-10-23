@@ -655,7 +655,7 @@ export class Sim {
 
   throwGrenade(a) {
     const e = a.weapons.equipment;
-    if (!e || a.grenades <= 0 || this.grenades.some(g => g.ownerId === a.id)) return;
+    if (!e?.projectile || a.grenades <= 0 || this.grenades.some(g => g.ownerId === a.id)) return; // the HOA Blower has no projectile
     a.grenades--;
     const P = e.projectile;
     const d = forwardOf(a.yaw, a.pitch + 0.15);

@@ -307,15 +307,5 @@
 </div>
 
 <script type="module" src="src/engine/game.js?v=4"></script>
-<script type="module">
-  document.getElementById('btnTutorial')?.addEventListener('click', () => {
-    const opt = document.getElementById('optMode');
-    if (opt) {
-      opt.value = 'tutorial';
-      opt.dispatchEvent(new Event('change'));
-    }
-    document.getElementById('deploy')?.click();
-  });
-</script>
 </body>
 </html>

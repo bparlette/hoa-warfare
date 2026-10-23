@@ -1401,10 +1401,13 @@ class Game {
           }
           break;
         case 'hardpointRotated': this.showBanner('NEW LAWN ACTIVE', e.name); break;
+        case 'drillComplete': this.showBanner(`DRILL ${e.drill}/4 PASSED`, e.message || e.name); break;
+        case 'weedCut': this.showBanner('WEED MOWED', e.name); break;
+        case 'tutorialComplete': this.showBanner(e.banner, e.sub); break;
         case 'matchEnd':
           if (!me.isBot) {
             this.hud.stopClipRecorder?.();
-            career.recordMatchEnd({ won: e.winner === me.team, mode: state.mode });
+            career.recordMatchEnd({ won: e.winner === me.team, mode: sim.mode.constructor.id });
             if (this.challenge) {
               const c = this.challenge;
               if (challengePassed(c, { won: e.winner === me.team, progress: this.challengeProgress })) {
@@ -1650,6 +1653,19 @@ function setupShortRecorder() {
     console.error('Short recording error:', err);
   }
 }
+
+/**
+ * TUTORIAL button. It used to set the mode <select> to 'tutorial', which has no option there, so the
+ * mode became '' and Deploy threw "unknown mode" - the tutorial never started and Deploy stayed broken
+ * until a reload. The drills are laid out on the cul-de-sac; the player's own pick is restored after.
+ */
+function startTutorial() {
+  const prev = { mode: state.mode, map: state.map };
+  state.mode = 'tutorial';
+  state.map = 'culdesac';
+  try { startGame(); } finally { Object.assign(state, prev); }
+}
+if ($('btnTutorial')) $('btnTutorial').onclick = startTutorial;
 
 function startGame(session = null) {
   if (game) game.dispose();

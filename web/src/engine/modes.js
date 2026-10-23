@@ -974,7 +974,7 @@ export class SuburbanWipeout extends Mode {
  * Safe HOA practice zone with infinite ammo, 4 progressive suburban drill objectives:
  * 1. Movement Drill: Walk across the manicured lawn to inspect the grass height meter.
  * 2. Target Practice: Shoot 3 cardboard cutout HOA violators (wooden target dummies: Karen with haircut, Dad with clipboard, WallStreetBets bro with vest).
- * 3. Suburban Ordinance: Throw a Lawsuit Grenade (key Q) to bounce it off the driveway.
+ * 3. Suburban Ordinance: Throw a Lawsuit Grenade (key G) to bounce it off the driveway.
  * 4. Heavy Machinery: Mount the riding lawn mower (key E) and run over a row of weeds!
  * Upon completion: triggers "HOA BOARD CERTIFICATION PASSED" banner, awards bonus XP, and invites player to Cul-de-Sac Clash!
  */
@@ -1011,9 +1011,11 @@ export class SuburbanTutorial extends Mode {
     ];
 
     this.weeds = [
-      { id: 'weed_1', name: 'Dandelion Row 1', kind: 'weed', pos: { x: -8, y: 0, z: 0 }, radius: 1.8, cut: false },
-      { id: 'weed_2', name: 'Crabgrass Row 2', kind: 'weed', pos: { x: -8, y: 0, z: -4 }, radius: 1.8, cut: false },
-      { id: 'weed_3', name: 'Clover Row 3', kind: 'weed', pos: { x: -8, y: 0, z: -8 }, radius: 1.8, cut: false },
+      // x = -11 is a clear lane. At x = -8 the mower spawned touching a parked car (blocked, so it
+      // could not move at all) and the weeds sat behind that car: no one could finish drill 4.
+      { id: 'weed_1', name: 'Dandelion Row 1', kind: 'weed', pos: { x: -11, y: 0, z: 0 }, radius: 1.8, cut: false },
+      { id: 'weed_2', name: 'Crabgrass Row 2', kind: 'weed', pos: { x: -11, y: 0, z: -4 }, radius: 1.8, cut: false },
+      { id: 'weed_3', name: 'Clover Row 3', kind: 'weed', pos: { x: -11, y: 0, z: -8 }, radius: 1.8, cut: false },
     ];
   }
 
@@ -1064,12 +1066,12 @@ export class SuburbanTutorial extends Mode {
     // Spawn or position riding lawn mower in practice zone
     let mower = sim.vehicles?.find(v => v.id === 'mower_driveable' || v.id === 'tutorial_mower');
     if (!mower && typeof sim.spawnMower === 'function') {
-      mower = sim.spawnMower({ id: 'tutorial_mower', pos: { x: -8, y: 0, z: 8 }, yaw: Math.PI });
+      mower = sim.spawnMower({ id: 'tutorial_mower', pos: { x: -11, y: 0, z: 8 }, yaw: 0 });
     } else if (mower) {
-      mower.pos.x = -8;
+      mower.pos.x = -11;
       mower.pos.y = 0;
       mower.pos.z = 8;
-      mower.yaw = Math.PI;
+      mower.yaw = 0; // facing the weed row (-z)
       mower.alive = true;
       mower.hp = mower.maxHp;
     }
@@ -1154,7 +1156,7 @@ export class SuburbanTutorial extends Mode {
     this.completed = true;
     this.step = 5;
     this.bonusXpAwarded = true;
-    this.sim.addScore(0, 100);
+    this.sim.score[0] += 100; // directly: addScore would end the match before the completion banner
 
     if (typeof globalThis !== 'undefined' && globalThis.__HOA_CAREER__?.addXp) {
       try { globalThis.__HOA_CAREER__.addXp(500); } catch {}
@@ -1166,11 +1168,6 @@ export class SuburbanTutorial extends Mode {
       sub: 'Ready for Cul-de-Sac Clash! +500 Bonus XP Awarded.',
       bonusXp: 500,
     });
-    this.sim.emit({
-      type: 'hardpointRotated',
-      name: 'HOA BOARD CERTIFICATION PASSED',
-    });
-
     if (typeof document !== 'undefined') {
       const bannerEl = document.getElementById('banner');
       if (bannerEl) {
@@ -1179,13 +1176,9 @@ export class SuburbanTutorial extends Mode {
       }
     }
 
-    this.sim.over = true;
-    this.sim.winner = 0;
-    this.sim.emit({
-      type: 'matchEnd',
-      winner: 0,
-      reason: 'HOA Board Certification Passed! Ready for Cul-de-Sac Clash!',
-    });
+    // one matchEnd: this used to addScore (which ends the match) and then emit a second matchEnd,
+    // running the end of match (career record, end screen) twice
+    this.sim.end(0);
   }
 
   update(dt) {
@@ -1223,7 +1216,7 @@ export class SuburbanTutorial extends Mode {
         this.advanceStep();
       }
     } else if (this.step === 3) {
-      // Drill 3: Suburban Ordinance (Throw a Lawsuit Grenade (key Q) to bounce it off the driveway)
+      // Drill 3: Suburban Ordinance (Throw a Lawsuit Grenade (key G) to bounce it off the driveway)
       if (sim.grenades && sim.grenades.length > 0) {
         this.grenadeThrown = true;
         for (const g of sim.grenades) {
@@ -1272,7 +1265,7 @@ export class SuburbanTutorial extends Mode {
       return `<b style="color:#ffec27">DRILL 2/4 (Target Practice):</b> Shoot 3 cardboard cutout HOA violators (${3 - remaining}/3 eliminated)`;
     }
     if (this.step === 3) {
-      return '<b style="color:#ffec27">DRILL 3/4 (Suburban Ordinance):</b> Throw a Lawsuit Grenade [G/Q] to bounce it off the driveway';
+      return '<b style="color:#ffec27">DRILL 3/4 (Suburban Ordinance):</b> Throw a Lawsuit Grenade [G] to bounce it off the driveway';
     }
     if (this.step === 4) {
       const remaining = this.weeds.filter(w => !w.cut).length;
