@@ -1375,7 +1375,8 @@ class Game {
         case 'receiptDenied': if (a === me) { sfx.reload(); this.showBanner('RETURN DENIED', `saved ${e.victimName}'s receipt`); } break;
         case 'zoneCaptured':
           if (e.cappers?.includes(me.id) && !me.isBot) {
-            career.unlockAchievement('ACH_HOA_PATROL');
+            this.zonesCapped = (this.zonesCapped || 0) + 1;
+            if (this.zonesCapped >= 3) career.unlockAchievement('ACH_HOA_PATROL'); // "Capture 3 zones", not the first
             this.hud.popScore?.(`🚩 +150 ZONE ${e.letter}!`, true);
           }
           this.showBanner(`ZONE ${e.letter} SECURED`, `${e.name} captured by ${e.team === me.team ? 'YOUR TEAM' : 'ENEMY'}`);
@@ -1420,7 +1421,8 @@ class Game {
         case 'matchEnd':
           if (!me.isBot) {
             this.hud.stopClipRecorder?.();
-            career.recordMatchEnd({ won: e.winner === me.team, mode: sim.mode.constructor.id });
+            // the tutorial pays its own XP; counting it as a won match also unlocked "Win a Clash match"
+            if (sim.mode.constructor.id !== 'tutorial') career.recordMatchEnd({ won: e.winner === me.team, mode: sim.mode.constructor.id });
             if (this.challenge) {
               const c = this.challenge;
               if (challengePassed(c, { won: e.winner === me.team, progress: this.challengeProgress })) {

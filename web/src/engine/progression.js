@@ -193,7 +193,7 @@ export class CareerProfile {
     this.addXp(headshot ? 35 : 25);
     this.unlockAchievement('ACH_FIRST_FINE');
     if (melee) this.unlockAchievement('ACH_TROPHY_HUNTER');
-    if (explosive) this.unlockAchievement('ACH_LAWSUIT');
+    if (explosive && weaponId === 'lawsuit') this.unlockAchievement('ACH_LAWSUIT'); // not the mower stampede or the drone
     if (streak >= 5) this.unlockAchievement('ACH_STREAK_5');
     this.save();
   }
@@ -259,12 +259,12 @@ export class CareerProfile {
     this.save();
   }
 
-  recordMatchEnd({ won = false } = {}) {
+  recordMatchEnd({ won = false, mode = 'clash' } = {}) {
     this.data.matches = (this.data.matches || 0) + 1;
     if (won) {
       this.data.wins = (this.data.wins || 0) + 1;
       this.addXp(120);
-      this.unlockAchievement('ACH_LAWN_ORDER');
+      if (mode === 'clash') this.unlockAchievement('ACH_LAWN_ORDER'); // "Win a Cul-de-Sac Clash match"
     } else {
       this.addXp(50);
     }

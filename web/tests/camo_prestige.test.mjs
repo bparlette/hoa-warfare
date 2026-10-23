@@ -96,3 +96,18 @@ test('challenges: first clear pays the reward XP once', () => {
   assert.equal(c.completeChallenge(ch), false);
   assert.equal(c.profile.xp, 500);
 });
+
+test('achievements match their descriptions: Clash win only, Lawsuit grenade only', async () => {
+  const { CareerProfile } = await import('../src/engine/progression.js');
+  const p = new CareerProfile();
+  p.data.achievements = {};
+  const has = id => !!p.data.achievements[id];
+  p.recordMatchEnd({ won: true, mode: 'kingOfTheLawn' });
+  assert.ok(!has('ACH_LAWN_ORDER'), 'a King of the Lawn win is not a Clash win');
+  p.recordMatchEnd({ won: true, mode: 'clash' });
+  assert.ok(has('ACH_LAWN_ORDER'));
+  p.recordKill({ weaponId: 'lawnMower', explosive: true });
+  assert.ok(!has('ACH_LAWSUIT'), 'a mower stampede kill is not a Lawsuit Grenade kill');
+  p.recordKill({ weaponId: 'lawsuit', explosive: true });
+  assert.ok(has('ACH_LAWSUIT'));
+});
